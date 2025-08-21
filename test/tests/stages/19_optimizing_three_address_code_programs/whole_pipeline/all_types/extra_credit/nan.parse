@@ -1,0 +1,366 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[12]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nan
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CLessThan: 
+                          CVar: 
+                            TIdentifier: nan
+                            None: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 0.000000
+                            None: 
+                          None: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: nan
+                            None: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 0.000000
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CGreaterThan: 
+                        CVar: 
+                          TIdentifier: nan
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 0.000000
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CLessOrEqual: 
+                      CVar: 
+                        TIdentifier: nan
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CGreaterOrEqual: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CGreaterThan: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          CVar: 
+                            TIdentifier: nan
+                            None: 
+                          None: 
+                        CBinary: 
+                          CEqual: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          CVar: 
+                            TIdentifier: nan
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CGreaterThan: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        CVar: 
+                          TIdentifier: nan
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CLessOrEqual: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      CVar: 
+                        TIdentifier: nan
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CGreaterOrEqual: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 2200.000000
+                      None: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: nan
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CVar: 
+                    TIdentifier: nan
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[0]: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

@@ -1,0 +1,428 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[4]: 
+    AsmStaticVariable: 
+      TIdentifier: c
+      TInt: 1
+      Bool: 1
+      List[1]: 
+        CharInit: 
+          TChar: 100
+    AsmStaticVariable: 
+      TIdentifier: uc
+      TInt: 1
+      Bool: 1
+      List[1]: 
+        UCharInit: 
+          TUChar: 250
+    AsmStaticVariable: 
+      TIdentifier: sc
+      TInt: 1
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 1
+    AsmFunction: 
+      TIdentifier: update_global_chars
+      Bool: 1
+      Bool: 0
+      List[32]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 48
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMovSx: 
+          Byte: 
+          LongWord: 
+          AsmData: 
+            TIdentifier: c
+            TLong: 0
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -4
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmMemory: 
+            TLong: -4
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 10
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -9
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -9
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmData: 
+            TIdentifier: c
+            TLong: 0
+        AsmMovZeroExtend: 
+          Byte: 
+          LongWord: 
+          AsmData: 
+            TIdentifier: uc
+            TLong: 0
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -20
+            AsmBp: 
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 10
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -20
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -20
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -21
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -21
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmData: 
+            TIdentifier: uc
+            TLong: 0
+        AsmMovSx: 
+          Byte: 
+          LongWord: 
+          AsmData: 
+            TIdentifier: sc
+            TLong: 0
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -28
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmMemory: 
+            TLong: -28
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+        AsmBinary: 
+          AsmSub: 
+          LongWord: 
+          AsmImm: 
+            TULong: 10
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -33
+            AsmBp: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: -33
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          Byte: 
+          AsmRegister: 
+            AsmR10: 
+          AsmData: 
+            TIdentifier: sc
+            TLong: 0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(13):
+  [c]: 
+    Symbol: 
+      Char: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            CharInit: 
+              TChar: 100
+  [uc]: 
+    Symbol: 
+      UChar: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            UCharInit: 
+              TUChar: 250
+  [sc]: 
+    Symbol: 
+      SChar: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 1
+  [update_global_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.2]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [cast.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(13):
+  [c]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      Byte: 
+  [uc]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      Byte: 
+  [sc]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      Byte: 
+  [update_global_chars]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [cast.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.1]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      Byte: 
+  [cast.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.5]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      Byte: 
+  [cast.6]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.7]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.8]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      Byte: 

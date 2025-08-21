@@ -1,0 +1,409 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: puts
+        List[1]: 
+          TIdentifier: s
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1
+          TIdentifier: s2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[18]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: escape_sequence
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[2]: 
+                          TChar: 7
+                          TChar: 8
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: escape_sequence
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: escape_sequence
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CSubscript: 
+                  CVar: 
+                    TIdentifier: escape_sequence
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: with_double_quote
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[11]: 
+                          TChar: 72
+                          TChar: 101
+                          TChar: 108
+                          TChar: 108
+                          TChar: 111
+                          TChar: 34
+                          TChar: 119
+                          TChar: 111
+                          TChar: 114
+                          TChar: 108
+                          TChar: 100
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: with_double_quote
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 34
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: with_double_quote
+                      None: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: with_backslash
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[11]: 
+                          TChar: 72
+                          TChar: 101
+                          TChar: 108
+                          TChar: 108
+                          TChar: 111
+                          TChar: 92
+                          TChar: 87
+                          TChar: 111
+                          TChar: 114
+                          TChar: 108
+                          TChar: 100
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: with_backslash
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 92
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: with_backslash
+                      None: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: with_newline
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[11]: 
+                          TChar: 76
+                          TChar: 105
+                          TChar: 110
+                          TChar: 101
+                          TChar: 10
+                          TChar: 98
+                          TChar: 114
+                          TChar: 101
+                          TChar: 97
+                          TChar: 107
+                          TChar: 33
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: with_newline
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: with_newline
+                      None: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: tab
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[1]: 
+                          TChar: 9
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: tab
+                      None: 
+                    CString: 
+                      CStringLiteral: 
+                        List[1]: 
+                          TChar: 9
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CString: 
+                      CStringLiteral: 
+                        List[13]: 
+                          TChar: 84
+                          TChar: 101
+                          TChar: 115
+                          TChar: 116
+                          TChar: 105
+                          TChar: 110
+                          TChar: 103
+                          TChar: 44
+                          TChar: 32
+                          TChar: 49
+                          TChar: 50
+                          TChar: 51
+                          TChar: 46
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CString: 
+                      CStringLiteral: 
+                        List[7]: 
+                          TChar: 94
+                          TChar: 64
+                          TChar: 49
+                          TChar: 32
+                          TChar: 95
+                          TChar: 92
+                          TChar: 93
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

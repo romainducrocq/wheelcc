@@ -1,0 +1,216 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[2]: 
+    AsmStaticVariable: 
+      TIdentifier: foo
+      TInt: 4
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 4
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[20]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.0
+        AsmLabel: 
+          TIdentifier: for_start.1
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.1
+        AsmSetCC: 
+          AsmL: 
+          AsmPseudo: 
+            TIdentifier: binop.1
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.1
+        AsmJmpCC: 
+          TIdentifier: break_for.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: foo
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.2
+          AsmPseudo: 
+            TIdentifier: foo
+        AsmLabel: 
+          TIdentifier: continue_for.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.0
+          AsmPseudo: 
+            TIdentifier: binop.3
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.3
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.3
+          AsmPseudo: 
+            TIdentifier: i.0
+        AsmJmp: 
+          TIdentifier: for_start.1
+        AsmLabel: 
+          TIdentifier: break_for.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: foo
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [foo]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(6):
+  [foo]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      LongWord: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [i.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.1]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

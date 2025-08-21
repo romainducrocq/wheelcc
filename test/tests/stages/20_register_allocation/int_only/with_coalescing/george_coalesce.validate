@@ -1,0 +1,1133 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[7]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.21
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 1
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: increment_glob
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: glob
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[6]: 
+          TIdentifier: a.22
+          TIdentifier: b.23
+          TIdentifier: c.24
+          TIdentifier: d.25
+          TIdentifier: e.26
+          TIdentifier: f.27
+        CB: 
+          List[40]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: a.22
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: b.23
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: c.24
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d.25
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: e.26
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: f.27
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 6
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one.28
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two.29
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: three.30
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: four.31
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: one.28
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: two.29
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: three.30
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: four.31
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: increment_glob
+                  List[0]: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: five.32
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      CVar: 
+                        TIdentifier: one.28
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: six.33
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      CVar: 
+                        TIdentifier: two.29
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: seven.34
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      CVar: 
+                        TIdentifier: three.30
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight.35
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      CVar: 
+                        TIdentifier: four.31
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: five.32
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: six.33
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 6
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: seven.34
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: eight.35
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 14
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: increment_glob
+                  List[0]: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nine.36
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 14
+                        Int: 
+                      CVar: 
+                        TIdentifier: five.32
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ten.37
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 16
+                        Int: 
+                      CVar: 
+                        TIdentifier: six.33
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eleven.38
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 18
+                        Int: 
+                      CVar: 
+                        TIdentifier: seven.34
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: twelve.39
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 20
+                        Int: 
+                      CVar: 
+                        TIdentifier: eight.35
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: increment_glob
+                  List[0]: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: nine.36
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 9
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ten.37
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 16
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: eleven.38
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 11
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 17
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: twelve.39
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 12
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 18
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s.40
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: t.41
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.42
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: v.43
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CBinary: 
+                        CMultiply: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: w.44
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CVar: 
+                      TIdentifier: s.40
+                      Int: 
+                    CVar: 
+                      TIdentifier: t.41
+                      Int: 
+                    CVar: 
+                      TIdentifier: u.42
+                      Int: 
+                    CVar: 
+                      TIdentifier: v.43
+                      Int: 
+                    CVar: 
+                      TIdentifier: w.44
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(30):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [increment_glob]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [one.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [two.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [three.30]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [four.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [five.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [six.33]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [seven.34]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eight.35]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [nine.36]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ten.37]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eleven.38]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [twelve.39]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [s.40]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [t.41]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [u.42]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [v.43]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [w.44]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

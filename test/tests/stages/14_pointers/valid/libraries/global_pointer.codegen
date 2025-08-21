@@ -1,0 +1,137 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[2]: 
+    AsmStaticVariable: 
+      TIdentifier: d_ptr
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+    AsmFunction: 
+      TIdentifier: update_thru_ptr
+      Bool: 1
+      Bool: 0
+      List[9]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 16
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmData: 
+            TIdentifier: d_ptr
+            TLong: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [d_ptr]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [new_val.0]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [update_thru_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 4096
+        TULong: 1
+        List[1]: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
++
++
+@@ Backend Symbol Table @@
+Dict(3):
+  [d_ptr]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      QuadWord: 
+  [new_val.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [update_thru_ptr]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 

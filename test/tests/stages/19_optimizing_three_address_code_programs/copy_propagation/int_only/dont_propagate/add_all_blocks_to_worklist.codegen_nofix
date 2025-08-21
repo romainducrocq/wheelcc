@@ -1,0 +1,194 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[4]: 
+    AsmStaticVariable: 
+      TIdentifier: global
+      TInt: 4
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 4
+    AsmStaticVariable: 
+      TIdentifier: flag
+      TInt: 4
+      Bool: 1
+      List[1]: 
+        IntInit: 
+          TInt: 1
+    AsmFunction: 
+      TIdentifier: f
+      Bool: 1
+      Bool: 0
+      List[5]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 100
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: global
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[10]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: global
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: flag
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmCall: 
+          TIdentifier: f
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.0
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: global
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(5):
+  [global]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [flag]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [f]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [call.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(5):
+  [global]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      LongWord: 
+  [flag]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      LongWord: 
+  [f]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [call.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

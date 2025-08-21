@@ -1,0 +1,180 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[175]:
+  void
+  identifier(exit)
+  (
+  int
+  identifier(status)
+  )
+  ;
+  void
+  identifier(check_pointers)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  *
+  identifier(ptr1)
+  ,
+  int
+  *
+  identifier(ptr2)
+  )
+  {
+  if
+  (
+  identifier(a)
+  !=
+  const int(100)
+  ||
+  identifier(b)
+  !=
+  const int(101)
+  )
+  {
+  identifier(exit)
+  (
+  const int(1)
+  )
+  ;
+  }
+  if
+  (
+  *
+  identifier(ptr1)
+  !=
+  const int(60)
+  ||
+  *
+  identifier(ptr2)
+  !=
+  const int(61)
+  )
+  {
+  identifier(exit)
+  (
+  const int(2)
+  )
+  ;
+  }
+  return
+  ;
+  }
+  int
+  identifier(callee)
+  (
+  int
+  *
+  identifier(p1)
+  ,
+  int
+  *
+  identifier(p2)
+  )
+  {
+  if
+  (
+  identifier(p1)
+  !=
+  identifier(p2)
+  )
+  {
+  identifier(exit)
+  (
+  const int(3)
+  )
+  ;
+  }
+  if
+  (
+  *
+  identifier(p2)
+  !=
+  const int(10)
+  )
+  {
+  identifier(exit)
+  (
+  const int(4)
+  )
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  int
+  *
+  identifier(ptr)
+  ,
+  int
+  *
+  identifier(ptr2)
+  )
+  {
+  identifier(check_pointers)
+  (
+  const int(100)
+  ,
+  const int(101)
+  ,
+  identifier(ptr)
+  ,
+  identifier(ptr2)
+  )
+  ;
+  identifier(ptr2)
+  =
+  identifier(ptr)
+  ;
+  *
+  identifier(ptr)
+  =
+  const int(10)
+  ;
+  return
+  identifier(callee)
+  (
+  identifier(ptr)
+  ,
+  identifier(ptr2)
+  )
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  int
+  identifier(x)
+  =
+  const int(60)
+  ;
+  int
+  identifier(y)
+  =
+  const int(61)
+  ;
+  return
+  identifier(target)
+  (
+  &
+  identifier(x)
+  ,
+  &
+  identifier(y)
+  )
+  ;
+  }

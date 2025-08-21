@@ -1,0 +1,393 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: z
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: x
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: y
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: z
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr2
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: z
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: y
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: x
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_of_pointers
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr2
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Pointer: 
+                          Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: array_of_pointers
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: arr
+                      None: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Pointer: 
+                          Int: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: array_of_pointers
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: arr2
+                      None: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Pointer: 
+                          Int: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: array_of_pointers
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: arr
+                      None: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Pointer: 
+                          Int: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: array_of_pointers
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: z
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: array_of_pointers
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: y
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CSubscript: 
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: array_of_pointers
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

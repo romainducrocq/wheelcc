@@ -1,0 +1,85 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: foo
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flag
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CConditional: 
+                  CVar: 
+                    TIdentifier: flag
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: foo
+                    List[0]: 
+                    None: 
+                  CAssignment: 
+                    None: 
+                    CVar: 
+                      TIdentifier: a
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

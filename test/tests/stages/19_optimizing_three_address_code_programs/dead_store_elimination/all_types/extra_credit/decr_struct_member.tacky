@@ -1,0 +1,145 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[0]: 
+      List[8]: 
+        TacCopyToOffset: 
+          TIdentifier: my_struct.0
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 15
+          TacVariable: 
+            TIdentifier: x.1
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.2
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: smem.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.3
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: assign.4
+        TacCopyToOffset: 
+          TIdentifier: my_struct.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: x.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[1]: 
+        TIdentifier: i
+      Dict[1]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(8):
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [x.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [smem.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [assign.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,132 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_sum
+        List[9]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+          TIdentifier: c.2
+          TIdentifier: d.3
+          TIdentifier: e.4
+          TIdentifier: f.5
+          TIdentifier: g.6
+          TIdentifier: h.7
+          TIdentifier: i.8
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[9]: 
+            Int: 
+            Int: 
+            Int: 
+            Long: 
+            Int: 
+            Long: 
+            Int: 
+            Int: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: test_sum
+                  List[9]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 34359738368
+                      Long: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 34359738368
+                      Long: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 34359738368
+                      Long: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [test_sum]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[9]: 
+          Int: 
+          Int: 
+          Int: 
+          Long: 
+          Int: 
+          Long: 
+          Int: 
+          Int: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

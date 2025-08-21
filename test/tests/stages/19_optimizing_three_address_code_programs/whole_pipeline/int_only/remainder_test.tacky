@@ -1,0 +1,124 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[0]: 
+      List[4]: 
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+          TacVariable: 
+            TIdentifier: unop.0
+        TacBinary: 
+          TacRemainder: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 6
+          TacVariable: 
+            TIdentifier: unop.0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[7]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.2
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [unop.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

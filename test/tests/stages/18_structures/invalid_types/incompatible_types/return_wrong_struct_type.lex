@@ -1,0 +1,62 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[57]:
+  struct
+  identifier(one)
+  {
+  int
+  identifier(x)
+  ;
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  struct
+  identifier(two)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  }
+  ;
+  struct
+  identifier(one)
+  identifier(return_struct)
+  (
+  void
+  )
+  {
+  struct
+  identifier(two)
+  identifier(retval)
+  =
+  {
+  const int(1)
+  ,
+  const int(2)
+  }
+  ;
+  return
+  identifier(retval)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(return_struct)
+  (
+  )
+  .
+  identifier(x)
+  ;
+  }

@@ -1,0 +1,137 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_max
+        List[11]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[11]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: result
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: get_max
+                      List[11]: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 100.300000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 200.100000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 0.010000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 100004.000000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 55.555000
+                          None: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 4.000000
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 6543.200000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 9000000000.000000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 800000000.000000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 7.600000
+                          None: 
+                        CBinary: 
+                          CMultiply: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 10000.000000
+                            None: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 1100000.000000
+                            None: 
+                          None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: result
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 10000.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1100000.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

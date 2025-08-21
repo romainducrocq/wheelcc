@@ -1,0 +1,67 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  None: 
+                  Array: 
+                    TLong: 10
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    None: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr2
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: ptr
+                        None: 
+                      Pointer: 
+                        ULong: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CSubtract: 
+                  CVar: 
+                    TIdentifier: ptr
+                    None: 
+                  CVar: 
+                    TIdentifier: ptr2
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

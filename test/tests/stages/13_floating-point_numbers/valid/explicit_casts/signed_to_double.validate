@@ -1,0 +1,229 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: int_to_double
+        List[1]: 
+          TIdentifier: i.0
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: i.0
+                    Int: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_to_double
+        List[1]: 
+          TIdentifier: l.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: l.1
+                    Long: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Long: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: int_to_double
+                    List[1]: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100000
+                          Int: 
+                        Int: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 100000.000000
+                      Double: 
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: long_to_double
+                    List[1]: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 9007199254751227
+                          Long: 
+                        Long: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 9007199254751228.000000
+                      Double: 
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.2
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 1152921504606846977
+                        Long: 
+                      Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d.2
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1152921504606846976.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [i.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [int_to_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [long_to_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Long: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 

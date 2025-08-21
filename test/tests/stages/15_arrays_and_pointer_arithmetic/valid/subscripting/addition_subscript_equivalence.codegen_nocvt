@@ -1,0 +1,1596 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[197]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.1
+        AsmLabel: 
+          TIdentifier: for_start.4
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 300
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.1
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmSetCC: 
+          AsmL: 
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmJmpCC: 
+          TIdentifier: break_for.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: j.2
+        AsmLabel: 
+          TIdentifier: for_start.5
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: j.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmSetCC: 
+          AsmL: 
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmJmpCC: 
+          TIdentifier: break_for.1
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.1
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmBinary: 
+          AsmMult: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.7
+          AsmPseudo: 
+            TIdentifier: binop.8
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: j.2
+          AsmPseudo: 
+            TIdentifier: binop.8
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.8
+          AsmPseudo: 
+            TIdentifier: cast.9
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.10
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: i.1
+          AsmPseudo: 
+            TIdentifier: cast.11
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.10
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.11
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.12
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: j.2
+          AsmPseudo: 
+            TIdentifier: cast.13
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.12
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.13
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.14
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.14
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.9
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+        AsmLabel: 
+          TIdentifier: continue_for.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: j.2
+          AsmPseudo: 
+            TIdentifier: binop.15
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.15
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.15
+          AsmPseudo: 
+            TIdentifier: j.2
+        AsmJmp: 
+          TIdentifier: for_start.5
+        AsmLabel: 
+          TIdentifier: break_for.1
+        AsmLabel: 
+          TIdentifier: continue_for.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.1
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.16
+          AsmPseudo: 
+            TIdentifier: i.1
+        AsmJmp: 
+          TIdentifier: for_start.4
+        AsmLabel: 
+          TIdentifier: break_for.0
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.17
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 20
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.18
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.17
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.18
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.19
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.20
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.19
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.20
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.21
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.21
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: deref.22
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.23
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 20
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.24
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.23
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.24
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.25
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.26
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.25
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.26
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.27
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.27
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: subscr.28
+        AsmCmp: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.28
+          AsmPseudo: 
+            TIdentifier: deref.22
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.29
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.29
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.29
+        AsmJmpCC: 
+          TIdentifier: if_false.6
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.6
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.30
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 290
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.31
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.30
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.31
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.32
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.33
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.32
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.33
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.34
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.35
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 290
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.36
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.35
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.36
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.37
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.38
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.37
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.38
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.39
+        AsmCmp: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.39
+          AsmPseudo: 
+            TIdentifier: binop.34
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.40
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.40
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.40
+        AsmJmpCC: 
+          TIdentifier: if_false.7
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.7
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.3
+        AsmLabel: 
+          TIdentifier: for_start.8
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 300
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.41
+        AsmSetCC: 
+          AsmL: 
+          AsmPseudo: 
+            TIdentifier: binop.41
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.41
+        AsmJmpCC: 
+          TIdentifier: break_for.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: j.4
+        AsmLabel: 
+          TIdentifier: for_start.9
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: j.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.42
+        AsmSetCC: 
+          AsmL: 
+          AsmPseudo: 
+            TIdentifier: binop.42
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.42
+        AsmJmpCC: 
+          TIdentifier: break_for.3
+          AsmE: 
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.43
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: i.3
+          AsmPseudo: 
+            TIdentifier: cast.44
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.43
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.44
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.45
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: j.4
+          AsmPseudo: 
+            TIdentifier: cast.46
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.45
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.46
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.47
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.47
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: deref.48
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.49
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: i.3
+          AsmPseudo: 
+            TIdentifier: cast.50
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.49
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.50
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.51
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: j.4
+          AsmPseudo: 
+            TIdentifier: cast.52
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.51
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.52
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.53
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.53
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: subscr.54
+        AsmCmp: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.54
+          AsmPseudo: 
+            TIdentifier: deref.48
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.55
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.55
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.55
+        AsmJmpCC: 
+          TIdentifier: if_false.10
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.10
+        AsmLabel: 
+          TIdentifier: continue_for.3
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: j.4
+          AsmPseudo: 
+            TIdentifier: binop.56
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.56
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.56
+          AsmPseudo: 
+            TIdentifier: j.4
+        AsmJmp: 
+          TIdentifier: for_start.9
+        AsmLabel: 
+          TIdentifier: break_for.3
+        AsmLabel: 
+          TIdentifier: continue_for.2
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.3
+          AsmPseudo: 
+            TIdentifier: binop.57
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.57
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.57
+          AsmPseudo: 
+            TIdentifier: i.3
+        AsmJmp: 
+          TIdentifier: for_start.8
+        AsmLabel: 
+          TIdentifier: break_for.2
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.58
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 275
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.59
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.58
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.59
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.60
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.61
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.60
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.61
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: binop.62
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.62
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 22000
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: x.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.63
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 275
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.64
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.63
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.64
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 40
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.65
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.66
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.65
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.66
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 8
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.67
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.67
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: subscr.68
+        AsmCmp: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 22000
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: subscr.68
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.69
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.69
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.69
+        AsmJmpCC: 
+          TIdentifier: if_false.11
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.11
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(1):
+  : x.0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(71):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Array: 
+        TLong: 300
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [i.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.9]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [addr.10]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.11]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.14]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.18]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.19]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.20]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.21]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [deref.22]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [addr.23]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.24]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.25]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.26]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.27]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.28]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.30]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.31]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.32]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.33]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.34]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.35]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.36]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.37]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.38]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.39]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.40]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.41]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.42]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.43]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.44]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.45]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.46]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.47]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [deref.48]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [addr.49]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.50]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.51]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.52]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.53]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.54]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.55]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.56]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.57]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.58]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.59]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.60]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.61]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.62]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.63]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.64]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.65]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.66]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.67]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.68]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.69]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

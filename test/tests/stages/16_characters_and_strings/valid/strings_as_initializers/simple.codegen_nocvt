@@ -1,0 +1,155 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[13]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 6513249
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: chars.0
+            TLong: 0
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: chars.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.1
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.2
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.1
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.2
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.3
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.3
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          Byte: 
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: subscr.4
+        AsmMovZeroExtend: 
+          Byte: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.4
+          AsmPseudo: 
+            TIdentifier: cast.5
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.5
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(1):
+  : chars.0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [chars.0]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        UChar: 
+      LocalAttr: 
+  [addr.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.3]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.4]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

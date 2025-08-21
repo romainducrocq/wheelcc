@@ -1,0 +1,180 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: s
+                  Bool: 0
+                  List[2]: 
+                    CMemberDeclaration: 
+                      TIdentifier: a
+                      Int: 
+                    CMemberDeclaration: 
+                      TIdentifier: b
+                      Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 12
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 13
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: s
+                    Bool: 0
+                  None: 
+            CS: 
+              CCompound: 
+                CB: 
+                  List[6]: 
+                    CD: 
+                      CStructDecl: 
+                        CStructDeclaration: 
+                          TIdentifier: u
+                          Bool: 1
+                          List[0]: 
+                    CD: 
+                      CVarDecl: 
+                        CVariableDeclaration: 
+                          TIdentifier: ptr
+                          CSingleInit: 
+                            CFunctionCall: 
+                              TIdentifier: malloc
+                              List[1]: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 4
+                                  None: 
+                              None: 
+                            None: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: u
+                              Bool: 1
+                          None: 
+                    CD: 
+                      CStructDecl: 
+                        CStructDeclaration: 
+                          TIdentifier: u
+                          Bool: 1
+                          List[2]: 
+                            CMemberDeclaration: 
+                              TIdentifier: i
+                              Int: 
+                            CMemberDeclaration: 
+                              TIdentifier: u
+                              UInt: 
+                    CS: 
+                      CExpression: 
+                        CAssignment: 
+                          None: 
+                          CArrow: 
+                            TIdentifier: i
+                            CVar: 
+                              TIdentifier: ptr
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                          None: 
+                    CS: 
+                      CIf: 
+                        CBinary: 
+                          CNotEqual: 
+                          CArrow: 
+                            TIdentifier: u
+                            CVar: 
+                              TIdentifier: ptr
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                          None: 
+                        CCompound: 
+                          CB: 
+                            List[1]: 
+                              CS: 
+                                CReturn: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    None: 
+                        None: 
+                    CS: 
+                      CIf: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: my_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            None: 
+                          None: 
+                        CCompound: 
+                          CB: 
+                            List[1]: 
+                              CS: 
+                                CReturn: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    None: 
+                        None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

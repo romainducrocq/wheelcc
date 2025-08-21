@@ -1,0 +1,17 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Structure: 
+              TIdentifier: a
+              Bool: 0

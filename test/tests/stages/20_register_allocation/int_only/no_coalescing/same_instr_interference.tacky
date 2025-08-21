@@ -1,0 +1,403 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[27]: 
+        TacFunCall: 
+          TIdentifier: id
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+          TacVariable: 
+            TIdentifier: call.28
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.28
+          TacVariable: 
+            TIdentifier: a.22
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: a.22
+          TacVariable: 
+            TIdentifier: a.22
+          TacVariable: 
+            TIdentifier: binop.29
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.29
+          TacVariable: 
+            TIdentifier: b.23
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.30
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.31
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: unop.30
+            TacVariable: 
+              TIdentifier: unop.31
+          TacVariable: 
+            TIdentifier: call.32
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: a.22
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+          TacVariable: 
+            TIdentifier: call.33
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: b.23
+            TacConstant: 
+              CConstInt: 
+                TInt: 2
+          TacVariable: 
+            TIdentifier: call.34
+        TacFunCall: 
+          TIdentifier: id
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 3
+          TacVariable: 
+            TIdentifier: call.35
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.35
+          TacVariable: 
+            TIdentifier: c.24
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: c.24
+          TacVariable: 
+            TIdentifier: c.24
+          TacVariable: 
+            TIdentifier: binop.36
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.36
+          TacVariable: 
+            TIdentifier: d.25
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+          TacVariable: 
+            TIdentifier: call.37
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: c.24
+            TacConstant: 
+              CConstInt: 
+                TInt: 3
+          TacVariable: 
+            TIdentifier: call.38
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: d.25
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+          TacVariable: 
+            TIdentifier: call.39
+        TacFunCall: 
+          TIdentifier: id
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 4
+          TacVariable: 
+            TIdentifier: call.40
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.40
+          TacVariable: 
+            TIdentifier: x.26
+        TacBinary: 
+          TacMultiply: 
+          TacVariable: 
+            TIdentifier: x.26
+          TacVariable: 
+            TIdentifier: x.26
+          TacVariable: 
+            TIdentifier: binop.41
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.41
+          TacVariable: 
+            TIdentifier: y.27
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.42
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.43
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: unop.42
+            TacVariable: 
+              TIdentifier: unop.43
+          TacVariable: 
+            TIdentifier: call.44
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: x.26
+            TacConstant: 
+              CConstInt: 
+                TInt: 4
+          TacVariable: 
+            TIdentifier: call.45
+        TacFunCall: 
+          TIdentifier: check_one_int
+          List[2]: 
+            TacVariable: 
+              TIdentifier: y.27
+            TacConstant: 
+              CConstInt: 
+                TInt: 16
+          TacVariable: 
+            TIdentifier: call.46
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(30):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [x.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.30]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.33]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.34]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.35]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.36]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.37]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.38]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.39]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.40]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.41]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.42]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.43]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.44]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.45]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.46]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

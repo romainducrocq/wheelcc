@@ -1,0 +1,704 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[6]: 
+    TacFunction: 
+      TIdentifier: test_shared_member_names
+      Bool: 1
+      List[0]: 
+      List[21]: 
+        TacCopyToOffset: 
+          TIdentifier: p1.0
+          TLong: 4
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacCopyToOffset: 
+          TIdentifier: p1.0
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+          TacVariable: 
+            TIdentifier: cast.6
+        TacCopyToOffset: 
+          TIdentifier: p2.1
+          TLong: 8
+          TacVariable: 
+            TIdentifier: cast.6
+        TacCopyToOffset: 
+          TIdentifier: p2.1
+          TLong: 0
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 3.000000
+        TacCopyFromOffset: 
+          TIdentifier: p1.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.8
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.8
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.9
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.9
+        TacCopyFromOffset: 
+          TIdentifier: p2.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.10
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.10
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 3.000000
+          TacVariable: 
+            TIdentifier: binop.11
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.11
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.7
+        TacJump: 
+          TIdentifier: or_false.2
+        TacLabel: 
+          TIdentifier: or_true.1
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.7
+        TacLabel: 
+          TIdentifier: or_false.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: test_shared_nested_member_names
+      Bool: 1
+      List[0]: 
+      List[17]: 
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: p1.2
+          TacVariable: 
+            TIdentifier: addr.12
+        TacCopyToOffset: 
+          TIdentifier: p1.2
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.12
+        TacCopyToOffset: 
+          TIdentifier: p1.2
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacCopyToOffset: 
+          TIdentifier: p2.3
+          TLong: 8
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 1.000000
+        TacCopyToOffset: 
+          TIdentifier: p2.3
+          TLong: 16
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 2.000000
+        TacCopyToOffset: 
+          TIdentifier: p2.3
+          TLong: 24
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 3.000000
+        TacCopyToOffset: 
+          TIdentifier: p2.3
+          TLong: 32
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 4.000000
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: p1.2
+          TacVariable: 
+            TIdentifier: addr.13
+        TacCopyToOffset: 
+          TIdentifier: p2.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: addr.13
+        TacCopyFromOffset: 
+          TIdentifier: p2.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.14
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.14
+          TacVariable: 
+            TIdentifier: sptr.15
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.15
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: binop.16
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: binop.16
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: test_same_name_var_member_and_tag
+      Bool: 1
+      List[0]: 
+      List[8]: 
+        TacCopyToOffset: 
+          TIdentifier: x.4
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+        TacCopyFromOffset: 
+          TIdentifier: x.4
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.17
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.17
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: binop.18
+        TacJumpIfZero: 
+          TIdentifier: if_false.4
+          TacVariable: 
+            TIdentifier: binop.18
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: test_same_name_fun_member_and_tag
+      Bool: 1
+      List[0]: 
+      List[9]: 
+        TacFunCall: 
+          TIdentifier: f
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.19
+        TacCopyToOffset: 
+          TIdentifier: my_struct.5
+          TLong: 0
+          TacVariable: 
+            TIdentifier: call.19
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.5
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.20
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.20
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: binop.21
+        TacJumpIfZero: 
+          TIdentifier: if_false.5
+          TacVariable: 
+            TIdentifier: binop.21
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: f
+      Bool: 1
+      List[0]: 
+      List[2]: 
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[22]: 
+        TacFunCall: 
+          TIdentifier: test_shared_member_names
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.22
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.22
+          TacVariable: 
+            TIdentifier: unop.23
+        TacJumpIfZero: 
+          TIdentifier: if_false.6
+          TacVariable: 
+            TIdentifier: unop.23
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.6
+        TacFunCall: 
+          TIdentifier: test_shared_nested_member_names
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.24
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.24
+          TacVariable: 
+            TIdentifier: unop.25
+        TacJumpIfZero: 
+          TIdentifier: if_false.7
+          TacVariable: 
+            TIdentifier: unop.25
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.7
+        TacFunCall: 
+          TIdentifier: test_same_name_var_member_and_tag
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.26
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.26
+          TacVariable: 
+            TIdentifier: unop.27
+        TacJumpIfZero: 
+          TIdentifier: if_false.8
+          TacVariable: 
+            TIdentifier: unop.27
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.8
+        TacFunCall: 
+          TIdentifier: test_same_name_fun_member_and_tag
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.28
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.28
+          TacVariable: 
+            TIdentifier: unop.29
+        TacJumpIfZero: 
+          TIdentifier: if_false.9
+          TacVariable: 
+            TIdentifier: unop.29
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.9
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(6):
+  [pair1.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [y]: 
+          StructMember: 
+            TLong: 4
+            Int: 
+  [pair2.1]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [y]: 
+          StructMember: 
+            TLong: 8
+            Char: 
+  [pair1.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [y]: 
+          StructMember: 
+            TLong: 8
+            Pointer: 
+              Int: 
+  [pair2.3]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 40
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Void: 
+        [y]: 
+          StructMember: 
+            TLong: 8
+            Array: 
+              TLong: 4
+              Double: 
+  [x.4]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[1]: 
+        TIdentifier: x
+      Dict[1]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+  [f.5]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[1]: 
+        TIdentifier: f
+      Dict[1]: 
+        [f]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(36):
+  [test_shared_member_names]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [p1.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: pair1.0
+        Bool: 0
+      LocalAttr: 
+  [p2.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: pair2.1
+        Bool: 0
+      LocalAttr: 
+  [test_shared_nested_member_names]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [p1.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: pair1.2
+        Bool: 0
+      LocalAttr: 
+  [p2.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: pair2.3
+        Bool: 0
+      LocalAttr: 
+  [test_same_name_var_member_and_tag]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: x.4
+        Bool: 0
+      LocalAttr: 
+  [test_same_name_fun_member_and_tag]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [f]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.5]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: f.5
+        Bool: 0
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.6]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.10]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.14]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [sptr.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.20]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

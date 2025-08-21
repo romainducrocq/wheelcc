@@ -1,0 +1,1781 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[10]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: free
+        List[1]: 
+          TIdentifier: ptr.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Void: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: memcmp
+        List[3]: 
+          TIdentifier: s1.2
+          TIdentifier: s2.3
+          TIdentifier: n.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Void: 
+            Pointer: 
+              Void: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_ptr
+        List[1]: 
+          TIdentifier: i.5
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.5
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Void: 
+                  Pointer: 
+                    Void: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_char_ptr_argument
+        List[2]: 
+          TIdentifier: pointer.6
+          TIdentifier: expected_val.7
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: pointer.6
+                        Pointer: 
+                          Char: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: expected_val.7
+                      Char: 
+                    Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_void_ptr_as_int_ptr
+        List[1]: 
+          TIdentifier: pointer.8
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: pointer.8
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Int: 
+                  Pointer: 
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Void: 
+          Pointer: 
+            Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_dbl_array
+        List[1]: 
+          TIdentifier: n.9
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CFunctionCall: 
+                    TIdentifier: malloc
+                    List[1]: 
+                      CBinary: 
+                        CMultiply: 
+                        CVar: 
+                          TIdentifier: n.9
+                          ULong: 
+                        CSizeOfT: 
+                          Double: 
+                          ULong: 
+                        ULong: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Double: 
+                  Pointer: 
+                    Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: set_doubles
+        List[3]: 
+          TIdentifier: array.10
+          TIdentifier: n.11
+          TIdentifier: d.12
+        CB: 
+          List[2]: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.13
+                    CSingleInit: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        ULong: 
+                        ULong: 
+                      ULong: 
+                    ULong: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.13
+                    ULong: 
+                  CVar: 
+                    TIdentifier: n.11
+                    ULong: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.13
+                    ULong: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.13
+                      ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    ULong: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: array.10
+                                Pointer: 
+                                  Double: 
+                              CCast: 
+                                CVar: 
+                                  TIdentifier: i.13
+                                  ULong: 
+                                Long: 
+                                Long: 
+                              Double: 
+                            CVar: 
+                              TIdentifier: d.12
+                              Double: 
+                            Double: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Double: 
+            ULong: 
+            Double: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_dbl_ptr_as_void_ptr
+        List[1]: 
+          TIdentifier: ptr.14
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: ptr.14
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Void: 
+                  Pointer: 
+                    Void: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Double: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[39]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: four_bytes.15
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: malloc
+                      List[1]: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                          ULong: 
+                          ULong: 
+                      Pointer: 
+                        Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: int_ptr.16
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Int: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: int_ptr.16
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_char_ptr_argument
+                    List[2]: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: four_bytes.15
+                          Pointer: 
+                            Void: 
+                        Pointer: 
+                          Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        Char: 
+                        Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: return_void_ptr_as_int_ptr
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                    Pointer: 
+                      Int: 
+                  CVar: 
+                    TIdentifier: int_ptr.16
+                    Pointer: 
+                      Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbl_ptr.17
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: complicated_ptr.18
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 2
+                            Array: 
+                              TLong: 5
+                              Int: 
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 2
+                            Array: 
+                              TLong: 5
+                              Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 5
+                            Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 5
+                          Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_ptr.19
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Long: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: dbl_ptr.17
+                          Pointer: 
+                            Double: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: complicated_ptr.18
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Array: 
+                                TLong: 2
+                                Array: 
+                                  TLong: 5
+                                  Int: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CVar: 
+                        TIdentifier: four_bytes.15
+                        Pointer: 
+                          Void: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_ptr.19
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                    CVar: 
+                      TIdentifier: four_bytes.15
+                      Pointer: 
+                        Void: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: four_bytes.15
+                      Pointer: 
+                        Void: 
+                  Void: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbl_array.20
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: get_dbl_array
+                      List[1]: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                          ULong: 
+                          ULong: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: void_array.21
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: dbl_array.20
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: set_doubles
+                  List[3]: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: void_array.21
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 4.000000
+                      Double: 
+                  Void: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: dbl_array.20
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Long: 
+                      Long: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: return_dbl_ptr_as_void_ptr
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: dbl_array.20
+                        Pointer: 
+                          Double: 
+                    Pointer: 
+                      Void: 
+                  CVar: 
+                    TIdentifier: void_array.21
+                    Pointer: 
+                      Void: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: some_other_ptr.22
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: some_other_ptr.22
+                    Pointer: 
+                      Void: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: dbl_array.20
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: some_other_ptr.22
+                    Pointer: 
+                      Void: 
+                  CVar: 
+                    TIdentifier: void_array.21
+                    Pointer: 
+                      Void: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: some_other_ptr.22
+                    Pointer: 
+                      Void: 
+                  CCast: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: some_other_ptr.22
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Pointer: 
+                          Void: 
+                    Pointer: 
+                      Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: some_other_ptr.22
+                    Pointer: 
+                      Void: 
+                  CVar: 
+                    TIdentifier: void_array.21
+                    Pointer: 
+                      Void: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: complicated_ptr.18
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 5
+                            Int: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 5
+                            Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 5
+                            Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 5
+                          Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: some_other_ptr.22
+                    Pointer: 
+                      Void: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: complicated_ptr.18
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 2
+                            Array: 
+                              TLong: 5
+                              Int: 
+                    Pointer: 
+                      Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: some_other_ptr.22
+                  Pointer: 
+                    Void: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: dbl_array.20
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                  Void: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_ptr_array.23
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: malloc
+                            List[1]: 
+                              CSizeOfT: 
+                                Long: 
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: malloc
+                            List[1]: 
+                              CSizeOfT: 
+                                Long: 
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: malloc
+                            List[1]: 
+                              CSizeOfT: 
+                                Long: 
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Long: 
+                    Array: 
+                      TLong: 3
+                      Pointer: 
+                        Long: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Long: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: long_ptr_array.23
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        Pointer: 
+                          Pointer: 
+                            Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 100
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: long_ptr_array.23
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        Pointer: 
+                          Pointer: 
+                            Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 200
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: long_ptr_array.23
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        Pointer: 
+                          Pointer: 
+                            Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 300
+                    Long: 
+                  Long: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: sum.24
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CBinary: 
+                        CAdd: 
+                        CDereference: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: long_ptr_array.23
+                                Pointer: 
+                                  Pointer: 
+                                    Long: 
+                              Pointer: 
+                                Pointer: 
+                                  Long: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Long: 
+                          Long: 
+                        CDereference: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: long_ptr_array.23
+                                Pointer: 
+                                  Pointer: 
+                                    Long: 
+                              Pointer: 
+                                Pointer: 
+                                  Long: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Long: 
+                          Long: 
+                        Long: 
+                      CDereference: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: long_ptr_array.23
+                              Pointer: 
+                                Pointer: 
+                                  Long: 
+                            Pointer: 
+                              Pointer: 
+                                Long: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Long: 
+                        Long: 
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: sum.24
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 600
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: long_ptr_array.23
+                            Pointer: 
+                              Pointer: 
+                                Long: 
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: long_ptr_array.23
+                            Pointer: 
+                              Pointer: 
+                                Long: 
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: long_ptr_array.23
+                            Pointer: 
+                              Pointer: 
+                                Long: 
+                          Pointer: 
+                            Pointer: 
+                              Long: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Void: 
+                      Pointer: 
+                        Void: 
+                  Void: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr1.25
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                    Array: 
+                      TLong: 3
+                      Long: 
+                  Array: 
+                    TLong: 3
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr2.26
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                    Array: 
+                      TLong: 3
+                      Long: 
+                  Array: 
+                    TLong: 3
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr3.27
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                    Array: 
+                      TLong: 3
+                      Long: 
+                  Array: 
+                    TLong: 3
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: memcmp
+                    List[3]: 
+                      CCast: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr1.25
+                            Pointer: 
+                              Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CCast: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr2.26
+                            Pointer: 
+                              Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CSizeOf: 
+                        CVar: 
+                          TIdentifier: arr1.25
+                          Array: 
+                            TLong: 3
+                            Long: 
+                        ULong: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: memcmp
+                    List[3]: 
+                      CCast: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr1.25
+                            Pointer: 
+                              Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CCast: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr3.27
+                            Pointer: 
+                              Long: 
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CSizeOf: 
+                        CVar: 
+                          TIdentifier: arr2.26
+                          Array: 
+                            TLong: 3
+                            Long: 
+                        ULong: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(33):
+  [malloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [free]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Void: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [memcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Pointer: 
+            Void: 
+          Pointer: 
+            Void: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [i.5]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [return_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pointer.6]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [expected_val.7]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [check_char_ptr_argument]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Char: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pointer.8]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [return_void_ptr_as_int_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Void: 
+        Pointer: 
+          Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [n.9]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [get_dbl_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [array.10]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [n.11]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [d.12]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [set_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Pointer: 
+            Double: 
+          ULong: 
+          Double: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.13]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [ptr.14]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [return_dbl_ptr_as_void_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Double: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [four_bytes.15]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [int_ptr.16]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [dbl_ptr.17]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [complicated_ptr.18]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 2
+            Array: 
+              TLong: 5
+              Int: 
+      LocalAttr: 
+  [long_ptr.19]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [dbl_array.20]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [void_array.21]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [some_other_ptr.22]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [long_ptr_array.23]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Pointer: 
+          Long: 
+      LocalAttr: 
+  [sum.24]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [arr1.25]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Long: 
+      LocalAttr: 
+  [arr2.26]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Long: 
+      LocalAttr: 
+  [arr3.27]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Long: 
+      LocalAttr: 

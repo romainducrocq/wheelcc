@@ -1,0 +1,387 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[382]:
+  int
+  identifier(check_one_int)
+  (
+  int
+  identifier(actual)
+  ,
+  int
+  identifier(expected)
+  )
+  ;
+  int
+  identifier(check_5_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(check_12_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(f)
+  ,
+  int
+  identifier(g)
+  ,
+  int
+  identifier(h)
+  ,
+  int
+  identifier(i)
+  ,
+  int
+  identifier(j)
+  ,
+  int
+  identifier(k)
+  ,
+  int
+  identifier(l)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(id)
+  (
+  int
+  identifier(x)
+  )
+  ;
+  int
+  identifier(glob1)
+  =
+  const int(1)
+  ;
+  int
+  identifier(glob2)
+  =
+  const int(2)
+  ;
+  int
+  identifier(glob3)
+  =
+  const int(3)
+  ;
+  int
+  identifier(glob4)
+  =
+  const int(4)
+  ;
+  int
+  identifier(glob5)
+  =
+  const int(5)
+  ;
+  int
+  identifier(callee)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  )
+  {
+  identifier(glob1)
+  =
+  -
+  identifier(a)
+  ;
+  identifier(glob2)
+  =
+  -
+  identifier(b)
+  ;
+  identifier(glob3)
+  =
+  -
+  identifier(c)
+  ;
+  identifier(glob4)
+  =
+  -
+  identifier(d)
+  ;
+  identifier(glob5)
+  =
+  -
+  identifier(e)
+  ;
+  identifier(check_5_ints)
+  (
+  const int(1)
+  ,
+  const int(2)
+  ,
+  const int(3)
+  ,
+  const int(4)
+  ,
+  const int(5)
+  ,
+  const int(1)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  int
+  identifier(a)
+  =
+  const int(99)
+  *
+  identifier(glob1)
+  ;
+  int
+  identifier(b)
+  =
+  const int(200)
+  /
+  identifier(glob2)
+  ;
+  int
+  identifier(c)
+  =
+  identifier(glob3)
+  ?
+  const int(104)
+  -
+  identifier(glob3)
+  :
+  const int(0)
+  ;
+  int
+  identifier(d)
+  =
+  identifier(c)
+  +
+  (
+  identifier(glob4)
+  ||
+  identifier(glob1)
+  )
+  ;
+  int
+  identifier(e)
+  =
+  const int(108)
+  -
+  identifier(glob5)
+  ;
+  identifier(callee)
+  (
+  identifier(a)
+  ,
+  identifier(b)
+  ,
+  identifier(c)
+  ,
+  identifier(d)
+  ,
+  identifier(e)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob1)
+  ,
+  -
+  const int(99)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob2)
+  ,
+  -
+  const int(100)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob3)
+  ,
+  -
+  const int(101)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob4)
+  ,
+  -
+  const int(102)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob5)
+  ,
+  -
+  const int(103)
+  )
+  ;
+  int
+  identifier(f)
+  =
+  identifier(a)
+  -
+  const int(100)
+  ;
+  int
+  identifier(g)
+  =
+  identifier(b)
+  -
+  const int(100)
+  ;
+  int
+  identifier(h)
+  =
+  identifier(c)
+  -
+  const int(100)
+  ;
+  int
+  identifier(i)
+  =
+  identifier(d)
+  -
+  const int(100)
+  ;
+  int
+  identifier(j)
+  =
+  identifier(e)
+  -
+  const int(100)
+  ;
+  identifier(glob1)
+  =
+  identifier(f)
+  ;
+  identifier(glob2)
+  =
+  identifier(g)
+  ;
+  identifier(glob3)
+  =
+  identifier(h)
+  ;
+  identifier(glob4)
+  =
+  identifier(i)
+  ;
+  identifier(glob5)
+  =
+  identifier(j)
+  ;
+  identifier(check_one_int)
+  (
+  identifier(a)
+  ,
+  const int(99)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(b)
+  ,
+  const int(100)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(c)
+  ,
+  const int(101)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(d)
+  ,
+  const int(102)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(e)
+  ,
+  const int(103)
+  )
+  ;
+  identifier(check_5_ints)
+  (
+  identifier(glob1)
+  ,
+  identifier(glob2)
+  ,
+  identifier(glob3)
+  ,
+  identifier(glob4)
+  ,
+  identifier(glob5)
+  ,
+  -
+  const int(1)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }

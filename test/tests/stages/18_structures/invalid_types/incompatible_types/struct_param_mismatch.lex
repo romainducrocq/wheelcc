@@ -1,0 +1,64 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[59]:
+  struct
+  identifier(one)
+  {
+  int
+  identifier(x)
+  ;
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  struct
+  identifier(two)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  }
+  ;
+  int
+  identifier(take_struct_param)
+  (
+  struct
+  identifier(one)
+  identifier(param)
+  )
+  {
+  return
+  identifier(param)
+  .
+  identifier(x)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(two)
+  identifier(arg)
+  =
+  {
+  const int(1)
+  ,
+  const int(2)
+  }
+  ;
+  return
+  identifier(take_struct_param)
+  (
+  identifier(arg)
+  )
+  ;
+  }

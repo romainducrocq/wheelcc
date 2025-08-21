@@ -1,0 +1,25 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: incomplete
+        Bool: 0
+        List[0]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: array_pointer
+            Pointer: 
+              Array: 
+                TLong: 3
+                Structure: 
+                  TIdentifier: incomplete
+                  Bool: 0

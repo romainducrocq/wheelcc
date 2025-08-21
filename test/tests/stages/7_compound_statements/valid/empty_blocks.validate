@@ -1,0 +1,104 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ten.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CCompound: 
+                CB: 
+                  List[0]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: twenty.1
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CCompound: 
+                CB: 
+                  List[1]: 
+                    CS: 
+                      CCompound: 
+                        CB: 
+                          List[0]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CVar: 
+                    TIdentifier: ten.0
+                    Int: 
+                  CVar: 
+                    TIdentifier: twenty.1
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ten.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [twenty.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

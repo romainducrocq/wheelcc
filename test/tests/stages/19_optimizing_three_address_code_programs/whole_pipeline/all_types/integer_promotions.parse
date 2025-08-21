@@ -1,0 +1,181 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 120
+                      None: 
+                    None: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c2
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c3
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: c1
+                          None: 
+                        CVar: 
+                          TIdentifier: c1
+                          None: 
+                        None: 
+                      CVar: 
+                        TIdentifier: c2
+                        None: 
+                      None: 
+                    None: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 200
+                      None: 
+                    None: 
+                  UChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc2
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      None: 
+                    None: 
+                  UChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc3
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: uc1
+                          None: 
+                        CVar: 
+                          TIdentifier: uc1
+                          None: 
+                        None: 
+                      CVar: 
+                        TIdentifier: uc2
+                        None: 
+                      None: 
+                    None: 
+                  UChar: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: c3
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 80
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: uc3
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 33
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[0]: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

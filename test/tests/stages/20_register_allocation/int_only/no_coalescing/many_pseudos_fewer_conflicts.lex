@@ -1,0 +1,374 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[369]:
+  int
+  identifier(check_one_int)
+  (
+  int
+  identifier(actual)
+  ,
+  int
+  identifier(expected)
+  )
+  ;
+  int
+  identifier(check_5_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(check_12_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(f)
+  ,
+  int
+  identifier(g)
+  ,
+  int
+  identifier(h)
+  ,
+  int
+  identifier(i)
+  ,
+  int
+  identifier(j)
+  ,
+  int
+  identifier(k)
+  ,
+  int
+  identifier(l)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(id)
+  (
+  int
+  identifier(x)
+  )
+  ;
+  int
+  identifier(return_five)
+  (
+  void
+  )
+  {
+  return
+  const int(5)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  int
+  identifier(one)
+  ,
+  int
+  identifier(two)
+  ,
+  int
+  identifier(three)
+  )
+  {
+  int
+  identifier(sum)
+  =
+  identifier(one)
+  +
+  identifier(three)
+  ;
+  int
+  identifier(product)
+  =
+  identifier(sum)
+  *
+  identifier(three)
+  ;
+  int
+  identifier(diff)
+  =
+  identifier(product)
+  -
+  (
+  identifier(three)
+  +
+  identifier(two)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(sum)
+  ,
+  const int(4)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(product)
+  ,
+  const int(12)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(diff)
+  ,
+  const int(7)
+  )
+  ;
+  for
+  (
+  int
+  identifier(i)
+  =
+  const int(0)
+  ;
+  identifier(i)
+  <
+  const int(2)
+  ;
+  identifier(i)
+  =
+  identifier(i)
+  +
+  const int(1)
+  )
+  {
+  if
+  (
+  identifier(i)
+  %
+  const int(2)
+  )
+  {
+  int
+  identifier(five)
+  =
+  identifier(return_five)
+  (
+  )
+  ;
+  int
+  identifier(quotient)
+  =
+  const int(25)
+  /
+  identifier(five)
+  ;
+  int
+  identifier(remainder)
+  =
+  const int(27)
+  %
+  identifier(five)
+  ;
+  int
+  identifier(complex)
+  =
+  (
+  identifier(quotient)
+  +
+  const int(3)
+  )
+  *
+  (
+  identifier(remainder)
+  +
+  const int(4)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(quotient)
+  ,
+  const int(5)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(remainder)
+  ,
+  const int(2)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(complex)
+  ,
+  const int(48)
+  )
+  ;
+  }
+  else
+  {
+  int
+  identifier(hundred)
+  =
+  identifier(return_five)
+  (
+  )
+  *
+  const int(20)
+  ;
+  int
+  identifier(ninety)
+  =
+  identifier(hundred)
+  -
+  const int(10)
+  ;
+  int
+  identifier(seventy)
+  =
+  identifier(i)
+  %
+  const int(2)
+  ?
+  const int(0)
+  :
+  identifier(hundred)
+  /
+  const int(2)
+  +
+  const int(20)
+  ;
+  int
+  identifier(negative_one_forty_five)
+  =
+  (
+  -
+  identifier(ninety)
+  /
+  const int(2)
+  )
+  -
+  identifier(hundred)
+  ;
+  identifier(check_one_int)
+  (
+  identifier(hundred)
+  ,
+  const int(100)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(ninety)
+  ,
+  const int(90)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(seventy)
+  ,
+  const int(70)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(negative_one_forty_five)
+  ,
+  -
+  const int(145)
+  )
+  ;
+  }
+  }
+  int
+  identifier(negative_six)
+  =
+  ~
+  identifier(return_five)
+  (
+  )
+  ;
+  int
+  identifier(negative_five)
+  =
+  -
+  const int(11)
+  -
+  identifier(negative_six)
+  ;
+  int
+  identifier(negative_four)
+  =
+  identifier(return_five)
+  (
+  )
+  -
+  const int(9)
+  ;
+  int
+  identifier(negative_three)
+  =
+  identifier(negative_six)
+  /
+  const int(2)
+  ;
+  int
+  identifier(negative_two)
+  =
+  identifier(negative_six)
+  /
+  const int(3)
+  ;
+  identifier(check_5_ints)
+  (
+  identifier(negative_six)
+  ,
+  identifier(negative_five)
+  ,
+  identifier(negative_four)
+  ,
+  identifier(negative_three)
+  ,
+  identifier(negative_two)
+  ,
+  -
+  const int(6)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }

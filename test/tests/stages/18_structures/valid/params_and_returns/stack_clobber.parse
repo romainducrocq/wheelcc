@@ -1,0 +1,152 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[41]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1
+          TIdentifier: s2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: exit
+        List[1]: 
+          TIdentifier: status
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: stack_bytes
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: bytes
+            Array: 
+              TLong: 16
+              Char: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: to_validate
+        None: 
+        Structure: 
+          TIdentifier: stack_bytes
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_stack_bytes
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CDot: 
+                      TIdentifier: bytes
+                      CVar: 
+                        TIdentifier: to_validate
+                        None: 
+                      None: 
+                    CString: 
+                      CStringLiteral: 
+                        List[15]: 
+                          TChar: 101
+                          TChar: 102
+                          TChar: 103
+                          TChar: 104
+                          TChar: 105
+                          TChar: 106
+                          TChar: 107
+                          TChar: 108
+                          TChar: 109
+                          TChar: 110
+                          TChar: 111
+                          TChar: 112
+                          TChar: 113
+                          TChar: 114
+                          TChar: 115
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code
+                                None: 
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_int_reg
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: cs
+            Array: 
+              TLong: 7
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_int_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[7]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                    

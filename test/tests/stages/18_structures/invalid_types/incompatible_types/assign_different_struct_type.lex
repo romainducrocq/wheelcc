@@ -1,0 +1,49 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[44]:
+  struct
+  identifier(s1)
+  {
+  int
+  identifier(field)
+  ;
+  }
+  ;
+  struct
+  identifier(s2)
+  {
+  int
+  identifier(field)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s1)
+  identifier(a)
+  =
+  {
+  const int(1)
+  }
+  ;
+  struct
+  identifier(s2)
+  identifier(b)
+  ;
+  identifier(b)
+  =
+  identifier(a)
+  ;
+  return
+  identifier(b)
+  .
+  identifier(field)
+  ;
+  }

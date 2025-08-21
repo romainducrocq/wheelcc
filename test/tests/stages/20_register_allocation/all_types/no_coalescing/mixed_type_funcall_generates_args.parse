@@ -1,0 +1,596 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[24]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uchar
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uint
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UInt: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_long
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_ulong
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_double
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_longs
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_six_chars
+        List[7]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_14_doubles
+        List[15]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: m
+          TIdentifier: n
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_vals
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Pointer: 
+              Long: 
+            Pointer: 
+              Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: dbl_id
+        List[1]: 
+          TIdentifier: x
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_id
+        List[1]: 
+          TIdentifier: l
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Long: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: unsigned_id
+        List[1]: 
+          TIdentifier: u
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uchar_id
+        List[1]: 
+          TIdentifier: uc
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UChar: 
+          UChar: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 100
+            None: 
+          None: 
+        Long: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob_d
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 200.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: x
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 0
+            None: 
+          None: 
+        Long: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: y
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 0
+            None: 
+          None: 
+        Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: callee
+        List[3]: 
+          TIdentifier: s1
+          TIdentifier: a
+          TIdentifier: b
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Structure: 
+              TIdentifier: s
+              Bool: 0
+            Long: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob_d
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s1
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 50
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 40.000000
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: s
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CVar: 
+                      TIdentifier: a
+                      None: 
+                    CVar: 
+                      TIdentifier: glob
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: y
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CVar: 
+                      TIdentifier: b
+                      None: 
+                    CVar: 
+                      TIdentifier: glob_d
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: callee
+                  List[3]: 
+                    CVar: 
+                      TIdentifier: s1
+                      None: 
+                    CVar: 
+                      TIdentifier: a
+                      None: 
+                    CVar: 
+                      TIdentifier: b
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_long
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10100
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_double
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: y
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 40400.000000
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

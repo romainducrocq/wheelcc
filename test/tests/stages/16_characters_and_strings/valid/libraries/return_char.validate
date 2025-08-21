@@ -1,0 +1,113 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_char
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 5369233654
+                    Long: 
+                  Char: 
+                  Char: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Char: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_schar
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 5369233654
+                    Long: 
+                  SChar: 
+                  SChar: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          SChar: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_uchar
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 5369233654
+                    Long: 
+                  UChar: 
+                  UChar: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          UChar: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [return_char]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Char: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_schar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        SChar: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        UChar: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

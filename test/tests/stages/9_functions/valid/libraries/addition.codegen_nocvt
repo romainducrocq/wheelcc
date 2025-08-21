@@ -1,0 +1,102 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: add
+      Bool: 1
+      Bool: 0
+      List[8]: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmDi: 
+          AsmPseudo: 
+            TIdentifier: x.0
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmSi: 
+          AsmPseudo: 
+            TIdentifier: y.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: x.0
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: y.1
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.2
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [x.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [add]: 
+    Symbol: 
+      FunType: 
+        TULong: 48
+        TULong: 1
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

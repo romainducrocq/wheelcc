@@ -1,0 +1,303 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[7]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: substruct
+            Structure: 
+              TIdentifier: inner
+              Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: access_members_through_pointer
+        List[5]: 
+          TIdentifier: ptr
+          TIdentifier: expected_a
+          TIdentifier: expected_b
+          TIdentifier: expected_d
+          TIdentifier: expected_i
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[5]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: outer
+                Bool: 0
+            Int: 
+            Int: 
+            Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: update_members_through_pointer
+        List[4]: 
+          TIdentifier: ptr
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: inner_ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: outer
+                Bool: 0
+            Int: 
+            Int: 
+            Pointer: 
+              Structure: 
+                TIdentifier: inner
+                Bool: 0
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: access_members_through_pointer
+        List[5]: 
+          TIdentifier: ptr
+          TIdentifier: expected_a
+          TIdentifier: expected_b
+          TIdentifier: expected_d
+          TIdentifier: expected_i
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: a
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: expected_a
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: b
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: expected_b
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CArrow: 
+                      TIdentifier: substruct
+                      CVar: 
+                        TIdentifier: ptr
+                        None: 
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: expected_d
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: i
+                    CArrow: 
+                      TIdentifier: substruct
+                      CVar: 
+                        TIdentifier: ptr
+                        None: 
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: expected_i
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[5]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: outer
+                Bool: 0
+            Int: 
+            Int: 
+            Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: update_members_through_pointer
+        List[4]: 
+          TIdentifier: ptr
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: inner_ptr
+        CB: 
+          List[4]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: a
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: a
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: b
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: substruct
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: inner_ptr
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: outer
+                Bool: 0
+            Int: 
+            Int: 
+            Pointer: 
+              Structure: 
+                TIdentifier: inner
+                Bool: 0
+          Void: 
+        None: 

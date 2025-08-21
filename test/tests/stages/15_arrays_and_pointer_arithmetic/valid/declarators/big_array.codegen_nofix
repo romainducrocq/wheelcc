@@ -1,0 +1,87 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[4]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [x]: 
+    Symbol: 
+      Array: 
+        TLong: 4294967297
+        Array: 
+          TLong: 100000000
+          Int: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
++
++
+@@ Backend Symbol Table @@
+Dict(2):
+  [x]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      ByteArray: 
+        TLong: 1717986918800000000
+        TInt: 16
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 

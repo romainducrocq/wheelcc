@@ -1,0 +1,204 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[28]: 
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: acc.0
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: x.1
+        TacLabel: 
+          TIdentifier: continue_while.0
+        TacJumpIfZero: 
+          TIdentifier: break_while.0
+          TacVariable: 
+            TIdentifier: x.1
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: y.2
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: x.1
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: binop.3
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.3
+          TacVariable: 
+            TIdentifier: x.1
+        TacLabel: 
+          TIdentifier: continue_while.1
+        TacJumpIfZero: 
+          TIdentifier: break_while.1
+          TacVariable: 
+            TIdentifier: y.2
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: acc.0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.4
+          TacVariable: 
+            TIdentifier: acc.0
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: y.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.5
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.5
+          TacVariable: 
+            TIdentifier: y.2
+        TacJump: 
+          TIdentifier: continue_while.1
+        TacLabel: 
+          TIdentifier: break_while.1
+        TacJump: 
+          TIdentifier: continue_while.0
+        TacLabel: 
+          TIdentifier: break_while.0
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: acc.0
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: binop.7
+        TacJumpIfZero: 
+          TIdentifier: and_false.2
+          TacVariable: 
+            TIdentifier: binop.7
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: x.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.8
+        TacJumpIfZero: 
+          TIdentifier: and_false.2
+          TacVariable: 
+            TIdentifier: binop.8
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.6
+        TacJump: 
+          TIdentifier: and_true.3
+        TacLabel: 
+          TIdentifier: and_false.2
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.6
+        TacLabel: 
+          TIdentifier: and_true.3
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.6
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(10):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [acc.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [x.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

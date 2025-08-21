@@ -1,0 +1,246 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[2]: 
+    AsmFunction: 
+      TIdentifier: target
+      Bool: 1
+      Bool: 0
+      List[8]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2147483647
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.0
+        AsmUnary: 
+          AsmNeg: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: unop.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: unop.0
+          AsmPseudo: 
+            TIdentifier: binop.1
+        AsmBinary: 
+          AsmSub: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.1
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[16]: 
+        AsmCall: 
+          TIdentifier: target
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.2
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: call.2
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmUnary: 
+          AsmNot: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2147483647
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [unop.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(7):
+  [target]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [unop.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.1]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [unop.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

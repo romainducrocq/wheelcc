@@ -1,0 +1,569 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[3]: 
+    TacStaticVariable: 
+      TIdentifier: glob
+      Bool: 1
+      Double: 
+      List[1]: 
+        DoubleInit: 
+          TIdentifier: 4607182418800017408
+    TacStaticVariable: 
+      TIdentifier: glob2
+      Bool: 1
+      Double: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+    TacStaticVariable: 
+      TIdentifier: flag
+      Bool: 1
+      Int: 
+      List[1]: 
+        IntInit: 
+          TInt: 1
+  List[3]: 
+    TacFunction: 
+      TIdentifier: src_test
+      Bool: 1
+      List[1]: 
+        TIdentifier: arg.84
+      List[7]: 
+        TacIntToDouble: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+          TacVariable: 
+            TIdentifier: cast.87
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: cast.87
+          TacVariable: 
+            TIdentifier: arg.84
+          TacVariable: 
+            TIdentifier: binop.88
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.88
+          TacVariable: 
+            TIdentifier: x.85
+        TacFunCall: 
+          TIdentifier: check_one_double
+          List[2]: 
+            TacVariable: 
+              TIdentifier: x.85
+            TacConstant: 
+              CConstDouble: 
+                TDouble: 6.000000
+          TacVariable: 
+            TIdentifier: call.89
+        TacIntToDouble: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.90
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.90
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: dst_test
+      Bool: 1
+      List[0]: 
+      List[12]: 
+        TacFunCall: 
+          TIdentifier: dbl_id
+          List[1]: 
+            TacConstant: 
+              CConstDouble: 
+                TDouble: 100.000000
+          TacVariable: 
+            TIdentifier: call.91
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.91
+          TacVariable: 
+            TIdentifier: a.86
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: flag
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: a.86
+          TacVariable: 
+            TIdentifier: glob
+          TacVariable: 
+            TIdentifier: binop.92
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.92
+          TacVariable: 
+            TIdentifier: glob2
+        TacBinary: 
+          TacDivide: 
+          TacVariable: 
+            TIdentifier: a.86
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 2.000000
+          TacVariable: 
+            TIdentifier: binop.93
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.93
+          TacVariable: 
+            TIdentifier: a.86
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacFunCall: 
+          TIdentifier: check_one_double
+          List[2]: 
+            TacVariable: 
+              TIdentifier: a.86
+            TacConstant: 
+              CConstDouble: 
+                TDouble: 50.000000
+          TacVariable: 
+            TIdentifier: call.94
+        TacFunCall: 
+          TIdentifier: check_one_double
+          List[2]: 
+            TacVariable: 
+              TIdentifier: glob2
+            TacConstant: 
+              CConstDouble: 
+                TDouble: 101.000000
+          TacVariable: 
+            TIdentifier: call.95
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[4]: 
+        TacIntToDouble: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.96
+        TacFunCall: 
+          TIdentifier: src_test
+          List[1]: 
+            TacVariable: 
+              TIdentifier: cast.96
+          TacVariable: 
+            TIdentifier: call.97
+        TacFunCall: 
+          TIdentifier: dst_test
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.98
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(38):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UChar: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UInt: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_longs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_six_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_14_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_vals]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Double: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [dbl_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [long_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Long: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [unsigned_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UInt: 
+        UInt: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uchar_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UChar: 
+        UChar: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [arg.84]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [src_test]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.85]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [glob]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 4607182418800017408
+  [glob2]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [flag]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [dst_test]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.86]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.87]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.88]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.89]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.90]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.91]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.92]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.93]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.94]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.95]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.96]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.97]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.98]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

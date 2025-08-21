@@ -1,0 +1,437 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[6]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: lt
+        List[2]: 
+          TIdentifier: d.0
+          TIdentifier: l.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: d.0
+                    Double: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: l.1
+                      Long: 
+                    Double: 
+                    Double: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: tern_double_flag
+        List[1]: 
+          TIdentifier: flag.2
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConditional: 
+                    CVar: 
+                      TIdentifier: flag.2
+                      Double: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 30
+                          Int: 
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 10
+                      ULong: 
+                    ULong: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: tern_double_result
+        List[1]: 
+          TIdentifier: flag.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CConditional: 
+                  CVar: 
+                    TIdentifier: flag.3
+                    Int: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 5.000000
+                    Double: 
+                  CCast: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 9223372036854777850
+                      ULong: 
+                    Double: 
+                    Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ten
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 10
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiply
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.4
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CMultiply: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 10.750000
+                          Double: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: ten
+                            Int: 
+                          Double: 
+                          Double: 
+                        Double: 
+                      Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: i.4
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 107
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: lt
+                  List[2]: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 9007199254751228.000000
+                        Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 9007199254751227
+                        Long: 
+                      Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: tern_double_flag
+                    List[1]: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 20.000000
+                        Double: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 18446744073709551616.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: tern_double_flag
+                    List[1]: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        Double: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: tern_double_result
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 5.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: tern_double_result
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854777856.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: multiply
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(11):
+  [d.0]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [l.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [lt]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Double: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flag.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [tern_double_flag]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flag.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [tern_double_result]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ten]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 10
+  [multiply]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

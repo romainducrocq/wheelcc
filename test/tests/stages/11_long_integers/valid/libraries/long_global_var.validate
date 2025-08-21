@@ -1,0 +1,97 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: l
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 8589934592
+            None: 
+          None: 
+        Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_l
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: l
+                  Long: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_l_as_int
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: l
+                    Long: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [l]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            LongInit: 
+              TLong: 8589934592
+  [return_l]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_l_as_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

@@ -1,0 +1,440 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[1]: 
+    AsmStaticConstant: 
+      TIdentifier: double.0
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4751297606873776128
+  List[2]: 
+    AsmStaticVariable: 
+      TIdentifier: one
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        LongInit: 
+          TLong: 1
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[16]: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: one
+          AsmPseudo: 
+            TIdentifier: unop.87
+        AsmUnary: 
+          AsmNeg: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: unop.87
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: unop.87
+          AsmPseudo: 
+            TIdentifier: neg1.84
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: neg1.84
+          AsmPseudo: 
+            TIdentifier: cast.88
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.88
+          AsmPseudo: 
+            TIdentifier: uint_max.85
+        AsmMovZeroExtend: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: uint_max.85
+          AsmRegister: 
+            AsmAx: 
+        AsmCvtsi2sd: 
+          QuadWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: cast.89
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: cast.89
+          AsmPseudo: 
+            TIdentifier: d.86
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: d.86
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.0
+            TLong: 0
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: check_one_double
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.90
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(26):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UChar: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UInt: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 12288
+        TULong: 1
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_longs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_six_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_14_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_vals]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Double: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [dbl_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [long_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Long: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [unsigned_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UInt: 
+        UInt: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uchar_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UChar: 
+        UChar: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [one]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            LongInit: 
+              TLong: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [neg1.84]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [uint_max.85]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [d.86]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.87]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.88]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.89]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.90]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

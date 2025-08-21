@@ -1,0 +1,148 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: pair.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: y
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_struct_param
+        List[1]: 
+          TIdentifier: p.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: pair.0
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_struct_param
+        List[1]: 
+          TIdentifier: p.1
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: x
+                      CVar: 
+                        TIdentifier: p.1
+                        Structure: 
+                          TIdentifier: pair.0
+                          Bool: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: y
+                      CVar: 
+                        TIdentifier: p.1
+                        Structure: 
+                          TIdentifier: pair.0
+                          Bool: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: pair.0
+              Bool: 0
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [pair.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [y]: 
+          StructMember: 
+            TLong: 4
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(2):
+  [validate_struct_param]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: pair.0
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [p.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: pair.0
+        Bool: 0
+      LocalAttr: 

@@ -1,0 +1,301 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: flag
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 1200000.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Void: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 5
+              Long: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Structure: 
+              TIdentifier: inner
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: c
+            Array: 
+              TLong: 4
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: z
+                  None: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: z
+                            None: 
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstLong: 
+                                TLong: 1
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstLong: 
+                                TLong: 2
+                              None: 
+                            None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 3.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 4.000000
+                              None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[3]: 
+                              TChar: 97
+                              TChar: 98
+                              TChar: 99
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: s
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CSubtract: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[3]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: x
+                              None: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: c
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                None: 
+                              None: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: z
+                              None: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: arr
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDot: 
+                              TIdentifier: a
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              None: 
+                            CBinary: 
+                              CMultiply: 
+                              CVar: 
+                                TIdentifier: z
+                                None: 
+                              CConstant: 
+                                CConstDouble: 
+                                  TDouble: 100.000000
+                                None: 
+                              None: 
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CVar: 
+                    TIdentifier: flag
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: z
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 10
+                                None: 
+                              CDereference: 
+                                CCast: 
+                                  CDot: 
+                                    TIdentifier: ptr
+                                    CVar: 
+                                      TIdentifier: my_struct
+                                      None: 
+                                    None: 
+                                  Pointer: 
+                                    Int: 
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: z
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: z
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[0]: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

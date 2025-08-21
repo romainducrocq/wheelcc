@@ -1,0 +1,308 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: u.0
+        Bool: 1
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: ul
+            ULong: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.0
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 20
+                            Int: 
+                          Double: 
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstULong: 
+                            TULong: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstChar: 
+                            TChar: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: u.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: u.0
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: x.0
+                      Structure: 
+                        TIdentifier: u.0
+                        Bool: 1
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 20.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr.1
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: x.0
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: u.0
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: u.0
+                      Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: ptr.1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 1
+                      Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: ptr.1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 1
+                      Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: ul
+                    CVar: 
+                      TIdentifier: ptr.1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551615
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: x.0
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                      Char: 
+                    Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[4]: 
+        TIdentifier: d
+        TIdentifier: l
+        TIdentifier: ul
+        TIdentifier: c
+      Dict[4]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [ul]: 
+          StructMember: 
+            TLong: 0
+            ULong: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
++
++
+@@ Symbol Table @@
+Dict(3):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [ptr.1]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: u.0
+          Bool: 1
+      LocalAttr: 

@@ -1,0 +1,237 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb
+          TIdentifier: size
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: free
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Void: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CFunctionCall: 
+                          TIdentifier: calloc
+                          List[2]: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            CSizeOfT: 
+                              Int: 
+                              None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: i
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: arr
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 4
+                    Pointer: 
+                      Void: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l
+                  CSingleInit: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CDereference: 
+                  CVar: 
+                    TIdentifier: l
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_1_val
+                  CSingleInit: 
+                    CDereference: 
+                      CCast: 
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        Pointer: 
+                          Int: 
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: elem_1_val
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CSubscript: 
+                  CVar: 
+                    TIdentifier: arr
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: arr
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: arr
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

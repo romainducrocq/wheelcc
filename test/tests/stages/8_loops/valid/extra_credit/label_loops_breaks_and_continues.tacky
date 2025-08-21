@@ -1,0 +1,216 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[42]: 
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: sum.0
+        TacJump: 
+          TIdentifier: do_label.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: do_label.0
+        TacLabel: 
+          TIdentifier: do_while_start.8
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: sum.0
+        TacJump: 
+          TIdentifier: while_label.2
+        TacLabel: 
+          TIdentifier: continue_do_while.1
+        TacJumpIfNotZero: 
+          TIdentifier: do_while_start.8
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: break_do_while.1
+        TacLabel: 
+          TIdentifier: while_label.2
+        TacLabel: 
+          TIdentifier: continue_while.3
+        TacJumpIfZero: 
+          TIdentifier: break_while.3
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: sum.0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.2
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.2
+          TacVariable: 
+            TIdentifier: sum.0
+        TacJump: 
+          TIdentifier: break_label.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: break_label.4
+        TacJump: 
+          TIdentifier: break_while.3
+        TacJump: 
+          TIdentifier: continue_while.3
+        TacLabel: 
+          TIdentifier: break_while.3
+        TacJump: 
+          TIdentifier: for_label.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: for_label.5
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: i.1
+        TacLabel: 
+          TIdentifier: for_start.9
+        TacBinary: 
+          TacLessThan: 
+          TacVariable: 
+            TIdentifier: i.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: break_for.6
+          TacVariable: 
+            TIdentifier: binop.3
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: sum.0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.4
+          TacVariable: 
+            TIdentifier: sum.0
+        TacJump: 
+          TIdentifier: continue_label.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: continue_label.7
+        TacJump: 
+          TIdentifier: continue_for.6
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: continue_for.6
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: i.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.5
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.5
+          TacVariable: 
+            TIdentifier: i.1
+        TacJump: 
+          TIdentifier: for_start.9
+        TacLabel: 
+          TIdentifier: break_for.6
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: sum.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [sum.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

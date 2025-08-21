@@ -1,0 +1,195 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: foo
+      Bool: 1
+      Int: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 4
+  List[3]: 
+    TacFunction: 
+      TIdentifier: set_foo_to_positive_num
+      Bool: 1
+      List[1]: 
+        TIdentifier: a.0
+      List[7]: 
+        TacBinary: 
+          TacLessThan: 
+          TacVariable: 
+            TIdentifier: a.0
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          None: 
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: a.0
+          TacVariable: 
+            TIdentifier: foo
+        TacReturn: 
+          None: 
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: do_nothing
+      Bool: 1
+      List[0]: 
+      List[1]: 
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[13]: 
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: unop.2
+        TacFunCall: 
+          TIdentifier: set_foo_to_positive_num
+          List[1]: 
+            TacVariable: 
+              TIdentifier: unop.2
+          None: 
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: foo
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacFunCall: 
+          TIdentifier: set_foo_to_positive_num
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 12
+          None: 
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: foo
+          TacConstant: 
+            CConstInt: 
+              TInt: 12
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacFunCall: 
+          TIdentifier: do_nothing
+          List[0]: 
+          None: 
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(8):
+  [foo]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [set_foo_to_positive_num]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [do_nothing]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

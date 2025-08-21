@@ -1,0 +1,208 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: glob
+      Bool: 1
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      List[3]: 
+        IntInit: 
+          TInt: 1
+        IntInit: 
+          TInt: 2
+        IntInit: 
+          TInt: 3
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[19]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: glob
+          TacVariable: 
+            TIdentifier: my_struct.0
+        TacCopyToOffset: 
+          TIdentifier: my_struct.0
+          TLong: 8
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.0
+          TLong: 8
+          TacVariable: 
+            TIdentifier: smem.1
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: binop.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.2
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.3
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.3
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacCopyFromOffset: 
+          TIdentifier: glob
+          TLong: 8
+          TacVariable: 
+            TIdentifier: smem.5
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.5
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: binop.6
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.6
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[3]: 
+        TIdentifier: a
+        TIdentifier: b
+        TIdentifier: c
+      Dict[3]: 
+        [a]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [b]: 
+          StructMember: 
+            TLong: 4
+            Int: 
+        [c]: 
+          StructMember: 
+            TLong: 8
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(9):
+  [glob]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[3]: 
+            IntInit: 
+              TInt: 1
+            IntInit: 
+              TInt: 2
+            IntInit: 
+              TInt: 3
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [smem.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

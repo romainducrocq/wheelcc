@@ -1,0 +1,83 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: empty.0
+                  CSingleInit: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[0]: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: empty.0
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [empty.0]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 

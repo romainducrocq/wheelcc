@@ -1,0 +1,684 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[75]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 112
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmCmp: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -28
+            AsmBp: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmMemory: 
+            TLong: -28
+            AsmBp: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -28
+            AsmBp: 
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmCmp: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -44
+            AsmBp: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmMemory: 
+            TLong: -44
+            AsmBp: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -44
+            AsmBp: 
+        AsmJmpCC: 
+          TIdentifier: if_false.1
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.1
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -56
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -56
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -72
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -72
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmCmp: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -76
+            AsmBp: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmMemory: 
+            TLong: -76
+            AsmBp: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -76
+            AsmBp: 
+        AsmJmpCC: 
+          TIdentifier: if_false.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -88
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -88
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmCmp: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -92
+            AsmBp: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmMemory: 
+            TLong: -92
+            AsmBp: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -92
+            AsmBp: 
+        AsmJmpCC: 
+          TIdentifier: if_false.3
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmR10: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmRegister: 
+            AsmR11: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR11: 
+          AsmMemory: 
+            TLong: -104
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+          AsmRegister: 
+            AsmR10: 
+        AsmCmp: 
+          QuadWord: 
+          AsmRegister: 
+            AsmR10: 
+          AsmMemory: 
+            TLong: -104
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -108
+            AsmBp: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmMemory: 
+            TLong: -108
+            AsmBp: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: -108
+            AsmBp: 
+        AsmJmpCC: 
+          TIdentifier: if_false.4
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(15):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [y.1]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Pointer: 
+            Double: 
+      LocalAttr: 
+  [cast.2]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [cast.3]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Pointer: 
+            Double: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Pointer: 
+            Double: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.10]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Pointer: 
+            Double: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.12]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Pointer: 
+            Double: 
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(15):
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [x.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [y.1]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [cast.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [cast.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [binop.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.5]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [binop.6]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.7]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [cast.8]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [binop.9]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.10]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [binop.11]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [cast.12]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [binop.13]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

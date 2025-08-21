@@ -1,0 +1,645 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: get_max
+      Bool: 1
+      Bool: 0
+      List[61]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 176
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM1: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM2: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM3: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM4: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM5: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM6: 
+          AsmMemory: 
+            TLong: -56
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM7: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: 16
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -72
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: 24
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -80
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: 32
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -88
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -96
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -104
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -96
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -104
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -112
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -120
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -56
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -64
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -128
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -120
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -128
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -136
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -112
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -136
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -144
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -80
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -88
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -152
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -72
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -152
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -160
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -144
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -160
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: fmax
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM0: 
+          AsmMemory: 
+            TLong: -168
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -168
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -176
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -176
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(24):
+  [fmax]: 
+    Symbol: 
+      FunType: 
+        TULong: 12288
+        TULong: 4096
+        List[2]: 
+          Double: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [a.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [b.3]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [c.4]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [d.5]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [e.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [f.7]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [g.8]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [h.9]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [i.10]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [j.11]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [k.12]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [get_max]: 
+    Symbol: 
+      FunType: 
+        TULong: 1044480
+        TULong: 4096
+        List[11]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [max.13]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.14]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.15]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.16]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.17]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.18]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.19]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.20]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.21]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.22]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.23]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(24):
+  [fmax]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [a.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [b.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [c.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [d.5]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [e.6]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [f.7]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [g.8]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [h.9]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [i.10]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [j.11]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [k.12]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [get_max]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [max.13]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.14]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.15]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.16]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.17]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.18]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.19]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.20]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.21]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.22]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.23]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 

@@ -1,0 +1,474 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[3]: 
+    TacStaticConstant: 
+      TIdentifier: string.0
+      Array: 
+        TLong: 4
+        Char: 
+      StringInit: 
+        TIdentifier: yes
+        Bool: 1
+        CStringLiteral: 
+          List[3]: 
+            TChar: 121
+            TChar: 101
+            TChar: 115
+    TacStaticConstant: 
+      TIdentifier: string.1
+      Array: 
+        TLong: 3
+        Char: 
+      StringInit: 
+        TIdentifier: no
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 110
+            TChar: 111
+    TacStaticConstant: 
+      TIdentifier: string.2
+      Array: 
+        TLong: 6
+        Char: 
+      StringInit: 
+        TIdentifier: maybe
+        Bool: 1
+        CStringLiteral: 
+          List[5]: 
+            TChar: 109
+            TChar: 97
+            TChar: 121
+            TChar: 98
+            TChar: 101
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[43]: 
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.0
+          TacVariable: 
+            TIdentifier: addr.3
+        TacCopyToOffset: 
+          TIdentifier: strings.2
+          TLong: 0
+          TacVariable: 
+            TIdentifier: addr.3
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.1
+          TacVariable: 
+            TIdentifier: addr.4
+        TacCopyToOffset: 
+          TIdentifier: strings.2
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.4
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.2
+          TacVariable: 
+            TIdentifier: addr.5
+        TacCopyToOffset: 
+          TIdentifier: strings.2
+          TLong: 16
+          TacVariable: 
+            TIdentifier: addr.5
+        TacCopyToOffset: 
+          TIdentifier: strings.2
+          TLong: 24
+          TacConstant: 
+            CConstULong: 
+              TULong: 0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: strings.2
+          TacVariable: 
+            TIdentifier: addr.6
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.7
+        TacAddPtr: 
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.6
+          TacVariable: 
+            TIdentifier: cast.7
+          TacVariable: 
+            TIdentifier: subscr.8
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.8
+          TacVariable: 
+            TIdentifier: subscr.9
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.0
+          TacVariable: 
+            TIdentifier: addr.10
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: subscr.9
+            TacVariable: 
+              TIdentifier: addr.10
+          TacVariable: 
+            TIdentifier: call.11
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: call.11
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: strings.2
+          TacVariable: 
+            TIdentifier: addr.12
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.13
+        TacAddPtr: 
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.12
+          TacVariable: 
+            TIdentifier: cast.13
+          TacVariable: 
+            TIdentifier: subscr.14
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.14
+          TacVariable: 
+            TIdentifier: subscr.15
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.1
+          TacVariable: 
+            TIdentifier: addr.16
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: subscr.15
+            TacVariable: 
+              TIdentifier: addr.16
+          TacVariable: 
+            TIdentifier: call.17
+        TacJumpIfZero: 
+          TIdentifier: if_false.4
+          TacVariable: 
+            TIdentifier: call.17
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.4
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: strings.2
+          TacVariable: 
+            TIdentifier: addr.18
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.19
+        TacAddPtr: 
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.18
+          TacVariable: 
+            TIdentifier: cast.19
+          TacVariable: 
+            TIdentifier: subscr.20
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.20
+          TacVariable: 
+            TIdentifier: subscr.21
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.2
+          TacVariable: 
+            TIdentifier: addr.22
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: subscr.21
+            TacVariable: 
+              TIdentifier: addr.22
+          TacVariable: 
+            TIdentifier: call.23
+        TacJumpIfZero: 
+          TIdentifier: if_false.5
+          TacVariable: 
+            TIdentifier: call.23
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.5
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: strings.2
+          TacVariable: 
+            TIdentifier: addr.24
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.25
+        TacAddPtr: 
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.24
+          TacVariable: 
+            TIdentifier: cast.25
+          TacVariable: 
+            TIdentifier: subscr.26
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.26
+          TacVariable: 
+            TIdentifier: subscr.27
+        TacJumpIfZero: 
+          TIdentifier: if_false.6
+          TacVariable: 
+            TIdentifier: subscr.27
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.6
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(3):
+  [yes]: 
+    String: "yes"
+  [no]: 
+    String: "no"
+  [maybe]: 
+    String: "maybe"
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(31):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [strings.2]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Pointer: 
+          Char: 
+      LocalAttr: 
+  [string.0]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: yes
+          Bool: 1
+          CStringLiteral: 
+            List[3]: 
+              TChar: 121
+              TChar: 101
+              TChar: 115
+  [addr.3]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.1]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: no
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 110
+              TChar: 111
+  [addr.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.2]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: maybe
+          Bool: 1
+          CStringLiteral: 
+            List[5]: 
+              TChar: 109
+              TChar: 97
+              TChar: 121
+              TChar: 98
+              TChar: 101
+  [addr.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.8]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.9]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [addr.10]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.14]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.15]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [addr.16]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.18]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.19]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.20]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.21]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [addr.22]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.24]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.25]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.26]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.27]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 

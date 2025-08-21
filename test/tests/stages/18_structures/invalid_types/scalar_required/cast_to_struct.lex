@@ -1,0 +1,30 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[25]:
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  }
+  ;
+  struct
+  identifier(s)
+  identifier(x)
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  (
+  struct
+  identifier(s)
+  )
+  identifier(x)
+  ;
+  }

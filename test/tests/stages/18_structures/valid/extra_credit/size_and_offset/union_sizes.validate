@@ -1,0 +1,1379 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[17]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: eight_bytes.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_bytes.1
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: three_bytes.2
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: sixteen_bytes.3
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: eight
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: seven_bytes.4
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two2
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twentyfour_bytes.5
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: seven
+            Structure: 
+              TIdentifier: seven_bytes.4
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twenty_bytes.6
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: wonky.7
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 19
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: internal_padding.8
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_struct_array.9
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: struct_array
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: eight_bytes.0
+                Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: no_padding.10
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: uc
+            UChar: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 11
+              SChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: with_padding.11
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 10
+              SChar: 
+          CMemberDeclaration: 
+            TIdentifier: ui
+            UInt: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_array.12
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr1
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: with_padding.11
+                Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: no_padding.10
+                Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: double_and_int.13
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_structs.14
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Structure: 
+              TIdentifier: wonky.7
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: y
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[12]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: no_padding.10
+                      Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: with_padding.11
+                      Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: contains_array.12
+                      Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 36
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: double_and_int.13
+                      Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: contains_structs.14
+                      Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 20
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.0
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Char: 
+                          Char: 
+                        Char: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstUChar: 
+                            TUChar: 0
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[11]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: no_padding.10
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: no_padding.10
+                    Bool: 1
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.1
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CCompoundInit: 
+                                List[10]: 
+                                  CSingleInit: 
+                                    CCast: 
+                                      CUnary: 
+                                        CNegate: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 1
+                                          Int: 
+                                        Int: 
+                                      SChar: 
+                                      SChar: 
+                                    SChar: 
+                                  CSingleInit: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 2
+                                        Int: 
+                                      SChar: 
+                                      SChar: 
+                                    SChar: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                Array: 
+                                  TLong: 10
+                                  SChar: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUInt: 
+                                    TUInt: 0
+                                  None: 
+                                None: 
+                            Structure: 
+                              TIdentifier: with_padding.11
+                              Bool: 1
+                          CCompoundInit: 
+                            List[2]: 
+                              CCompoundInit: 
+                                List[10]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUInt: 
+                                    TUInt: 0
+                                  None: 
+                                None: 
+                            None: 
+                        Array: 
+                          TLong: 2
+                          Structure: 
+                            TIdentifier: with_padding.11
+                            Bool: 1
+                      CCompoundInit: 
+                        List[3]: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstChar: 
+                                    TChar: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUChar: 
+                                    TUChar: 0
+                                  None: 
+                                None: 
+                              CCompoundInit: 
+                                List[11]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstChar: 
+                                    TChar: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUChar: 
+                                    TUChar: 0
+                                  None: 
+                                None: 
+                              CCompoundInit: 
+                                List[11]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstChar: 
+                                    TChar: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUChar: 
+                                    TUChar: 0
+                                  None: 
+                                None: 
+                              CCompoundInit: 
+                                List[11]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstChar: 
+                                        TChar: 0
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: contains_array.12
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: contains_array.12
+                    Bool: 1
+                  None: 
+            CD: 
+              CFunDecl: 
+                CFunctionDeclaration: 
+                  TIdentifier: get_union_ptr
+                  List[0]: 
+                  None: 
+                  FunType: 
+                    TULong: 67108864
+                    TULong: 67108864
+                    List[0]: 
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: contains_structs.14
+                        Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOf: 
+                    CVar: 
+                      TIdentifier: x.0
+                      Structure: 
+                        TIdentifier: no_padding.10
+                        Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOf: 
+                    CDot: 
+                      TIdentifier: arr1
+                      CVar: 
+                        TIdentifier: y.1
+                        Structure: 
+                          TIdentifier: contains_array.12
+                          Bool: 1
+                      Array: 
+                        TLong: 2
+                        Structure: 
+                          TIdentifier: with_padding.11
+                          Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 24
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOf: 
+                    CDereference: 
+                      CFunctionCall: 
+                        TIdentifier: get_union_ptr
+                        List[0]: 
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: contains_structs.14
+                            Bool: 1
+                      Structure: 
+                        TIdentifier: contains_structs.14
+                        Bool: 1
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 20
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_union_ptr
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: contains_structs.14
+                      Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: contains_structs.14
+                      Bool: 1
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: contains_structs.14
+              Bool: 1
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(15):
+  [eight_bytes.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: c
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [c]: 
+          StructMember: 
+            TLong: 4
+            Char: 
+  [two_bytes.1]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 2
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Char: 
+  [three_bytes.2]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 3
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Char: 
+  [sixteen_bytes.3]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 16
+      List[3]: 
+        TIdentifier: eight
+        TIdentifier: two
+        TIdentifier: three
+      Dict[3]: 
+        [eight]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
+        [two]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+        [three]: 
+          StructMember: 
+            TLong: 10
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+  [seven_bytes.4]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 7
+      List[3]: 
+        TIdentifier: two
+        TIdentifier: three
+        TIdentifier: two2
+      Dict[3]: 
+        [two]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+        [three]: 
+          StructMember: 
+            TLong: 2
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+        [two2]: 
+          StructMember: 
+            TLong: 5
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+  [twentyfour_bytes.5]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 24
+      List[2]: 
+        TIdentifier: seven
+        TIdentifier: sixteen
+      Dict[2]: 
+        [seven]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: seven_bytes.4
+              Bool: 0
+        [sixteen]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+  [twenty_bytes.6]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 20
+      List[2]: 
+        TIdentifier: sixteen
+        TIdentifier: two
+      Dict[2]: 
+        [sixteen]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+        [two]: 
+          StructMember: 
+            TLong: 16
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+  [wonky.7]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 19
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 19
+              Char: 
+  [internal_padding.8]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: d
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+  [contains_struct_array.9]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 28
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: struct_array
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [struct_array]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: eight_bytes.0
+                Bool: 0
+  [no_padding.10]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 11
+      List[3]: 
+        TIdentifier: c
+        TIdentifier: uc
+        TIdentifier: arr
+      Dict[3]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [uc]: 
+          StructMember: 
+            TLong: 0
+            UChar: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 11
+              SChar: 
+  [with_padding.11]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: ui
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 10
+              SChar: 
+        [ui]: 
+          StructMember: 
+            TLong: 0
+            UInt: 
+  [contains_array.12]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 36
+      List[2]: 
+        TIdentifier: arr1
+        TIdentifier: arr
+      Dict[2]: 
+        [arr1]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: with_padding.11
+                Bool: 1
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: no_padding.10
+                Bool: 1
+  [double_and_int.13]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: d
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [contains_structs.14]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 20
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: wonky.7
+              Bool: 0
+        [y]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
++
++
+@@ Symbol Table @@
+Dict(4):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: no_padding.10
+        Bool: 1
+      LocalAttr: 
+  [y.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: contains_array.12
+        Bool: 1
+      LocalAttr: 
+  [get_union_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Structure: 
+            TIdentifier: contains_structs.14
+            Bool: 1
+      FunAttr: 
+        Bool: 1
+        Bool: 1

@@ -1,0 +1,338 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uint_to_double
+        List[1]: 
+          TIdentifier: ui.0
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: ui.0
+                    UInt: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ulong_to_double
+        List[1]: 
+          TIdentifier: ul.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CVar: 
+                    TIdentifier: ul.1
+                    ULong: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: uint_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 1000
+                        UInt: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1000.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: uint_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 4294967200
+                        UInt: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4294967200.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 138512825844
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 138512825844.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 10223372036854775816
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10223372036854775808.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 9223372036854776832
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854775808.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 9223372036854776833
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854777856.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 9223372036854776831
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854775808.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_double
+                    List[1]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 9223372036854776830
+                        ULong: 
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854775808.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(5):
+  [ui.0]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [uint_to_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UInt: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ul.1]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [ulong_to_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

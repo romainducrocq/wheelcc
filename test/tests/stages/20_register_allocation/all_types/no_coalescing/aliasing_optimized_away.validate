@@ -1,0 +1,82 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[1]: 
+          TIdentifier: arg.0
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: optimized_away.1
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: arg.0
+                        Int: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CVar: 
+                    TIdentifier: arg.0
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [arg.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [optimized_away.1]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 

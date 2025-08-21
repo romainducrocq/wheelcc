@@ -1,0 +1,330 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[8]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ui_a
+        None: 
+        UInt: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ui_b
+        None: 
+        UInt: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ul_a
+        None: 
+        ULong: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ul_b
+        None: 
+        ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: addition
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: ui_a
+                      UInt: 
+                    CVar: 
+                      TIdentifier: ui_b
+                      UInt: 
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 0
+                    UInt: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: subtraction
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: ul_a
+                      ULong: 
+                    CVar: 
+                      TIdentifier: ul_b
+                      ULong: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551606
+                    ULong: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: neg
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: ul_a
+                      ULong: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551615
+                    ULong: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ui_a
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 4294967293
+                    UInt: 
+                  UInt: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ui_b
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 3
+                    UInt: 
+                  UInt: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: addition
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ul_a
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 10
+                    ULong: 
+                  ULong: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ul_b
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 20
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: subtraction
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ul_a
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 1
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: neg
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(8):
+  [ui_a]: 
+    Symbol: 
+      UInt: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [ui_b]: 
+    Symbol: 
+      UInt: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [ul_a]: 
+    Symbol: 
+      ULong: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [ul_b]: 
+    Symbol: 
+      ULong: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [addition]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [subtraction]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [neg]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

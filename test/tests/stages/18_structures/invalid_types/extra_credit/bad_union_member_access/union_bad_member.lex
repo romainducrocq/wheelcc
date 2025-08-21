@@ -1,0 +1,47 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[42]:
+  union
+  identifier(s)
+  {
+  int
+  identifier(x)
+  ;
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  union
+  identifier(t)
+  {
+  int
+  identifier(blah)
+  ;
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(s)
+  identifier(foo)
+  =
+  {
+  const int(1)
+  }
+  ;
+  return
+  identifier(foo)
+  .
+  identifier(blah)
+  ;
+  }

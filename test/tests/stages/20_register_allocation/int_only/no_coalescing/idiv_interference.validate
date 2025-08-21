@@ -1,0 +1,333 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[7]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.21
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 3
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dividend.22
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 16
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: quotient.23
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CVar: 
+                        TIdentifier: dividend.22
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob
+                    Int: 
+                  CVar: 
+                    TIdentifier: dividend.22
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: quotient.23
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 48
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(9):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 3
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [dividend.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [quotient.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

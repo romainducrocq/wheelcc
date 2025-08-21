@@ -1,0 +1,388 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[16]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 137438953472
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: shiftcount.1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShrArithmetic: 
+                    CVar: 
+                      TIdentifier: l.0
+                      Long: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: shiftcount.1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 34359738368
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CVar: 
+                      TIdentifier: l.0
+                      Long: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: shiftcount.1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 549755813888
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CVar: 
+                      TIdentifier: l.0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 549755813888
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 40
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 40
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 43980465111040
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_shiftcount.2
+                  CSingleInit: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 3
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i_neighbor1.3
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.4
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2147483645
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i_neighbor2.5
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShrArithmetic: 
+                    CVar: 
+                      TIdentifier: i.4
+                      Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_shiftcount.2
+                        Long: 
+                      Int: 
+                      Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 268435456
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.4
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShrArithmetic: 
+                    CVar: 
+                      TIdentifier: i.4
+                      Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 10
+                        Long: 
+                      Int: 
+                      Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: i_neighbor1.3
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: i_neighbor2.5
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.0]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [shiftcount.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [long_shiftcount.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [i_neighbor1.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i_neighbor2.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

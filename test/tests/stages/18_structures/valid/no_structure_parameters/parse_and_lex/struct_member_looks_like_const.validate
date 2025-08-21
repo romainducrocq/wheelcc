@@ -1,0 +1,96 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s.0
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: E10
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x1.0
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Int: 
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CDot: 
+                  TIdentifier: E10
+                  CVar: 
+                    TIdentifier: x1.0
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[1]: 
+        TIdentifier: E10
+      Dict[1]: 
+        [E10]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x1.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 

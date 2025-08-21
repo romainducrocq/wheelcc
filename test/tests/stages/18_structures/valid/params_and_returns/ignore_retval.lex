@@ -1,0 +1,179 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[174]:
+  struct
+  identifier(small)
+  {
+  int
+  identifier(x)
+  ;
+  }
+  ;
+  struct
+  identifier(big)
+  {
+  double
+  identifier(d)
+  ;
+  int
+  identifier(x)
+  ;
+  long
+  identifier(l)
+  ;
+  }
+  ;
+  struct
+  identifier(small)
+  identifier(globl)
+  =
+  {
+  const int(0)
+  }
+  ;
+  struct
+  identifier(small)
+  identifier(return_in_reg)
+  (
+  void
+  )
+  {
+  identifier(globl)
+  .
+  identifier(x)
+  =
+  identifier(globl)
+  .
+  identifier(x)
+  +
+  const int(1)
+  ;
+  return
+  identifier(globl)
+  ;
+  }
+  struct
+  identifier(big)
+  identifier(globl2)
+  =
+  {
+  const double(1.25)
+  ,
+  const int(2)
+  ,
+  const int(300)
+  }
+  ;
+  struct
+  identifier(big)
+  identifier(return_in_mem)
+  (
+  void
+  )
+  {
+  identifier(globl2)
+  .
+  identifier(d)
+  =
+  identifier(globl2)
+  .
+  identifier(d)
+  *
+  const int(2)
+  ;
+  identifier(globl2)
+  .
+  identifier(x)
+  =
+  identifier(globl2)
+  .
+  identifier(x)
+  *
+  const int(3)
+  ;
+  identifier(globl2)
+  .
+  identifier(l)
+  =
+  identifier(globl2)
+  .
+  identifier(l)
+  *
+  const int(4)
+  ;
+  return
+  identifier(globl2)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  (
+  void
+  )
+  identifier(return_in_reg)
+  (
+  )
+  ;
+  identifier(return_in_reg)
+  (
+  )
+  ;
+  if
+  (
+  identifier(globl)
+  .
+  identifier(x)
+  !=
+  const int(2)
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  identifier(return_in_mem)
+  (
+  )
+  ;
+  (
+  void
+  )
+  identifier(return_in_mem)
+  (
+  )
+  ;
+  if
+  (
+  identifier(globl2)
+  .
+  identifier(d)
+  !=
+  const double(5.0)
+  ||
+  identifier(globl2)
+  .
+  identifier(x)
+  !=
+  const int(18)
+  ||
+  identifier(globl2)
+  .
+  identifier(l)
+  !=
+  const int(4800)
+  )
+  {
+  return
+  const int(2)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

@@ -1,0 +1,178 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[173]:
+  int
+  identifier(not)
+  (
+  unsigned
+  long
+  identifier(ul)
+  )
+  {
+  return
+  !
+  identifier(ul)
+  ;
+  }
+  int
+  identifier(if_cond)
+  (
+  unsigned
+  identifier(u)
+  )
+  {
+  if
+  (
+  identifier(u)
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(and)
+  (
+  unsigned
+  long
+  identifier(ul)
+  ,
+  int
+  identifier(i)
+  )
+  {
+  return
+  identifier(ul)
+  &&
+  identifier(i)
+  ;
+  }
+  int
+  identifier(or)
+  (
+  int
+  identifier(i)
+  ,
+  unsigned
+  identifier(u)
+  )
+  {
+  return
+  identifier(i)
+  ||
+  identifier(u)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  unsigned
+  long
+  identifier(ul)
+  =
+  const unsigned long(1152921504606846976ul)
+  ;
+  unsigned
+  int
+  identifier(u)
+  =
+  const unsigned int(2147483648u)
+  ;
+  unsigned
+  long
+  identifier(zero)
+  =
+  const long(0l)
+  ;
+  if
+  (
+  identifier(not)
+  (
+  identifier(ul)
+  )
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  if
+  (
+  !
+  identifier(not)
+  (
+  identifier(zero)
+  )
+  )
+  {
+  return
+  const int(2)
+  ;
+  }
+  if
+  (
+  !
+  identifier(if_cond)
+  (
+  identifier(u)
+  )
+  )
+  {
+  return
+  const int(3)
+  ;
+  }
+  if
+  (
+  identifier(if_cond)
+  (
+  identifier(zero)
+  )
+  )
+  {
+  return
+  const int(4)
+  ;
+  }
+  if
+  (
+  identifier(and)
+  (
+  identifier(zero)
+  ,
+  const int(1)
+  )
+  )
+  {
+  return
+  const int(5)
+  ;
+  }
+  if
+  (
+  !
+  identifier(or)
+  (
+  const int(1)
+  ,
+  identifier(u)
+  )
+  )
+  {
+  return
+  const int(6)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

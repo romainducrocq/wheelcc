@@ -1,0 +1,173 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[168]:
+  struct
+  identifier(s)
+  ;
+  struct
+  identifier(s)
+  *
+  identifier(create_struct)
+  (
+  int
+  identifier(i)
+  ,
+  double
+  identifier(d)
+  ,
+  char
+  *
+  identifier(s)
+  )
+  ;
+  void
+  identifier(increment_struct)
+  (
+  struct
+  identifier(s)
+  *
+  identifier(src_ptr)
+  )
+  ;
+  int
+  identifier(check_struct)
+  (
+  struct
+  identifier(s)
+  *
+  identifier(ptr)
+  ,
+  int
+  identifier(expected_i)
+  ,
+  double
+  identifier(expected_d)
+  ,
+  char
+  *
+  identifier(expected_s)
+  )
+  ;
+  void
+  identifier(print_struct_msg)
+  (
+  struct
+  identifier(s)
+  *
+  identifier(ptr)
+  )
+  ;
+  struct
+  identifier(s)
+  *
+  identifier(get_internal_struct)
+  (
+  void
+  )
+  ;
+  extern
+  struct
+  identifier(s)
+  identifier(incomplete_var)
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  *
+  identifier(new_struct)
+  =
+  identifier(create_struct)
+  (
+  const int(101)
+  ,
+  const double(102.0)
+  ,
+  string literal("new struct")
+  )
+  ;
+  struct
+  identifier(s)
+  *
+  identifier(internal_struct)
+  =
+  identifier(get_internal_struct)
+  (
+  )
+  ;
+  identifier(print_struct_msg)
+  (
+  identifier(new_struct)
+  )
+  ;
+  identifier(print_struct_msg)
+  (
+  identifier(internal_struct)
+  )
+  ;
+  identifier(print_struct_msg)
+  (
+  &
+  identifier(incomplete_var)
+  )
+  ;
+  identifier(increment_struct)
+  (
+  identifier(new_struct)
+  )
+  ;
+  identifier(increment_struct)
+  (
+  &
+  identifier(incomplete_var)
+  )
+  ;
+  if
+  (
+  !
+  identifier(check_struct)
+  (
+  identifier(new_struct)
+  ,
+  const int(102)
+  ,
+  const double(103.0)
+  ,
+  string literal("new struct")
+  )
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  if
+  (
+  !
+  identifier(check_struct)
+  (
+  &
+  identifier(incomplete_var)
+  ,
+  const int(4)
+  ,
+  const double(5.0)
+  ,
+  string literal("global struct")
+  )
+  )
+  {
+  return
+  const int(2)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

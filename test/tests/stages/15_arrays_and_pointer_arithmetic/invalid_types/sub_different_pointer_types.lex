@@ -1,0 +1,41 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[36]:
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  long
+  identifier(x)
+  [
+  const int(10)
+  ]
+  ;
+  long
+  *
+  identifier(ptr)
+  =
+  identifier(x)
+  ;
+  unsigned
+  long
+  *
+  identifier(ptr2)
+  =
+  (
+  unsigned
+  long
+  *
+  )
+  identifier(ptr)
+  ;
+  return
+  identifier(ptr)
+  -
+  identifier(ptr2)
+  ;
+  }

@@ -1,0 +1,946 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[2]: 
+    AsmStaticVariable: 
+      TIdentifier: glob
+      TInt: 4
+      Bool: 1
+      List[1]: 
+        IntInit: 
+          TInt: 1
+    AsmFunction: 
+      TIdentifier: target
+      Bool: 1
+      Bool: 0
+      List[77]: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmDi: 
+          AsmPseudo: 
+            TIdentifier: a.22
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmSi: 
+          AsmPseudo: 
+            TIdentifier: b.23
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: c.24
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmCx: 
+          AsmPseudo: 
+            TIdentifier: d.25
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR8: 
+          AsmPseudo: 
+            TIdentifier: e.26
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmR9: 
+          AsmPseudo: 
+            TIdentifier: f.27
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a.22
+          AsmPseudo: 
+            TIdentifier: binop.39
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: f.27
+          AsmPseudo: 
+            TIdentifier: binop.39
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.39
+          AsmPseudo: 
+            TIdentifier: g.28
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: b.23
+          AsmPseudo: 
+            TIdentifier: binop.40
+        AsmBinary: 
+          AsmMult: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: d.25
+          AsmPseudo: 
+            TIdentifier: binop.40
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.40
+          AsmPseudo: 
+            TIdentifier: h.29
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: c.24
+          AsmPseudo: 
+            TIdentifier: binop.41
+        AsmBinary: 
+          AsmMult: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: c.24
+          AsmPseudo: 
+            TIdentifier: binop.41
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.41
+          AsmPseudo: 
+            TIdentifier: i.30
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: d.25
+          AsmPseudo: 
+            TIdentifier: binop.42
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: f.27
+          AsmPseudo: 
+            TIdentifier: binop.42
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.42
+          AsmPseudo: 
+            TIdentifier: j.31
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: e.26
+          AsmPseudo: 
+            TIdentifier: binop.43
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: f.27
+          AsmPseudo: 
+            TIdentifier: binop.43
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.43
+          AsmPseudo: 
+            TIdentifier: k.32
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: f.27
+          AsmPseudo: 
+            TIdentifier: binop.44
+        AsmBinary: 
+          AsmMult: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: b.23
+          AsmPseudo: 
+            TIdentifier: binop.44
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.44
+          AsmPseudo: 
+            TIdentifier: l.33
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a.22
+          AsmPseudo: 
+            TIdentifier: binop.45
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: b.23
+          AsmPseudo: 
+            TIdentifier: binop.45
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.45
+          AsmPseudo: 
+            TIdentifier: binop.46
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: c.24
+          AsmPseudo: 
+            TIdentifier: binop.46
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.46
+          AsmPseudo: 
+            TIdentifier: binop.47
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: d.25
+          AsmPseudo: 
+            TIdentifier: binop.47
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.47
+          AsmPseudo: 
+            TIdentifier: binop.48
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: e.26
+          AsmPseudo: 
+            TIdentifier: binop.48
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.48
+          AsmPseudo: 
+            TIdentifier: binop.49
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: f.27
+          AsmPseudo: 
+            TIdentifier: binop.49
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.49
+          AsmPseudo: 
+            TIdentifier: binop.50
+        AsmBinary: 
+          AsmSub: 
+          LongWord: 
+          AsmImm: 
+            TULong: 7
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.50
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.50
+          AsmPseudo: 
+            TIdentifier: m.34
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: g.28
+          AsmPseudo: 
+            TIdentifier: binop.51
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: h.29
+          AsmPseudo: 
+            TIdentifier: binop.51
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.51
+          AsmPseudo: 
+            TIdentifier: n.35
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.30
+          AsmPseudo: 
+            TIdentifier: binop.52
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 7
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.52
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.52
+          AsmPseudo: 
+            TIdentifier: o.36
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: j.31
+          AsmPseudo: 
+            TIdentifier: binop.53
+        AsmBinary: 
+          AsmMult: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.53
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.53
+          AsmPseudo: 
+            TIdentifier: binop.54
+        AsmBinary: 
+          AsmSub: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.54
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.54
+          AsmPseudo: 
+            TIdentifier: p.37
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: k.32
+          AsmPseudo: 
+            TIdentifier: binop.55
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: g.28
+          AsmPseudo: 
+            TIdentifier: binop.55
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.55
+          AsmPseudo: 
+            TIdentifier: q.38
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: g.28
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: h.29
+          AsmRegister: 
+            AsmSi: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: i.30
+          AsmRegister: 
+            AsmDx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: j.31
+          AsmRegister: 
+            AsmCx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: k.32
+          AsmRegister: 
+            AsmR8: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: l.33
+          AsmRegister: 
+            AsmR9: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 8
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmPush: 
+          AsmImm: 
+            TULong: 7
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: q.38
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: p.37
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: o.36
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: n.35
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: m.34
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmRegister: 
+            AsmAx: 
+        AsmPush: 
+          AsmImm: 
+            TULong: 13
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmCall: 
+          TIdentifier: check_12_ints
+        AsmBinary: 
+          AsmAdd: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 64
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.56
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(41):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 252
+        TULong: 1
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [a.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 252
+        TULong: 1
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [g.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [h.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.30]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [k.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [l.33]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [m.34]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [n.35]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [o.36]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [p.37]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [q.38]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.39]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.40]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.41]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.42]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.43]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.44]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.45]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.46]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.47]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.48]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.49]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.50]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.51]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.52]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.53]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.54]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.55]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.56]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(41):
+  [check_one_int]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_5_ints]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_12_ints]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [glob]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      LongWord: 
+  [a.22]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [b.23]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [c.24]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [d.25]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [e.26]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [f.27]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [target]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [g.28]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [h.29]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [i.30]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [j.31]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [k.32]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [l.33]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [m.34]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [n.35]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [o.36]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [p.37]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [q.38]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.39]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.40]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.41]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.42]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.43]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.44]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.45]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.46]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.47]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.48]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.49]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.50]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.51]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.52]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.53]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.54]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [binop.55]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.56]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

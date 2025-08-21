@@ -1,0 +1,89 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[84]:
+  int
+  identifier(putchar)
+  (
+  int
+  identifier(c)
+  )
+  ;
+  int
+  identifier(foo)
+  (
+  int
+  *
+  identifier(ptr)
+  )
+  {
+  identifier(putchar)
+  (
+  *
+  identifier(ptr)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  int
+  identifier(x)
+  =
+  const int(10)
+  ;
+  int
+  identifier(y)
+  =
+  const int(65)
+  ;
+  int
+  *
+  identifier(ptr)
+  =
+  &
+  identifier(y)
+  ;
+  if
+  (
+  const int(0)
+  )
+  {
+  identifier(ptr)
+  =
+  &
+  identifier(x)
+  ;
+  }
+  identifier(x)
+  =
+  const int(5)
+  ;
+  identifier(foo)
+  (
+  identifier(ptr)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(target)
+  (
+  )
+  ;
+  }

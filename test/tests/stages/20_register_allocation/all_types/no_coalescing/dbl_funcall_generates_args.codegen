@@ -1,0 +1,938 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[4]: 
+    AsmStaticConstant: 
+      TIdentifier: double.0
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4607182418800017408
+    AsmStaticConstant: 
+      TIdentifier: double.1
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4611686018427387904
+    AsmStaticConstant: 
+      TIdentifier: double.2
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4637440978796412928
+    AsmStaticConstant: 
+      TIdentifier: double.3
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4638144666238189568
+  List[5]: 
+    AsmStaticVariable: 
+      TIdentifier: glob
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        DoubleInit: 
+          TIdentifier: 4621819117588971520
+    AsmStaticVariable: 
+      TIdentifier: x
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+    AsmStaticVariable: 
+      TIdentifier: y
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+    AsmFunction: 
+      TIdentifier: target
+      Bool: 1
+      Bool: 0
+      List[45]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 64
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: glob
+            TLong: 0
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM15: 
+        AsmBinary: 
+          AsmAdd: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.0
+            TLong: 0
+          AsmRegister: 
+            AsmXMM15: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM15: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: glob
+            TLong: 0
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM15: 
+        AsmBinary: 
+          AsmAdd: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.1
+            TLong: 0
+          AsmRegister: 
+            AsmXMM15: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM15: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -24
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM15: 
+        AsmBinary: 
+          AsmMult: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: glob
+            TLong: 0
+          AsmRegister: 
+            AsmXMM15: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM15: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -40
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmData: 
+            TIdentifier: x
+            TLong: 0
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM15: 
+        AsmBinary: 
+          AsmMult: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: glob
+            TLong: 0
+          AsmRegister: 
+            AsmXMM15: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM15: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -48
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM14: 
+        AsmMov: 
+          BackendDouble: 
+          AsmRegister: 
+            AsmXMM14: 
+          AsmData: 
+            TIdentifier: y
+            TLong: 0
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -16
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmMemory: 
+            TLong: -32
+            AsmBp: 
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: use_dbls
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmMemory: 
+            TLong: -52
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: x
+            TLong: 0
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.2
+            TLong: 0
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: check_one_double
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmMemory: 
+            TLong: -56
+            AsmBp: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: y
+            TLong: 0
+          AsmRegister: 
+            AsmXMM0: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.3
+            TLong: 0
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCall: 
+          TIdentifier: check_one_double
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmMemory: 
+            TLong: -60
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[7]: 
+        AsmBinary: 
+          AsmSub: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 16
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmSp: 
+        AsmCall: 
+          TIdentifier: target
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmMemory: 
+            TLong: -4
+            AsmBp: 
+        AsmMov: 
+          LongWord: 
+          AsmMemory: 
+            TLong: -4
+            AsmBp: 
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(33):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          UChar: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          UInt: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          ULong: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 12288
+        TULong: 1
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_longs]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[13]: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_six_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[7]: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_14_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[15]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_vals]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Double: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [dbl_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [long_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          Long: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [unsigned_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          UInt: 
+        UInt: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uchar_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[1]: 
+          UChar: 
+        UChar: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [use_dbls]: 
+    Symbol: 
+      FunType: 
+        TULong: 12288
+        TULong: 1
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 4621819117588971520
+  [x]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [y]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.86]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [b.87]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.88]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.89]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.90]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.91]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.92]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.93]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.94]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.95]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(37):
+  [check_one_int]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_5_ints]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_12_ints]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_one_uchar]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_one_uint]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_one_long]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_one_ulong]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_one_double]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_12_longs]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_six_chars]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_14_doubles]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [check_12_vals]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [dbl_id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [long_id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [unsigned_id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [uchar_id]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [use_dbls]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [glob]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      BackendDouble: 
+  [x]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      BackendDouble: 
+  [y]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      BackendDouble: 
+  [target]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [a.86]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [b.87]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [binop.88]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [binop.89]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [binop.90]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [binop.91]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      BackendDouble: 
+  [call.92]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.93]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.94]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.95]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [double.0]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      BackendDouble: 
+  [double.1]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      BackendDouble: 
+  [double.2]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      BackendDouble: 
+  [double.3]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      BackendDouble: 

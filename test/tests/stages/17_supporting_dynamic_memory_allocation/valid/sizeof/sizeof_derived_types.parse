@@ -1,0 +1,223 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 2
+                      Int: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 6
+                        Array: 
+                          TLong: 17
+                          Array: 
+                            TLong: 9
+                            Char: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2754
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 4294967297
+                      Array: 
+                        TLong: 100000000
+                        Int: 
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 1717986918800000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Pointer: 
+                      Int: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 4
+                          Array: 
+                            TLong: 6
+                            Int: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Pointer: 
+                      Char: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 4
+                        Pointer: 
+                          Array: 
+                            TLong: 2
+                            Double: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 96
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

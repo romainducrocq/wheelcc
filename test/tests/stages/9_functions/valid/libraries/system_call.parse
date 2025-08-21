@@ -1,0 +1,50 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: putchar
+        List[1]: 
+          TIdentifier: c
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: incr_and_print
+        List[1]: 
+          TIdentifier: b
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 

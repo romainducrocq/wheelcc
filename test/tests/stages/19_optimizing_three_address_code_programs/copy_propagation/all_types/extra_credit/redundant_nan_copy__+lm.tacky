@@ -1,0 +1,195 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: na
+      Bool: 1
+      Double: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+  List[2]: 
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[1]: 
+        TIdentifier: flag.1
+      List[9]: 
+        TacBinary: 
+          TacDivide: 
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+          TacVariable: 
+            TIdentifier: binop.3
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.3
+          TacVariable: 
+            TIdentifier: na
+        TacBinary: 
+          TacDivide: 
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+          TacVariable: 
+            TIdentifier: binop.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.4
+          TacVariable: 
+            TIdentifier: d.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: flag.1
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: d.2
+          TacVariable: 
+            TIdentifier: na
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[8]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+          TacVariable: 
+            TIdentifier: call.5
+        TacFunCall: 
+          TIdentifier: double_isnan
+          List[1]: 
+            TacVariable: 
+              TIdentifier: na
+          TacVariable: 
+            TIdentifier: call.6
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.6
+          TacVariable: 
+            TIdentifier: unop.7
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: unop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(11):
+  [double_isnan]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [na]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [flag.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.3]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

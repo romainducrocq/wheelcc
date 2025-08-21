@@ -1,0 +1,269 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[6]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CString: 
+                          CStringLiteral: 
+                            List[7]: 
+                              TChar: 97
+                              TChar: 98
+                              TChar: 99
+                              TChar: 100
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 99
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr.0
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CString: 
+                          CStringLiteral: 
+                            List[17]: 
+                              TChar: 84
+                              TChar: 104
+                              TChar: 105
+                              TChar: 115
+                              TChar: 32
+                              TChar: 105
+                              TChar: 115
+                              TChar: 32
+                              TChar: 97
+                              TChar: 32
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 105
+                              TChar: 110
+                              TChar: 103
+                              TChar: 33
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ptr.0
+                        Pointer: 
+                          Char: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 115
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: ptr.0
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 6
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 33
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CSubscript: 
+                  CVar: 
+                    TIdentifier: ptr.0
+                    Pointer: 
+                      Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      Int: 
+                    Long: 
+                    Long: 
+                  Char: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CAddrOf: 
+                    CString: 
+                      CStringLiteral: 
+                        List[19]: 
+                          TChar: 78
+                          TChar: 111
+                          TChar: 116
+                          TChar: 32
+                          TChar: 97
+                          TChar: 32
+                          TChar: 110
+                          TChar: 117
+                          TChar: 108
+                          TChar: 108
+                          TChar: 32
+                          TChar: 112
+                          TChar: 111
+                          TChar: 105
+                          TChar: 110
+                          TChar: 116
+                          TChar: 101
+                          TChar: 114
+                          TChar: 33
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr.0]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 

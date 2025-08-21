@@ -1,0 +1,266 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: i
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 0
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: putchar
+        List[1]: 
+          TIdentifier: c.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_A
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 65
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CVar: 
+                    TIdentifier: i
+                    Int: 
+                  Pointer: 
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_B
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 66
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CVar: 
+                    TIdentifier: i
+                    Int: 
+                  Pointer: 
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CAdd: 
+                    CDereference: 
+                      CFunctionCall: 
+                        TIdentifier: print_A
+                        List[0]: 
+                        Pointer: 
+                          Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CCast: 
+                    CBinary: 
+                      CAdd: 
+                      CCast: 
+                        CDereference: 
+                          CFunctionCall: 
+                            TIdentifier: print_B
+                            List[0]: 
+                            Pointer: 
+                              Int: 
+                          Int: 
+                        Long: 
+                        Long: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 5
+                        Long: 
+                      Long: 
+                    Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(5):
+  [i]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [putchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [print_A]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [print_B]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

@@ -1,0 +1,251 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: globvar
+      Bool: 1
+      Int: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 4
+  List[3]: 
+    TacFunction: 
+      TIdentifier: callee
+      Bool: 1
+      List[1]: 
+        TIdentifier: arg.0
+      List[3]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: arg.0
+          TacVariable: 
+            TIdentifier: globvar
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[1]: 
+        TIdentifier: flag.1
+      List[18]: 
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: arg.2
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: flag.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: const.3
+        TacJumpIfNotZero: 
+          TIdentifier: case_0switch.0
+          TacVariable: 
+            TIdentifier: const.3
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: flag.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: const.4
+        TacJumpIfNotZero: 
+          TIdentifier: case_1switch.0
+          TacVariable: 
+            TIdentifier: const.4
+        TacJump: 
+          TIdentifier: default_switch.0
+        TacLabel: 
+          TIdentifier: case_0switch.0
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 20
+          TacVariable: 
+            TIdentifier: arg.2
+        TacJump: 
+          TIdentifier: break_switch.0
+        TacLabel: 
+          TIdentifier: case_1switch.0
+        TacFunCall: 
+          TIdentifier: callee
+          List[1]: 
+            TacVariable: 
+              TIdentifier: arg.2
+          TacVariable: 
+            TIdentifier: call.5
+        TacJump: 
+          TIdentifier: break_switch.0
+        TacLabel: 
+          TIdentifier: default_switch.0
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.6
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: unop.6
+          TacVariable: 
+            TIdentifier: globvar
+        TacLabel: 
+          TIdentifier: break_switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[7]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 2
+          TacVariable: 
+            TIdentifier: call.7
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: globvar
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: binop.8
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.8
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(13):
+  [globvar]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [arg.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flag.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arg.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [const.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [const.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

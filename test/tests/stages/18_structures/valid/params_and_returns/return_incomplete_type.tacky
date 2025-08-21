@@ -1,0 +1,276 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[20]: 
+        TacCopyToOffset: 
+          TIdentifier: arg.1
+          TLong: 4
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacCopyToOffset: 
+          TIdentifier: arg.1
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacFunCall: 
+          TIdentifier: increment_struct
+          List[1]: 
+            TacVariable: 
+              TIdentifier: arg.1
+          TacVariable: 
+            TIdentifier: call.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.4
+          TacVariable: 
+            TIdentifier: val.2
+        TacCopyFromOffset: 
+          TIdentifier: val.2
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.6
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.6
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: binop.7
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.7
+        TacCopyFromOffset: 
+          TIdentifier: val.2
+          TLong: 4
+          TacVariable: 
+            TIdentifier: smem.8
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.8
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: binop.9
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.9
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.5
+        TacJump: 
+          TIdentifier: or_false.2
+        TacLabel: 
+          TIdentifier: or_true.1
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.5
+        TacLabel: 
+          TIdentifier: or_false.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: increment_struct
+      Bool: 1
+      List[1]: 
+        TIdentifier: param.3
+      List[8]: 
+        TacCopyFromOffset: 
+          TIdentifier: param.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.10
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: smem.10
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.11
+        TacCopyToOffset: 
+          TIdentifier: param.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: binop.11
+        TacCopyFromOffset: 
+          TIdentifier: param.3
+          TLong: 4
+          TacVariable: 
+            TIdentifier: smem.12
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: smem.12
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.13
+        TacCopyToOffset: 
+          TIdentifier: param.3
+          TLong: 4
+          TacVariable: 
+            TIdentifier: binop.13
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: param.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: a
+        TIdentifier: b
+      Dict[2]: 
+        [a]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [b]: 
+          StructMember: 
+            TLong: 4
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(15):
+  [increment_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: s.0
+            Bool: 0
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arg.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [val.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [param.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [call.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

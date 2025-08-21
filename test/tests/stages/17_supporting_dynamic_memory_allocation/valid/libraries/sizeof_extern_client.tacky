@@ -1,0 +1,78 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[4]: 
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 16000000
+          TacVariable: 
+            TIdentifier: cast.0
+        TacBinary: 
+          TacEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 16000000
+          TacVariable: 
+            TIdentifier: cast.0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [large_array]: 
+    Symbol: 
+      Array: 
+        TLong: 1000
+        Array: 
+          TLong: 2000
+          Double: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.0]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

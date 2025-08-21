@@ -1,0 +1,103 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: x
+      Bool: 1
+      Double: 
+      List[1]: 
+        DoubleInit: 
+          TIdentifier: 4617315517961601024
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[6]: 
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+          TacVariable: 
+            TIdentifier: unop.1
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: unop.1
+          TacVariable: 
+            TIdentifier: d.0
+        TacUnary: 
+          TacNegate: 
+          TacVariable: 
+            TIdentifier: x
+          TacVariable: 
+            TIdentifier: unop.2
+        TacBinary: 
+          TacGreaterThan: 
+          TacVariable: 
+            TIdentifier: unop.2
+          TacVariable: 
+            TIdentifier: d.0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [x]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 4617315517961601024
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.0]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.1]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

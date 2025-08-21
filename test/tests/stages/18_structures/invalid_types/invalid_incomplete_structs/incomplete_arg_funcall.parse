@@ -1,0 +1,56 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: f
+        List[1]: 
+          TIdentifier: param
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: s
+              Bool: 0
+          Void: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: extern_var
+        None: 
+        Structure: 
+          TIdentifier: s
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: f
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: extern_var
+                      None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

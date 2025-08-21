@@ -1,0 +1,331 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: strings.2
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[12]: 
+                              TChar: 97
+                              TChar: 98
+                              TChar: 99
+                              TChar: 100
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                          Array: 
+                            TLong: 13
+                            Char: 
+                        Array: 
+                          TLong: 13
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[1]: 
+                              TChar: 122
+                          Array: 
+                            TLong: 13
+                            Char: 
+                        Array: 
+                          TLong: 13
+                          Char: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 13
+                        Char: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 13
+                      Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: strings.2
+                            Pointer: 
+                              Array: 
+                                TLong: 13
+                                Char: 
+                          Pointer: 
+                            Array: 
+                              TLong: 13
+                              Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[12]: 
+                            TChar: 97
+                            TChar: 98
+                            TChar: 99
+                            TChar: 100
+                            TChar: 101
+                            TChar: 102
+                            TChar: 103
+                            TChar: 104
+                            TChar: 105
+                            TChar: 106
+                            TChar: 107
+                            TChar: 108
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: strings.2
+                              Pointer: 
+                                Array: 
+                                  TLong: 13
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 13
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 122
+                    Int: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                None: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.3
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 13
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: strings.2
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 13
+                                        Char: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 13
+                                      Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CVar: 
+                                TIdentifier: i.3
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              Int: 
+                          None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [strings.2]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 13
+          Char: 
+      LocalAttr: 
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

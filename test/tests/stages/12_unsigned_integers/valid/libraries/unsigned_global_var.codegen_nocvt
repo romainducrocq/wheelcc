@@ -1,0 +1,164 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[4]: 
+    AsmStaticVariable: 
+      TIdentifier: ui
+      TInt: 4
+      Bool: 1
+      List[1]: 
+        UIntInit: 
+          TUInt: 4294967200
+    AsmFunction: 
+      TIdentifier: return_uint
+      Bool: 1
+      Bool: 0
+      List[4]: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: ui
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: return_uint_as_signed
+      Bool: 1
+      Bool: 0
+      List[5]: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: ui
+          AsmPseudo: 
+            TIdentifier: cast.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: return_uint_as_long
+      Bool: 1
+      Bool: 0
+      List[5]: 
+        AsmMovZeroExtend: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: ui
+          AsmPseudo: 
+            TIdentifier: cast.1
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.1
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [ui]: 
+    Symbol: 
+      UInt: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            UIntInit: 
+              TUInt: 4294967200
+  [return_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        UInt: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_uint_as_signed]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_uint_as_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

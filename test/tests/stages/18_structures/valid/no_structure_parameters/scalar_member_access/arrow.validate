@@ -1,0 +1,2193 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[9]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.0
+          TIdentifier: size.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: four_members.0
+        Bool: 0
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_double
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstDouble: 
+                    TDouble: 2000000000000.000000
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: l
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 34359738378
+            None: 
+          None: 
+        Long: 
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: accept_params
+        List[8]: 
+          TIdentifier: d_divided.2
+          TIdentifier: c_doubled.3
+          TIdentifier: l_cast.4
+          TIdentifier: dereferenced_ptr.5
+          TIdentifier: d.6
+          TIdentifier: c.7
+          TIdentifier: l.8
+          TIdentifier: ptr.9
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          COr: 
+                          CBinary: 
+                            COr: 
+                            CBinary: 
+                              COr: 
+                              CBinary: 
+                                CNotEqual: 
+                                CVar: 
+                                  TIdentifier: d.6
+                                  Double: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 1845381177299.000000
+                                    Double: 
+                                  Double: 
+                                Int: 
+                              CBinary: 
+                                CNotEqual: 
+                                CVar: 
+                                  TIdentifier: c.7
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 127
+                                  Int: 
+                                Int: 
+                              Int: 
+                            CBinary: 
+                              CNotEqual: 
+                              CVar: 
+                                TIdentifier: l.8
+                                Long: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 58
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CNotEqual: 
+                            CCast: 
+                              CDereference: 
+                                CVar: 
+                                  TIdentifier: ptr.9
+                                  Pointer: 
+                                    Char: 
+                                Char: 
+                              Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 100
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CNotEqual: 
+                          CVar: 
+                            TIdentifier: d_divided.2
+                            Int: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 922690588
+                              Int: 
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CVar: 
+                          TIdentifier: c_doubled.3
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 254
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CVar: 
+                        TIdentifier: l_cast.4
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 58.000000
+                        Double: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: dereferenced_ptr.5
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Int: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Long: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_auto
+        List[0]: 
+        CB: 
+          List[14]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: autom.10
+                  None: 
+                  Structure: 
+                    TIdentifier: four_members.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: autom_ptr.11
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: autom.10
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: autom_ptr.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Double: 
+                  CBinary: 
+                    CAdd: 
+                    CBinary: 
+                      CSubtract: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      CFunctionCall: 
+                        TIdentifier: get_double
+                        List[0]: 
+                        Double: 
+                      Double: 
+                    CBinary: 
+                      CMultiply: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 3.500000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: c
+                    CVar: 
+                      TIdentifier: autom_ptr.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 127
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: autom_ptr.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Long: 
+                  CCast: 
+                    CBinary: 
+                      CDivide: 
+                      CFunctionCall: 
+                        TIdentifier: get_double
+                        List[0]: 
+                        Double: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      Double: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: chr.12
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      Char: 
+                      Char: 
+                    Char: 
+                  Char: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: ptr
+                    CVar: 
+                      TIdentifier: autom_ptr.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Char: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: chr.12
+                      Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        CNotEqual: 
+                        CArrow: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: autom_ptr.11
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                          Double: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 1845381177299.000000
+                            Double: 
+                          Double: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CCast: 
+                          CArrow: 
+                            TIdentifier: c
+                            CVar: 
+                              TIdentifier: autom_ptr.11
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: four_members.0
+                                  Bool: 0
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 127
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: l
+                        CVar: 
+                          TIdentifier: autom_ptr.11
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 58
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: ptr
+                      CVar: 
+                        TIdentifier: autom_ptr.11
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: chr.12
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d_ptr.13
+                  CSingleInit: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: autom_ptr.11
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c_ptr.14
+                  CSingleInit: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: c
+                        CVar: 
+                          TIdentifier: autom_ptr.11
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: d_ptr.13
+                        Pointer: 
+                          Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1845381177299.000000
+                        Double: 
+                      Double: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CDereference: 
+                        CVar: 
+                          TIdentifier: c_ptr.14
+                          Pointer: 
+                            Char: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 127
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDereference: 
+                      CArrow: 
+                        TIdentifier: ptr
+                        CVar: 
+                          TIdentifier: autom_ptr.11
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Pointer: 
+                          Char: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: accept_params
+                    List[8]: 
+                      CCast: 
+                        CBinary: 
+                          CDivide: 
+                          CDot: 
+                            TIdentifier: d
+                            CVar: 
+                              TIdentifier: autom.10
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Double: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2000
+                              Int: 
+                            Double: 
+                            Double: 
+                          Double: 
+                        Int: 
+                        Int: 
+                      CBinary: 
+                        CMultiply: 
+                        CCast: 
+                          CDot: 
+                            TIdentifier: c
+                            CVar: 
+                              TIdentifier: autom.10
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: l
+                          CVar: 
+                            TIdentifier: autom.10
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                          Long: 
+                        Double: 
+                        Double: 
+                      CCast: 
+                        CDereference: 
+                          CDot: 
+                            TIdentifier: ptr
+                            CVar: 
+                              TIdentifier: autom.10
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Pointer: 
+                              Char: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: autom.10
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Double: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: c
+                          CVar: 
+                            TIdentifier: autom.10
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                          Char: 
+                        Int: 
+                        Int: 
+                      CDot: 
+                        TIdentifier: l
+                        CVar: 
+                          TIdentifier: autom.10
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Long: 
+                      CDot: 
+                        TIdentifier: ptr
+                        CVar: 
+                          TIdentifier: autom.10
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_static
+        List[0]: 
+        CB: 
+          List[15]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: stat.15
+                  None: 
+                  Structure: 
+                    TIdentifier: four_members.0
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: stat_ptr.16
+                  None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: stat_ptr.16
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: stat.15
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: chr.17
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      None: 
+                    None: 
+                  Char: 
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: stat_ptr.16
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Double: 
+                  CBinary: 
+                    CAdd: 
+                    CBinary: 
+                      CSubtract: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      CFunctionCall: 
+                        TIdentifier: get_double
+                        List[0]: 
+                        Double: 
+                      Double: 
+                    CBinary: 
+                      CMultiply: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 3.500000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: c
+                    CVar: 
+                      TIdentifier: stat_ptr.16
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 127
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: stat_ptr.16
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Long: 
+                  CCast: 
+                    CBinary: 
+                      CDivide: 
+                      CFunctionCall: 
+                        TIdentifier: get_double
+                        List[0]: 
+                        Double: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: l
+                          Long: 
+                        Double: 
+                        Double: 
+                      Double: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: ptr
+                    CVar: 
+                      TIdentifier: stat_ptr.16
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Char: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: chr.17
+                      Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        CNotEqual: 
+                        CArrow: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: stat_ptr.16
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                          Double: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 1845381177299.000000
+                            Double: 
+                          Double: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CCast: 
+                          CArrow: 
+                            TIdentifier: c
+                            CVar: 
+                              TIdentifier: stat_ptr.16
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: four_members.0
+                                  Bool: 0
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 127
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: l
+                        CVar: 
+                          TIdentifier: stat_ptr.16
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 58
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: ptr
+                      CVar: 
+                        TIdentifier: stat_ptr.16
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: chr.17
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d_ptr.18
+                  CSingleInit: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: stat_ptr.16
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c_ptr.19
+                  CSingleInit: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: c
+                        CVar: 
+                          TIdentifier: stat_ptr.16
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: d_ptr.18
+                        Pointer: 
+                          Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1845381177299.000000
+                        Double: 
+                      Double: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CDereference: 
+                        CVar: 
+                          TIdentifier: c_ptr.19
+                          Pointer: 
+                            Char: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 127
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDereference: 
+                      CArrow: 
+                        TIdentifier: ptr
+                        CVar: 
+                          TIdentifier: stat_ptr.16
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Pointer: 
+                          Char: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: accept_params
+                    List[8]: 
+                      CCast: 
+                        CBinary: 
+                          CDivide: 
+                          CDot: 
+                            TIdentifier: d
+                            CVar: 
+                              TIdentifier: stat.15
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Double: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2000
+                              Int: 
+                            Double: 
+                            Double: 
+                          Double: 
+                        Int: 
+                        Int: 
+                      CBinary: 
+                        CMultiply: 
+                        CCast: 
+                          CDot: 
+                            TIdentifier: c
+                            CVar: 
+                              TIdentifier: stat.15
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: l
+                          CVar: 
+                            TIdentifier: stat.15
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                          Long: 
+                        Double: 
+                        Double: 
+                      CCast: 
+                        CDereference: 
+                          CDot: 
+                            TIdentifier: ptr
+                            CVar: 
+                              TIdentifier: stat.15
+                              Structure: 
+                                TIdentifier: four_members.0
+                                Bool: 0
+                            Pointer: 
+                              Char: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: stat.15
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Double: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: c
+                          CVar: 
+                            TIdentifier: stat.15
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                          Char: 
+                        Int: 
+                        Int: 
+                      CDot: 
+                        TIdentifier: l
+                        CVar: 
+                          TIdentifier: stat.15
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Long: 
+                      CDot: 
+                        TIdentifier: ptr
+                        CVar: 
+                          TIdentifier: stat.15
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_exp_result_member
+        List[0]: 
+        CB: 
+          List[23]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flag.20
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s1.21
+                  None: 
+                  Structure: 
+                    TIdentifier: four_members.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: s1.21
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10.000000
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CVar: 
+                      TIdentifier: s1.21
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 99
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: s1.21
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 9223372036854775807
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: ptr
+                    CVar: 
+                      TIdentifier: s1.21
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Pointer: 
+                      Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Pointer: 
+                      Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s2.22
+                  None: 
+                  Structure: 
+                    TIdentifier: four_members.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: s2.22
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 12.000000
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CVar: 
+                      TIdentifier: s2.22
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 98
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: s2.22
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 9223372036854775807
+                      Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: ptr
+                    CVar: 
+                      TIdentifier: s2.22
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Pointer: 
+                      Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Pointer: 
+                      Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s1_ptr.23
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s1.21
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s2_ptr.24
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s2.22
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: c
+                    CConditional: 
+                      CVar: 
+                        TIdentifier: flag.20
+                        Int: 
+                      CVar: 
+                        TIdentifier: s1_ptr.23
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      CVar: 
+                        TIdentifier: s2_ptr.24
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 127
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: s1.21
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 127
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: s2.22
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 98
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: result_ptr.25
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: d
+                      CAssignment: 
+                        None: 
+                        CVar: 
+                          TIdentifier: result_ptr.25
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        CVar: 
+                          TIdentifier: s2_ptr.24
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: four_members.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 12.000000
+                      Double: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: l
+                      CVar: 
+                        TIdentifier: result_ptr.25
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Long: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 9223372036854775807
+                        Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: void_ptr.26
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: calloc
+                      List[2]: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          ULong: 
+                          ULong: 
+                        CSizeOfT: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                          ULong: 
+                      Pointer: 
+                        Void: 
+                    Pointer: 
+                      Void: 
+                  Pointer: 
+                    Void: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: c
+                    CCast: 
+                      CVar: 
+                        TIdentifier: void_ptr.26
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: four_members.0
+                          Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 80
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: result_ptr.25
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  CCast: 
+                    CVar: 
+                      TIdentifier: void_ptr.26
+                      Pointer: 
+                        Void: 
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: four_members.0
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: four_members.0
+                      Bool: 0
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CArrow: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: result_ptr.25
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: four_members.0
+                            Bool: 0
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 80
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_auto
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_static
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_exp_result_member
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [four_members.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[4]: 
+        TIdentifier: d
+        TIdentifier: c
+        TIdentifier: l
+        TIdentifier: ptr
+      Dict[4]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [c]: 
+          StructMember: 
+            TLong: 8
+            Char: 
+        [l]: 
+          StructMember: 
+            TLong: 16
+            Long: 
+        [ptr]: 
+          StructMember: 
+            TLong: 24
+            Pointer: 
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(33):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [get_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            LongInit: 
+              TLong: 34359738378
+  [d_divided.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c_doubled.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [l_cast.4]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [dereferenced_ptr.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [c.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [l.8]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [ptr.9]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [accept_params]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[8]: 
+          Int: 
+          Int: 
+          Double: 
+          Int: 
+          Double: 
+          Int: 
+          Long: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [test_auto]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [autom.10]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: four_members.0
+        Bool: 0
+      LocalAttr: 
+  [autom_ptr.11]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: four_members.0
+          Bool: 0
+      LocalAttr: 
+  [chr.12]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [d_ptr.13]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [c_ptr.14]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [test_static]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [stat.15]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: four_members.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 32
+  [stat_ptr.16]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: four_members.0
+          Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [chr.17]: 
+    Symbol: 
+      Char: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            CharInit: 
+              TChar: 100
+  [d_ptr.18]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [c_ptr.19]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [test_exp_result_member]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flag.20]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [s1.21]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: four_members.0
+        Bool: 0
+      LocalAttr: 
+  [s2.22]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: four_members.0
+        Bool: 0
+      LocalAttr: 
+  [s1_ptr.23]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: four_members.0
+          Bool: 0
+      LocalAttr: 
+  [s2_ptr.24]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: four_members.0
+          Bool: 0
+      LocalAttr: 
+  [result_ptr.25]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: four_members.0
+          Bool: 0
+      LocalAttr: 
+  [void_ptr.26]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

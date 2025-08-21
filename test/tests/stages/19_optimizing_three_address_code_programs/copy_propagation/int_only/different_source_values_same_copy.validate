@@ -1,0 +1,297 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: callee
+        List[2]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CVar: 
+                    TIdentifier: a.0
+                    Int: 
+                  CVar: 
+                    TIdentifier: b.1
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[1]: 
+          TIdentifier: flag.2
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.3
+                  None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.4
+                  None: 
+                  Int: 
+                  CStatic: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: flag.2
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: y.4
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 20
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: x.3
+                              Int: 
+                            CVar: 
+                              TIdentifier: y.4
+                              Int: 
+                            Int: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: y.4
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 100
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: x.3
+                              Int: 
+                            CVar: 
+                              TIdentifier: y.4
+                              Int: 
+                            Int: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: callee
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: x.3
+                      Int: 
+                    CVar: 
+                      TIdentifier: y.4
+                      Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: result.5
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: target
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: result.5
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 200
+                    Int: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: result.5
+                    Int: 
+                  CFunctionCall: 
+                    TIdentifier: target
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: result.5
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 40
+                    Int: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(9):
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flag.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.3]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [y.4]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [result.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

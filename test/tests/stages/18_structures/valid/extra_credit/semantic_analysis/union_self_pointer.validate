@@ -1,0 +1,157 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: self_ptr.0
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: self_ptr.0
+                Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.0
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: u.0
+                            Structure: 
+                              TIdentifier: self_ptr.0
+                              Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: self_ptr.0
+                              Bool: 1
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: self_ptr.0
+                            Bool: 1
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: self_ptr.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: self_ptr.0
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: u.0
+                      Structure: 
+                        TIdentifier: self_ptr.0
+                        Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: self_ptr.0
+                        Bool: 1
+                  CDot: 
+                    TIdentifier: ptr
+                    CVar: 
+                      TIdentifier: u.0
+                      Structure: 
+                        TIdentifier: self_ptr.0
+                        Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: self_ptr.0
+                        Bool: 1
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [self_ptr.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: ptr
+        TIdentifier: l
+      Dict[2]: 
+        [ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: self_ptr.0
+                Bool: 1
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [u.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: self_ptr.0
+        Bool: 1
+      LocalAttr: 

@@ -1,0 +1,127 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[18]: 
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: a.0
+        TacJumpIfZero: 
+          TIdentifier: if_else.0
+          TacVariable: 
+            TIdentifier: a.0
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: b.1
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: b.1
+        TacJump: 
+          TIdentifier: if_false.1
+        TacLabel: 
+          TIdentifier: if_else.0
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: c.2
+        TacBinary: 
+          TacLessThan: 
+          TacVariable: 
+            TIdentifier: a.0
+          TacVariable: 
+            TIdentifier: c.2
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: if_else.2
+          TacVariable: 
+            TIdentifier: binop.3
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: a.0
+          TacVariable: 
+            TIdentifier: unop.4
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: unop.4
+        TacJump: 
+          TIdentifier: if_false.3
+        TacLabel: 
+          TIdentifier: if_else.2
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: a.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

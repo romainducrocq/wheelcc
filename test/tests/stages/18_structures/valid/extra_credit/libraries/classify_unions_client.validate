@@ -1,0 +1,5727 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[92]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: exit
+        List[1]: 
+          TIdentifier: status.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size.3
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_double.0
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d1
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: d2
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_union_with_double.1
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: member
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_struct_with_double.2
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: has_union_with_double.1
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 1
+              Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_int.3
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_int_nested.4
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: oi
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: od
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: char_int_mixed.5
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 7
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: union_ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: char_int_mixed.5
+                Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: ui
+            UInt: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: char_int_short.6
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_union.7
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            UInt: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: char_int_short.6
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_struct_with_ints.8
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: ul
+            ULong: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_doubles.9
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: single
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_xmm_union.10
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: u2
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: dbl_struct.11
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: member2
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_dbl_struct.12
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: dbl_struct.11
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: char_arr.13
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 11
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_arrs.14
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: dbl_arr
+            Array: 
+              TLong: 2
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: long_arr
+            Array: 
+              TLong: 2
+              Long: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_eightbyte_has_struct.15
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Int: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: dbl_struct.11
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: char_first_eightbyte.16
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: int_second_eightbyte.17
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_structs.18
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: char_first_eightbyte.16
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: member2
+            Structure: 
+              TIdentifier: int_second_eightbyte.17
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: nine_bytes.19
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 5
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_nine_byte_struct.20
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: nine_bytes.19
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: uneven.21
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 5
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: uc
+            UChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_uneven_union.22
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: uneven.21
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_other_unions.23
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: uneven.21
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: d
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: n
+            Structure: 
+              TIdentifier: has_nine_byte_struct.20
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: union_array.24
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: u_arr
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: one_int.3
+                Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: uneven_union_array.25
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: u_arr
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: uneven.21
+                Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: small.26
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: sc
+            SChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_small_struct_array.27
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: small.26
+                Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: gp_and_xmm.28
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d_arr
+            Array: 
+              TLong: 2
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: scalar_and_struct.29
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Long: 
+          CMemberDeclaration: 
+            TIdentifier: cfe
+            Structure: 
+              TIdentifier: char_first_eightbyte.16
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_two_unions.30
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: char_int_mixed.5
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: member2
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: small_struct_arr_and_dbl.31
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: small.26
+                Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: d
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: xmm_and_gp.32
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: ise
+            Structure: 
+              TIdentifier: int_second_eightbyte.17
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: xmm_and_gp_nested.33
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: member1
+            Structure: 
+              TIdentifier: xmm_and_gp.32
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: lotsa_doubles.34
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: lotsa_chars.35
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: more_chars
+            Array: 
+              TLong: 18
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: fewer_chars
+            Array: 
+              TLong: 5
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: large.36
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 10
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_large_struct.37
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: ul
+            ULong: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Structure: 
+              TIdentifier: large.36
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_union_array.38
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: gp_and_xmm.28
+                Bool: 1
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_one_double
+        List[1]: 
+          TIdentifier: u.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_union_with_double
+        List[1]: 
+          TIdentifier: s.5
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_union_with_double.1
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_struct_with_double
+        List[1]: 
+          TIdentifier: u.6
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_struct_with_double.2
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_one_int
+        List[1]: 
+          TIdentifier: u.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_one_int_nested
+        List[1]: 
+          TIdentifier: u.8
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: one_int_nested.4
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_char_int_mixed
+        List[1]: 
+          TIdentifier: u.9
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: char_int_mixed.5
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_union
+        List[1]: 
+          TIdentifier: s.10
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_struct_with_ints
+        List[1]: 
+          TIdentifier: u.11
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_struct_with_ints.8
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_doubles
+        List[1]: 
+          TIdentifier: u.12
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_xmm_union
+        List[1]: 
+          TIdentifier: u.13
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_xmm_union.10
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_dbl_struct
+        List[1]: 
+          TIdentifier: s.14
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: dbl_struct.11
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_dbl_struct
+        List[1]: 
+          TIdentifier: u.15
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_dbl_struct.12
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_char_arr
+        List[1]: 
+          TIdentifier: u.16
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: char_arr.13
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_arrs
+        List[1]: 
+          TIdentifier: u.17
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: two_arrs.14
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_eightbyte_has_struct
+        List[1]: 
+          TIdentifier: u.18
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: two_eightbyte_has_struct.15
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_structs
+        List[1]: 
+          TIdentifier: u.19
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: two_structs.18
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_nine_byte_struct
+        List[1]: 
+          TIdentifier: u.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_nine_byte_struct.20
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_uneven_union
+        List[1]: 
+          TIdentifier: s.21
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_uneven_union.22
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_other_unions
+        List[1]: 
+          TIdentifier: u.22
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_other_unions.23
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_union_array
+        List[1]: 
+          TIdentifier: u.23
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: union_array.24
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_uneven_union_array
+        List[1]: 
+          TIdentifier: u.24
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: uneven_union_array.25
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_small_struct_array
+        List[1]: 
+          TIdentifier: u.25
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_small_struct_array.27
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_gp_and_xmm
+        List[1]: 
+          TIdentifier: u.26
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: gp_and_xmm.28
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_scalar_and_struct
+        List[1]: 
+          TIdentifier: u.27
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: scalar_and_struct.29
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_has_two_unions
+        List[1]: 
+          TIdentifier: s.28
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: has_two_unions.30
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_small_struct_arr_and_dbl
+        List[1]: 
+          TIdentifier: u.29
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: small_struct_arr_and_dbl.31
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_xmm_and_gp
+        List[1]: 
+          TIdentifier: u.30
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: xmm_and_gp.32
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_xmm_and_gp_nested
+        List[1]: 
+          TIdentifier: u.31
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: xmm_and_gp_nested.33
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_lotsa_doubles
+        List[1]: 
+          TIdentifier: u.32
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: lotsa_doubles.34
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_lotsa_chars
+        List[1]: 
+          TIdentifier: u.33
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: lotsa_chars.35
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_contains_large_struct
+        List[1]: 
+          TIdentifier: u.34
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: contains_large_struct.37
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_contains_union_array
+        List[1]: 
+          TIdentifier: u.35
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: contains_union_array.38
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_unions_and_structs
+        List[9]: 
+          TIdentifier: i1.36
+          TIdentifier: i2.37
+          TIdentifier: one_gp_struct.38
+          TIdentifier: d1.39
+          TIdentifier: two_xmm.40
+          TIdentifier: one_gp.41
+          TIdentifier: i3.42
+          TIdentifier: i4.43
+          TIdentifier: i5.44
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[9]: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+            Double: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_gp_union_in_memory
+        List[9]: 
+          TIdentifier: two_xmm.45
+          TIdentifier: one_gp_struct.46
+          TIdentifier: i1.47
+          TIdentifier: i2.48
+          TIdentifier: i3.49
+          TIdentifier: i4.50
+          TIdentifier: i5.51
+          TIdentifier: i6.52
+          TIdentifier: one_gp.53
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[9]: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_xmm_union_in_memory
+        List[7]: 
+          TIdentifier: d1.54
+          TIdentifier: d2.55
+          TIdentifier: two_xmm.56
+          TIdentifier: two_xmm_copy.57
+          TIdentifier: d3.58
+          TIdentifier: d4.59
+          TIdentifier: two_xmm_2.60
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Double: 
+            Double: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+            Double: 
+            Double: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_borderline_union
+        List[6]: 
+          TIdentifier: i1.61
+          TIdentifier: i2.62
+          TIdentifier: i3.63
+          TIdentifier: i4.64
+          TIdentifier: i5.65
+          TIdentifier: two_gp.66
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: char_arr.13
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_borderline_xmm_union
+        List[7]: 
+          TIdentifier: two_xmm.67
+          TIdentifier: d1.68
+          TIdentifier: d2.69
+          TIdentifier: d3.70
+          TIdentifier: d4.71
+          TIdentifier: d5.72
+          TIdentifier: two_xmm_2.73
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_mixed_reg_in_memory
+        List[11]: 
+          TIdentifier: d1.74
+          TIdentifier: d2.75
+          TIdentifier: d3.76
+          TIdentifier: d4.77
+          TIdentifier: i1.78
+          TIdentifier: i2.79
+          TIdentifier: i3.80
+          TIdentifier: i4.81
+          TIdentifier: i5.82
+          TIdentifier: i6.83
+          TIdentifier: mixed_regs.84
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[11]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: gp_and_xmm.28
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_uneven_union_in_memory
+        List[8]: 
+          TIdentifier: i1.85
+          TIdentifier: i2.86
+          TIdentifier: i3.87
+          TIdentifier: i4.88
+          TIdentifier: i5.89
+          TIdentifier: mixed_regs.90
+          TIdentifier: one_gp.91
+          TIdentifier: uneven.92
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: gp_and_xmm.28
+              Bool: 1
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+            Structure: 
+              TIdentifier: uneven.21
+              Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_in_mem_first
+        List[4]: 
+          TIdentifier: mem.93
+          TIdentifier: mixed_regs.94
+          TIdentifier: two_gp.95
+          TIdentifier: one_gp_struct.96
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Structure: 
+              TIdentifier: lotsa_doubles.34
+              Bool: 1
+            Structure: 
+              TIdentifier: gp_and_xmm.28
+              Bool: 1
+            Structure: 
+              TIdentifier: char_arr.13
+              Bool: 1
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_one_double
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: one_double.0
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_one_int_nested
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: one_int_nested.4
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_has_dbl_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: has_dbl_struct.12
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_two_arrs
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: two_arrs.14
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_scalar_and_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: scalar_and_struct.29
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_xmm_and_gp
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: xmm_and_gp.32
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_contains_union_array
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: contains_union_array.38
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_params_and_return_in_mem
+        List[6]: 
+          TIdentifier: i1.97
+          TIdentifier: int_and_dbl.98
+          TIdentifier: two_arrs.99
+          TIdentifier: i2.100
+          TIdentifier: big_union.101
+          TIdentifier: oin.102
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Structure: 
+              TIdentifier: scalar_and_struct.29
+              Bool: 1
+            Structure: 
+              TIdentifier: two_arrs.14
+              Bool: 1
+            Int: 
+            Structure: 
+              TIdentifier: contains_union_array.38
+              Bool: 1
+            Structure: 
+              TIdentifier: one_int_nested.4
+              Bool: 1
+          Structure: 
+            TIdentifier: lotsa_chars.35
+            Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_struct_with_union
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: has_uneven_union.22
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[83]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: od.103
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 2345000.000000
+                            Double: 
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 0.000000
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: one_double.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: one_double.0
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_one_double
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: od.103
+                        Structure: 
+                          TIdentifier: one_double.0
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: huwd.104
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 988754320999999956148343042414110258110920654848.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        Structure: 
+                          TIdentifier: one_double.0
+                          Bool: 1
+                    Structure: 
+                      TIdentifier: has_union_with_double.1
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: has_union_with_double.1
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_union_with_double
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: huwd.104
+                        Structure: 
+                          TIdentifier: has_union_with_double.1
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hswd.105
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: huwd.104
+                          Structure: 
+                            TIdentifier: has_union_with_double.1
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: has_union_with_double.1
+                          Bool: 0
+                      CCompoundInit: 
+                        List[1]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: has_struct_with_double.2
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: has_struct_with_double.2
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_struct_with_double
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hswd.105
+                        Structure: 
+                          TIdentifier: has_struct_with_double.2
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: oi.106
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 80.000000
+                            Double: 
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstChar: 
+                            TChar: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: one_int.3
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: one_int.3
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_one_int
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: oi.106
+                        Structure: 
+                          TIdentifier: one_int.3
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: oin.107
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 440000000000000031726018842654839582907361672495745728512.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                        Structure: 
+                          TIdentifier: one_int.3
+                          Bool: 1
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: one_int_nested.4
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: one_int_nested.4
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_one_int_nested
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: oin.107
+                        Structure: 
+                          TIdentifier: one_int_nested.4
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: cim.108
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[4]: 
+                              TChar: 87
+                              TChar: 88
+                              TChar: 89
+                              TChar: 90
+                          Array: 
+                            TLong: 7
+                            Char: 
+                        Array: 
+                          TLong: 7
+                          Char: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstULong: 
+                            TULong: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstUInt: 
+                            TUInt: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: char_int_mixed.5
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: char_int_mixed.5
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_char_int_mixed
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: cim.108
+                        Structure: 
+                          TIdentifier: char_int_mixed.5
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hu.109
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstUInt: 
+                            TUInt: 4294954951
+                          UInt: 
+                        UInt: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CCast: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 60
+                                  Int: 
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                        Structure: 
+                          TIdentifier: char_int_short.6
+                          Bool: 1
+                    Structure: 
+                      TIdentifier: has_union.7
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: has_union.7
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_union
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hu.109
+                        Structure: 
+                          TIdentifier: has_union.7
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hswi.110
+                  None: 
+                  Structure: 
+                    TIdentifier: has_struct_with_ints.8
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: s
+                    CVar: 
+                      TIdentifier: hswi.110
+                      Structure: 
+                        TIdentifier: has_struct_with_ints.8
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: has_union.7
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: hu.109
+                    Structure: 
+                      TIdentifier: has_union.7
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: has_union.7
+                    Bool: 0
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_struct_with_ints
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hswi.110
+                        Structure: 
+                          TIdentifier: has_struct_with_ints.8
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: td.111
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 10.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 11.000000
+                              Double: 
+                            Double: 
+                        Array: 
+                          TLong: 2
+                          Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 0.000000
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: two_doubles.9
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: two_doubles.9
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_two_doubles
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: td.111
+                        Structure: 
+                          TIdentifier: two_doubles.9
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hxu.112
+                  None: 
+                  Structure: 
+                    TIdentifier: has_xmm_union.10
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: u2
+                    CVar: 
+                      TIdentifier: hxu.112
+                      Structure: 
+                        TIdentifier: has_xmm_union.10
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: two_doubles.9
+                      Bool: 1
+                  CVar: 
+                    TIdentifier: td.111
+                    Structure: 
+                      TIdentifier: two_doubles.9
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: two_doubles.9
+                    Bool: 1
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_xmm_union
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hxu.112
+                        Structure: 
+                          TIdentifier: has_xmm_union.10
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ds.113
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: od.103
+                          Structure: 
+                            TIdentifier: one_double.0
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: one_double.0
+                          Bool: 1
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 123.450000
+                          Double: 
+                        Double: 
+                    Structure: 
+                      TIdentifier: dbl_struct.11
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: dbl_struct.11
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_dbl_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ds.113
+                        Structure: 
+                          TIdentifier: dbl_struct.11
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hds.114
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: ds.113
+                          Structure: 
+                            TIdentifier: dbl_struct.11
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: dbl_struct.11
+                          Bool: 0
+                    Structure: 
+                      TIdentifier: has_dbl_struct.12
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: has_dbl_struct.12
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_dbl_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hds.114
+                        Structure: 
+                          TIdentifier: has_dbl_struct.12
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ca.115
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[6]: 
+                              TChar: 67
+                              TChar: 104
+                              TChar: 97
+                              TChar: 114
+                              TChar: 115
+                              TChar: 33
+                          Array: 
+                            TLong: 11
+                            Char: 
+                        Array: 
+                          TLong: 11
+                          Char: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: char_arr.13
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: char_arr.13
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_char_arr
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ca.115
+                        Structure: 
+                          TIdentifier: char_arr.13
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr_var.116
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 130000.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 14.500000
+                              Double: 
+                            Double: 
+                        Array: 
+                          TLong: 2
+                          Double: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstLong: 
+                                TLong: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstLong: 
+                                TLong: 0
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: two_arrs.14
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: two_arrs.14
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_two_arrs
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: two_arr_var.116
+                        Structure: 
+                          TIdentifier: two_arrs.14
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 14
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: tehs.117
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 100
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 200
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 300
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstDouble: 
+                                    TDouble: 0.000000
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstDouble: 
+                                    TDouble: 0.000000
+                                  None: 
+                                None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: two_eightbyte_has_struct.15
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: two_eightbyte_has_struct.15
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_two_eightbyte_has_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: tehs.117
+                        Structure: 
+                          TIdentifier: two_eightbyte_has_struct.15
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ts.118
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 120
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 5550000.000000
+                              Double: 
+                            Double: 
+                        Structure: 
+                          TIdentifier: char_first_eightbyte.16
+                          Bool: 0
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: two_structs.18
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: two_structs.18
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_two_structs
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ts.118
+                        Structure: 
+                          TIdentifier: two_structs.18
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 16
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hnbs.119
+                  None: 
+                  Structure: 
+                    TIdentifier: has_nine_byte_struct.20
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: hnbs.119
+                        Structure: 
+                          TIdentifier: has_nine_byte_struct.20
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: nine_bytes.19
+                        Bool: 0
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16711936
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.120
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.120
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.120
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.120
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: byte.121
+                            CSingleInit: 
+                              CCast: 
+                                CConditional: 
+                                  CBinary: 
+                                    CRemainder: 
+                                    CVar: 
+                                      TIdentifier: i.120
+                                      Int: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 2
+                                      Int: 
+                                    Int: 
+                                  CUnary: 
+                                    CNegate: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                                    Int: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 0
+                                    Int: 
+                                  Int: 
+                                Char: 
+                                Char: 
+                              Char: 
+                            Char: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CDot: 
+                                  TIdentifier: arr
+                                  CDot: 
+                                    TIdentifier: s
+                                    CVar: 
+                                      TIdentifier: hnbs.119
+                                      Structure: 
+                                        TIdentifier: has_nine_byte_struct.20
+                                        Bool: 1
+                                    Structure: 
+                                      TIdentifier: nine_bytes.19
+                                      Bool: 0
+                                  Pointer: 
+                                    Char: 
+                                Pointer: 
+                                  Char: 
+                              CCast: 
+                                CVar: 
+                                  TIdentifier: i.120
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Char: 
+                            CVar: 
+                              TIdentifier: byte.121
+                              Char: 
+                            Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: s
+                          CVar: 
+                            TIdentifier: hnbs.119
+                            Structure: 
+                              TIdentifier: has_nine_byte_struct.20
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: nine_bytes.19
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_nine_byte_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hnbs.119
+                        Structure: 
+                          TIdentifier: has_nine_byte_struct.20
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 17
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: huu.122
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2147483647
+                            Int: 
+                          Int: 
+                        Int: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[4]: 
+                                  TChar: 33
+                                  TChar: 64
+                                  TChar: 35
+                                  TChar: 36
+                              Array: 
+                                TLong: 5
+                                Char: 
+                            Array: 
+                              TLong: 5
+                              Char: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstUChar: 
+                                TUChar: 0
+                              None: 
+                            None: 
+                        Structure: 
+                          TIdentifier: uneven.21
+                          Bool: 1
+                    Structure: 
+                      TIdentifier: has_uneven_union.22
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: has_uneven_union.22
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_uneven_union
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: huu.122
+                        Structure: 
+                          TIdentifier: has_uneven_union.22
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 18
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hou.123
+                  None: 
+                  Structure: 
+                    TIdentifier: has_other_unions.23
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: n
+                    CVar: 
+                      TIdentifier: hou.123
+                      Structure: 
+                        TIdentifier: has_other_unions.23
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: has_nine_byte_struct.20
+                      Bool: 1
+                  CVar: 
+                    TIdentifier: hnbs.119
+                    Structure: 
+                      TIdentifier: has_nine_byte_struct.20
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: has_nine_byte_struct.20
+                    Bool: 1
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: s
+                          CDot: 
+                            TIdentifier: n
+                            CVar: 
+                              TIdentifier: hou.123
+                              Structure: 
+                                TIdentifier: has_other_unions.23
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: has_nine_byte_struct.20
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: nine_bytes.19
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_other_unions
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hou.123
+                        Structure: 
+                          TIdentifier: has_other_unions.23
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 19
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ua.124
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 20.000000
+                                    Double: 
+                                  Double: 
+                                Double: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstChar: 
+                                    TChar: 0
+                                  None: 
+                                None: 
+                            Structure: 
+                              TIdentifier: one_int.3
+                              Bool: 1
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 30.000000
+                                    Double: 
+                                  Double: 
+                                Double: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstChar: 
+                                    TChar: 0
+                                  None: 
+                                None: 
+                            Structure: 
+                              TIdentifier: one_int.3
+                              Bool: 1
+                        Array: 
+                          TLong: 2
+                          Structure: 
+                            TIdentifier: one_int.3
+                            Bool: 1
+                    Structure: 
+                      TIdentifier: union_array.24
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: union_array.24
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ua.124
+                        Structure: 
+                          TIdentifier: union_array.24
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 20
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uua.125
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[4]: 
+                                      TChar: 81
+                                      TChar: 87
+                                      TChar: 69
+                                      TChar: 82
+                                  Array: 
+                                    TLong: 5
+                                    Char: 
+                                Array: 
+                                  TLong: 5
+                                  Char: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUChar: 
+                                    TUChar: 0
+                                  None: 
+                                None: 
+                            Structure: 
+                              TIdentifier: uneven.21
+                              Bool: 1
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[4]: 
+                                      TChar: 84
+                                      TChar: 89
+                                      TChar: 85
+                                      TChar: 73
+                                  Array: 
+                                    TLong: 5
+                                    Char: 
+                                Array: 
+                                  TLong: 5
+                                  Char: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstUChar: 
+                                    TUChar: 0
+                                  None: 
+                                None: 
+                            Structure: 
+                              TIdentifier: uneven.21
+                              Bool: 1
+                        Array: 
+                          TLong: 2
+                          Structure: 
+                            TIdentifier: uneven.21
+                            Bool: 1
+                    Structure: 
+                      TIdentifier: uneven_union_array.25
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: uneven_union_array.25
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_uneven_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: uua.125
+                        Structure: 
+                          TIdentifier: uneven_union_array.25
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 21
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hssa.126
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 65
+                                      TChar: 83
+                                  Array: 
+                                    TLong: 3
+                                    Char: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                              CSingleInit: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 10
+                                    Int: 
+                                  SChar: 
+                                  SChar: 
+                                SChar: 
+                            Structure: 
+                              TIdentifier: small.26
+                              Bool: 0
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 68
+                                      TChar: 70
+                                  Array: 
+                                    TLong: 3
+                                    Char: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                              CSingleInit: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 11
+                                    Int: 
+                                  SChar: 
+                                  SChar: 
+                                SChar: 
+                            Structure: 
+                              TIdentifier: small.26
+                              Bool: 0
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 71
+                                      TChar: 72
+                                  Array: 
+                                    TLong: 3
+                                    Char: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                              CSingleInit: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 12
+                                    Int: 
+                                  SChar: 
+                                  SChar: 
+                                SChar: 
+                            Structure: 
+                              TIdentifier: small.26
+                              Bool: 0
+                        Array: 
+                          TLong: 3
+                          Structure: 
+                            TIdentifier: small.26
+                            Bool: 0
+                    Structure: 
+                      TIdentifier: has_small_struct_array.27
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: has_small_struct_array.27
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_small_struct_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hssa.126
+                        Structure: 
+                          TIdentifier: has_small_struct_array.27
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 22
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: gax.127
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 11.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 12
+                                Int: 
+                              Double: 
+                              Double: 
+                            Double: 
+                        Array: 
+                          TLong: 2
+                          Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstChar: 
+                            TChar: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: gp_and_xmm.28
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: gp_and_xmm.28
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_gp_and_xmm
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: gax.127
+                        Structure: 
+                          TIdentifier: gp_and_xmm.28
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 23
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: sas.128
+                  None: 
+                  Structure: 
+                    TIdentifier: scalar_and_struct.29
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CDot: 
+                      TIdentifier: cfe
+                      CVar: 
+                        TIdentifier: sas.128
+                        Structure: 
+                          TIdentifier: scalar_and_struct.29
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: char_first_eightbyte.16
+                        Bool: 0
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: cfe
+                      CVar: 
+                        TIdentifier: sas.128
+                        Structure: 
+                          TIdentifier: scalar_and_struct.29
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: char_first_eightbyte.16
+                        Bool: 0
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 88.800000
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_scalar_and_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: sas.128
+                        Structure: 
+                          TIdentifier: scalar_and_struct.29
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 24
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: htu.129
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: cim.108
+                          Structure: 
+                            TIdentifier: char_int_mixed.5
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: char_int_mixed.5
+                          Bool: 1
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: od.103
+                          Structure: 
+                            TIdentifier: one_double.0
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: one_double.0
+                          Bool: 1
+                    Structure: 
+                      TIdentifier: has_two_unions.30
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: has_two_unions.30
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_two_unions
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: htu.129
+                        Structure: 
+                          TIdentifier: has_two_unions.30
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 25
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ssaad.130
+                  None: 
+                  Structure: 
+                    TIdentifier: small_struct_arr_and_dbl.31
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: ssaad.130
+                            Structure: 
+                              TIdentifier: small_struct_arr_and_dbl.31
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: two_doubles.9
+                            Bool: 1
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Long: 
+                      Long: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 22.000000
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: ssaad.130
+                            Structure: 
+                              TIdentifier: small_struct_arr_and_dbl.31
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: two_doubles.9
+                            Bool: 1
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 32.000000
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_small_struct_arr_and_dbl
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ssaad.130
+                        Structure: 
+                          TIdentifier: small_struct_arr_and_dbl.31
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 26
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xag.131
+                  None: 
+                  Structure: 
+                    TIdentifier: xmm_and_gp.32
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: ise
+                      CVar: 
+                        TIdentifier: xag.131
+                        Structure: 
+                          TIdentifier: xmm_and_gp.32
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: int_second_eightbyte.17
+                        Bool: 0
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 8.000000
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: ise
+                      CVar: 
+                        TIdentifier: xag.131
+                        Structure: 
+                          TIdentifier: xmm_and_gp.32
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: int_second_eightbyte.17
+                        Bool: 0
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_xmm_and_gp
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: xag.131
+                        Structure: 
+                          TIdentifier: xmm_and_gp.32
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 27
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xagn.132
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: xag.131
+                          Structure: 
+                            TIdentifier: xmm_and_gp.32
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: xmm_and_gp.32
+                          Bool: 1
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstDouble: 
+                                    TDouble: 0.000000
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstDouble: 
+                                    TDouble: 0.000000
+                                  None: 
+                                None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: xmm_and_gp_nested.33
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: xmm_and_gp_nested.33
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_xmm_and_gp_nested
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: xagn.132
+                        Structure: 
+                          TIdentifier: xmm_and_gp_nested.33
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 28
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbls.133
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 99.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 98.000000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 97.000000
+                              Double: 
+                            Double: 
+                        Array: 
+                          TLong: 3
+                          Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: lotsa_doubles.34
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: lotsa_doubles.34
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_lotsa_doubles
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: dbls.133
+                        Structure: 
+                          TIdentifier: lotsa_doubles.34
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 29
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: chars.134
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[14]: 
+                              TChar: 97
+                              TChar: 115
+                              TChar: 102
+                              TChar: 108
+                              TChar: 97
+                              TChar: 107
+                              TChar: 106
+                              TChar: 115
+                              TChar: 100
+                              TChar: 102
+                              TChar: 108
+                              TChar: 107
+                              TChar: 106
+                              TChar: 115
+                          Array: 
+                            TLong: 18
+                            Char: 
+                        Array: 
+                          TLong: 18
+                          Char: 
+                      CCompoundInit: 
+                        List[5]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: lotsa_chars.35
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: lotsa_chars.35
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_lotsa_chars
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: chars.134
+                        Structure: 
+                          TIdentifier: lotsa_chars.35
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 30
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: large_struct.135
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 100.000000
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[9]: 
+                              TChar: 65
+                              TChar: 32
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 117
+                              TChar: 99
+                              TChar: 116
+                              TChar: 33
+                          Array: 
+                            TLong: 10
+                            Char: 
+                        Array: 
+                          TLong: 10
+                          Char: 
+                    Structure: 
+                      TIdentifier: large.36
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: large.36
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: cls.136
+                  None: 
+                  Structure: 
+                    TIdentifier: contains_large_struct.37
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: cls.136
+                      Structure: 
+                        TIdentifier: contains_large_struct.37
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: large.36
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: large_struct.135
+                    Structure: 
+                      TIdentifier: large.36
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: large.36
+                    Bool: 0
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_contains_large_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: cls.136
+                        Structure: 
+                          TIdentifier: contains_large_struct.37
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 31
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: gax2.137
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: gax.127
+                      Structure: 
+                        TIdentifier: gp_and_xmm.28
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: gp_and_xmm.28
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: gp_and_xmm.28
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: d_arr
+                        CVar: 
+                          TIdentifier: gax2.137
+                          Structure: 
+                            TIdentifier: gp_and_xmm.28
+                            Bool: 1
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Long: 
+                      Long: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 2.000000
+                      Double: 
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: d_arr
+                        CVar: 
+                          TIdentifier: gax2.137
+                          Structure: 
+                            TIdentifier: gp_and_xmm.28
+                            Bool: 1
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Double: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Double: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      Double: 
+                    Double: 
+                  Double: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: cua.138
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CVar: 
+                              TIdentifier: gax.127
+                              Structure: 
+                                TIdentifier: gp_and_xmm.28
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: gp_and_xmm.28
+                              Bool: 1
+                          CSingleInit: 
+                            CVar: 
+                              TIdentifier: gax2.137
+                              Structure: 
+                                TIdentifier: gp_and_xmm.28
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: gp_and_xmm.28
+                              Bool: 1
+                        Array: 
+                          TLong: 2
+                          Structure: 
+                            TIdentifier: gp_and_xmm.28
+                            Bool: 1
+                    Structure: 
+                      TIdentifier: contains_union_array.38
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: contains_union_array.38
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_contains_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: cua.138
+                        Structure: 
+                          TIdentifier: contains_union_array.38
+                          Bool: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 32
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(39):
+  [one_double.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: d1
+        TIdentifier: d2
+      Dict[2]: 
+        [d1]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [d2]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [has_union_with_double.1]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: member
+      Dict[1]: 
+        [member]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+  [has_struct_with_double.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: s
+        TIdentifier: arr
+      Dict[2]: 
+        [s]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: has_union_with_double.1
+              Bool: 0
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 1
+              Double: 
+  [one_int.3]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: d
+        TIdentifier: c
+      Dict[2]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+  [one_int_nested.4]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: oi
+        TIdentifier: od
+      Dict[2]: 
+        [oi]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_int.3
+              Bool: 1
+        [od]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+  [char_int_mixed.5]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[3]: 
+        TIdentifier: arr
+        TIdentifier: union_ptr
+        TIdentifier: ui
+      Dict[3]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 7
+              Char: 
+        [union_ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: char_int_mixed.5
+                Bool: 1
+        [ui]: 
+          StructMember: 
+            TLong: 0
+            UInt: 
+  [char_int_short.6]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: i
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+  [has_union.7]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: u
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            UInt: 
+        [u]: 
+          StructMember: 
+            TLong: 4
+            Structure: 
+              TIdentifier: char_int_short.6
+              Bool: 1
+  [has_struct_with_ints.8]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[3]: 
+        TIdentifier: d
+        TIdentifier: s
+        TIdentifier: ul
+      Dict[3]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [s]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: has_union.7
+              Bool: 0
+        [ul]: 
+          StructMember: 
+            TLong: 0
+            ULong: 
+  [two_doubles.9]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: single
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+        [single]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [has_xmm_union.10]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: u
+        TIdentifier: u2
+      Dict[2]: 
+        [u]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+        [u2]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+  [dbl_struct.11]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: member1
+        TIdentifier: member2
+      Dict[2]: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+        [member2]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+  [has_dbl_struct.12]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[1]: 
+        TIdentifier: member1
+      Dict[1]: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: dbl_struct.11
+              Bool: 0
+  [char_arr.13]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: i
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 11
+              Char: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+  [two_arrs.14]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: dbl_arr
+        TIdentifier: long_arr
+      Dict[2]: 
+        [dbl_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+        [long_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Long: 
+  [two_eightbyte_has_struct.15]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: member1
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Int: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: dbl_struct.11
+              Bool: 0
+  [char_first_eightbyte.16]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: d
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+  [int_second_eightbyte.17]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: d
+        TIdentifier: i
+      Dict[2]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [i]: 
+          StructMember: 
+            TLong: 8
+            Int: 
+  [two_structs.18]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: member1
+        TIdentifier: member2
+      Dict[2]: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: char_first_eightbyte.16
+              Bool: 0
+        [member2]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: int_second_eightbyte.17
+              Bool: 0
+  [nine_bytes.19]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: arr
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [arr]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 5
+              Char: 
+  [has_nine_byte_struct.20]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[3]: 
+        TIdentifier: c
+        TIdentifier: l
+        TIdentifier: s
+      Dict[3]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [s]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: nine_bytes.19
+              Bool: 0
+  [uneven.21]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 5
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: uc
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 5
+              Char: 
+        [uc]: 
+          StructMember: 
+            TLong: 0
+            UChar: 
+  [has_uneven_union.22]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: u
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [u]: 
+          StructMember: 
+            TLong: 4
+            Structure: 
+              TIdentifier: uneven.21
+              Bool: 1
+  [has_other_unions.23]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[3]: 
+        TIdentifier: u
+        TIdentifier: d
+        TIdentifier: n
+      Dict[3]: 
+        [u]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: uneven.21
+              Bool: 1
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+        [n]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: has_nine_byte_struct.20
+              Bool: 1
+  [union_array.24]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[1]: 
+        TIdentifier: u_arr
+      Dict[1]: 
+        [u_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: one_int.3
+                Bool: 1
+  [uneven_union_array.25]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 10
+      List[1]: 
+        TIdentifier: u_arr
+      Dict[1]: 
+        [u_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: uneven.21
+                Bool: 1
+  [small.26]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 4
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: sc
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Char: 
+        [sc]: 
+          StructMember: 
+            TLong: 3
+            SChar: 
+  [has_small_struct_array.27]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 12
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: small.26
+                Bool: 0
+  [gp_and_xmm.28]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: d_arr
+        TIdentifier: c
+      Dict[2]: 
+        [d_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+  [scalar_and_struct.29]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: ptr
+        TIdentifier: cfe
+      Dict[2]: 
+        [ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Long: 
+        [cfe]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: char_first_eightbyte.16
+              Bool: 0
+  [has_two_unions.30]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: member1
+        TIdentifier: member2
+      Dict[2]: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: char_int_mixed.5
+              Bool: 1
+        [member2]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: one_double.0
+              Bool: 1
+  [small_struct_arr_and_dbl.31]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: d
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: small.26
+                Bool: 0
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+  [xmm_and_gp.32]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: d
+        TIdentifier: ise
+      Dict[2]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [ise]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: int_second_eightbyte.17
+              Bool: 0
+  [xmm_and_gp_nested.33]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[3]: 
+        TIdentifier: member1
+        TIdentifier: arr
+        TIdentifier: d
+      Dict[3]: 
+        [member1]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: xmm_and_gp.32
+              Bool: 1
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_doubles.9
+              Bool: 1
+  [lotsa_doubles.34]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: i
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Double: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+  [lotsa_chars.35]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 18
+      List[2]: 
+        TIdentifier: more_chars
+        TIdentifier: fewer_chars
+      Dict[2]: 
+        [more_chars]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 18
+              Char: 
+        [fewer_chars]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 5
+              Char: 
+  [large.36]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[3]: 
+        TIdentifier: i
+        TIdentifier: d
+        TIdentifier: arr
+      Dict[3]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+        [arr]: 
+          StructMember: 
+            TLong: 16
+            Array: 
+              TLong: 10
+              Char: 
+  [contains_large_struct.37]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[3]: 
+        TIdentifier: i
+        TIdentifier: ul
+        TIdentifier: l
+      Dict[3]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [ul]: 
+          StructMember: 
+            TLong: 0
+            ULong: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: large.36
+              Bool: 0
+  [contains_union_array.38]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: gp_and_xmm.28
+                Bool: 1
++
++
+@@ Symbol Table @@
+Dict(89):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [exit]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [malloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: one_double.0
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_union_with_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_union_with_double.1
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_struct_with_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_struct_with_double.2
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: one_int.3
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_one_int_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: one_int_nested.4
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_char_int_mixed]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: char_int_mixed.5
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_union.7
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_struct_with_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_struct_with_ints.8
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_two_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_xmm_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_xmm_union.10
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_dbl_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: dbl_struct.11
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_dbl_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_dbl_struct.12
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_char_arr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: char_arr.13
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_two_arrs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: two_arrs.14
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_two_eightbyte_has_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: two_eightbyte_has_struct.15
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_two_structs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: two_structs.18
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_nine_byte_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_nine_byte_struct.20
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_uneven_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_uneven_union.22
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_other_unions]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_other_unions.23
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_union_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: union_array.24
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_uneven_union_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: uneven_union_array.25
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_small_struct_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_small_struct_array.27
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_gp_and_xmm]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: gp_and_xmm.28
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_scalar_and_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: scalar_and_struct.29
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_has_two_unions]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: has_two_unions.30
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_small_struct_arr_and_dbl]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: small_struct_arr_and_dbl.31
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_xmm_and_gp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: xmm_and_gp.32
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_xmm_and_gp_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: xmm_and_gp_nested.33
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_lotsa_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: lotsa_doubles.34
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_lotsa_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: lotsa_chars.35
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_contains_large_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: contains_large_struct.37
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_contains_union_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: contains_union_array.38
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_unions_and_structs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[9]: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: has_union.7
+            Bool: 0
+          Double: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+          Structure: 
+            TIdentifier: one_int.3
+            Bool: 1
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_gp_union_in_memory]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[9]: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+          Structure: 
+            TIdentifier: has_union.7
+            Bool: 0
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: one_int.3
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_xmm_union_in_memory]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Double: 
+          Double: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+          Double: 
+          Double: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_borderline_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: char_arr.13
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_borderline_xmm_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Structure: 
+            TIdentifier: two_doubles.9
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_mixed_reg_in_memory]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[11]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: gp_and_xmm.28
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_uneven_union_in_memory]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[8]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: gp_and_xmm.28
+            Bool: 1
+          Structure: 
+            TIdentifier: one_int.3
+            Bool: 1
+          Structure: 
+            TIdentifier: uneven.21
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_in_mem_first]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Structure: 
+            TIdentifier: lotsa_doubles.34
+            Bool: 1
+          Structure: 
+            TIdentifier: gp_and_xmm.28
+            Bool: 1
+          Structure: 
+            TIdentifier: char_arr.13
+            Bool: 1
+          Structure: 
+            TIdentifier: has_union.7
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: one_double.0
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_one_int_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: one_int_nested.4
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_has_dbl_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: has_dbl_struct.12
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_two_arrs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: two_arrs.14
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_scalar_and_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: scalar_and_struct.29
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_xmm_and_gp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: xmm_and_gp.32
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_contains_union_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: contains_union_array.38
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_params_and_return_in_mem]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Structure: 
+            TIdentifier: scalar_and_struct.29
+            Bool: 1
+          Structure: 
+            TIdentifier: two_arrs.14
+            Bool: 1
+          Int: 
+          Structure: 
+            TIdentifier: contains_union_array.38
+            Bool: 1
+          Structure: 
+            TIdentifier: one_int_nested.4
+            Bool: 1
+        Structure: 
+          TIdentifier: lotsa_chars.35
+          Bool: 1
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_struct_with_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: has_uneven_union.22
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [od.103]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_double.0
+        Bool: 1
+      LocalAttr: 
+  [huwd.104]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union_with_double.1
+        Bool: 0
+      LocalAttr: 
+  [hswd.105]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_struct_with_double.2
+        Bool: 1
+      LocalAttr: 
+  [oi.106]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_int.3
+        Bool: 1
+      LocalAttr: 
+  [oin.107]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_int_nested.4
+        Bool: 1
+      LocalAttr: 
+  [cim.108]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: char_int_mixed.5
+        Bool: 1
+      LocalAttr: 
+  [hu.109]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union.7
+        Bool: 0
+      LocalAttr: 
+  [hswi.110]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_struct_with_ints.8
+        Bool: 1
+      LocalAttr: 
+  [td.111]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_doubles.9
+        Bool: 1
+      LocalAttr: 
+  [hxu.112]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_xmm_union.10
+        Bool: 1
+      LocalAttr: 
+  [ds.113]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: dbl_struct.11
+        Bool: 0
+      LocalAttr: 
+  [hds.114]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_dbl_struct.12
+        Bool: 1
+      LocalAttr: 
+  [ca.115]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: char_arr.13
+        Bool: 1
+      LocalAttr: 
+  [two_arr_var.116]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_arrs.14
+        Bool: 1
+      LocalAttr: 
+  [tehs.117]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_eightbyte_has_struct.15
+        Bool: 1
+      LocalAttr: 
+  [ts.118]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_structs.18
+        Bool: 1
+      LocalAttr: 
+  [hnbs.119]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_nine_byte_struct.20
+        Bool: 1
+      LocalAttr: 
+  [i.120]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [byte.121]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [huu.122]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_uneven_union.22
+        Bool: 0
+      LocalAttr: 
+  [hou.123]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_other_unions.23
+        Bool: 1
+      LocalAttr: 
+  [ua.124]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: union_array.24
+        Bool: 1
+      LocalAttr: 
+  [uua.125]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: uneven_union_array.25
+        Bool: 1
+      LocalAttr: 
+  [hssa.126]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_small_struct_array.27
+        Bool: 1
+      LocalAttr: 
+  [gax.127]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: gp_and_xmm.28
+        Bool: 1
+      LocalAttr: 
+  [sas.128]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: scalar_and_struct.29
+        Bool: 1
+      LocalAttr: 
+  [htu.129]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_two_unions.30
+        Bool: 0
+      LocalAttr: 
+  [ssaad.130]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: small_struct_arr_and_dbl.31
+        Bool: 1
+      LocalAttr: 
+  [xag.131]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: xmm_and_gp.32
+        Bool: 1
+      LocalAttr: 
+  [xagn.132]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: xmm_and_gp_nested.33
+        Bool: 1
+      LocalAttr: 
+  [dbls.133]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: lotsa_doubles.34
+        Bool: 1
+      LocalAttr: 
+  [chars.134]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: lotsa_chars.35
+        Bool: 1
+      LocalAttr: 
+  [large_struct.135]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: large.36
+        Bool: 0
+      LocalAttr: 
+  [cls.136]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: contains_large_struct.37
+        Bool: 1
+      LocalAttr: 
+  [gax2.137]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: gp_and_xmm.28
+        Bool: 1
+      LocalAttr: 
+  [cua.138]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: contains_union_array.38
+        Bool: 1
+      LocalAttr: 

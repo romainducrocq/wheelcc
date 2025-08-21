@@ -1,0 +1,103 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: bar
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CFunDecl: 
+                CFunctionDeclaration: 
+                  TIdentifier: foo
+                  List[1]: 
+                    TIdentifier: a
+                  None: 
+                  FunType: 
+                    TULong: 67108864
+                    TULong: 67108864
+                    List[1]: 
+                      Int: 
+                    Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CFunctionCall: 
+                    TIdentifier: bar
+                    List[0]: 
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: foo
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: bar
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CFunDecl: 
+                CFunctionDeclaration: 
+                  TIdentifier: foo
+                  List[2]: 
+                    TIdentifier: a
+                    TIdentifier: b
+                  None: 
+                  FunType: 
+                    TULong: 67108864
+                    TULong: 67108864
+                    List[2]: 
+                      Int: 
+                      Int: 
+                    Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: foo
+                  List[2]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

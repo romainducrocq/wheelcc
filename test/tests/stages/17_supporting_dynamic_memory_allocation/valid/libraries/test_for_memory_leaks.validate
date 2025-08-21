@@ -1,0 +1,578 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: exit
+        List[1]: 
+          TIdentifier: status.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: sum
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 0
+            None: 
+          None: 
+        Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: lots_of_args
+        List[15]: 
+          TIdentifier: a.1
+          TIdentifier: b.2
+          TIdentifier: c.3
+          TIdentifier: d.4
+          TIdentifier: e.5
+          TIdentifier: f.6
+          TIdentifier: g.7
+          TIdentifier: h.8
+          TIdentifier: i.9
+          TIdentifier: j.10
+          TIdentifier: k.11
+          TIdentifier: l.12
+          TIdentifier: m.13
+          TIdentifier: n.14
+          TIdentifier: o.15
+        CB: 
+          List[16]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: a.1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: b.2
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: c.3
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d.4
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 4
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: e.5
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 5
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: f.6
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 6
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 6
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: g.7
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 7
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: h.8
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 8
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i.9
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 9
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 9
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: j.10
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 10
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: k.11
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 11
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 11
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: l.12
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 12
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 12
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: m.13
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 13
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 13
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: n.14
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 14
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 14
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: sum
+                    Long: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: sum
+                      Long: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: o.15
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Void: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(18):
+  [exit]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [sum]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [a.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [g.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [h.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [k.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [l.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [m.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [n.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [o.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [lots_of_args]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

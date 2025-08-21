@@ -1,0 +1,454 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[11]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: eight_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_bytes
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: three_bytes
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: sixteen_bytes
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: eight
+            Structure: 
+              TIdentifier: eight_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: seven_bytes
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two2
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twentyfour_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: seven
+            Structure: 
+              TIdentifier: seven_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twenty_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: wonky
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 19
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: internal_padding
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_struct_array
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: struct_array
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: eight_bytes
+                Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: eight_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: two_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: three_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: sixteen_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 16
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: seven_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: twentyfour_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 24
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: twenty_bytes
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 20
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: wonky
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 19
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: internal_padding
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 16
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Structure: 
+                      TIdentifier: contains_struct_array
+                      Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 28
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 4
+                      Structure: 
+                        TIdentifier: internal_padding
+                        Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 64
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSizeOfT: 
+                    Array: 
+                      TLong: 2
+                      Structure: 
+                        TIdentifier: wonky
+                        Bool: 0
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 38
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

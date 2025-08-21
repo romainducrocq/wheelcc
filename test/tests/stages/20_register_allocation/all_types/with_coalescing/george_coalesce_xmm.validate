@@ -1,0 +1,1208 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[19]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uchar
+        List[2]: 
+          TIdentifier: actual.21
+          TIdentifier: expected.22
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uint
+        List[2]: 
+          TIdentifier: actual.23
+          TIdentifier: expected.24
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UInt: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_long
+        List[2]: 
+          TIdentifier: actual.25
+          TIdentifier: expected.26
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_ulong
+        List[2]: 
+          TIdentifier: actual.27
+          TIdentifier: expected.28
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_double
+        List[2]: 
+          TIdentifier: actual.29
+          TIdentifier: expected.30
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_longs
+        List[13]: 
+          TIdentifier: a.31
+          TIdentifier: b.32
+          TIdentifier: c.33
+          TIdentifier: d.34
+          TIdentifier: e.35
+          TIdentifier: f.36
+          TIdentifier: g.37
+          TIdentifier: h.38
+          TIdentifier: i.39
+          TIdentifier: j.40
+          TIdentifier: k.41
+          TIdentifier: l.42
+          TIdentifier: start.43
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_six_chars
+        List[7]: 
+          TIdentifier: a.44
+          TIdentifier: b.45
+          TIdentifier: c.46
+          TIdentifier: d.47
+          TIdentifier: e.48
+          TIdentifier: f.49
+          TIdentifier: start.50
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_14_doubles
+        List[15]: 
+          TIdentifier: a.51
+          TIdentifier: b.52
+          TIdentifier: c.53
+          TIdentifier: d.54
+          TIdentifier: e.55
+          TIdentifier: f.56
+          TIdentifier: g.57
+          TIdentifier: h.58
+          TIdentifier: i.59
+          TIdentifier: j.60
+          TIdentifier: k.61
+          TIdentifier: l.62
+          TIdentifier: m.63
+          TIdentifier: n.64
+          TIdentifier: start.65
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_vals
+        List[13]: 
+          TIdentifier: a.66
+          TIdentifier: b.67
+          TIdentifier: c.68
+          TIdentifier: d.69
+          TIdentifier: e.70
+          TIdentifier: f.71
+          TIdentifier: g.72
+          TIdentifier: h.73
+          TIdentifier: i.74
+          TIdentifier: j.75
+          TIdentifier: k.76
+          TIdentifier: l.77
+          TIdentifier: start.78
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Pointer: 
+              Long: 
+            Pointer: 
+              Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.79
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: dbl_id
+        List[1]: 
+          TIdentifier: x.80
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_id
+        List[1]: 
+          TIdentifier: l.81
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Long: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: unsigned_id
+        List[1]: 
+          TIdentifier: u.82
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uchar_id
+        List[1]: 
+          TIdentifier: uc.83
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UChar: 
+          UChar: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 4.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: dbl_target
+        List[8]: 
+          TIdentifier: a.84
+          TIdentifier: b.85
+          TIdentifier: c.86
+          TIdentifier: d.87
+          TIdentifier: e.88
+          TIdentifier: f.89
+          TIdentifier: g.90
+          TIdentifier: h.91
+        CB: 
+          List[20]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: a.84
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 1.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: b.85
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 2.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: c.86
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 3.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 3.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d.87
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 4.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: e.88
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 5.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 5.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: f.89
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 6.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 6.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: g.90
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 7.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 7.000000
+                            Double: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: h.91
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 8.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 8.000000
+                            Double: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s.92
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 3.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: t.93
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.94
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: v.95
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CBinary: 
+                        CMultiply: 
+                        CVar: 
+                          TIdentifier: glob
+                          Double: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 2.000000
+                          Double: 
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 4.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: w.96
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.97
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.98
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 3.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: z.99
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: spill.100
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: w.96
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 10.000000
+                        Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_14_doubles
+                  List[15]: 
+                    CVar: 
+                      TIdentifier: s.92
+                      Double: 
+                    CVar: 
+                      TIdentifier: t.93
+                      Double: 
+                    CVar: 
+                      TIdentifier: u.94
+                      Double: 
+                    CVar: 
+                      TIdentifier: v.95
+                      Double: 
+                    CVar: 
+                      TIdentifier: w.96
+                      Double: 
+                    CVar: 
+                      TIdentifier: x.97
+                      Double: 
+                    CVar: 
+                      TIdentifier: y.98
+                      Double: 
+                    CVar: 
+                      TIdentifier: z.99
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 9.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 10.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 11.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 12.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 13.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 14.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      Double: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: spill.100
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 50.000000
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstDouble: 
+                              TDouble: 9.000000
+                            Double: 
+                None: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CFunctionCall: 
+                    TIdentifier: check_one_double
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: glob
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 4.000000
+                        Double: 
+                    Int: 
+                  Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(36):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UChar: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UInt: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_longs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_six_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_14_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_vals]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Double: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [dbl_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [long_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Long: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [unsigned_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UInt: 
+        UInt: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uchar_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UChar: 
+        UChar: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 4616189618054758400
+  [a.84]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [b.85]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [c.86]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [d.87]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [e.88]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [f.89]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [g.90]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [h.91]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [dbl_target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[8]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [s.92]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [t.93]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [u.94]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [v.95]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [w.96]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [x.97]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [y.98]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [z.99]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [spill.100]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 

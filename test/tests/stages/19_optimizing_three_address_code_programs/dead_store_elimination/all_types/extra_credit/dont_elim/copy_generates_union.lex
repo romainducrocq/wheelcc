@@ -1,0 +1,62 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[57]:
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  {
+  struct
+  identifier(s)
+  identifier(str)
+  ;
+  long
+  identifier(l)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  identifier(glob)
+  =
+  {
+  {
+  const int(1)
+  ,
+  const int(2)
+  }
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(my_union)
+  ;
+  identifier(my_union)
+  =
+  identifier(glob)
+  ;
+  return
+  identifier(my_union)
+  .
+  identifier(str)
+  .
+  identifier(a)
+  ;
+  }

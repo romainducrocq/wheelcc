@@ -1,0 +1,124 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: add
+      Bool: 1
+      Bool: 0
+      List[10]: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmDi: 
+          AsmPseudo: 
+            TIdentifier: a.0
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmSi: 
+          AsmPseudo: 
+            TIdentifier: b.1
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: a.0
+          AsmPseudo: 
+            TIdentifier: cast.2
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: b.1
+          AsmPseudo: 
+            TIdentifier: cast.3
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.2
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmBinary: 
+          AsmAdd: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.3
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.4
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [add]: 
+    Symbol: 
+      FunType: 
+        TULong: 48
+        TULong: 1
+        List[2]: 
+          Int: 
+          Int: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.3]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

@@ -1,0 +1,147 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: callee
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[1]: 
+          TIdentifier: x.0
+        CB: 
+          List[1]: 
+            CS: 
+              CSwitch: 
+                TIdentifier: switch.0
+                Bool: 1
+                CVar: 
+                  TIdentifier: x.0
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[3]: 
+                      CS: 
+                        CReturn: 
+                          CFunctionCall: 
+                            TIdentifier: callee
+                            List[0]: 
+                            Int: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: 0switch.0
+                          None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                      CS: 
+                        CDefault: 
+                          TIdentifier: switch.0
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                List[1]: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [callee]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

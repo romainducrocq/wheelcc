@@ -1,0 +1,68 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[63]:
+  struct
+  identifier(s)
+  ;
+  int
+  identifier(foo)
+  (
+  struct
+  identifier(s)
+  identifier(blah)
+  )
+  ;
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  identifier(arg)
+  =
+  {
+  const int(1)
+  ,
+  const int(2)
+  }
+  ;
+  return
+  identifier(foo)
+  (
+  identifier(arg)
+  )
+  ;
+  }
+  int
+  identifier(foo)
+  (
+  struct
+  identifier(s)
+  identifier(blah)
+  )
+  {
+  return
+  identifier(blah)
+  .
+  identifier(a)
+  +
+  identifier(blah)
+  .
+  identifier(b)
+  ;
+  }

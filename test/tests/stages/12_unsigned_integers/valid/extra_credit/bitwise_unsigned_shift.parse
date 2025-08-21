@@ -1,0 +1,168 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ui
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 1
+                        None: 
+                      None: 
+                    None: 
+                  UInt: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CVar: 
+                      TIdentifier: ui
+                      None: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 2
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 4294967292
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftRight: 
+                    CVar: 
+                      TIdentifier: ui
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1073741823
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: shiftcount
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftRight: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 1000000
+                      None: 
+                    CVar: 
+                      TIdentifier: shiftcount
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 31250
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 1000000
+                      None: 
+                    CVar: 
+                      TIdentifier: shiftcount
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 32000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

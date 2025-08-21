@@ -1,0 +1,393 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: null_ptr.5
+      Bool: 0
+      Pointer: 
+        Void: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[44]: 
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.8
+        TacFunCall: 
+          TIdentifier: calloc
+          List[2]: 
+            TacVariable: 
+              TIdentifier: cast.8
+            TacConstant: 
+              CConstULong: 
+                TULong: 4
+          TacVariable: 
+            TIdentifier: call.9
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.9
+          TacVariable: 
+            TIdentifier: void_ptr.3
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.10
+        TacCopyToOffset: 
+          TIdentifier: array.4
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.10
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.11
+        TacCopyToOffset: 
+          TIdentifier: array.4
+          TLong: 4
+          TacVariable: 
+            TIdentifier: cast.11
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.12
+        TacCopyToOffset: 
+          TIdentifier: array.4
+          TLong: 8
+          TacVariable: 
+            TIdentifier: cast.12
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.13
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: void_ptr.3
+          TacVariable: 
+            TIdentifier: cast.13
+          TacVariable: 
+            TIdentifier: binop.14
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.14
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: array.4
+          TacVariable: 
+            TIdentifier: addr.15
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: void_ptr.3
+          TacVariable: 
+            TIdentifier: addr.15
+          TacVariable: 
+            TIdentifier: binop.16
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.16
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: array.4
+          TacVariable: 
+            TIdentifier: addr.17
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: void_ptr.3
+          TacVariable: 
+            TIdentifier: addr.17
+          TacVariable: 
+            TIdentifier: binop.18
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: binop.18
+          TacVariable: 
+            TIdentifier: unop.19
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: unop.19
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacJumpIfZero: 
+          TIdentifier: ternary_else.3
+          TacVariable: 
+            TIdentifier: null_ptr.5
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: void_ptr.3
+          TacVariable: 
+            TIdentifier: ternop.20
+        TacJump: 
+          TIdentifier: ternary_false.4
+        TacLabel: 
+          TIdentifier: ternary_else.3
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: array.4
+          TacVariable: 
+            TIdentifier: addr.21
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: addr.21
+          TacVariable: 
+            TIdentifier: ternop.20
+        TacLabel: 
+          TIdentifier: ternary_false.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: ternop.20
+          TacVariable: 
+            TIdentifier: my_array.6
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.22
+        TacAddPtr: 
+          TLong: 4
+          TacVariable: 
+            TIdentifier: my_array.6
+          TacVariable: 
+            TIdentifier: cast.22
+          TacVariable: 
+            TIdentifier: subscr.23
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.23
+          TacVariable: 
+            TIdentifier: subscr.24
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: subscr.24
+          TacVariable: 
+            TIdentifier: array_element.7
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: array_element.7
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: binop.25
+        TacJumpIfZero: 
+          TIdentifier: if_false.5
+          TacVariable: 
+            TIdentifier: binop.25
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.5
+        TacFunCall: 
+          TIdentifier: free
+          List[1]: 
+            TacVariable: 
+              TIdentifier: void_ptr.3
+          None: 
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(26):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [free]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Void: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [void_ptr.3]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [array.4]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        UInt: 
+      LocalAttr: 
+  [null_ptr.5]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [my_array.6]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [array_element.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [call.9]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [cast.10]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.11]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.12]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.13]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [binop.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ternop.20]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [addr.21]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.22]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.23]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

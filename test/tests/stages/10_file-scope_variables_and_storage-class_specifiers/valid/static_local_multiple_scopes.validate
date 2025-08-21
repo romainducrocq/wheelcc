@@ -1,0 +1,253 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: putchar
+        List[1]: 
+          TIdentifier: ch.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_letters
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 65
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: i.1
+                      Int: 
+                  Int: 
+            CS: 
+              CCompound: 
+                CB: 
+                  List[4]: 
+                    CS: 
+                      CExpression: 
+                        CAssignment: 
+                          None: 
+                          CVar: 
+                            TIdentifier: i.1
+                            Int: 
+                          CBinary: 
+                            CAdd: 
+                            CVar: 
+                              TIdentifier: i.1
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          Int: 
+                    CD: 
+                      CVarDecl: 
+                        CVariableDeclaration: 
+                          TIdentifier: i.2
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 97
+                              None: 
+                            None: 
+                          Int: 
+                          CStatic: 
+                    CS: 
+                      CExpression: 
+                        CFunctionCall: 
+                          TIdentifier: putchar
+                          List[1]: 
+                            CVar: 
+                              TIdentifier: i.2
+                              Int: 
+                          Int: 
+                    CS: 
+                      CExpression: 
+                        CAssignment: 
+                          None: 
+                          CVar: 
+                            TIdentifier: i.2
+                            Int: 
+                          CBinary: 
+                            CAdd: 
+                            CVar: 
+                              TIdentifier: i.2
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.3
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 26
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CExpression: 
+                  CFunctionCall: 
+                    TIdentifier: print_letters
+                    List[0]: 
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [putchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [print_letters]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.1]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 65
+  [i.2]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 97
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,41 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_row
+        List[2]: 
+          TIdentifier: arr
+          TIdentifier: idx
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CSubscript: 
+                  CVar: 
+                    TIdentifier: arr
+                    None: 
+                  CVar: 
+                    TIdentifier: idx
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Array: 
+                  TLong: 4
+                  Long: 
+            Int: 
+          Pointer: 
+            Array: 
+              TLong: 4
+              Long: 
+        None: 

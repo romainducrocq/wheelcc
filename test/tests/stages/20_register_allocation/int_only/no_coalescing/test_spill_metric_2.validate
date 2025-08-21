@@ -1,0 +1,627 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.21
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[19]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: to_spill.22
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a.23
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b.24
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c.25
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.26
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: e.27
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 6
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: to_spill.22
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CVar: 
+                      TIdentifier: a.23
+                      Int: 
+                    CVar: 
+                      TIdentifier: b.24
+                      Int: 
+                    CVar: 
+                      TIdentifier: c.25
+                      Int: 
+                    CVar: 
+                      TIdentifier: d.26
+                      Int: 
+                    CVar: 
+                      TIdentifier: e.27
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: a.23
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: b.24
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: c.25
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: d.26
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: e.27
+                        Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: to_spill.22
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: f.28
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 7
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: g.29
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 8
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: h.30
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 9
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.31
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: j.32
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 11
+                          Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CVar: 
+                      TIdentifier: f.28
+                      Int: 
+                    CVar: 
+                      TIdentifier: g.29
+                      Int: 
+                    CVar: 
+                      TIdentifier: h.30
+                      Int: 
+                    CVar: 
+                      TIdentifier: i.31
+                      Int: 
+                    CVar: 
+                      TIdentifier: j.32
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: f.28
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: g.29
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: h.30
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: i.31
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: j.32
+                        Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: to_spill.22
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(16):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [to_spill.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [g.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [h.30]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

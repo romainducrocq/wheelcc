@@ -1,0 +1,134 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d_ptr
+        None: 
+        Pointer: 
+          Double: 
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: update_thru_ptr
+        List[1]: 
+          TIdentifier: new_val.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: d_ptr
+                    Pointer: 
+                      Double: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: d.1
+                      Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: update_thru_ptr
+                  List[1]: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 10.000000
+                      Double: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: d.1
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10.000000
+                    Double: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [d_ptr]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [update_thru_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.1]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 

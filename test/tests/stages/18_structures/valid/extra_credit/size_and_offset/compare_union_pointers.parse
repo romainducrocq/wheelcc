@@ -1,0 +1,298 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: u
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: my_struct
+            Structure: 
+              TIdentifier: s
+              Bool: 0
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: my_union
+        None: 
+        Structure: 
+          TIdentifier: u
+          Bool: 1
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u_ptr
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: my_union
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: u
+                      Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: u_ptr
+                      None: 
+                    Pointer: 
+                      Void: 
+                    None: 
+                  CCast: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: u_ptr
+                          None: 
+                        None: 
+                      None: 
+                    Pointer: 
+                      Void: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: u_ptr
+                        None: 
+                      Pointer: 
+                        Void: 
+                      None: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: u_ptr
+                            None: 
+                          None: 
+                        None: 
+                      Pointer: 
+                        Void: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: my_struct
+                        CVar: 
+                          TIdentifier: u_ptr
+                          None: 
+                        None: 
+                      None: 
+                    Pointer: 
+                      Void: 
+                    None: 
+                  CVar: 
+                    TIdentifier: u_ptr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: arr
+                    CVar: 
+                      TIdentifier: my_union
+                      None: 
+                    None: 
+                  CCast: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: my_union
+                          None: 
+                        None: 
+                      None: 
+                    Pointer: 
+                      Char: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CGreaterOrEqual: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: my_union
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                      None: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: i
+                          CDot: 
+                            TIdentifier: my_struct
+                            CVar: 
+                              TIdentifier: my_union
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      Pointer: 
+                        Char: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CLessOrEqual: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: u_ptr
+                            None: 
+                          None: 
+                        None: 
+                      Pointer: 
+                        Char: 
+                      None: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: my_struct
+                          CVar: 
+                            TIdentifier: u_ptr
+                            None: 
+                          None: 
+                        None: 
+                      Pointer: 
+                        Char: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

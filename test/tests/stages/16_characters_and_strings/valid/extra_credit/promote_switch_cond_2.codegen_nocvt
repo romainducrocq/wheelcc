@@ -1,0 +1,171 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[20]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 56
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.1
+        AsmUnary: 
+          AsmNeg: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: unop.1
+        AsmMov: 
+          Byte: 
+          AsmPseudo: 
+            TIdentifier: unop.1
+          AsmPseudo: 
+            TIdentifier: cast.2
+        AsmMov: 
+          Byte: 
+          AsmPseudo: 
+            TIdentifier: cast.2
+          AsmPseudo: 
+            TIdentifier: c.0
+        AsmMovSx: 
+          Byte: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: c.0
+          AsmPseudo: 
+            TIdentifier: cast.3
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 33554632
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: const.4
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: const.4
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: const.4
+        AsmJmpCC: 
+          TIdentifier: case_0switch.0
+          AsmNE: 
+        AsmJmp: 
+          TIdentifier: default_switch.0
+        AsmLabel: 
+          TIdentifier: case_0switch.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: default_switch.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: break_switch.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.0]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [unop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.2]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [cast.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [const.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

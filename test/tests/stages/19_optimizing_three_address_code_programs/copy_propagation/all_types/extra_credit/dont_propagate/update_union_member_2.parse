@@ -1,0 +1,77 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: u
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  None: 
+                  Structure: 
+                    TIdentifier: u
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 200
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CDot: 
+                  TIdentifier: i
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

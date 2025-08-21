@@ -1,0 +1,2202 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[27]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: exit
+        List[1]: 
+          TIdentifier: status.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: bytes
+            Array: 
+              TLong: 16
+              Char: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: to_validate
+        None: 
+        Structure: 
+          TIdentifier: stack_bytes.0
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_stack_bytes
+        List[1]: 
+          TIdentifier: code.3
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: bytes
+                        CVar: 
+                          TIdentifier: to_validate
+                          Structure: 
+                            TIdentifier: stack_bytes.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[15]: 
+                            TChar: 101
+                            TChar: 102
+                            TChar: 103
+                            TChar: 104
+                            TChar: 105
+                            TChar: 106
+                            TChar: 107
+                            TChar: 108
+                            TChar: 109
+                            TChar: 110
+                            TChar: 111
+                            TChar: 112
+                            TChar: 113
+                            TChar: 114
+                            TChar: 115
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.3
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_longword.1
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_longword
+        List[2]: 
+          TIdentifier: s.4
+          TIdentifier: code.5
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: i
+                    CVar: 
+                      TIdentifier: s.4
+                      Structure: 
+                        TIdentifier: one_longword.1
+                        Bool: 0
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.5
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: one_longword.1
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_longword
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.6
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.7
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_longword.1
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_longword
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.7
+                      Structure: 
+                        TIdentifier: one_longword.1
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.6
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_quadword.2
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_quadword
+        List[2]: 
+          TIdentifier: s.8
+          TIdentifier: code.9
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: s.8
+                      Structure: 
+                        TIdentifier: one_quadword.2
+                        Bool: 0
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.9
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: one_quadword.2
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_quadword
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.10
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.11
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_quadword.2
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_quadword
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.11
+                      Structure: 
+                        TIdentifier: one_quadword.2
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.10
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_double.3
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_double
+        List[2]: 
+          TIdentifier: s.12
+          TIdentifier: code.13
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: s.12
+                      Structure: 
+                        TIdentifier: one_double.3
+                        Bool: 0
+                    Double: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    Double: 
+                    Double: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.13
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: one_double.3
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_double
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.14
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.15
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_double.3
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_double
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.15
+                      Structure: 
+                        TIdentifier: one_double.3
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.14
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twelve_bytes.4
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 12
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_twelve_bytes
+        List[2]: 
+          TIdentifier: s.16
+          TIdentifier: code.17
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: s.16
+                          Structure: 
+                            TIdentifier: twelve_bytes.4
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[11]: 
+                            TChar: 97
+                            TChar: 98
+                            TChar: 99
+                            TChar: 100
+                            TChar: 101
+                            TChar: 102
+                            TChar: 103
+                            TChar: 104
+                            TChar: 105
+                            TChar: 106
+                            TChar: 107
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.17
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: twelve_bytes.4
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_twelve_bytes
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.18
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.19
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[11]: 
+                              TChar: 97
+                              TChar: 98
+                              TChar: 99
+                              TChar: 100
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: twelve_bytes.4
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_twelve_bytes
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.19
+                      Structure: 
+                        TIdentifier: twelve_bytes.4
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.18
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: memory.5
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 32
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_struct_in_mem
+        List[2]: 
+          TIdentifier: s.20
+          TIdentifier: code.21
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: s.20
+                          Structure: 
+                            TIdentifier: memory.5
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[31]: 
+                            TChar: 72
+                            TChar: 101
+                            TChar: 114
+                            TChar: 101
+                            TChar: 39
+                            TChar: 115
+                            TChar: 32
+                            TChar: 116
+                            TChar: 104
+                            TChar: 101
+                            TChar: 32
+                            TChar: 116
+                            TChar: 104
+                            TChar: 105
+                            TChar: 110
+                            TChar: 103
+                            TChar: 58
+                            TChar: 32
+                            TChar: 73
+                            TChar: 39
+                            TChar: 109
+                            TChar: 32
+                            TChar: 97
+                            TChar: 32
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 105
+                            TChar: 110
+                            TChar: 103
+                            TChar: 46
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.21
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: memory.5
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_struct_in_mem
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.22
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.23
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[31]: 
+                              TChar: 72
+                              TChar: 101
+                              TChar: 114
+                              TChar: 101
+                              TChar: 39
+                              TChar: 115
+                              TChar: 32
+                              TChar: 116
+                              TChar: 104
+                              TChar: 101
+                              TChar: 32
+                              TChar: 116
+                              TChar: 104
+                              TChar: 105
+                              TChar: 110
+                              TChar: 103
+                              TChar: 58
+                              TChar: 32
+                              TChar: 73
+                              TChar: 39
+                              TChar: 109
+                              TChar: 32
+                              TChar: 97
+                              TChar: 32
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 105
+                              TChar: 110
+                              TChar: 103
+                              TChar: 46
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: memory.5
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_struct_in_mem
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.23
+                      Structure: 
+                        TIdentifier: memory.5
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 9
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.22
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: irregular.6
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_irregular_struct
+        List[2]: 
+          TIdentifier: s.24
+          TIdentifier: code.25
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: s.24
+                          Structure: 
+                            TIdentifier: irregular.6
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[2]: 
+                            TChar: 49
+                            TChar: 50
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.25
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: irregular.6
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_irregular_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.26
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.27
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 49
+                              TChar: 50
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: irregular.6
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_irregular_struct
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.27
+                      Structure: 
+                        TIdentifier: irregular.6
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.26
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: irregular_memory.7
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 27
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: take_irregular_memory_struct
+        List[2]: 
+          TIdentifier: s.28
+          TIdentifier: code.29
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: s.28
+                          Structure: 
+                            TIdentifier: irregular_memory.7
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[26]: 
+                            TChar: 84
+                            TChar: 104
+                            TChar: 101
+                            TChar: 32
+                            TChar: 113
+                            TChar: 117
+                            TChar: 105
+                            TChar: 99
+                            TChar: 107
+                            TChar: 32
+                            TChar: 98
+                            TChar: 114
+                            TChar: 111
+                            TChar: 119
+                            TChar: 110
+                            TChar: 32
+                            TChar: 102
+                            TChar: 111
+                            TChar: 120
+                            TChar: 32
+                            TChar: 106
+                            TChar: 117
+                            TChar: 109
+                            TChar: 112
+                            TChar: 101
+                            TChar: 100
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code.29
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Structure: 
+              TIdentifier: irregular_memory.7
+              Bool: 0
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_irregular_memory_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes.30
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 16
+                            Char: 
+                        Array: 
+                          TLong: 16
+                          Char: 
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_var.31
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[26]: 
+                              TChar: 84
+                              TChar: 104
+                              TChar: 101
+                              TChar: 32
+                              TChar: 113
+                              TChar: 117
+                              TChar: 105
+                              TChar: 99
+                              TChar: 107
+                              TChar: 32
+                              TChar: 98
+                              TChar: 114
+                              TChar: 111
+                              TChar: 119
+                              TChar: 110
+                              TChar: 32
+                              TChar: 102
+                              TChar: 111
+                              TChar: 120
+                              TChar: 32
+                              TChar: 106
+                              TChar: 117
+                              TChar: 109
+                              TChar: 112
+                              TChar: 101
+                              TChar: 100
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: irregular_memory.7
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: take_irregular_memory_struct
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: my_var.31
+                      Structure: 
+                        TIdentifier: irregular_memory.7
+                        Bool: 0
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 13
+                      Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  CVar: 
+                    TIdentifier: bytes.30
+                    Structure: 
+                      TIdentifier: stack_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: stack_bytes.0
+                    Bool: 0
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      Int: 
+                  Void: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_longword
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_quadword
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_double
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_twelve_bytes
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_struct_in_mem
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_irregular_struct
+                  List[0]: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: pass_irregular_memory_struct
+                  List[0]: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(8):
+  [stack_bytes.0]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 16
+      List[1]: 
+        TIdentifier: bytes
+      Dict[1]: 
+        [bytes]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 16
+              Char: 
+  [one_longword.1]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 4
+      List[1]: 
+        TIdentifier: i
+      Dict[1]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+  [one_quadword.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: l
+      Dict[1]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+  [one_double.3]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: d
+      Dict[1]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [twelve_bytes.4]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 12
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 12
+              Char: 
+  [memory.5]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 32
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 32
+              Char: 
+  [irregular.6]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 3
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Char: 
+  [irregular_memory.7]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 27
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 27
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(48):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [exit]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [to_validate]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Tentative: 
+  [code.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [validate_stack_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [s.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_longword.1
+        Bool: 0
+      LocalAttr: 
+  [code.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_longword]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: one_longword.1
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_longword]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.6]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.7]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_longword.1
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 10
+  [s.8]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_quadword.2
+        Bool: 0
+      LocalAttr: 
+  [code.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_quadword]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: one_quadword.2
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_quadword]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.10]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.11]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_quadword.2
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            LongInit: 
+              TLong: 10
+  [s.12]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_double.3
+        Bool: 0
+      LocalAttr: 
+  [code.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: one_double.3
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.14]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.15]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_double.3
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 4621819117588971520
+  [s.16]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: twelve_bytes.4
+        Bool: 0
+      LocalAttr: 
+  [code.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_twelve_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: twelve_bytes.4
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_twelve_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.18]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.19]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: twelve_bytes.4
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: abcdefghijk
+              Bool: 1
+              CStringLiteral: 
+                List[11]: 
+                  TChar: 97
+                  TChar: 98
+                  TChar: 99
+                  TChar: 100
+                  TChar: 101
+                  TChar: 102
+                  TChar: 103
+                  TChar: 104
+                  TChar: 105
+                  TChar: 106
+                  TChar: 107
+  [s.20]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: memory.5
+        Bool: 0
+      LocalAttr: 
+  [code.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_struct_in_mem]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: memory.5
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_struct_in_mem]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.22]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.23]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: memory.5
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: Here\047s the thing: I\047m a string.
+              Bool: 1
+              CStringLiteral: 
+                List[31]: 
+                  TChar: 72
+                  TChar: 101
+                  TChar: 114
+                  TChar: 101
+                  TChar: 39
+                  TChar: 115
+                  TChar: 32
+                  TChar: 116
+                  TChar: 104
+                  TChar: 101
+                  TChar: 32
+                  TChar: 116
+                  TChar: 104
+                  TChar: 105
+                  TChar: 110
+                  TChar: 103
+                  TChar: 58
+                  TChar: 32
+                  TChar: 73
+                  TChar: 39
+                  TChar: 109
+                  TChar: 32
+                  TChar: 97
+                  TChar: 32
+                  TChar: 115
+                  TChar: 116
+                  TChar: 114
+                  TChar: 105
+                  TChar: 110
+                  TChar: 103
+                  TChar: 46
+  [s.24]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: irregular.6
+        Bool: 0
+      LocalAttr: 
+  [code.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_irregular_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: irregular.6
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_irregular_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.26]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.27]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: irregular.6
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: 12
+              Bool: 1
+              CStringLiteral: 
+                List[2]: 
+                  TChar: 49
+                  TChar: 50
+  [s.28]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: irregular_memory.7
+        Bool: 0
+      LocalAttr: 
+  [code.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [take_irregular_memory_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: irregular_memory.7
+            Bool: 0
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pass_irregular_memory_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [bytes.30]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: stack_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [my_var.31]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: irregular_memory.7
+        Bool: 0
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: The quick brown fox jumped
+              Bool: 1
+              CStringLiteral: 
+                List[26]: 
+                  TChar: 84
+                  TChar: 104
+                  TChar: 101
+                  TChar: 32
+                  TChar: 113
+                  TChar: 117
+                  TChar: 105
+                  TChar: 99
+                  TChar: 107
+                  TChar: 32
+                  TChar: 98
+                  TChar: 114
+                  TChar: 111
+                  TChar: 119
+                  TChar: 110
+                  TChar: 32
+                  TChar: 102
+                  TChar: 111
+                  TChar: 120
+                  TChar: 32
+                  TChar: 106
+                  TChar: 117
+                  TChar: 109
+                  TChar: 112
+                  TChar: 101
+                  TChar: 100
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

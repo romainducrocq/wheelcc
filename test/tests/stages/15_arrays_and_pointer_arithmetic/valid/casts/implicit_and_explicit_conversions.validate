@@ -1,0 +1,281 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr.0
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                    Array: 
+                      TLong: 4
+                      Long: 
+                  Array: 
+                    TLong: 4
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: arr.0
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Long: 
+                  CCast: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: arr.0
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Long: 
+                    Pointer: 
+                      Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: arr.0
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 4
+                        Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 4
+                        Long: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: arr.0
+                      Array: 
+                        TLong: 4
+                        Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 4
+                        Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: unsigned_arr.1
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.0
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        ULong: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: unsigned_arr.1
+                      Pointer: 
+                        ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Long: 
+                      Long: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551615
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: unsigned_arr.1
+                      Pointer: 
+                        ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Long: 
+                      Long: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551612
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arr.0]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Long: 
+      LocalAttr: 
+  [unsigned_arr.1]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 

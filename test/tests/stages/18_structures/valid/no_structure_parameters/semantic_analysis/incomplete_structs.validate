@@ -1,0 +1,1712 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[28]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.1
+          TIdentifier: size.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: puts
+        List[1]: 
+          TIdentifier: s.3
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.4
+          TIdentifier: s2.5
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: never_used.0
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: incomplete_fun
+        List[1]: 
+          TIdentifier: x.6
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Structure: 
+              TIdentifier: never_used.0
+              Bool: 0
+          Structure: 
+            TIdentifier: never_used.0
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_block_scope_forward_decl
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: s.1
+                  Bool: 0
+                  List[0]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s_ptr.7
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.1
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.1
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: s.1
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: s.1
+                      Bool: 0
+                  None: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: s.1
+                  Bool: 0
+                  List[2]: 
+                    CMemberDeclaration: 
+                      TIdentifier: x
+                      Int: 
+                    CMemberDeclaration: 
+                      TIdentifier: y
+                      Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: val.8
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                    Structure: 
+                      TIdentifier: s.1
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.1
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: s_ptr.7
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: s.1
+                        Bool: 0
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: val.8
+                      Structure: 
+                        TIdentifier: s.1
+                        Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: s.1
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: s.1
+                      Bool: 0
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: x
+                      CVar: 
+                        TIdentifier: s_ptr.7
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.1
+                            Bool: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: y
+                      CVar: 
+                        TIdentifier: s_ptr.7
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.1
+                            Bool: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: pair.2
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: make_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: pair.2
+              Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_struct
+        List[1]: 
+          TIdentifier: ptr.9
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: pair.2
+                Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_file_scope_forward_decl
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct.10
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: make_struct
+                      List[0]: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: pair.2
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: pair.2
+                      Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_struct
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: my_struct.10
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: pair.2
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: m
+            Long: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: make_struct
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval.11
+                  CSingleInit: 
+                    CCast: 
+                      CFunctionCall: 
+                        TIdentifier: malloc
+                        List[1]: 
+                          CSizeOfT: 
+                            Structure: 
+                              TIdentifier: pair.2
+                              Bool: 0
+                            ULong: 
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: pair.2
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: pair.2
+                      Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: retval.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: m
+                    CVar: 
+                      TIdentifier: retval.11
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: pair.2
+                          Bool: 0
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 200
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval.11
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: pair.2
+                      Bool: 0
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: pair.2
+              Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_struct
+        List[1]: 
+          TIdentifier: ptr.12
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CEqual: 
+                    CArrow: 
+                      TIdentifier: l
+                      CVar: 
+                        TIdentifier: ptr.12
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: pair.2
+                            Bool: 0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CArrow: 
+                      TIdentifier: m
+                      CVar: 
+                        TIdentifier: ptr.12
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: pair.2
+                            Bool: 0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 200
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: pair.2
+                Bool: 0
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: msg_holder.3
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_msg
+        List[1]: 
+          TIdentifier: param.13
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: msg_holder.3
+                Bool: 0
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_incomplete_var
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: incomplete_var
+        None: 
+        Structure: 
+          TIdentifier: msg_holder.3
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_incomplete_var
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: print_msg
+                  List[1]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: incomplete_var
+                        Structure: 
+                          TIdentifier: msg_holder.3
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: msg_holder.3
+                          Bool: 0
+                  Void: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_incomplete_var
+                  List[0]: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: msg_holder.3
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: msg
+            Pointer: 
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_incomplete_var
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CDot: 
+                      TIdentifier: msg
+                      CVar: 
+                        TIdentifier: incomplete_var
+                        Structure: 
+                          TIdentifier: msg_holder.3
+                          Bool: 0
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[13]: 
+                            TChar: 73
+                            TChar: 39
+                            TChar: 109
+                            TChar: 32
+                            TChar: 97
+                            TChar: 32
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 117
+                            TChar: 99
+                            TChar: 116
+                            TChar: 33
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: incomplete_var
+        CCompoundInit: 
+          List[1]: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[13]: 
+                    TChar: 73
+                    TChar: 39
+                    TChar: 109
+                    TChar: 32
+                    TChar: 97
+                    TChar: 32
+                    TChar: 115
+                    TChar: 116
+                    TChar: 114
+                    TChar: 117
+                    TChar: 99
+                    TChar: 116
+                    TChar: 33
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: msg_holder.3
+          Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_msg
+        List[1]: 
+          TIdentifier: param.14
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CArrow: 
+                      TIdentifier: msg
+                      CVar: 
+                        TIdentifier: param.14
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: msg_holder.3
+                            Bool: 0
+                      Pointer: 
+                        Char: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: msg_holder.3
+                Bool: 0
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_deref_incomplete_var
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: undefined_struct.4
+                  Bool: 0
+                  List[0]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr.15
+                  CSingleInit: 
+                    CCast: 
+                      CFunctionCall: 
+                        TIdentifier: malloc
+                        List[1]: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            ULong: 
+                            ULong: 
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: undefined_struct.4
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: undefined_struct.4
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: undefined_struct.4
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: undefined_struct.4
+                      Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CAddrOf: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ptr.15
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: undefined_struct.4
+                            Bool: 0
+                      Structure: 
+                        TIdentifier: undefined_struct.4
+                        Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: undefined_struct.4
+                        Bool: 0
+                  CVar: 
+                    TIdentifier: ptr.15
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: undefined_struct.4
+                        Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: opaque_struct.5
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: use_struct_pointers
+        List[1]: 
+          TIdentifier: param.16
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: param.16
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: puts
+                            List[1]: 
+                              CAddrOf: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[14]: 
+                                      TChar: 101
+                                      TChar: 109
+                                      TChar: 112
+                                      TChar: 116
+                                      TChar: 121
+                                      TChar: 32
+                                      TChar: 112
+                                      TChar: 111
+                                      TChar: 105
+                                      TChar: 110
+                                      TChar: 116
+                                      TChar: 101
+                                      TChar: 114
+                                      TChar: 33
+                                  Pointer: 
+                                    Char: 
+                                Pointer: 
+                                  Char: 
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: opaque_struct.5
+                Bool: 0
+          Pointer: 
+            Structure: 
+              TIdentifier: opaque_struct.5
+              Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_use_incomplete_struct_pointers
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr1.17
+                  CSingleInit: 
+                    CCast: 
+                      CFunctionCall: 
+                        TIdentifier: calloc
+                        List[2]: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            ULong: 
+                            ULong: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            ULong: 
+                            ULong: 
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr2.18
+                  CSingleInit: 
+                    CCast: 
+                      CFunctionCall: 
+                        TIdentifier: calloc
+                        List[2]: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            ULong: 
+                            ULong: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            ULong: 
+                            ULong: 
+                        Pointer: 
+                          Void: 
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr1_bytes.19
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: ptr1.17
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: ptr1_bytes.19
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: ptr1_bytes.19
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CEqual: 
+                      CVar: 
+                        TIdentifier: ptr1.17
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CVar: 
+                        TIdentifier: ptr2.18
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: ptr1.17
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                    CVar: 
+                      TIdentifier: ptr2.18
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flse.20
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr3.21
+                  CSingleInit: 
+                    CConditional: 
+                      CVar: 
+                        TIdentifier: flse.20
+                        Int: 
+                      CVar: 
+                        TIdentifier: ptr1.17
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      CVar: 
+                        TIdentifier: ptr2.18
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: opaque_struct.5
+                            Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ptr3.21
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  CVar: 
+                    TIdentifier: ptr2.18
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: opaque_struct.5
+                        Bool: 0
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: use_struct_pointers
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: ptr3.21
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: opaque_struct.5
+                          Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: opaque_struct.5
+                      Bool: 0
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[6]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_block_scope_forward_decl
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_file_scope_forward_decl
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_incomplete_var
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_deref_incomplete_var
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_use_incomplete_struct_pointers
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(1):
+  [I\047m a struct!]: 
+    String: "I\'m a struct!"
++
++
+@@ Structure Typedef Table @@
+Dict(3):
+  [s.1]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [y]: 
+          StructMember: 
+            TLong: 4
+            Int: 
+  [pair.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: l
+        TIdentifier: m
+      Dict[2]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [m]: 
+          StructMember: 
+            TLong: 8
+            Long: 
+  [msg_holder.3]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: msg
+      Dict[1]: 
+        [msg]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(31):
+  [malloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [puts]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [incomplete_fun]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Structure: 
+            TIdentifier: never_used.0
+            Bool: 0
+        Structure: 
+          TIdentifier: never_used.0
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_block_scope_forward_decl]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [s_ptr.7]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: s.1
+          Bool: 0
+      LocalAttr: 
+  [val.8]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.1
+        Bool: 0
+      LocalAttr: 
+  [make_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Structure: 
+            TIdentifier: pair.2
+            Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [validate_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: pair.2
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [test_file_scope_forward_decl]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.10]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: pair.2
+          Bool: 0
+      LocalAttr: 
+  [retval.11]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: pair.2
+          Bool: 0
+      LocalAttr: 
+  [ptr.12]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: pair.2
+          Bool: 0
+      LocalAttr: 
+  [print_msg]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: msg_holder.3
+              Bool: 0
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [validate_incomplete_var]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [incomplete_var]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: msg_holder.3
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            PointerInit: 
+              TIdentifier: string.0
+  [test_incomplete_var]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [string.0]: 
+    Symbol: 
+      Array: 
+        TLong: 14
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: I\047m a struct!
+          Bool: 1
+          CStringLiteral: 
+            List[13]: 
+              TChar: 73
+              TChar: 39
+              TChar: 109
+              TChar: 32
+              TChar: 97
+              TChar: 32
+              TChar: 115
+              TChar: 116
+              TChar: 114
+              TChar: 117
+              TChar: 99
+              TChar: 116
+              TChar: 33
+  [param.14]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: msg_holder.3
+          Bool: 0
+      LocalAttr: 
+  [test_deref_incomplete_var]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr.15]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: undefined_struct.4
+          Bool: 0
+      LocalAttr: 
+  [param.16]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: opaque_struct.5
+          Bool: 0
+      LocalAttr: 
+  [use_struct_pointers]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: opaque_struct.5
+              Bool: 0
+        Pointer: 
+          Structure: 
+            TIdentifier: opaque_struct.5
+            Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [test_use_incomplete_struct_pointers]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.17]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: opaque_struct.5
+          Bool: 0
+      LocalAttr: 
+  [ptr2.18]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: opaque_struct.5
+          Bool: 0
+      LocalAttr: 
+  [ptr1_bytes.19]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [flse.20]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [ptr3.21]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: opaque_struct.5
+          Bool: 0
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

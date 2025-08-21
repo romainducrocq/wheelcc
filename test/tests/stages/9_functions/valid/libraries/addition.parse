@@ -1,0 +1,34 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: add
+        List[2]: 
+          TIdentifier: x
+          TIdentifier: y
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  CVar: 
+                    TIdentifier: y
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 

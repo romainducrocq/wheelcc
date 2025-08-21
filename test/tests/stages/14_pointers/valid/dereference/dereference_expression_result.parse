@@ -1,0 +1,341 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_pointer
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: var
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CVar: 
+                    TIdentifier: var
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: one
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 1
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: val
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr_var
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: val
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CFunctionCall: 
+                      TIdentifier: return_pointer
+                      List[0]: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CConditional: 
+                      CVar: 
+                        TIdentifier: one
+                        None: 
+                      CFunctionCall: 
+                        TIdentifier: return_pointer
+                        List[0]: 
+                        None: 
+                      CVar: 
+                        TIdentifier: ptr_var
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CConditional: 
+                      CBinary: 
+                        CSubtract: 
+                        CVar: 
+                          TIdentifier: one
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CFunctionCall: 
+                        TIdentifier: return_pointer
+                        List[0]: 
+                        None: 
+                      CVar: 
+                        TIdentifier: ptr_var
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr_to_one
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: one
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CAssignment: 
+                      None: 
+                      CVar: 
+                        TIdentifier: ptr_var
+                        None: 
+                      CVar: 
+                        TIdentifier: ptr_to_one
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CFunctionCall: 
+                      TIdentifier: return_pointer
+                      List[0]: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 20
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CConditional: 
+                      CVar: 
+                        TIdentifier: one
+                        None: 
+                      CVar: 
+                        TIdentifier: ptr_var
+                        None: 
+                      CFunctionCall: 
+                        TIdentifier: return_pointer
+                        List[0]: 
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 30
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CFunctionCall: 
+                      TIdentifier: return_pointer
+                      List[0]: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 20
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: ptr_var
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 30
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: one
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 30
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

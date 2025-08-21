@@ -1,0 +1,649 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[21]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uchar
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uint
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UInt: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_long
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_ulong
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_double
+        List[2]: 
+          TIdentifier: actual
+          TIdentifier: expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_longs
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_six_chars
+        List[7]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_14_doubles
+        List[15]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: m
+          TIdentifier: n
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_vals
+        List[13]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: start
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Pointer: 
+              Long: 
+            Pointer: 
+              Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: dbl_id
+        List[1]: 
+          TIdentifier: x
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_id
+        List[1]: 
+          TIdentifier: l
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Long: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: unsigned_id
+        List[1]: 
+          TIdentifier: u
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uchar_id
+        List[1]: 
+          TIdentifier: uc
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UChar: 
+          UChar: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_alignment
+        List[1]: 
+          TIdentifier: exit_code
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test1
+        List[0]: 
+        CB: 
+          List[16]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          None: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: e
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: f
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 6
+                          None: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: g
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 7
+                          None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_alignment
+                  List[1]: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: a
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: b
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: c
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: d
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: e
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: f
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: g
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test2
+        List[0]: 
+        CB: 
+          List[8]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                      None: 
+                    None: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: id
+                      List[1]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                      None: 
+                    None: 
+                  UInt: 
+    

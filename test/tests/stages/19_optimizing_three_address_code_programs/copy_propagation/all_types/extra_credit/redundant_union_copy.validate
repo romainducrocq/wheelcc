@@ -1,0 +1,271 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: u.0
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[3]: 
+          TIdentifier: flag.0
+          TIdentifier: flag2.1
+          TIdentifier: y.2
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.3
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: y.2
+                      Structure: 
+                        TIdentifier: u.0
+                        Bool: 1
+                    Structure: 
+                      TIdentifier: u.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: u.0
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: flag.0
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: y.2
+                              Structure: 
+                                TIdentifier: u.0
+                                Bool: 1
+                            CVar: 
+                              TIdentifier: x.3
+                              Structure: 
+                                TIdentifier: u.0
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: u.0
+                              Bool: 1
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: flag2.1
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: x.3
+                              Structure: 
+                                TIdentifier: u.0
+                                Bool: 1
+                            CVar: 
+                              TIdentifier: y.2
+                              Structure: 
+                                TIdentifier: u.0
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: u.0
+                              Bool: 1
+                None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: x.3
+                      Structure: 
+                        TIdentifier: u.0
+                        Bool: 1
+                    Double: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: y.2
+                      Structure: 
+                        TIdentifier: u.0
+                        Bool: 1
+                    Double: 
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: u.0
+              Bool: 1
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_union.4
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 25.000000
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: u.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: u.0
+                    Bool: 1
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target
+                    List[3]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: my_union.4
+                        Structure: 
+                          TIdentifier: u.0
+                          Bool: 1
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 50.000000
+                    Double: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: d
+        TIdentifier: i
+      Dict[2]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(7):
+  [flag.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [flag2.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: u.0
+            Bool: 1
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_union.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 

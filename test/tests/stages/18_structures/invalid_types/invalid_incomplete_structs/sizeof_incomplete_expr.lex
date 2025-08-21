@@ -1,0 +1,39 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[34]:
+  struct
+  identifier(s)
+  ;
+  struct
+  identifier(s)
+  *
+  identifier(get_ptr)
+  (
+  void
+  )
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  *
+  identifier(struct_ptr)
+  =
+  identifier(get_ptr)
+  (
+  )
+  ;
+  return
+  sizeof
+  (
+  *
+  identifier(struct_ptr)
+  )
+  ;
+  }

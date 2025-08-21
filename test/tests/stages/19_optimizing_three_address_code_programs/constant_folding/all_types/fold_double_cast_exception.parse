@@ -1,0 +1,139 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dead_int_cast
+                  CSingleInit: 
+                    CConditional: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      CCast: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 2147483649.000000
+                          None: 
+                        Int: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dead_uint_cast
+                  CSingleInit: 
+                    CConditional: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      CCast: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 34359738368.000000
+                          None: 
+                        UInt: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 200
+                        None: 
+                      None: 
+                    None: 
+                  UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dead_long_cast
+                  CSingleInit: 
+                    CConditional: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 300
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 9223372036854777856.000000
+                        None: 
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dead_ulong_cast
+                  CSingleInit: 
+                    CConditional: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 200
+                        None: 
+                      CCast: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 200000000000000015259406158169789850694693710301313623403203468412422760576251588968284377929383568153279495154277097522744420775689599876583631222701039661500335299712977963253072736190829214628470302116746917973781650311318127235431726410565244781018568366879717234206167471347699798409140996315021312.000000
+                          None: 
+                        ULong: 
+                        None: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CBinary: 
+                    CAdd: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: dead_int_cast
+                        None: 
+                      CVar: 
+                        TIdentifier: dead_uint_cast
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: dead_long_cast
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: dead_ulong_cast
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

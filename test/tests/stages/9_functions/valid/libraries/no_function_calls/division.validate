@@ -1,0 +1,167 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: f
+        List[4]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+          TIdentifier: c.2
+          TIdentifier: d.3
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.4
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CVar: 
+                        TIdentifier: a.0
+                        Int: 
+                      CVar: 
+                        TIdentifier: b.1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: a.0
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: b.1
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CVar: 
+                          TIdentifier: c.2
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CVar: 
+                        TIdentifier: d.3
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: x.4
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      Int: 
+                    Int: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

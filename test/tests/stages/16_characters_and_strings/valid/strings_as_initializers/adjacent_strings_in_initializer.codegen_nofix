@@ -1,0 +1,676 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[3]: 
+    AsmStaticConstant: 
+      TIdentifier: string.1
+      TInt: 1
+      StringInit: 
+        TIdentifier: yesno
+        Bool: 1
+        CStringLiteral: 
+          List[5]: 
+            TChar: 121
+            TChar: 101
+            TChar: 115
+            TChar: 110
+            TChar: 111
+    AsmStaticConstant: 
+      TIdentifier: string.3
+      TInt: 1
+      StringInit: 
+        TIdentifier: ab
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 97
+            TChar: 98
+    AsmStaticConstant: 
+      TIdentifier: string.5
+      TInt: 1
+      StringInit: 
+        TIdentifier: cd
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 99
+            TChar: 100
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[56]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1853056377
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: multi_string.2
+            TLong: 0
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 111
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: multi_string.2
+            TLong: 4
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: multi_string.2
+            TLong: 5
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 97
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 0
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 98
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 1
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 2
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 99
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 3
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 100
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 4
+        AsmMov: 
+          Byte: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 5
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: multi_string.2
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.4
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.1
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.5
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.4
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.5
+          AsmRegister: 
+            AsmSi: 
+        AsmCall: 
+          TIdentifier: strcmp
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.6
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.6
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.7
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.8
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.7
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.8
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.9
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.3
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.10
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.9
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.10
+          AsmRegister: 
+            AsmSi: 
+        AsmCall: 
+          TIdentifier: strcmp
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.11
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.11
+        AsmJmpCC: 
+          TIdentifier: if_false.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.2
+        AsmLea: 
+          AsmPseudoMem: 
+            TIdentifier: nested_multi_string.3
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.12
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.13
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.12
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.13
+          AsmRegister: 
+            AsmDx: 
+        AsmBinary: 
+          AsmMult: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmDx: 
+        AsmLea: 
+          AsmIndexed: 
+            TLong: 1
+            AsmAx: 
+            AsmDx: 
+          AsmPseudo: 
+            TIdentifier: subscr.14
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.5
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.15
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: subscr.14
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.15
+          AsmRegister: 
+            AsmSi: 
+        AsmCall: 
+          TIdentifier: strcmp
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.16
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.16
+        AsmJmpCC: 
+          TIdentifier: if_false.4
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(5):
+  : multi_string.2
+  : string.1
+  : nested_multi_string.3
+  : string.3
+  : string.5
++
++
+@@ String Constant Table @@
+Dict(3):
+  [yesno]: 
+    String: "yesno"
+  [ab]: 
+    String: "ab"
+  [cd]: 
+    String: "cd"
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(20):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 48
+        TULong: 1
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [multi_string.2]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      LocalAttr: 
+  [nested_multi_string.3]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 3
+          Char: 
+      LocalAttr: 
+  [addr.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.1]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: yesno
+          Bool: 1
+          CStringLiteral: 
+            List[5]: 
+              TChar: 121
+              TChar: 101
+              TChar: 115
+              TChar: 110
+              TChar: 111
+  [addr.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.9]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.3]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: ab
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 97
+              TChar: 98
+  [addr.10]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.14]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.5]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: cd
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 99
+              TChar: 100
+  [addr.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(20):
+  [strcmp]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [multi_string.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      ByteArray: 
+        TLong: 6
+        TInt: 1
+  [nested_multi_string.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      ByteArray: 
+        TLong: 6
+        TInt: 1
+  [addr.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [addr.5]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [call.6]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [addr.7]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [cast.8]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [subscr.9]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [addr.10]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [call.11]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [addr.12]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [cast.13]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [subscr.14]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [addr.15]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      QuadWord: 
+  [call.16]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [string.1]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      ByteArray: 
+        TLong: 6
+        TInt: 1
+  [string.3]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      ByteArray: 
+        TLong: 3
+        TInt: 1
+  [string.5]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      ByteArray: 
+        TLong: 3
+        TInt: 1

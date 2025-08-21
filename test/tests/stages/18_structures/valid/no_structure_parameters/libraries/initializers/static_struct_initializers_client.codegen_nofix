@@ -1,0 +1,678 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[2]: 
+    AsmStaticConstant: 
+      TIdentifier: string.0
+      TInt: 1
+      StringInit: 
+        TIdentifier: Hello
+        Bool: 1
+        CStringLiteral: 
+          List[5]: 
+            TChar: 72
+            TChar: 101
+            TChar: 108
+            TChar: 108
+            TChar: 111
+    AsmStaticConstant: 
+      TIdentifier: string.1
+      TInt: 1
+      StringInit: 
+        TIdentifier: !
+        Bool: 1
+        CStringLiteral: 
+          List[1]: 
+            TChar: 33
+  List[5]: 
+    AsmStaticVariable: 
+      TIdentifier: uninitialized
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 24
+    AsmStaticVariable: 
+      TIdentifier: partial
+      TInt: 8
+      Bool: 1
+      List[3]: 
+        DoubleInit: 
+          TIdentifier: 4607182418800017408
+        PointerInit: 
+          TIdentifier: string.0
+        ZeroInit: 
+          TLong: 8
+    AsmStaticVariable: 
+      TIdentifier: partial_with_array
+      TInt: 8
+      Bool: 1
+      List[5]: 
+        DoubleInit: 
+          TIdentifier: 4613937818241073152
+        PointerInit: 
+          TIdentifier: string.1
+        UCharInit: 
+          TUChar: 1
+        ZeroInit: 
+          TLong: 3
+        IntInit: 
+          TInt: 2
+    AsmStaticVariable: 
+      TIdentifier: converted
+      TInt: 8
+      Bool: 1
+      List[5]: 
+        DoubleInit: 
+          TIdentifier: 4877398396442247168
+        ZeroInit: 
+          TLong: 8
+        StringInit: 
+          TIdentifier: abc
+          Bool: 0
+          CStringLiteral: 
+            List[3]: 
+              TChar: 97
+              TChar: 98
+              TChar: 99
+        ZeroInit: 
+          TLong: 1
+        IntInit: 
+          TInt: 5
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[44]: 
+        AsmCall: 
+          TIdentifier: test_uninitialized
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.2
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.3
+        AsmJmpCC: 
+          TIdentifier: if_false.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.2
+        AsmCall: 
+          TIdentifier: test_partially_initialized
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.4
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.5
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: unop.5
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.5
+        AsmJmpCC: 
+          TIdentifier: if_false.3
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.3
+        AsmCall: 
+          TIdentifier: test_partial_inner_init
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.6
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.6
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.7
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: unop.7
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.7
+        AsmJmpCC: 
+          TIdentifier: if_false.4
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.4
+        AsmCall: 
+          TIdentifier: test_implicit_conversion
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.8
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.8
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.9
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: unop.9
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: unop.9
+        AsmJmpCC: 
+          TIdentifier: if_false.5
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.5
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(2):
+  [Hello]: 
+    String: "Hello"
+  [!]: 
+    String: "!"
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[4]: 
+        TIdentifier: one_d
+        TIdentifier: two_msg
+        TIdentifier: three_arr
+        TIdentifier: four_i
+      Dict[4]: 
+        [one_d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [two_msg]: 
+          StructMember: 
+            TLong: 8
+            Pointer: 
+              Char: 
+        [three_arr]: 
+          StructMember: 
+            TLong: 16
+            Array: 
+              TLong: 3
+              UChar: 
+        [four_i]: 
+          StructMember: 
+            TLong: 20
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(20):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 0
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uninitialized]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [partial]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[3]: 
+            DoubleInit: 
+              TIdentifier: 4607182418800017408
+            PointerInit: 
+              TIdentifier: string.0
+            ZeroInit: 
+              TLong: 8
+  [partial_with_array]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[5]: 
+            DoubleInit: 
+              TIdentifier: 4613937818241073152
+            PointerInit: 
+              TIdentifier: string.1
+            UCharInit: 
+              TUChar: 1
+            ZeroInit: 
+              TLong: 3
+            IntInit: 
+              TInt: 2
+  [converted]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[5]: 
+            DoubleInit: 
+              TIdentifier: 4877398396442247168
+            ZeroInit: 
+              TLong: 8
+            StringInit: 
+              TIdentifier: abc
+              Bool: 0
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 97
+                  TChar: 98
+                  TChar: 99
+            ZeroInit: 
+              TLong: 1
+            IntInit: 
+              TInt: 5
+  [test_uninitialized]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_partially_initialized]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_partial_inner_init]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_implicit_conversion]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [string.0]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Hello
+          Bool: 1
+          CStringLiteral: 
+            List[5]: 
+              TChar: 72
+              TChar: 101
+              TChar: 108
+              TChar: 108
+              TChar: 111
+  [string.1]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: !
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 33
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [call.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(20):
+  [strcmp]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [uninitialized]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      ByteArray: 
+        TLong: 24
+        TInt: 8
+  [partial]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      ByteArray: 
+        TLong: 24
+        TInt: 8
+  [partial_with_array]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      ByteArray: 
+        TLong: 24
+        TInt: 8
+  [converted]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      ByteArray: 
+        TLong: 24
+        TInt: 8
+  [test_uninitialized]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [test_partially_initialized]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [test_partial_inner_init]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [test_implicit_conversion]: 
+    BackendFun: 
+      Bool: 0
+      List[0]: 
+  [main]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [call.2]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [unop.3]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.4]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [unop.5]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.6]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [unop.7]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [call.8]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [unop.9]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 
+  [string.0]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      ByteArray: 
+        TLong: 6
+        TInt: 1
+  [string.1]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 1
+      ByteArray: 
+        TLong: 2
+        TInt: 1

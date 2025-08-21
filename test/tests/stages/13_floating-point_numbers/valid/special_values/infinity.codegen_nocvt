@@ -1,0 +1,607 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[4]: 
+    AsmStaticConstant: 
+      TIdentifier: double.7
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 9218868437227405312
+    AsmStaticConstant: 
+      TIdentifier: double.10
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4621819117588971520
+    AsmStaticConstant: 
+      TIdentifier: double.13
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4607182418800017408
+    AsmStaticConstant: 
+      TIdentifier: double.16
+      TInt: 16
+      DoubleInit: 
+        TIdentifier: 9223372036854775808
+  List[4]: 
+    AsmStaticVariable: 
+      TIdentifier: inf
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        DoubleInit: 
+          TIdentifier: 9218868437227405312
+    AsmStaticVariable: 
+      TIdentifier: very_large
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        DoubleInit: 
+          TIdentifier: 9218829891383704473
+    AsmStaticVariable: 
+      TIdentifier: zero
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        ZeroInit: 
+          TLong: 8
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[90]: 
+        AsmCmp: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.7
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: inf
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.6
+          AsmP: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmJmp: 
+          TIdentifier: comisd_nan.8
+        AsmLabel: 
+          TIdentifier: comisd_nan.6
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmLabel: 
+          TIdentifier: comisd_nan.8
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.2
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmCmp: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: very_large
+          AsmPseudo: 
+            TIdentifier: inf
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.3
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.9
+          AsmP: 
+        AsmSetCC: 
+          AsmBE: 
+          AsmPseudo: 
+            TIdentifier: binop.3
+        AsmLabel: 
+          TIdentifier: comisd_nan.9
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.3
+        AsmJmpCC: 
+          TIdentifier: if_false.1
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.1
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: very_large
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmBinary: 
+          AsmMult: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.10
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmCmp: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: inf
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.11
+          AsmP: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmJmp: 
+          TIdentifier: comisd_nan.12
+        AsmLabel: 
+          TIdentifier: comisd_nan.11
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmLabel: 
+          TIdentifier: comisd_nan.12
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.5
+        AsmJmpCC: 
+          TIdentifier: if_false.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.2
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.13
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmBinary: 
+          AsmDivDouble: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: zero
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmCmp: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: inf
+          AsmPseudo: 
+            TIdentifier: binop.6
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.14
+          AsmP: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmJmp: 
+          TIdentifier: comisd_nan.15
+        AsmLabel: 
+          TIdentifier: comisd_nan.14
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmLabel: 
+          TIdentifier: comisd_nan.15
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.7
+        AsmJmpCC: 
+          TIdentifier: if_false.3
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.3
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: inf
+          AsmPseudo: 
+            TIdentifier: unop.8
+        AsmBinary: 
+          AsmBitXor: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.16
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: unop.8
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: unop.8
+          AsmPseudo: 
+            TIdentifier: negated_inf.0
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.13
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: unop.9
+        AsmBinary: 
+          AsmBitXor: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.16
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: unop.9
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: unop.9
+          AsmPseudo: 
+            TIdentifier: binop.10
+        AsmBinary: 
+          AsmDivDouble: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: zero
+          AsmPseudo: 
+            TIdentifier: binop.10
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: binop.10
+          AsmPseudo: 
+            TIdentifier: negated_inf2.1
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: very_large
+          AsmPseudo: 
+            TIdentifier: unop.11
+        AsmBinary: 
+          AsmBitXor: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.16
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: unop.11
+        AsmCmp: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: unop.11
+          AsmPseudo: 
+            TIdentifier: negated_inf.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.17
+          AsmP: 
+        AsmSetCC: 
+          AsmAE: 
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmLabel: 
+          TIdentifier: comisd_nan.17
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmJmpCC: 
+          TIdentifier: if_false.4
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.4
+        AsmCmp: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: negated_inf2.1
+          AsmPseudo: 
+            TIdentifier: negated_inf.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.13
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.18
+          AsmP: 
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.13
+        AsmJmp: 
+          TIdentifier: comisd_nan.19
+        AsmLabel: 
+          TIdentifier: comisd_nan.18
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: binop.13
+        AsmLabel: 
+          TIdentifier: comisd_nan.19
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.13
+        AsmJmpCC: 
+          TIdentifier: if_false.5
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 6
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.5
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(18):
+  [inf]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 9218868437227405312
+  [very_large]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            DoubleInit: 
+              TIdentifier: 9218829891383704473
+  [zero]: 
+    Symbol: 
+      Double: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [negated_inf.0]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [negated_inf2.1]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.8]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.9]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.10]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.11]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

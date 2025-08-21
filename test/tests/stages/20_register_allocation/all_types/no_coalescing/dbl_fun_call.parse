@@ -1,0 +1,82 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 3.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: callee
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: callee
+                      List[0]: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: d
+                      None: 
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 13.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

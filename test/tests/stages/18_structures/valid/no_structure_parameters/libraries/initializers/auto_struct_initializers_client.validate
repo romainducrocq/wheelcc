@@ -1,0 +1,1167 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[14]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.3
+          TIdentifier: size.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s.0
+        Bool: 0
+        List[5]: 
+          CMemberDeclaration: 
+            TIdentifier: one_msg
+            Pointer: 
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: two_arr
+            Array: 
+              TLong: 3
+              UChar: 
+          CMemberDeclaration: 
+            TIdentifier: three_self_ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: four_d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: five_d_ptr
+            Pointer: 
+              Double: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_full_initialization
+        List[1]: 
+          TIdentifier: ptr.5
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_partial_initialization
+        List[2]: 
+          TIdentifier: ptr.6
+          TIdentifier: expected_msg.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_converted
+        List[1]: 
+          TIdentifier: ptr.8
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_two_structs
+        List[2]: 
+          TIdentifier: ptr1.9
+          TIdentifier: ptr2.10
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_double
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstDouble: 
+                    TDouble: 2000000000000.000000
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_full_initialization
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: full.11
+                  CCompoundInit: 
+                    List[5]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CString: 
+                            CStringLiteral: 
+                              List[13]: 
+                                TChar: 73
+                                TChar: 39
+                                TChar: 109
+                                TChar: 32
+                                TChar: 97
+                                TChar: 32
+                                TChar: 115
+                                TChar: 116
+                                TChar: 114
+                                TChar: 117
+                                TChar: 99
+                                TChar: 116
+                                TChar: 33
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[3]: 
+                              TChar: 115
+                              TChar: 117
+                              TChar: 112
+                          Array: 
+                            TLong: 3
+                            UChar: 
+                        Array: 
+                          TLong: 3
+                          UChar: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: full.11
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.0
+                            Bool: 0
+                      CSingleInit: 
+                        CFunctionCall: 
+                          TIdentifier: get_double
+                          List[0]: 
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CDot: 
+                            TIdentifier: four_d
+                            CVar: 
+                              TIdentifier: full.11
+                              Structure: 
+                                TIdentifier: s.0
+                                Bool: 0
+                            Double: 
+                          Pointer: 
+                            Double: 
+                        Pointer: 
+                          Double: 
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_full_initialization
+                  List[1]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: full.11
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_partial_initialization
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: msg.12
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[22]: 
+                          TChar: 65
+                          TChar: 110
+                          TChar: 111
+                          TChar: 116
+                          TChar: 104
+                          TChar: 101
+                          TChar: 114
+                          TChar: 32
+                          TChar: 115
+                          TChar: 116
+                          TChar: 114
+                          TChar: 105
+                          TChar: 110
+                          TChar: 103
+                          TChar: 32
+                          TChar: 108
+                          TChar: 105
+                          TChar: 116
+                          TChar: 101
+                          TChar: 114
+                          TChar: 97
+                          TChar: 108
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: partial.13
+                  CCompoundInit: 
+                    List[5]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: msg.12
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 97
+                                Int: 
+                              UChar: 
+                              UChar: 
+                            UChar: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 98
+                                Int: 
+                              UChar: 
+                              UChar: 
+                            UChar: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstUChar: 
+                                TUChar: 0
+                              None: 
+                            None: 
+                        Array: 
+                          TLong: 3
+                          UChar: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: calloc
+                            List[2]: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                ULong: 
+                                ULong: 
+                              CSizeOfT: 
+                                Structure: 
+                                  TIdentifier: s.0
+                                  Bool: 0
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.0
+                            Bool: 0
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 0.000000
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstULong: 
+                            TULong: 0
+                          None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_partial_initialization
+                  List[2]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: partial.13
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                    CVar: 
+                      TIdentifier: msg.12
+                      Pointer: 
+                        Char: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_implicit_type_conversions
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.14
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3000
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: converted.15
+                  CCompoundInit: 
+                    List[5]: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: malloc
+                            List[1]: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 5
+                                  Int: 
+                                ULong: 
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Char: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CCast: 
+                              CBinary: 
+                                CDivide: 
+                                CVar: 
+                                  TIdentifier: i.14
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 2
+                                  Int: 
+                                Int: 
+                              UChar: 
+                              UChar: 
+                            UChar: 
+                          CSingleInit: 
+                            CCast: 
+                              CBinary: 
+                                CDivide: 
+                                CVar: 
+                                  TIdentifier: i.14
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 3
+                                  Int: 
+                                Int: 
+                              UChar: 
+                              UChar: 
+                            UChar: 
+                          CSingleInit: 
+                            CCast: 
+                              CBinary: 
+                                CMultiply: 
+                                CVar: 
+                                  TIdentifier: i.14
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 4
+                                  Int: 
+                                Int: 
+                              UChar: 
+                              UChar: 
+                            UChar: 
+                        Array: 
+                          TLong: 3
+                          UChar: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstLong: 
+                              TLong: 0
+                            Long: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.0
+                            Bool: 0
+                      CSingleInit: 
+                        CCast: 
+                          CBinary: 
+                            CSubtract: 
+                            CVar: 
+                              TIdentifier: i.14
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          Double: 
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: calloc
+                            List[2]: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                ULong: 
+                                ULong: 
+                              CSizeOfT: 
+                                Double: 
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Double: 
+                          Pointer: 
+                            Double: 
+                        Pointer: 
+                          Double: 
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_converted
+                  List[1]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: converted.15
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_single_exp_initializer
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.16
+                  CSingleInit: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 123.400000
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s1.17
+                  CCompoundInit: 
+                    List[5]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CString: 
+                            CStringLiteral: 
+                              List[18]: 
+                                TChar: 89
+                                TChar: 101
+                                TChar: 116
+                                TChar: 32
+                                TChar: 97
+                                TChar: 110
+                                TChar: 111
+                                TChar: 116
+                                TChar: 104
+                                TChar: 101
+                                TChar: 114
+                                TChar: 32
+                                TChar: 115
+                                TChar: 116
+                                TChar: 114
+                                TChar: 105
+                                TChar: 110
+                                TChar: 103
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 120
+                              TChar: 121
+                          Array: 
+                            TLong: 3
+                            UChar: 
+                        Array: 
+                          TLong: 3
+                          UChar: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: s1.17
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: s.0
+                            Bool: 0
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 150.000000
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: d.16
+                            Double: 
+                          Pointer: 
+                            Double: 
+                        Pointer: 
+                          Double: 
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s2.18
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: s1.17
+                      Structure: 
+                        TIdentifier: s.0
+                        Bool: 0
+                    Structure: 
+                      TIdentifier: s.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: s.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: validate_two_structs
+                  List[2]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s1.17
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s2.18
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: s.0
+                          Bool: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_full_initialization
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_partial_initialization
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_implicit_type_conversions
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_single_exp_initializer
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(1):
+  [Another string literal]: 
+    String: "Another string literal"
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 40
+      List[5]: 
+        TIdentifier: one_msg
+        TIdentifier: two_arr
+        TIdentifier: three_self_ptr
+        TIdentifier: four_d
+        TIdentifier: five_d_ptr
+      Dict[5]: 
+        [one_msg]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Char: 
+        [two_arr]: 
+          StructMember: 
+            TLong: 8
+            Array: 
+              TLong: 3
+              UChar: 
+        [three_self_ptr]: 
+          StructMember: 
+            TLong: 16
+            Pointer: 
+              Structure: 
+                TIdentifier: s.0
+                Bool: 0
+        [four_d]: 
+          StructMember: 
+            TLong: 24
+            Double: 
+        [five_d_ptr]: 
+          StructMember: 
+            TLong: 32
+            Pointer: 
+              Double: 
++
++
+@@ Symbol Table @@
+Dict(22):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [malloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [validate_full_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [validate_partial_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [validate_converted]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [validate_two_structs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [get_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [test_full_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [full.11]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [test_partial_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [string.0]: 
+    Symbol: 
+      Array: 
+        TLong: 23
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Another string literal
+          Bool: 1
+          CStringLiteral: 
+            List[22]: 
+              TChar: 65
+              TChar: 110
+              TChar: 111
+              TChar: 116
+              TChar: 104
+              TChar: 101
+              TChar: 114
+              TChar: 32
+              TChar: 115
+              TChar: 116
+              TChar: 114
+              TChar: 105
+              TChar: 110
+              TChar: 103
+              TChar: 32
+              TChar: 108
+              TChar: 105
+              TChar: 116
+              TChar: 101
+              TChar: 114
+              TChar: 97
+              TChar: 108
+  [msg.12]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            PointerInit: 
+              TIdentifier: string.0
+  [partial.13]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [test_implicit_type_conversions]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.14]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 3000
+  [converted.15]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [test_single_exp_initializer]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.16]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [s1.17]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [s2.18]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

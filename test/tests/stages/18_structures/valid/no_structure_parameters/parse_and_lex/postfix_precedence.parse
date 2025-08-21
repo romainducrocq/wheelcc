@@ -1,0 +1,234 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: inner_arr
+            Array: 
+              TLong: 3
+              Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Structure: 
+              TIdentifier: inner
+              Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array
+                  CCompoundInit: 
+                    List[4]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 2
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 3
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 4
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 6
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 7
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 8
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 9
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 10
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 11
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 12
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                        None: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 13
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 14
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 15
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 16
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 4
+                    Structure: 
+                      TIdentifier: outer
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: inner_arr
+                          CDot: 
+                            TIdentifier: b
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: array
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                None: 
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

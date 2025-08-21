@@ -1,0 +1,432 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_null_ptr_cast
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_ptr.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  Pointer: 
+                    Long: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbl_ptr.1
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_ptr.0
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: int_ptr.2
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_ptr.0
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        UInt: 
+                      Pointer: 
+                        UInt: 
+                    Pointer: 
+                      UInt: 
+                  Pointer: 
+                    UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr_ptr.3
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_ptr.0
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Pointer: 
+                          Int: 
+                    Pointer: 
+                      Pointer: 
+                        Int: 
+                  Pointer: 
+                    Pointer: 
+                      Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: long_ptr.0
+                  Pointer: 
+                    Long: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: dbl_ptr.1
+                  Pointer: 
+                    Double: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: int_ptr.2
+                  Pointer: 
+                    UInt: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: ptr_ptr.3
+                  Pointer: 
+                    Pointer: 
+                      Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_round_trip
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l.4
+                  CSingleInit: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_ptr.5
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: l.4
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Long: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbl_ptr.6
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: long_ptr.5
+                        Pointer: 
+                          Long: 
+                      Pointer: 
+                        Double: 
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  Pointer: 
+                    Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: other_long_ptr.7
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: dbl_ptr.6
+                        Pointer: 
+                          Double: 
+                      Pointer: 
+                        Long: 
+                      Pointer: 
+                        Long: 
+                    Pointer: 
+                      Long: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: other_long_ptr.7
+                      Pointer: 
+                        Long: 
+                    Long: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: result.8
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: check_null_ptr_cast
+                      List[0]: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: result.8
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: result.8
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: result.8
+                    Int: 
+                  CFunctionCall: 
+                    TIdentifier: check_round_trip
+                    List[0]: 
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: result.8
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(12):
+  [check_null_ptr_cast]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [long_ptr.0]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [dbl_ptr.1]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [int_ptr.2]: 
+    Symbol: 
+      Pointer: 
+        UInt: 
+      LocalAttr: 
+  [ptr_ptr.3]: 
+    Symbol: 
+      Pointer: 
+        Pointer: 
+          Int: 
+      LocalAttr: 
+  [check_round_trip]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [long_ptr.5]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [dbl_ptr.6]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      LocalAttr: 
+  [other_long_ptr.7]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [result.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

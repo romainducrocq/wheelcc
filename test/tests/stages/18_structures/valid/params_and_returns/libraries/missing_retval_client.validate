@@ -1,0 +1,189 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: big.0
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 25
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: missing_return_value
+        List[1]: 
+          TIdentifier: i.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Int: 
+          Structure: 
+            TIdentifier: big.0
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array.1
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                        Int: 
+                    Array: 
+                      TLong: 4
+                      Int: 
+                  Array: 
+                    TLong: 4
+                    Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: missing_return_value
+                  List[1]: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: array.1
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Int: 
+                  Structure: 
+                    TIdentifier: big.0
+                    Bool: 0
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: array.1
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [big.0]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 25
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 25
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(3):
+  [missing_return_value]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Int: 
+        Structure: 
+          TIdentifier: big.0
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [array.1]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Int: 
+      LocalAttr: 

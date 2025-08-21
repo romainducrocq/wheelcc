@@ -1,0 +1,446 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_int_to_uint
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.0
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.1
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: i.0
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    UInt: 
+                  UInt: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CVar: 
+                    TIdentifier: u.1
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 10
+                    UInt: 
+                  UInt: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_uint_to_int
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.2
+                  CSingleInit: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 4294967295
+                      UInt: 
+                    UInt: 
+                  UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.3
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: u.2
+                        UInt: 
+                      Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConditional: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  CBinary: 
+                    CMultiply: 
+                    CVar: 
+                      TIdentifier: i.3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_ulong_to_long
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ul.4
+                  CSingleInit: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 9223372036854775900
+                      ULong: 
+                    ULong: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l.5
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: ul.4
+                        ULong: 
+                      Long: 
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CVar: 
+                    TIdentifier: l.5
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_long_to_ulong
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l.6
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 200
+                        Long: 
+                      Long: 
+                    Long: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ul.7
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: l.6
+                        Long: 
+                      ULong: 
+                      ULong: 
+                    ULong: 
+                  ULong: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CVar: 
+                    TIdentifier: ul.7
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_int_to_uint
+                    List[0]: 
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 429496729
+                    UInt: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_uint_to_int
+                    List[0]: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_ulong_to_long
+                    List[0]: 
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 2305843009213693929
+                      Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_long_to_ulong
+                    List[0]: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 1844674407370955141
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(13):
+  [target_int_to_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        UInt: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [u.1]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [target_uint_to_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [u.2]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target_ulong_to_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ul.4]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [l.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [target_long_to_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [ul.7]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

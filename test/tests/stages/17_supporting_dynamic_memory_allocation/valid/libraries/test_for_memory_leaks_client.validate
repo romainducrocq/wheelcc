@@ -1,0 +1,260 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: sum
+        None: 
+        Long: 
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: lots_of_args
+        List[15]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+          TIdentifier: c.2
+          TIdentifier: d.3
+          TIdentifier: e.4
+          TIdentifier: f.5
+          TIdentifier: g.6
+          TIdentifier: h.7
+          TIdentifier: i.8
+          TIdentifier: j.9
+          TIdentifier: k.10
+          TIdentifier: l.11
+          TIdentifier: m.12
+          TIdentifier: n.13
+          TIdentifier: o.14
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.15
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.15
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10000000
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.15
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.15
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: lots_of_args
+                            List[15]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 4
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 5
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 6
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 7
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 8
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 9
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 10
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 11
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 12
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 13
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 14
+                                Int: 
+                              CVar: 
+                                TIdentifier: i.15
+                                Int: 
+                            Void: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: sum
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 49999995000000
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [sum]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [lots_of_args]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,139 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[3]: 
+    AsmStaticVariable: 
+      TIdentifier: l
+      TInt: 8
+      Bool: 1
+      List[1]: 
+        LongInit: 
+          TLong: 8589934592
+    AsmFunction: 
+      TIdentifier: return_l
+      Bool: 1
+      Bool: 0
+      List[4]: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: l
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+    AsmFunction: 
+      TIdentifier: return_l_as_int
+      Bool: 1
+      Bool: 0
+      List[5]: 
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: l
+          AsmPseudo: 
+            TIdentifier: cast.0
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [l]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            LongInit: 
+              TLong: 8589934592
+  [return_l]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [return_l_as_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(4):
+  [l]: 
+    BackendObj: 
+      Bool: 1
+      Bool: 0
+      QuadWord: 
+  [return_l]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [return_l_as_int]: 
+    BackendFun: 
+      Bool: 1
+      List[0]: 
+  [cast.0]: 
+    BackendObj: 
+      Bool: 0
+      Bool: 0
+      LongWord: 

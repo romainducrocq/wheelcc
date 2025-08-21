@@ -1,0 +1,66 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[61]:
+  void
+  *
+  identifier(malloc)
+  (
+  unsigned
+  long
+  identifier(size)
+  )
+  ;
+  union
+  identifier(a)
+  {
+  int
+  identifier(x)
+  ;
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  union
+  identifier(b)
+  {
+  int
+  identifier(m)
+  ;
+  int
+  identifier(n)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(a)
+  *
+  identifier(ptr)
+  =
+  identifier(malloc)
+  (
+  sizeof
+  (
+  union
+  identifier(a)
+  )
+  )
+  ;
+  identifier(ptr)
+  ->
+  identifier(m)
+  =
+  const int(10)
+  ;
+  return
+  const int(0)
+  ;
+  }

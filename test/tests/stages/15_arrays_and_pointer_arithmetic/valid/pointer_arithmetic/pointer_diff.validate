@@ -1,0 +1,828 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_ptr_diff
+        List[2]: 
+          TIdentifier: ptr1.0
+          TIdentifier: ptr2.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: ptr2.1
+                      Pointer: 
+                        Int: 
+                    CVar: 
+                      TIdentifier: ptr1.0
+                      Pointer: 
+                        Int: 
+                    Long: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Int: 
+            Pointer: 
+              Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_long_ptr_diff
+        List[2]: 
+          TIdentifier: ptr1.2
+          TIdentifier: ptr2.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: ptr2.3
+                      Pointer: 
+                        Long: 
+                    CVar: 
+                      TIdentifier: ptr1.2
+                      Pointer: 
+                        Long: 
+                    Long: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Long: 
+            Pointer: 
+              Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_multidim_ptr_diff
+        List[2]: 
+          TIdentifier: ptr1.4
+          TIdentifier: ptr2.5
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: ptr2.5
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 5
+                            Double: 
+                    CVar: 
+                      TIdentifier: ptr1.4
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 5
+                            Double: 
+                    Long: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Array: 
+                  TLong: 5
+                  Double: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Array: 
+                  TLong: 5
+                  Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_multidim_ptr_diff_2
+        List[2]: 
+          TIdentifier: ptr1.6
+          TIdentifier: ptr2.7
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: ptr2.7
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          Double: 
+                    CVar: 
+                      TIdentifier: ptr1.6
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          Double: 
+                    Long: 
+                  Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                Double: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr.8
+                  CCompoundInit: 
+                    List[5]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                    Array: 
+                      TLong: 5
+                      Int: 
+                  Array: 
+                    TLong: 5
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: end_of_array.9
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.8
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: get_ptr_diff
+                    List[2]: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.8
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CVar: 
+                        TIdentifier: end_of_array.9
+                        Pointer: 
+                          Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: long_arr.10
+                  None: 
+                  Array: 
+                    TLong: 8
+                    Long: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: get_long_ptr_diff
+                    List[2]: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: long_arr.10
+                            Pointer: 
+                              Long: 
+                          Pointer: 
+                            Long: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Long: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: long_arr.10
+                          Pointer: 
+                            Long: 
+                        Pointer: 
+                          Long: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: multidim.11
+                  None: 
+                  Array: 
+                    TLong: 6
+                    Array: 
+                      TLong: 7
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 5
+                          Double: 
+                  CStatic: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: get_multidim_ptr_diff
+                    List[2]: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: multidim.11
+                                Pointer: 
+                                  Array: 
+                                    TLong: 7
+                                    Array: 
+                                      TLong: 3
+                                      Array: 
+                                        TLong: 5
+                                        Double: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 7
+                                  Array: 
+                                    TLong: 3
+                                    Array: 
+                                      TLong: 5
+                                      Double: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Array: 
+                                  TLong: 5
+                                  Double: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Array: 
+                                TLong: 5
+                                Double: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Array: 
+                              TLong: 5
+                              Double: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: multidim.11
+                                Pointer: 
+                                  Array: 
+                                    TLong: 7
+                                    Array: 
+                                      TLong: 3
+                                      Array: 
+                                        TLong: 5
+                                        Double: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 7
+                                  Array: 
+                                    TLong: 3
+                                    Array: 
+                                      TLong: 5
+                                      Double: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Array: 
+                                  TLong: 5
+                                  Double: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Array: 
+                                TLong: 5
+                                Double: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Array: 
+                              TLong: 5
+                              Double: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: get_multidim_ptr_diff_2
+                    List[2]: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: multidim.11
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 7
+                                        Array: 
+                                          TLong: 3
+                                          Array: 
+                                            TLong: 5
+                                            Double: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 7
+                                      Array: 
+                                        TLong: 3
+                                        Array: 
+                                          TLong: 5
+                                          Double: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 3
+                                    Array: 
+                                      TLong: 5
+                                      Double: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Array: 
+                                    TLong: 5
+                                    Double: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                Double: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              Double: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            Double: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: multidim.11
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 7
+                                      Array: 
+                                        TLong: 3
+                                        Array: 
+                                          TLong: 5
+                                          Double: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 7
+                                    Array: 
+                                      TLong: 3
+                                      Array: 
+                                        TLong: 5
+                                        Double: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 2
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Array: 
+                                    TLong: 5
+                                    Double: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Array: 
+                                  TLong: 5
+                                  Double: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              Double: 
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            Double: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(17):
+  [ptr1.0]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [ptr2.1]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [get_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Int: 
+          Pointer: 
+            Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.2]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [ptr2.3]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [get_long_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Long: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.4]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 5
+            Double: 
+      LocalAttr: 
+  [ptr2.5]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 5
+            Double: 
+      LocalAttr: 
+  [get_multidim_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 5
+                Double: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 5
+                Double: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.6]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          Double: 
+      LocalAttr: 
+  [ptr2.7]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          Double: 
+      LocalAttr: 
+  [get_multidim_ptr_diff_2]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              Double: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              Double: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arr.8]: 
+    Symbol: 
+      Array: 
+        TLong: 5
+        Int: 
+      LocalAttr: 
+  [end_of_array.9]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [long_arr.10]: 
+    Symbol: 
+      Array: 
+        TLong: 8
+        Long: 
+      LocalAttr: 
+  [multidim.11]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Array: 
+          TLong: 7
+          Array: 
+            TLong: 3
+            Array: 
+              TLong: 5
+              Double: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 5040

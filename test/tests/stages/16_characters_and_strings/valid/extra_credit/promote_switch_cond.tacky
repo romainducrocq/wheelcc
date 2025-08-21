@@ -1,0 +1,149 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[20]: 
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: cast.1
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: cast.1
+          TacVariable: 
+            TIdentifier: c.0
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: c.0
+          TacVariable: 
+            TIdentifier: cast.2
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: cast.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: const.3
+        TacJumpIfNotZero: 
+          TIdentifier: case_0switch.0
+          TacVariable: 
+            TIdentifier: const.3
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: cast.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: const.4
+        TacJumpIfNotZero: 
+          TIdentifier: case_1switch.0
+          TacVariable: 
+            TIdentifier: const.4
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: cast.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 356
+          TacVariable: 
+            TIdentifier: const.5
+        TacJumpIfNotZero: 
+          TIdentifier: case_2switch.0
+          TacVariable: 
+            TIdentifier: const.5
+        TacJump: 
+          TIdentifier: default_switch.0
+        TacLabel: 
+          TIdentifier: case_0switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: case_1switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: case_2switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: default_switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: break_switch.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.0]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [cast.1]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [cast.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [const.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [const.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [const.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

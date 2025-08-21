@@ -1,0 +1,251 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fib
+        List[1]: 
+          TIdentifier: n.0
+        CB: 
+          List[1]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: n.0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: n.0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: n.0
+                            Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CBinary: 
+                            CAdd: 
+                            CFunctionCall: 
+                              TIdentifier: fib
+                              List[1]: 
+                                CBinary: 
+                                  CSubtract: 
+                                  CVar: 
+                                    TIdentifier: n.0
+                                    Int: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    Int: 
+                                  Int: 
+                              Int: 
+                            CFunctionCall: 
+                              TIdentifier: fib
+                              List[1]: 
+                                CBinary: 
+                                  CSubtract: 
+                                  CVar: 
+                                    TIdentifier: n.0
+                                    Int: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    Int: 
+                                  Int: 
+                              Int: 
+                            Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiply_many_args
+        List[8]: 
+          TIdentifier: a.1
+          TIdentifier: b.2
+          TIdentifier: c.3
+          TIdentifier: d.4
+          TIdentifier: e.5
+          TIdentifier: f.6
+          TIdentifier: g.7
+          TIdentifier: h.8
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CBinary: 
+                    CMultiply: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CMultiply: 
+                        CBinary: 
+                          CMultiply: 
+                          CBinary: 
+                            CMultiply: 
+                            CBinary: 
+                              CMultiply: 
+                              CVar: 
+                                TIdentifier: a.1
+                                Int: 
+                              CVar: 
+                                TIdentifier: b.2
+                                Int: 
+                              Int: 
+                            CVar: 
+                              TIdentifier: c.3
+                              Int: 
+                            Int: 
+                          CVar: 
+                            TIdentifier: d.4
+                            Int: 
+                          Int: 
+                        CVar: 
+                          TIdentifier: e.5
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: f.6
+                        Int: 
+                      Int: 
+                    CFunctionCall: 
+                      TIdentifier: fib
+                      List[1]: 
+                        CVar: 
+                          TIdentifier: g.7
+                          Int: 
+                      Int: 
+                    Int: 
+                  CFunctionCall: 
+                    TIdentifier: fib
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: h.8
+                        Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(11):
+  [n.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [fib]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [g.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [h.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [multiply_many_args]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[8]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

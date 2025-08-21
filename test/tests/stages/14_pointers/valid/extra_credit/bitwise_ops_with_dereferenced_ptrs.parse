@@ -1,0 +1,235 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[11]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ui
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 1
+                        None: 
+                      None: 
+                    None: 
+                  UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ul
+                  CSingleInit: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 9223372036854775808
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ui_ptr
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: ui
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ul_ptr
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: ul
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitAnd: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ui_ptr
+                        None: 
+                      None: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ul_ptr
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitOr: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ui_ptr
+                        None: 
+                      None: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ul_ptr
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372041149743103
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i_ptr
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitAnd: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: i_ptr
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: ul
+                      None: 
+                    None: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: ul_ptr
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CBitOr: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: i_ptr
+                        None: 
+                      None: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ul_ptr
+                        None: 
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

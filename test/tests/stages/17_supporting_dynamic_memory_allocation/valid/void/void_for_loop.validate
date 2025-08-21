@@ -1,0 +1,293 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: putchar
+        List[1]: 
+          TIdentifier: c.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: letter
+        None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: initialize_letter
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 90
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: decrement_letter
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: letter
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitExp: 
+                  CFunctionCall: 
+                    TIdentifier: initialize_letter
+                    List[0]: 
+                    Void: 
+                CBinary: 
+                  CGreaterOrEqual: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 65
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: letter
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: putchar
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: letter
+                                Int: 
+                            Int: 
+            CS: 
+              CFor: 
+                TIdentifier: for.1
+                CInitExp: 
+                  CAssignment: 
+                    None: 
+                    CVar: 
+                      TIdentifier: letter
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 65
+                      Int: 
+                    Int: 
+                CBinary: 
+                  CLessOrEqual: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 90
+                    Int: 
+                  Int: 
+                CCast: 
+                  CAssignment: 
+                    None: 
+                    CVar: 
+                      TIdentifier: letter
+                      Int: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: letter
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Void: 
+                  Void: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: putchar
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: letter
+                                Int: 
+                            Int: 
+            CS: 
+              CFor: 
+                TIdentifier: for.2
+                CInitExp: 
+                  CFunctionCall: 
+                    TIdentifier: initialize_letter
+                    List[0]: 
+                    Void: 
+                CBinary: 
+                  CGreaterOrEqual: 
+                  CVar: 
+                    TIdentifier: letter
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 65
+                    Int: 
+                  Int: 
+                CFunctionCall: 
+                  TIdentifier: decrement_letter
+                  List[0]: 
+                  Void: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: putchar
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: letter
+                                Int: 
+                            Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(5):
+  [putchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [letter]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [initialize_letter]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [decrement_letter]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

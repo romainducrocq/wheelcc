@@ -1,0 +1,94 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_elem
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: three_elems
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: one
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: two
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: three
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_or_three_elems
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Structure: 
+              TIdentifier: one_elem
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: b
+            Structure: 
+              TIdentifier: three_elems
+              Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_union
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_or_three_elems
+                    Bool: 1
+                  CStatic: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

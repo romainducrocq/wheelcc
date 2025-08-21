@@ -1,0 +1,185 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_static_variable
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d
+                  CSingleInit: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.500000
+                      None: 
+                    None: 
+                  Double: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ret
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: d
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: d
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: ret
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d1
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: return_static_variable
+                      List[0]: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d2
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: return_static_variable
+                      List[0]: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d3
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: return_static_variable
+                      List[0]: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d1
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.500000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d2
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1.500000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d3
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2.500000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

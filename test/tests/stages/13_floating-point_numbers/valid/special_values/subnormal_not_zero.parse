@@ -1,0 +1,114 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: non_zero
+        List[1]: 
+          TIdentifier: d
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CUnary: 
+                  CNot: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiply_by_large_num
+        List[1]: 
+          TIdentifier: d
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 200000000000000000000.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: subnormal
+                  CSingleInit: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: multiply_by_large_num
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: subnormal
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: non_zero
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: subnormal
+                      None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

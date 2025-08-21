@@ -1,0 +1,149 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[144]:
+  struct
+  identifier(inner)
+  {
+  char
+  identifier(x)
+  ;
+  long
+  identifier(y)
+  ;
+  }
+  ;
+  struct
+  identifier(outer)
+  {
+  double
+  identifier(d)
+  ;
+  struct
+  identifier(inner)
+  *
+  identifier(ptr)
+  ;
+  struct
+  identifier(inner)
+  identifier(s)
+  ;
+  }
+  ;
+  void
+  *
+  identifier(calloc)
+  (
+  unsigned
+  long
+  identifier(nmemb)
+  ,
+  unsigned
+  long
+  identifier(size)
+  )
+  ;
+  struct
+  identifier(inner)
+  identifier(return_small_struct)
+  (
+  void
+  )
+  ;
+  struct
+  identifier(outer)
+  identifier(return_nested_struct)
+  (
+  void
+  )
+  ;
+  struct
+  identifier(inner)
+  identifier(return_small_struct)
+  (
+  void
+  )
+  {
+  struct
+  identifier(inner)
+  identifier(i)
+  =
+  {
+  const int(101)
+  ,
+  const int(102)
+  }
+  ;
+  return
+  identifier(i)
+  ;
+  }
+  struct
+  identifier(outer)
+  identifier(return_nested_struct)
+  (
+  void
+  )
+  {
+  static
+  struct
+  identifier(outer)
+  identifier(ret)
+  =
+  {
+  const double(2.0)
+  ,
+  const int(0)
+  ,
+  {
+  const int(10)
+  ,
+  const int(11)
+  }
+  }
+  ;
+  if
+  (
+  !
+  identifier(ret)
+  .
+  identifier(ptr)
+  )
+  {
+  identifier(ret)
+  .
+  identifier(ptr)
+  =
+  identifier(calloc)
+  (
+  const int(1)
+  ,
+  sizeof
+  (
+  struct
+  identifier(inner)
+  )
+  )
+  ;
+  identifier(ret)
+  .
+  identifier(ptr)
+  ->
+  identifier(x)
+  =
+  const int(12)
+  ;
+  identifier(ret)
+  .
+  identifier(ptr)
+  ->
+  identifier(y)
+  =
+  const int(13)
+  ;
+  }
+  return
+  identifier(ret)
+  ;
+  }

@@ -1,0 +1,400 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[2]: 
+    TacStaticVariable: 
+      TIdentifier: flat_static
+      Bool: 0
+      Array: 
+        TLong: 16
+        SChar: 
+      List[2]: 
+        StringInit: 
+          TIdentifier: x
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 120
+        ZeroInit: 
+          TLong: 14
+    TacStaticVariable: 
+      TIdentifier: nested_static
+      Bool: 0
+      Array: 
+        TLong: 3
+        Array: 
+          TLong: 4
+          Array: 
+            TLong: 2
+            UChar: 
+      List[4]: 
+        StringInit: 
+          TIdentifier: a
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 97
+        ZeroInit: 
+          TLong: 6
+        StringInit: 
+          TIdentifier: b
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 98
+        ZeroInit: 
+          TLong: 14
+  List[2]: 
+    TacFunction: 
+      TIdentifier: check_aligment
+      Bool: 1
+      List[1]: 
+        TIdentifier: c.0
+      List[8]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: c.0
+          TacVariable: 
+            TIdentifier: cast.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: cast.4
+          TacVariable: 
+            TIdentifier: l.1
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 16
+          TacVariable: 
+            TIdentifier: cast.5
+        TacBinary: 
+          TacRemainder: 
+          TacVariable: 
+            TIdentifier: l.1
+          TacVariable: 
+            TIdentifier: cast.5
+          TacVariable: 
+            TIdentifier: binop.6
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.7
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: binop.6
+          TacVariable: 
+            TIdentifier: cast.7
+          TacVariable: 
+            TIdentifier: binop.8
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.8
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[26]: 
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: flat_static
+          TacVariable: 
+            TIdentifier: addr.9
+        TacFunCall: 
+          TIdentifier: check_aligment
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.9
+          TacVariable: 
+            TIdentifier: call.10
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.10
+          TacVariable: 
+            TIdentifier: unop.11
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: unop.11
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_static
+          TacVariable: 
+            TIdentifier: addr.12
+        TacFunCall: 
+          TIdentifier: check_aligment
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.12
+          TacVariable: 
+            TIdentifier: call.13
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.13
+          TacVariable: 
+            TIdentifier: unop.14
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: unop.14
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: flat_auto.2
+          TacVariable: 
+            TIdentifier: addr.15
+        TacFunCall: 
+          TIdentifier: check_aligment
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.15
+          TacVariable: 
+            TIdentifier: call.16
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.16
+          TacVariable: 
+            TIdentifier: unop.17
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: unop.17
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_auto.3
+          TacVariable: 
+            TIdentifier: addr.18
+        TacFunCall: 
+          TIdentifier: check_aligment
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.18
+          TacVariable: 
+            TIdentifier: call.19
+        TacUnary: 
+          TacNot: 
+          TacVariable: 
+            TIdentifier: call.19
+          TacVariable: 
+            TIdentifier: unop.20
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: unop.20
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(25):
+  [c.0]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [check_aligment]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.1]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [flat_static]: 
+    Symbol: 
+      Array: 
+        TLong: 16
+        SChar: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[2]: 
+            StringInit: 
+              TIdentifier: x
+              Bool: 1
+              CStringLiteral: 
+                List[1]: 
+                  TChar: 120
+            ZeroInit: 
+              TLong: 14
+  [nested_static]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Array: 
+          TLong: 4
+          Array: 
+            TLong: 2
+            UChar: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[4]: 
+            StringInit: 
+              TIdentifier: a
+              Bool: 1
+              CStringLiteral: 
+                List[1]: 
+                  TChar: 97
+            ZeroInit: 
+              TLong: 6
+            StringInit: 
+              TIdentifier: b
+              Bool: 1
+              CStringLiteral: 
+                List[1]: 
+                  TChar: 98
+            ZeroInit: 
+              TLong: 14
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flat_auto.2]: 
+    Symbol: 
+      Array: 
+        TLong: 22
+        Char: 
+      LocalAttr: 
+  [nested_auto.3]: 
+    Symbol: 
+      Array: 
+        TLong: 10
+        Array: 
+          TLong: 3
+          Char: 
+      LocalAttr: 
+  [cast.4]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.9]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.18]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.20]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

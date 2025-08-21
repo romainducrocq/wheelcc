@@ -1,0 +1,228 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[25]: 
+        TacFunCall: 
+          TIdentifier: return_l
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.0
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.0
+          TacConstant: 
+            CConstLong: 
+              TLong: 8589934592
+          TacVariable: 
+            TIdentifier: binop.1
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacFunCall: 
+          TIdentifier: return_l_as_int
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.2
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.2
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: l
+          TacConstant: 
+            CConstLong: 
+              TLong: 10
+          TacVariable: 
+            TIdentifier: binop.4
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.4
+          TacVariable: 
+            TIdentifier: l
+        TacFunCall: 
+          TIdentifier: return_l
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.5
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.5
+          TacConstant: 
+            CConstLong: 
+              TLong: 8589934582
+          TacVariable: 
+            TIdentifier: binop.6
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.6
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacFunCall: 
+          TIdentifier: return_l_as_int
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.7
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: unop.8
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.7
+          TacVariable: 
+            TIdentifier: unop.8
+          TacVariable: 
+            TIdentifier: binop.9
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: binop.9
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(14):
+  [l]: 
+    Symbol: 
+      Long: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [return_l]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_l_as_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [call.0]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

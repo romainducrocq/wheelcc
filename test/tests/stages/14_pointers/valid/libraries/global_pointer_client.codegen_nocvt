@@ -1,0 +1,166 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[2]: 
+    AsmStaticConstant: 
+      TIdentifier: double.0
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 0
+    AsmStaticConstant: 
+      TIdentifier: double.1
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4621819117588971520
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[15]: 
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.0
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: d.1
+        AsmLea: 
+          AsmPseudo: 
+            TIdentifier: d.1
+          AsmPseudo: 
+            TIdentifier: addr.2
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.2
+          AsmPseudo: 
+            TIdentifier: d_ptr
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.1
+            TLong: 0
+          AsmRegister: 
+            AsmXMM0: 
+        AsmCall: 
+          TIdentifier: update_thru_ptr
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.3
+        AsmCmp: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.1
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: d.1
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmJmpCC: 
+          TIdentifier: comisd_nan.2
+          AsmP: 
+        AsmSetCC: 
+          AsmE: 
+          AsmPseudo: 
+            TIdentifier: binop.4
+        AsmLabel: 
+          TIdentifier: comisd_nan.2
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.4
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(1):
+  : d.1
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(7):
+  [d_ptr]: 
+    Symbol: 
+      Pointer: 
+        Double: 
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [update_thru_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 4096
+        TULong: 1
+        List[1]: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [d.1]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [addr.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

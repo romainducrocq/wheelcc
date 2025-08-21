@@ -1,0 +1,423 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[418]:
+  int
+  identifier(strcmp)
+  (
+  char
+  *
+  identifier(s1)
+  ,
+  char
+  *
+  identifier(s2)
+  )
+  ;
+  union
+  identifier(simple)
+  {
+  int
+  identifier(i)
+  ;
+  char
+  identifier(c)
+  ;
+  double
+  identifier(d)
+  ;
+  }
+  ;
+  extern
+  union
+  identifier(simple)
+  identifier(s)
+  ;
+  int
+  identifier(validate_simple)
+  (
+  void
+  )
+  ;
+  union
+  identifier(has_union)
+  {
+  union
+  identifier(simple)
+  identifier(u)
+  ;
+  char
+  identifier(c)
+  ;
+  }
+  ;
+  extern
+  union
+  identifier(has_union)
+  identifier(h)
+  ;
+  int
+  identifier(validate_has_union)
+  (
+  void
+  )
+  ;
+  struct
+  identifier(has_union_array)
+  {
+  union
+  identifier(has_union)
+  identifier(union_array)
+  [
+  const int(4)
+  ]
+  ;
+  char
+  identifier(c)
+  ;
+  union
+  identifier(simple)
+  identifier(s)
+  ;
+  }
+  ;
+  extern
+  struct
+  identifier(has_union_array)
+  identifier(my_struct)
+  ;
+  int
+  identifier(validate_has_union_array)
+  (
+  void
+  )
+  ;
+  extern
+  union
+  identifier(has_union)
+  identifier(all_zeros)
+  ;
+  int
+  identifier(validate_uninitialized)
+  (
+  void
+  )
+  ;
+  union
+  identifier(with_padding)
+  {
+  char
+  identifier(arr)
+  [
+  const int(13)
+  ]
+  ;
+  long
+  identifier(l)
+  ;
+  }
+  ;
+  extern
+  union
+  identifier(with_padding)
+  identifier(padded_union_array)
+  [
+  const int(3)
+  ]
+  ;
+  int
+  identifier(validate_padded_union_array)
+  (
+  void
+  )
+  ;
+  int
+  identifier(validate_simple)
+  (
+  void
+  )
+  {
+  return
+  (
+  identifier(s)
+  .
+  identifier(c)
+  ==
+  -
+  const int(39)
+  &&
+  identifier(s)
+  .
+  identifier(i)
+  ==
+  const int(217)
+  )
+  ;
+  }
+  int
+  identifier(validate_has_union)
+  (
+  void
+  )
+  {
+  return
+  (
+  identifier(h)
+  .
+  identifier(u)
+  .
+  identifier(c)
+  ==
+  const int(77)
+  &&
+  identifier(h)
+  .
+  identifier(c)
+  ==
+  const int(77)
+  &&
+  identifier(h)
+  .
+  identifier(u)
+  .
+  identifier(i)
+  ==
+  const int(77)
+  )
+  ;
+  }
+  int
+  identifier(validate_has_union_array)
+  (
+  void
+  )
+  {
+  for
+  (
+  int
+  identifier(i)
+  =
+  const int(0)
+  ;
+  identifier(i)
+  <
+  const int(3)
+  ;
+  identifier(i)
+  =
+  identifier(i)
+  +
+  const int(1)
+  )
+  {
+  int
+  identifier(expected)
+  =
+  const char('a')
+  +
+  identifier(i)
+  ;
+  if
+  (
+  identifier(my_struct)
+  .
+  identifier(union_array)
+  [
+  identifier(i)
+  ]
+  .
+  identifier(u)
+  .
+  identifier(c)
+  !=
+  identifier(expected)
+  ||
+  identifier(my_struct)
+  .
+  identifier(union_array)
+  [
+  identifier(i)
+  ]
+  .
+  identifier(c)
+  !=
+  identifier(expected)
+  ||
+  identifier(my_struct)
+  .
+  identifier(union_array)
+  [
+  identifier(i)
+  ]
+  .
+  identifier(u)
+  .
+  identifier(i)
+  !=
+  identifier(expected)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  }
+  if
+  (
+  identifier(my_struct)
+  .
+  identifier(union_array)
+  [
+  const int(3)
+  ]
+  .
+  identifier(u)
+  .
+  identifier(d)
+  !=
+  const double(0.0)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  if
+  (
+  identifier(my_struct)
+  .
+  identifier(c)
+  !=
+  const char('#')
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  if
+  (
+  identifier(my_struct)
+  .
+  identifier(s)
+  .
+  identifier(c)
+  !=
+  const char('!')
+  ||
+  identifier(my_struct)
+  .
+  identifier(s)
+  .
+  identifier(i)
+  !=
+  const char('!')
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  return
+  const int(1)
+  ;
+  }
+  int
+  identifier(validate_uninitialized)
+  (
+  void
+  )
+  {
+  if
+  (
+  identifier(all_zeros)
+  .
+  identifier(u)
+  .
+  identifier(d)
+  !=
+  const double(0.0)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  return
+  const int(1)
+  ;
+  }
+  int
+  identifier(validate_padded_union_array)
+  (
+  void
+  )
+  {
+  if
+  (
+  identifier(strcmp)
+  (
+  identifier(padded_union_array)
+  [
+  const int(0)
+  ]
+  .
+  identifier(arr)
+  ,
+  string literal("first string")
+  )
+  !=
+  const int(0)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  if
+  (
+  identifier(strcmp)
+  (
+  identifier(padded_union_array)
+  [
+  const int(1)
+  ]
+  .
+  identifier(arr)
+  ,
+  string literal("string #2")
+  )
+  !=
+  const int(0)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  if
+  (
+  identifier(strcmp)
+  (
+  identifier(padded_union_array)
+  [
+  const int(2)
+  ]
+  .
+  identifier(arr)
+  ,
+  string literal("string #3")
+  )
+  !=
+  const int(0)
+  )
+  {
+  return
+  const int(0)
+  ;
+  }
+  return
+  const int(1)
+  ;
+  }

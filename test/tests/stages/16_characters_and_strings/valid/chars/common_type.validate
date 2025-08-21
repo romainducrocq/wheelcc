@@ -1,0 +1,630 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[8]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ternary
+        List[2]: 
+          TIdentifier: flag.0
+          TIdentifier: c.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CConditional: 
+                    CVar: 
+                      TIdentifier: flag.0
+                      Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: c.1
+                        Char: 
+                      UInt: 
+                      UInt: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 1
+                      UInt: 
+                    UInt: 
+                  Long: 
+                  Long: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Char: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: char_lt_int
+        List[2]: 
+          TIdentifier: c.2
+          TIdentifier: i.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessThan: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: c.2
+                      Char: 
+                    Int: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Char: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uchar_gt_long
+        List[2]: 
+          TIdentifier: uc.4
+          TIdentifier: l.5
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CGreaterThan: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: uc.4
+                      UChar: 
+                    Long: 
+                    Long: 
+                  CVar: 
+                    TIdentifier: l.5
+                    Long: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: char_lt_uchar
+        List[2]: 
+          TIdentifier: c.6
+          TIdentifier: u.7
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessThan: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: c.6
+                      Char: 
+                    Int: 
+                    Int: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: u.7
+                      UChar: 
+                    Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Char: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: signed_char_le_char
+        List[2]: 
+          TIdentifier: s.8
+          TIdentifier: c.9
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessOrEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: s.8
+                      SChar: 
+                    Int: 
+                    Int: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: c.9
+                      Char: 
+                    Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            SChar: 
+            Char: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ten
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 10
+            None: 
+          None: 
+        Char: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiply
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.10
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CMultiply: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 10.750000
+                          Double: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: ten
+                            Char: 
+                          Double: 
+                          Double: 
+                        Double: 
+                      Char: 
+                      Char: 
+                    Char: 
+                  Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: i.10
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 107
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[10]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: ternary
+                    List[2]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CCast: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                          Int: 
+                        Char: 
+                        Char: 
+                    Long: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 4294967286
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: char_lt_int
+                    List[2]: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Char: 
+                        Char: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 256
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: uchar_gt_long
+                    List[2]: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          Int: 
+                        UChar: 
+                        UChar: 
+                      CCast: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Int: 
+                        Long: 
+                        Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c.11
+                  CSingleInit: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      Char: 
+                      Char: 
+                    Char: 
+                  Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: u.12
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      UChar: 
+                      UChar: 
+                    UChar: 
+                  UChar: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: char_lt_uchar
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: c.11
+                        Char: 
+                      CVar: 
+                        TIdentifier: u.12
+                        UChar: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s.13
+                  CSingleInit: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      SChar: 
+                      SChar: 
+                    SChar: 
+                  SChar: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: signed_char_le_char
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: s.13
+                        SChar: 
+                      CVar: 
+                        TIdentifier: c.11
+                        Char: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: multiply
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(22):
+  [flag.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.1]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [ternary]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Char: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.2]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [char_lt_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [uc.4]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [l.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [uchar_gt_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UChar: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.6]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [u.7]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [char_lt_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Char: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [s.8]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [c.9]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [signed_char_le_char]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          SChar: 
+          Char: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ten]: 
+    Symbol: 
+      Char: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            CharInit: 
+              TChar: 10
+  [multiply]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.10]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.11]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [u.12]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [s.13]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 

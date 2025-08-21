@@ -1,0 +1,107 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[11]: 
+        TacBinary: 
+          TacAdd: 
+          TacConstant: 
+            CConstLong: 
+              TLong: 2147483647
+          TacConstant: 
+            CConstLong: 
+              TLong: 2147483647
+          TacVariable: 
+            TIdentifier: binop.0
+        TacBinary: 
+          TacLessThan: 
+          TacVariable: 
+            TIdentifier: binop.0
+          TacConstant: 
+            CConstLong: 
+              TLong: 0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacBinary: 
+          TacLessThan: 
+          TacConstant: 
+            CConstLong: 
+              TLong: 19327352832
+          TacConstant: 
+            CConstLong: 
+              TLong: 100
+          TacVariable: 
+            TIdentifier: binop.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.2
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.0]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

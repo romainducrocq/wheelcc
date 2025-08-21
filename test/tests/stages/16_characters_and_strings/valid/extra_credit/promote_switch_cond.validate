@@ -1,0 +1,122 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c.0
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      Char: 
+                      Char: 
+                    Char: 
+                  Char: 
+                  None: 
+            CS: 
+              CSwitch: 
+                TIdentifier: switch.0
+                Bool: 1
+                CCast: 
+                  CVar: 
+                    TIdentifier: c.0
+                    Char: 
+                  Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[4]: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: 0switch.0
+                          None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: 1switch.0
+                          None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: 2switch.0
+                          None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                      CS: 
+                        CDefault: 
+                          TIdentifier: switch.0
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              Int: 
+                List[3]: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 356
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [c.0]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 

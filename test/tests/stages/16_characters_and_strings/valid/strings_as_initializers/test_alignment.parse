@@ -1,0 +1,245 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_aligment
+        List[1]: 
+          TIdentifier: c
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: l
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CRemainder: 
+                    CVar: 
+                      TIdentifier: l
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: flat_static
+        CSingleInit: 
+          CString: 
+            CStringLiteral: 
+              List[1]: 
+                TChar: 120
+            None: 
+          None: 
+        Array: 
+          TLong: 16
+          SChar: 
+        CStatic: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: nested_static
+        CCompoundInit: 
+          List[2]: 
+            CCompoundInit: 
+              List[1]: 
+                CSingleInit: 
+                  CString: 
+                    CStringLiteral: 
+                      List[1]: 
+                        TChar: 97
+                    None: 
+                  None: 
+              None: 
+            CCompoundInit: 
+              List[1]: 
+                CSingleInit: 
+                  CString: 
+                    CStringLiteral: 
+                      List[1]: 
+                        TChar: 98
+                    None: 
+                  None: 
+              None: 
+          None: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 4
+            Array: 
+              TLong: 2
+              UChar: 
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flat_auto
+                  None: 
+                  Array: 
+                    TLong: 22
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested_auto
+                  None: 
+                  Array: 
+                    TLong: 10
+                    Array: 
+                      TLong: 3
+                      Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_aligment
+                    List[1]: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: flat_static
+                          None: 
+                        Pointer: 
+                          Char: 
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_aligment
+                    List[1]: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: nested_static
+                          None: 
+                        Pointer: 
+                          Char: 
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_aligment
+                    List[1]: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: flat_auto
+                          None: 
+                        Pointer: 
+                          Char: 
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_aligment
+                    List[1]: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: nested_auto
+                          None: 
+                        Pointer: 
+                          Char: 
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

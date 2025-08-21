@@ -1,0 +1,65 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: u
+                  Bool: 1
+                  List[2]: 
+                    CMemberDeclaration: 
+                      TIdentifier: d
+                      Double: 
+                    CMemberDeclaration: 
+                      TIdentifier: x
+                      Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_of_unions
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 1.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 2.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 3.000000
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Structure: 
+                      TIdentifier: u
+                      Bool: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

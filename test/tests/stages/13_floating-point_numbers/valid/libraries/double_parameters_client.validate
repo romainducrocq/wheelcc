@@ -1,0 +1,137 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_arguments
+        List[8]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+          TIdentifier: c.2
+          TIdentifier: d.3
+          TIdentifier: e.4
+          TIdentifier: f.5
+          TIdentifier: g.6
+          TIdentifier: h.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: check_arguments
+                  List[8]: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 2.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 3.000000
+                      Double: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 4.000000
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 3.000000
+                        Double: 
+                      Double: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 4.000000
+                        Double: 
+                      Double: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [check_arguments]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[8]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

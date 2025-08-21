@@ -1,0 +1,66 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[61]:
+  union
+  identifier(u)
+  {
+  long
+  identifier(l)
+  ;
+  int
+  identifier(i)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  identifier(global_union)
+  =
+  {
+  const int(10)
+  }
+  ;
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(my_union)
+  =
+  {
+  const int(4)
+  }
+  ;
+  identifier(my_union)
+  .
+  identifier(i)
+  =
+  const int(123)
+  ;
+  identifier(my_union)
+  =
+  identifier(global_union)
+  ;
+  return
+  identifier(my_union)
+  .
+  identifier(i)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(target)
+  (
+  )
+  ;
+  }

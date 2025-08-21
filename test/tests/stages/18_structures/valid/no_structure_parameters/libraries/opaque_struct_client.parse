@@ -1,0 +1,322 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[8]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[0]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: create_struct
+        List[3]: 
+          TIdentifier: i
+          TIdentifier: d
+          TIdentifier: s
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Int: 
+            Double: 
+            Pointer: 
+              Char: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s
+              Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: increment_struct
+        List[1]: 
+          TIdentifier: src_ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s
+                Bool: 0
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_struct
+        List[4]: 
+          TIdentifier: ptr
+          TIdentifier: expected_i
+          TIdentifier: expected_d
+          TIdentifier: expected_s
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s
+                Bool: 0
+            Int: 
+            Double: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: print_struct_msg
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: s
+                Bool: 0
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_internal_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s
+              Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: incomplete_var
+        None: 
+        Structure: 
+          TIdentifier: s
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: new_struct
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: create_struct
+                      List[3]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 101
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 102.000000
+                          None: 
+                        CString: 
+                          CStringLiteral: 
+                            List[10]: 
+                              TChar: 110
+                              TChar: 101
+                              TChar: 119
+                              TChar: 32
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 117
+                              TChar: 99
+                              TChar: 116
+                          None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: s
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: internal_struct
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: get_internal_struct
+                      List[0]: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: s
+                      Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: print_struct_msg
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: new_struct
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: print_struct_msg
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: internal_struct
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: print_struct_msg
+                  List[1]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: incomplete_var
+                        None: 
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: increment_struct
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: new_struct
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: increment_struct
+                  List[1]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: incomplete_var
+                        None: 
+                      None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_struct
+                    List[4]: 
+                      CVar: 
+                        TIdentifier: new_struct
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 102
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 103.000000
+                        None: 
+                      CString: 
+                        CStringLiteral: 
+                          List[10]: 
+                            TChar: 110
+                            TChar: 101
+                            TChar: 119
+                            TChar: 32
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 117
+                            TChar: 99
+                            TChar: 116
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: check_struct
+                    List[4]: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: incomplete_var
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 5.000000
+                        None: 
+                      CString: 
+                        CStringLiteral: 
+                          List[13]: 
+                            TChar: 103
+                            TChar: 108
+                            TChar: 111
+                            TChar: 98
+                            TChar: 97
+                            TChar: 108
+                            TChar: 32
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 117
+                            TChar: 99
+                            TChar: 116
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

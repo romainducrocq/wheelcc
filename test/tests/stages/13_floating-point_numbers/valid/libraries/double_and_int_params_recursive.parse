@@ -1,0 +1,810 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun
+        List[18]: 
+          TIdentifier: i1
+          TIdentifier: d1
+          TIdentifier: i2
+          TIdentifier: d2
+          TIdentifier: i3
+          TIdentifier: d3
+          TIdentifier: i4
+          TIdentifier: d4
+          TIdentifier: i5
+          TIdentifier: d5
+          TIdentifier: i6
+          TIdentifier: d6
+          TIdentifier: i7
+          TIdentifier: d7
+          TIdentifier: i8
+          TIdentifier: d8
+          TIdentifier: i9
+          TIdentifier: d9
+        CB: 
+          List[18]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i1
+                    None: 
+                  CVar: 
+                    TIdentifier: d9
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[4]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: call1
+                            CSingleInit: 
+                              CFunctionCall: 
+                                TIdentifier: fun
+                                List[18]: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i1
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d1
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i2
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d2
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i3
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d3
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i4
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d4
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i5
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d5
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i6
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d6
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i7
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d7
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i8
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d8
+                                    None: 
+                                  CBinary: 
+                                    CAdd: 
+                                    CVar: 
+                                      TIdentifier: i9
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: d9
+                                    None: 
+                                None: 
+                              None: 
+                            Int: 
+                            None: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: call2
+                            CSingleInit: 
+                              CFunctionCall: 
+                                TIdentifier: fun
+                                List[18]: 
+                                  CVar: 
+                                    TIdentifier: i1
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d1
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i2
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d2
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i3
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d3
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i4
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d4
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i5
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d5
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i6
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d6
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i7
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d7
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i8
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d8
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                  CVar: 
+                                    TIdentifier: i9
+                                    None: 
+                                  CBinary: 
+                                    CSubtract: 
+                                    CVar: 
+                                      TIdentifier: d9
+                                      None: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                                    None: 
+                                None: 
+                              None: 
+                            Int: 
+                            None: 
+                      CS: 
+                        CIf: 
+                          CVar: 
+                            TIdentifier: call1
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CVar: 
+                                      TIdentifier: call1
+                                      None: 
+                          None: 
+                      CS: 
+                        CIf: 
+                          CVar: 
+                            TIdentifier: call2
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CVar: 
+                                      TIdentifier: call2
+                                      None: 
+                          None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i2
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i3
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i4
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i5
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i6
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i7
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i8
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i9
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i1
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d1
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d2
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d3
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d4
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 14
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d5
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d6
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 16
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d7
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 17
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d8
+                    None: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d9
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 18
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[18]: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+          Int: 
+        None: 

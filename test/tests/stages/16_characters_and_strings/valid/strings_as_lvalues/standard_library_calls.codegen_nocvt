@@ -1,0 +1,622 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[6]: 
+    AsmStaticConstant: 
+      TIdentifier: string.1
+      TInt: 1
+      StringInit: 
+        TIdentifier: abc
+        Bool: 1
+        CStringLiteral: 
+          List[3]: 
+            TChar: 97
+            TChar: 98
+            TChar: 99
+    AsmStaticConstant: 
+      TIdentifier: string.3
+      TInt: 1
+      StringInit: 
+        TIdentifier: ab
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 97
+            TChar: 98
+    AsmStaticConstant: 
+      TIdentifier: string.4
+      TInt: 1
+      StringInit: 
+        TIdentifier: xy
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 120
+            TChar: 121
+    AsmStaticConstant: 
+      TIdentifier: string.5
+      TInt: 1
+      StringInit: 
+        TIdentifier: Hello, World!
+        Bool: 1
+        CStringLiteral: 
+          List[13]: 
+            TChar: 72
+            TChar: 101
+            TChar: 108
+            TChar: 108
+            TChar: 111
+            TChar: 44
+            TChar: 32
+            TChar: 87
+            TChar: 111
+            TChar: 114
+            TChar: 108
+            TChar: 100
+            TChar: 33
+    AsmStaticConstant: 
+      TIdentifier: string.7
+      TInt: 1
+      StringInit: 
+        TIdentifier: 
+        Bool: 1
+        CStringLiteral: 
+          List[0]: 
+    AsmStaticConstant: 
+      TIdentifier: string.8
+      TInt: 1
+      StringInit: 
+        TIdentifier: 10
+        Bool: 1
+        CStringLiteral: 
+          List[2]: 
+            TChar: 49
+            TChar: 48
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[55]: 
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.1
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.6
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.1
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.7
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.6
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.7
+          AsmRegister: 
+            AsmSi: 
+        AsmCall: 
+          TIdentifier: strcmp
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.8
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.8
+        AsmJmpCC: 
+          TIdentifier: if_false.0
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.0
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.3
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.9
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.4
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.10
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.9
+          AsmRegister: 
+            AsmDi: 
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.10
+          AsmRegister: 
+            AsmSi: 
+        AsmCall: 
+          TIdentifier: strcmp
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.11
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.11
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmSetCC: 
+          AsmGE: 
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.12
+        AsmJmpCC: 
+          TIdentifier: if_false.2
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.2
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.5
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.13
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.13
+          AsmRegister: 
+            AsmDi: 
+        AsmCall: 
+          TIdentifier: puts
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.14
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.7
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.15
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.15
+          AsmRegister: 
+            AsmDi: 
+        AsmCall: 
+          TIdentifier: strlen
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.16
+        AsmCmp: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: call.16
+        AsmJmpCC: 
+          TIdentifier: if_false.6
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 3
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.6
+        AsmLea: 
+          AsmData: 
+            TIdentifier: string.8
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: addr.17
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: addr.17
+          AsmRegister: 
+            AsmDi: 
+        AsmCall: 
+          TIdentifier: atoi
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: call.18
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: call.18
+          AsmPseudo: 
+            TIdentifier: i.5
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 10
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: i.5
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.19
+        AsmSetCC: 
+          AsmNE: 
+          AsmPseudo: 
+            TIdentifier: binop.19
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: binop.19
+        AsmJmpCC: 
+          TIdentifier: if_false.9
+          AsmE: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 4
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: if_false.9
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(6):
+  : string.1
+  : string.3
+  : string.4
+  : string.5
+  : string.7
+  : string.8
++
++
+@@ String Constant Table @@
+Dict(6):
+  [abc]: 
+    String: "abc"
+  [ab]: 
+    String: "ab"
+  [xy]: 
+    String: "xy"
+  [Hello, World!]: 
+    String: "Hello, World!"
+  []: 
+    String: ""
+  [10]: 
+    String: "10"
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(26):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 48
+        TULong: 1
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [puts]: 
+    Symbol: 
+      FunType: 
+        TULong: 16
+        TULong: 1
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [strlen]: 
+    Symbol: 
+      FunType: 
+        TULong: 16
+        TULong: 1
+        List[1]: 
+          Pointer: 
+            Char: 
+        ULong: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [atoi]: 
+    Symbol: 
+      FunType: 
+        TULong: 16
+        TULong: 1
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [string.1]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: abc
+          Bool: 1
+          CStringLiteral: 
+            List[3]: 
+              TChar: 97
+              TChar: 98
+              TChar: 99
+  [addr.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [string.3]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: ab
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 97
+              TChar: 98
+  [addr.9]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [string.4]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: xy
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 120
+              TChar: 121
+  [addr.10]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [string.5]: 
+    Symbol: 
+      Array: 
+        TLong: 14
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Hello, World!
+          Bool: 1
+          CStringLiteral: 
+            List[13]: 
+              TChar: 72
+              TChar: 101
+              TChar: 108
+              TChar: 108
+              TChar: 111
+              TChar: 44
+              TChar: 32
+              TChar: 87
+              TChar: 111
+              TChar: 114
+              TChar: 108
+              TChar: 100
+              TChar: 33
+  [addr.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [string.7]: 
+    Symbol: 
+      Array: 
+        TLong: 1
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: 
+          Bool: 1
+          CStringLiteral: 
+            List[0]: 
+  [addr.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.16]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [string.8]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: 10
+          Bool: 1
+          CStringLiteral: 
+            List[2]: 
+              TChar: 49
+              TChar: 48
+  [addr.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

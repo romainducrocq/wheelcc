@@ -1,0 +1,2380 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[57]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize1
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 1
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_1
+        None: 
+        Structure: 
+          TIdentifier: bytesize1
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize2
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_2
+        None: 
+        Structure: 
+          TIdentifier: bytesize2
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize3
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_3
+        None: 
+        Structure: 
+          TIdentifier: bytesize3
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize4
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 4
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_4
+        None: 
+        Structure: 
+          TIdentifier: bytesize4
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize5
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 5
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_5
+        None: 
+        Structure: 
+          TIdentifier: bytesize5
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize6
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 6
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_6
+        None: 
+        Structure: 
+          TIdentifier: bytesize6
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize7
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 7
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_7
+        None: 
+        Structure: 
+          TIdentifier: bytesize7
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize8
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 8
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_8
+        None: 
+        Structure: 
+          TIdentifier: bytesize8
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize9
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 9
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_9
+        None: 
+        Structure: 
+          TIdentifier: bytesize9
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize10
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 10
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_10
+        None: 
+        Structure: 
+          TIdentifier: bytesize10
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize11
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 11
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_11
+        None: 
+        Structure: 
+          TIdentifier: bytesize11
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize12
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 12
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_12
+        None: 
+        Structure: 
+          TIdentifier: bytesize12
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize13
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 13
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_13
+        None: 
+        Structure: 
+          TIdentifier: bytesize13
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize14
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 14
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_14
+        None: 
+        Structure: 
+          TIdentifier: bytesize14
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize15
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 15
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_15
+        None: 
+        Structure: 
+          TIdentifier: bytesize15
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize16
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 16
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_16
+        None: 
+        Structure: 
+          TIdentifier: bytesize16
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize17
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 17
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_17
+        None: 
+        Structure: 
+          TIdentifier: bytesize17
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize18
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 18
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_18
+        None: 
+        Structure: 
+          TIdentifier: bytesize18
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize19
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 19
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_19
+        None: 
+        Structure: 
+          TIdentifier: bytesize19
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize20
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 20
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_20
+        None: 
+        Structure: 
+          TIdentifier: bytesize20
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize21
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 21
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_21
+        None: 
+        Structure: 
+          TIdentifier: bytesize21
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize22
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 22
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_22
+        None: 
+        Structure: 
+          TIdentifier: bytesize22
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize23
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 23
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_23
+        None: 
+        Structure: 
+          TIdentifier: bytesize23
+          Bool: 0
+        CExtern: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: bytesize24
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 24
+              UChar: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globvar_24
+        None: 
+        Structure: 
+          TIdentifier: bytesize24
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun0
+        List[48]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: m
+          TIdentifier: n
+          TIdentifier: o
+          TIdentifier: p
+          TIdentifier: q
+          TIdentifier: r
+          TIdentifier: s
+          TIdentifier: t
+          TIdentifier: u
+          TIdentifier: v
+          TIdentifier: w
+          TIdentifier: x
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+          TIdentifier: e_expected
+          TIdentifier: f_expected
+          TIdentifier: g_expected
+          TIdentifier: h_expected
+          TIdentifier: i_expected
+          TIdentifier: j_expected
+          TIdentifier: k_expected
+          TIdentifier: l_expected
+          TIdentifier: m_expected
+          TIdentifier: n_expected
+          TIdentifier: o_expected
+          TIdentifier: p_expected
+          TIdentifier: q_expected
+          TIdentifier: r_expected
+          TIdentifier: s_expected
+          TIdentifier: t_expected
+          TIdentifier: u_expected
+          TIdentifier: v_expected
+          TIdentifier: w_expected
+          TIdentifier: x_expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[48]: 
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize3
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize4
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize5
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize6
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize7
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize8
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize9
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize10
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize11
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize12
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize13
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize14
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize15
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize16
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize17
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize18
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize19
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize20
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize21
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize22
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize23
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize24
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun1
+        List[20]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+          TIdentifier: e_expected
+          TIdentifier: f_expected
+          TIdentifier: g_expected
+          TIdentifier: h_expected
+          TIdentifier: i_expected
+          TIdentifier: j_expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[20]: 
+            Structure: 
+              TIdentifier: bytesize7
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize8
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize9
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize10
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize3
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize4
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize5
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize6
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun2
+        List[8]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Structure: 
+              TIdentifier: bytesize11
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize12
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize13
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun3
+        List[8]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Structure: 
+              TIdentifier: bytesize14
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize15
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize16
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: memcmp
+        List[3]: 
+          TIdentifier: s1
+          TIdentifier: s2
+          TIdentifier: n
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Void: 
+            Pointer: 
+              Void: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun0
+        List[48]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: k
+          TIdentifier: l
+          TIdentifier: m
+          TIdentifier: n
+          TIdentifier: o
+          TIdentifier: p
+          TIdentifier: q
+          TIdentifier: r
+          TIdentifier: s
+          TIdentifier: t
+          TIdentifier: u
+          TIdentifier: v
+          TIdentifier: w
+          TIdentifier: x
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+          TIdentifier: e_expected
+          TIdentifier: f_expected
+          TIdentifier: g_expected
+          TIdentifier: h_expected
+          TIdentifier: i_expected
+          TIdentifier: j_expected
+          TIdentifier: k_expected
+          TIdentifier: l_expected
+          TIdentifier: m_expected
+          TIdentifier: n_expected
+          TIdentifier: o_expected
+          TIdentifier: p_expected
+          TIdentifier: q_expected
+          TIdentifier: r_expected
+          TIdentifier: s_expected
+          TIdentifier: t_expected
+          TIdentifier: u_expected
+          TIdentifier: v_expected
+          TIdentifier: w_expected
+          TIdentifier: x_expected
+        CB: 
+          List[25]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: a_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: b_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: c_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: d_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: e
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: e_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: e
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: f
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: f_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: f
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: g
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: g_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: g
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: h
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: h_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: h
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: i_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: j
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: j_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: j
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: k
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: k_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: k
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: l
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: l_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: l
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: m
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: m_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: m
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: n
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: n_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: n
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: o
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: o_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: o
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: p
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: p_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: p
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: q
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: q_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: q
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: r
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: r_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: r
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: s_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: s
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: t
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: t_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: t
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: u
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: u_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: u
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: v
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: v_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: v
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: w
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: w_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: w
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: x
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: x_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: x
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[48]: 
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize3
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize4
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize5
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize6
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize7
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize8
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize9
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize10
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize11
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize12
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize13
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize14
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize15
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize16
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize17
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize18
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize19
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize20
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize21
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize22
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize23
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize24
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun1
+        List[20]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+          TIdentifier: i
+          TIdentifier: j
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+          TIdentifier: e_expected
+          TIdentifier: f_expected
+          TIdentifier: g_expected
+          TIdentifier: h_expected
+          TIdentifier: i_expected
+          TIdentifier: j_expected
+        CB: 
+          List[11]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: a_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: b_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: c_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: d_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: e
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: e_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: e
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: f
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: f_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: f
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: g
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: g_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: g
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: h
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: h_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: h
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: i_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: j
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: j_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: j
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[20]: 
+            Structure: 
+              TIdentifier: bytesize7
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize8
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize9
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize10
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize3
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize4
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize5
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize6
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun2
+        List[8]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: a_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: b_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: c_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: d_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Structure: 
+              TIdentifier: bytesize11
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize12
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize13
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize1
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun3
+        List[8]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: a_expected
+          TIdentifier: b_expected
+          TIdentifier: c_expected
+          TIdentifier: d_expected
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: a_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: b_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: b
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: c_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: c
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: memcmp
+                  List[3]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: d_expected
+                      None: 
+                    CSizeOf: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Structure: 
+              TIdentifier: bytesize14
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize15
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize16
+              Bool: 0
+            Structure: 
+              TIdentifier: bytesize2
+              Bool: 0
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+            Pointer: 
+              UChar: 
+          Int: 
+        None: 

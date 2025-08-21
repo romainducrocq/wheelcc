@@ -1,0 +1,529 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[15]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s.0
+        Bool: 0
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: one_d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: two_msg
+            Pointer: 
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: three_arr
+            Array: 
+              TLong: 3
+              UChar: 
+          CMemberDeclaration: 
+            TIdentifier: four_i
+            Int: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: uninitialized
+        None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        CExtern: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: partial
+        None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        CExtern: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: partial_with_array
+        None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        CExtern: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: converted
+        None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_uninitialized
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_partially_initialized
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_partial_inner_init
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_implicit_conversion
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: uninitialized
+        None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: partial
+        CCompoundInit: 
+          List[2]: 
+            CSingleInit: 
+              CConstant: 
+                CConstDouble: 
+                  TDouble: 1.000000
+                None: 
+              None: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[5]: 
+                    TChar: 72
+                    TChar: 101
+                    TChar: 108
+                    TChar: 108
+                    TChar: 111
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: partial_with_array
+        CCompoundInit: 
+          List[4]: 
+            CSingleInit: 
+              CConstant: 
+                CConstDouble: 
+                  TDouble: 3.000000
+                None: 
+              None: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[1]: 
+                    TChar: 33
+                None: 
+              None: 
+            CCompoundInit: 
+              List[1]: 
+                CSingleInit: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 2
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: converted
+        CCompoundInit: 
+          List[4]: 
+            CSingleInit: 
+              CConstant: 
+                CConstLong: 
+                  TLong: 1152921504606846977
+                None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstLong: 
+                  TLong: 0
+                None: 
+              None: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[3]: 
+                    TChar: 97
+                    TChar: 98
+                    TChar: 99
+                None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstLong: 
+                  TLong: 17179869189
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_uninitialized
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_partially_initialized
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_partial_inner_init
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_implicit_conversion
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(2):
+  [Hello]: 
+    String: "Hello"
+  [!]: 
+    String: "!"
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[4]: 
+        TIdentifier: one_d
+        TIdentifier: two_msg
+        TIdentifier: three_arr
+        TIdentifier: four_i
+      Dict[4]: 
+        [one_d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [two_msg]: 
+          StructMember: 
+            TLong: 8
+            Pointer: 
+              Char: 
+        [three_arr]: 
+          StructMember: 
+            TLong: 16
+            Array: 
+              TLong: 3
+              UChar: 
+        [four_i]: 
+          StructMember: 
+            TLong: 20
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(12):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uninitialized]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [partial]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[3]: 
+            DoubleInit: 
+              TIdentifier: 4607182418800017408
+            PointerInit: 
+              TIdentifier: string.0
+            ZeroInit: 
+              TLong: 8
+  [partial_with_array]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[5]: 
+            DoubleInit: 
+              TIdentifier: 4613937818241073152
+            PointerInit: 
+              TIdentifier: string.1
+            UCharInit: 
+              TUChar: 1
+            ZeroInit: 
+              TLong: 3
+            IntInit: 
+              TInt: 2
+  [converted]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[5]: 
+            DoubleInit: 
+              TIdentifier: 4877398396442247168
+            ZeroInit: 
+              TLong: 8
+            StringInit: 
+              TIdentifier: abc
+              Bool: 0
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 97
+                  TChar: 98
+                  TChar: 99
+            ZeroInit: 
+              TLong: 1
+            IntInit: 
+              TInt: 5
+  [test_uninitialized]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_partially_initialized]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_partial_inner_init]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_implicit_conversion]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [string.0]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Hello
+          Bool: 1
+          CStringLiteral: 
+            List[5]: 
+              TChar: 72
+              TChar: 101
+              TChar: 108
+              TChar: 108
+              TChar: 111
+  [string.1]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: !
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 33
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

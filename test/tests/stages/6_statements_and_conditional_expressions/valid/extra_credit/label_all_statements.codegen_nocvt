@@ -1,0 +1,149 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[25]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.0
+        AsmLabel: 
+          TIdentifier: label_if.0
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.0
+        AsmJmpCC: 
+          TIdentifier: if_else.5
+          AsmE: 
+        AsmJmp: 
+          TIdentifier: label_expression.1
+        AsmJmp: 
+          TIdentifier: if_false.6
+        AsmLabel: 
+          TIdentifier: if_else.5
+        AsmJmp: 
+          TIdentifier: label_empty.2
+        AsmLabel: 
+          TIdentifier: if_false.6
+        AsmLabel: 
+          TIdentifier: label_goto.3
+        AsmJmp: 
+          TIdentifier: label_return.4
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmJmpCC: 
+          TIdentifier: if_false.7
+          AsmE: 
+        AsmLabel: 
+          TIdentifier: label_expression.1
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.0
+        AsmLabel: 
+          TIdentifier: if_false.7
+        AsmJmp: 
+          TIdentifier: label_if.0
+        AsmLabel: 
+          TIdentifier: label_return.4
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a.0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmLabel: 
+          TIdentifier: label_empty.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 100
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.0
+        AsmJmp: 
+          TIdentifier: label_goto.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

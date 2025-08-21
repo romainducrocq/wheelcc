@@ -1,0 +1,1127 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[120]: 
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 11
+          TacVariable: 
+            TIdentifier: cast.2
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 11
+          TacVariable: 
+            TIdentifier: cast.2
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 12
+          TacVariable: 
+            TIdentifier: cast.4
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 12
+          TacVariable: 
+            TIdentifier: cast.4
+          TacVariable: 
+            TIdentifier: binop.5
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 36
+          TacVariable: 
+            TIdentifier: cast.6
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 36
+          TacVariable: 
+            TIdentifier: cast.6
+          TacVariable: 
+            TIdentifier: binop.7
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 8
+          TacVariable: 
+            TIdentifier: cast.8
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 8
+          TacVariable: 
+            TIdentifier: cast.8
+          TacVariable: 
+            TIdentifier: binop.9
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: binop.9
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 20
+          TacVariable: 
+            TIdentifier: cast.10
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 20
+          TacVariable: 
+            TIdentifier: cast.10
+          TacVariable: 
+            TIdentifier: binop.11
+        TacJumpIfZero: 
+          TIdentifier: if_false.4
+          TacVariable: 
+            TIdentifier: binop.11
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+        TacLabel: 
+          TIdentifier: if_false.4
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 0
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 1
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 2
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 3
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 4
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 5
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 6
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 7
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 8
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 9
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 10
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 0
+          TacConstant: 
+            CConstUChar: 
+              TUChar: 0
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.12
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.12
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 0
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 1
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 2
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 3
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 4
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 5
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 6
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 7
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 8
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 9
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 10
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 0
+          TacConstant: 
+            CConstUChar: 
+              TUChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 0
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 11
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 12
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 13
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 14
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 15
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 16
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 17
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 18
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 19
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 20
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 21
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 11
+          TacConstant: 
+            CConstUChar: 
+              TUChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 11
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 22
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 23
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 24
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 25
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 26
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 27
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 28
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 29
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 30
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 31
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 32
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 22
+          TacConstant: 
+            CConstUChar: 
+              TUChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 22
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 0
+          TacConstant: 
+            CConstUInt: 
+              TUInt: 0
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.13
+        TacTruncate: 
+          TacVariable: 
+            TIdentifier: unop.13
+          TacVariable: 
+            TIdentifier: cast.14
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.14
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.15
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 1
+          TacVariable: 
+            TIdentifier: cast.15
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 2
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 3
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 4
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 5
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 6
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 7
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 8
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 9
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 12
+          TacConstant: 
+            CConstUInt: 
+              TUInt: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 12
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 13
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 14
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 15
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 16
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 17
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 18
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 19
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 20
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: y.1
+          TLong: 21
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 11
+          TacVariable: 
+            TIdentifier: cast.16
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 11
+          TacVariable: 
+            TIdentifier: cast.16
+          TacVariable: 
+            TIdentifier: binop.17
+        TacJumpIfZero: 
+          TIdentifier: if_false.5
+          TacVariable: 
+            TIdentifier: binop.17
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 6
+        TacLabel: 
+          TIdentifier: if_false.5
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 24
+          TacVariable: 
+            TIdentifier: cast.18
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 24
+          TacVariable: 
+            TIdentifier: cast.18
+          TacVariable: 
+            TIdentifier: binop.19
+        TacJumpIfZero: 
+          TIdentifier: if_false.6
+          TacVariable: 
+            TIdentifier: binop.19
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 7
+        TacLabel: 
+          TIdentifier: if_false.6
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 20
+          TacVariable: 
+            TIdentifier: cast.20
+        TacBinary: 
+          TacNotEqual: 
+          TacConstant: 
+            CConstULong: 
+              TULong: 20
+          TacVariable: 
+            TIdentifier: cast.20
+          TacVariable: 
+            TIdentifier: binop.21
+        TacJumpIfZero: 
+          TIdentifier: if_false.7
+          TacVariable: 
+            TIdentifier: binop.21
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 8
+        TacLabel: 
+          TIdentifier: if_false.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: get_union_ptr
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.22
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.22
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(15):
+  [eight_bytes.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: c
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [c]: 
+          StructMember: 
+            TLong: 4
+            Char: 
+  [two_bytes.1]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 2
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Char: 
+  [three_bytes.2]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 3
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Char: 
+  [sixteen_bytes.3]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 16
+      List[3]: 
+        TIdentifier: eight
+        TIdentifier: two
+        TIdentifier: three
+      Dict[3]: 
+        [eight]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
+        [two]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+        [three]: 
+          StructMember: 
+            TLong: 10
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+  [seven_bytes.4]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 7
+      List[3]: 
+        TIdentifier: two
+        TIdentifier: three
+        TIdentifier: two2
+      Dict[3]: 
+        [two]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+        [three]: 
+          StructMember: 
+            TLong: 2
+            Structure: 
+              TIdentifier: three_bytes.2
+              Bool: 0
+        [two2]: 
+          StructMember: 
+            TLong: 5
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+  [twentyfour_bytes.5]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 24
+      List[2]: 
+        TIdentifier: seven
+        TIdentifier: sixteen
+      Dict[2]: 
+        [seven]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: seven_bytes.4
+              Bool: 0
+        [sixteen]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+  [twenty_bytes.6]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 20
+      List[2]: 
+        TIdentifier: sixteen
+        TIdentifier: two
+      Dict[2]: 
+        [sixteen]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: sixteen_bytes.3
+              Bool: 0
+        [two]: 
+          StructMember: 
+            TLong: 16
+            Structure: 
+              TIdentifier: two_bytes.1
+              Bool: 0
+  [wonky.7]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 19
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 19
+              Char: 
+  [internal_padding.8]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: d
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+  [contains_struct_array.9]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 28
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: struct_array
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [struct_array]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: eight_bytes.0
+                Bool: 0
+  [no_padding.10]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 11
+      List[3]: 
+        TIdentifier: c
+        TIdentifier: uc
+        TIdentifier: arr
+      Dict[3]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [uc]: 
+          StructMember: 
+            TLong: 0
+            UChar: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 11
+              SChar: 
+  [with_padding.11]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: arr
+        TIdentifier: ui
+      Dict[2]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 10
+              SChar: 
+        [ui]: 
+          StructMember: 
+            TLong: 0
+            UInt: 
+  [contains_array.12]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 36
+      List[2]: 
+        TIdentifier: arr1
+        TIdentifier: arr
+      Dict[2]: 
+        [arr1]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Structure: 
+                TIdentifier: with_padding.11
+                Bool: 1
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: no_padding.10
+                Bool: 1
+  [double_and_int.13]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: d
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [contains_structs.14]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 20
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: wonky.7
+              Bool: 0
+        [y]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: eight_bytes.0
+              Bool: 0
++
++
+@@ Symbol Table @@
+Dict(25):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: no_padding.10
+        Bool: 1
+      LocalAttr: 
+  [y.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: contains_array.12
+        Bool: 1
+      LocalAttr: 
+  [get_union_ptr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Structure: 
+            TIdentifier: contains_structs.14
+            Bool: 1
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [cast.2]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.4]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.6]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.10]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.12]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [unop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.14]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [cast.15]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [cast.16]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.18]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.20]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.22]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: contains_structs.14
+          Bool: 1
+      LocalAttr: 

@@ -1,0 +1,695 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[12]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.21
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 5
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob7
+        None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob8
+        None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob9
+        None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob10
+        None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob11
+        None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob12
+        None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[6]: 
+          TIdentifier: one.22
+          TIdentifier: two.23
+          TIdentifier: three.24
+          TIdentifier: four.25
+          TIdentifier: five.26
+          TIdentifier: six.27
+        CB: 
+          List[20]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: seven.28
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CBinary: 
+                        CSubtract: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: four.25
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight.29
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CSubtract: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: two.23
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nine.30
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CSubtract: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: three.24
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ten.31
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CSubtract: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: two.23
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eleven.32
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CBinary: 
+                        CMultiply: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CVar: 
+                          TIdentifier: two.23
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: one.22
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: twelve.33
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: glob
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      CVar: 
+                        TIdentifier: two.23
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob7
+                    Int: 
+                  CVar: 
+                    TIdentifier: seven.28
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob8
+                    Int: 
+                  CVar: 
+                    TIdentifier: eight.29
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob9
+                    Int: 
+                  CVar: 
+                    TIdentifier: nine.30
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob10
+                    Int: 
+                  CVar: 
+                    TIdentifier: ten.31
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob11
+                    Int: 
+                  CVar: 
+                    TIdentifier: eleven.32
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: glob12
+                    Int: 
+                  CVar: 
+                    TIdentifier: twelve.33
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_12_ints
+                  List[13]: 
+                    CVar: 
+                      TIdentifier: one.22
+                      Int: 
+                    CVar: 
+                      TIdentifier: two.23
+                      Int: 
+                    CVar: 
+                      TIdentifier: three.24
+                      Int: 
+                    CVar: 
+                      TIdentifier: four.25
+                      Int: 
+                    CVar: 
+                      TIdentifier: five.26
+                      Int: 
+                    CVar: 
+                      TIdentifier: six.27
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 9
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob7
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob8
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob9
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 9
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob10
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob11
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: glob12
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(24):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 5
+  [glob7]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [glob8]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [glob9]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [glob10]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [glob11]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [glob12]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [one.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [two.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [three.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [four.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [five.26]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [six.27]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [seven.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eight.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [nine.30]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ten.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eleven.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [twelve.33]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

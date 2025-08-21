@@ -1,0 +1,73 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: puts
+        List[1]: 
+          TIdentifier: s
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: strings
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[12]: 
+                          TChar: 72
+                          TChar: 101
+                          TChar: 108
+                          TChar: 108
+                          TChar: 111
+                          TChar: 44
+                          TChar: 32
+                          TChar: 87
+                          TChar: 111
+                          TChar: 114
+                          TChar: 108
+                          TChar: 100
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: strings
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

@@ -1,0 +1,96 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: x
+        None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CGoto: 
+                TIdentifier: x.0
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: x.0
+                  Int: 
+            CS: 
+              CCompound: 
+                CB: 
+                  List[2]: 
+                    CD: 
+                      CVarDecl: 
+                        CVariableDeclaration: 
+                          TIdentifier: x
+                          None: 
+                          Int: 
+                          CExtern: 
+                    CS: 
+                      CLabel: 
+                        TIdentifier: x.0
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: x
+                            Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [x]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

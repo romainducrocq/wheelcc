@@ -1,0 +1,106 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: a
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 8589934580
+            None: 
+          None: 
+        ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b
+                  CSingleInit: 
+                    CCast: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: a
+                          None: 
+                        UInt: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 4294967284
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  CCast: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: a
+                        None: 
+                      Int: 
+                      None: 
+                    ULong: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709551604
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

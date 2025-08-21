@@ -1,0 +1,134 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[11]: 
+        TacCopyToOffset: 
+          TIdentifier: u.0
+          TLong: 0
+          TacConstant: 
+            CConstLong: 
+              TLong: 0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: u.0
+          TacVariable: 
+            TIdentifier: addr.1
+        TacCopyToOffset: 
+          TIdentifier: u.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: addr.1
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: u.0
+          TacVariable: 
+            TIdentifier: addr.2
+        TacCopyFromOffset: 
+          TIdentifier: u.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.3
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: addr.2
+          TacVariable: 
+            TIdentifier: smem.3
+          TacVariable: 
+            TIdentifier: binop.4
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [self_ptr.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: ptr
+        TIdentifier: l
+      Dict[2]: 
+        [ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: self_ptr.0
+                Bool: 1
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
++
++
+@@ Symbol Table @@
+Dict(6):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [u.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: self_ptr.0
+        Bool: 1
+      LocalAttr: 
+  [addr.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.3]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: self_ptr.0
+          Bool: 1
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

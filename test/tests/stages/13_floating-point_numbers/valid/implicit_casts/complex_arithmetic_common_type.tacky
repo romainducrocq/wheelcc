@@ -1,0 +1,146 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: ul
+      Bool: 1
+      ULong: 
+      List[1]: 
+        ULongInit: 
+          TULong: 10000
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[10]: 
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 50
+          TacVariable: 
+            TIdentifier: unop.2
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: unop.2
+          TacVariable: 
+            TIdentifier: i.0
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: i.0
+          TacVariable: 
+            TIdentifier: cast.3
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: ul
+          TacVariable: 
+            TIdentifier: cast.3
+          TacVariable: 
+            TIdentifier: binop.4
+        TacUIntToDouble: 
+          TacVariable: 
+            TIdentifier: binop.4
+          TacVariable: 
+            TIdentifier: cast.5
+        TacBinary: 
+          TacMultiply: 
+          TacVariable: 
+            TIdentifier: cast.5
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 3.125000
+          TacVariable: 
+            TIdentifier: binop.6
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.6
+          TacVariable: 
+            TIdentifier: d.1
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: d.1
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 31093.750000
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(10):
+  [ul]: 
+    Symbol: 
+      ULong: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            ULongInit: 
+              TULong: 10000
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.1]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.3]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

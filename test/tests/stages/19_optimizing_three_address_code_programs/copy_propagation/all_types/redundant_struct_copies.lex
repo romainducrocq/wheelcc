@@ -1,0 +1,103 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[98]:
+  struct
+  identifier(s)
+  {
+  double
+  identifier(d)
+  ;
+  int
+  identifier(i)
+  ;
+  }
+  ;
+  double
+  identifier(target)
+  (
+  int
+  identifier(flag)
+  ,
+  int
+  identifier(flag2)
+  ,
+  struct
+  identifier(s)
+  identifier(y)
+  )
+  {
+  struct
+  identifier(s)
+  identifier(x)
+  =
+  identifier(y)
+  ;
+  if
+  (
+  identifier(flag)
+  )
+  {
+  identifier(y)
+  =
+  identifier(x)
+  ;
+  }
+  if
+  (
+  identifier(flag2)
+  )
+  {
+  identifier(x)
+  =
+  identifier(y)
+  ;
+  }
+  return
+  identifier(x)
+  .
+  identifier(d)
+  +
+  identifier(y)
+  .
+  identifier(d)
+  +
+  identifier(x)
+  .
+  identifier(i)
+  +
+  identifier(y)
+  .
+  identifier(i)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  identifier(my_struct)
+  =
+  {
+  const double(25.0)
+  ,
+  const int(5)
+  }
+  ;
+  return
+  identifier(target)
+  (
+  const int(0)
+  ,
+  const int(1)
+  ,
+  identifier(my_struct)
+  )
+  ==
+  const double(60.0)
+  ;
+  }

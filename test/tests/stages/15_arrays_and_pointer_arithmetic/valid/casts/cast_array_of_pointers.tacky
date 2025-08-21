@@ -1,0 +1,158 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[14]: 
+        TacCopyToOffset: 
+          TIdentifier: simple_array.0
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacCopyToOffset: 
+          TIdentifier: simple_array.0
+          TLong: 4
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: simple_array.0
+          TacVariable: 
+            TIdentifier: addr.3
+        TacCopyToOffset: 
+          TIdentifier: ptr_arr.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: addr.3
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.4
+        TacCopyToOffset: 
+          TIdentifier: ptr_arr.1
+          TLong: 8
+          TacVariable: 
+            TIdentifier: cast.4
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: simple_array.0
+          TacVariable: 
+            TIdentifier: addr.5
+        TacCopyToOffset: 
+          TIdentifier: ptr_arr.1
+          TLong: 16
+          TacVariable: 
+            TIdentifier: addr.5
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: ptr_arr.1
+          TacVariable: 
+            TIdentifier: addr.6
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: addr.6
+          TacVariable: 
+            TIdentifier: other_ptr.2
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: ptr_arr.1
+          TacVariable: 
+            TIdentifier: addr.7
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: other_ptr.2
+          TacVariable: 
+            TIdentifier: addr.7
+          TacVariable: 
+            TIdentifier: binop.8
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.8
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(10):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [simple_array.0]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Int: 
+      LocalAttr: 
+  [ptr_arr.1]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Pointer: 
+          Array: 
+            TLong: 2
+            Int: 
+      LocalAttr: 
+  [other_ptr.2]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [addr.3]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.4]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 2
+          Int: 
+      LocalAttr: 
+  [addr.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,1435 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[10]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: read_nested
+        List[4]: 
+          TIdentifier: nested_arr.0
+          TIdentifier: i.1
+          TIdentifier: j.2
+          TIdentifier: expected.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: nested_arr.0
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: i.1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: j.2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: expected.3
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: write_nested
+        List[4]: 
+          TIdentifier: nested_arr.4
+          TIdentifier: i.5
+          TIdentifier: j.6
+          TIdentifier: new_val.7
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: nested_arr.4
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: i.5
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: j.6
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: new_val.7
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: read_nested_negated
+        List[4]: 
+          TIdentifier: nested_arr.8
+          TIdentifier: i.9
+          TIdentifier: j.10
+          TIdentifier: expected.11
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: nested_arr.8
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CVar: 
+                              TIdentifier: i.9
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: j.10
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: expected.11
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_nested_addr
+        List[4]: 
+          TIdentifier: nested_arr.12
+          TIdentifier: i.13
+          TIdentifier: j.14
+          TIdentifier: expected.15
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CAddrOf: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: nested_arr.12
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          CCast: 
+                            CVar: 
+                              TIdentifier: i.13
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: j.14
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    Pointer: 
+                      Int: 
+                  CVar: 
+                    TIdentifier: expected.15
+                    Pointer: 
+                      Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Int: 
+            Int: 
+            Int: 
+            Pointer: 
+              Int: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: nested_arr
+        CCompoundInit: 
+          List[2]: 
+            CCompoundInit: 
+              List[2]: 
+                CCompoundInit: 
+                  List[2]: 
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                  None: 
+                CCompoundInit: 
+                  List[1]: 
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        None: 
+                      None: 
+                  None: 
+              None: 
+            CCompoundInit: 
+              List[2]: 
+                CCompoundInit: 
+                  List[1]: 
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        None: 
+                      None: 
+                  None: 
+                CCompoundInit: 
+                  List[1]: 
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        None: 
+                      None: 
+                  None: 
+              None: 
+          None: 
+        Array: 
+          TLong: 4
+          Array: 
+            TLong: 3
+            Array: 
+              TLong: 5
+              Int: 
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: read_static_nested
+        List[4]: 
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: expected.19
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: nested_arr
+                                Pointer: 
+                                  Array: 
+                                    TLong: 3
+                                    Array: 
+                                      TLong: 5
+                                      Int: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Array: 
+                                    TLong: 5
+                                    Int: 
+                            CCast: 
+                              CVar: 
+                                TIdentifier: i.16
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              Int: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: j.17
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: k.18
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: expected.19
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_array
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CVar: 
+                    TIdentifier: nested_arr
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Array: 
+                          TLong: 5
+                          Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 5
+                        Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 5
+                Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: write_nested_complex
+        List[4]: 
+          TIdentifier: i.20
+          TIdentifier: j.21
+          TIdentifier: k.22
+          TIdentifier: val.23
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CFunctionCall: 
+                              TIdentifier: get_array
+                              List[0]: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Array: 
+                                    TLong: 5
+                                    Int: 
+                            CCast: 
+                              CVar: 
+                                TIdentifier: i.20
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              Int: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: j.21
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: k.22
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: val.23
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_subarray
+        List[2]: 
+          TIdentifier: nested.24
+          TIdentifier: i.25
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: nested.24
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: i.25
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Int: 
+            Int: 
+          Pointer: 
+            Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested_arr.26
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 6
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 3
+                      Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: read_nested
+                    List[4]: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested_arr.26
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 6
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: write_nested
+                  List[4]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: nested_arr.26
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: nested_arr.26
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: read_nested_negated
+                    List[4]: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: nested_arr.26
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr.27
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested_arr.26
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Int: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: get_nested_addr
+                    List[4]: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested_arr.26
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CVar: 
+                        TIdentifier: ptr.27
+                        Pointer: 
+                          Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: read_static_nested
+                    List[4]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: write_nested_complex
+                  List[4]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 111
+                      Int: 
+                  Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CFunctionCall: 
+                              TIdentifier: get_array
+                              List[0]: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Array: 
+                                    TLong: 5
+                                    Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              Int: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 111
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: row_1.28
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: get_subarray
+                      List[2]: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: nested_arr.26
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: row_1.28
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Int: 
+                  CAddrOf: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested_arr.26
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Int: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Int: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    Pointer: 
+                      Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(39):
+  [nested_arr.0]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [i.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [expected.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [read_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_arr.4]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [i.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [new_val.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [write_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_arr.8]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [i.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [expected.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [read_nested_negated]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_arr.12]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [i.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [expected.15]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [get_nested_addr]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_arr]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 5
+            Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[9]: 
+            IntInit: 
+              TInt: 1
+            IntInit: 
+              TInt: 2
+            ZeroInit: 
+              TLong: 12
+            IntInit: 
+              TInt: 3
+            ZeroInit: 
+              TLong: 36
+            IntInit: 
+              TInt: 4
+            ZeroInit: 
+              TLong: 16
+            IntInit: 
+              TInt: 5
+            ZeroInit: 
+              TLong: 156
+  [i.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [k.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [expected.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [read_static_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [get_array]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Array: 
+            TLong: 3
+            Array: 
+              TLong: 5
+              Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.20]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [k.22]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [val.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [write_nested_complex]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested.24]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [i.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [get_subarray]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Int: 
+          Int: 
+        Pointer: 
+          Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_arr.26]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [ptr.27]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [row_1.28]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 

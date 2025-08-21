@@ -1,0 +1,17 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[12]:
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  const int(1000)
+  >>
+  const int(4)
+  ;
+  }

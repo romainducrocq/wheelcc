@@ -1,0 +1,109 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[104]:
+  struct
+  identifier(s)
+  ;
+  struct
+  identifier(s)
+  identifier(increment_struct)
+  (
+  struct
+  identifier(s)
+  identifier(param)
+  )
+  ;
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  identifier(arg)
+  =
+  {
+  const int(1)
+  ,
+  const int(2)
+  }
+  ;
+  struct
+  identifier(s)
+  identifier(val)
+  =
+  identifier(increment_struct)
+  (
+  identifier(arg)
+  )
+  ;
+  if
+  (
+  identifier(val)
+  .
+  identifier(a)
+  !=
+  const int(2)
+  ||
+  identifier(val)
+  .
+  identifier(b)
+  !=
+  const int(3)
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }
+  struct
+  identifier(s)
+  identifier(increment_struct)
+  (
+  struct
+  identifier(s)
+  identifier(param)
+  )
+  {
+  identifier(param)
+  .
+  identifier(a)
+  =
+  identifier(param)
+  .
+  identifier(a)
+  +
+  const int(1)
+  ;
+  identifier(param)
+  .
+  identifier(b)
+  =
+  identifier(param)
+  .
+  identifier(b)
+  +
+  const int(1)
+  ;
+  return
+  identifier(param)
+  ;
+  }

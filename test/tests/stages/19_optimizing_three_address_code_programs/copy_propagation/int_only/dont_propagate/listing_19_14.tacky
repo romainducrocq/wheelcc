@@ -1,0 +1,179 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: total.1
+      Bool: 0
+      Int: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 4
+  List[3]: 
+    TacFunction: 
+      TIdentifier: f
+      Bool: 1
+      List[1]: 
+        TIdentifier: new_total.0
+      List[9]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: new_total.0
+          TacVariable: 
+            TIdentifier: total.1
+        TacBinary: 
+          TacGreaterThan: 
+          TacVariable: 
+            TIdentifier: total.1
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: binop.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.2
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: total.1
+        TacFunCall: 
+          TIdentifier: indirect_update
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.3
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: total.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: indirect_update
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacFunCall: 
+          TIdentifier: f
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 101
+          TacVariable: 
+            TIdentifier: call.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacFunCall: 
+          TIdentifier: f
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(9):
+  [indirect_update]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [new_total.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [f]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [total.1]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 4
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

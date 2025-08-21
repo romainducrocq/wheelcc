@@ -1,0 +1,337 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[7]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: small
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: big
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globl
+        CCompoundInit: 
+          List[1]: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 0
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: small
+          Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_in_reg
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: x
+                    CVar: 
+                      TIdentifier: globl
+                      None: 
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CDot: 
+                      TIdentifier: x
+                      CVar: 
+                        TIdentifier: globl
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: globl
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: small
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: globl2
+        CCompoundInit: 
+          List[3]: 
+            CSingleInit: 
+              CConstant: 
+                CConstDouble: 
+                  TDouble: 1.250000
+                None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 2
+                None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 300
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: big
+          Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_in_mem
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: globl2
+                      None: 
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CDot: 
+                      TIdentifier: d
+                      CVar: 
+                        TIdentifier: globl2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: x
+                    CVar: 
+                      TIdentifier: globl2
+                      None: 
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CDot: 
+                      TIdentifier: x
+                      CVar: 
+                        TIdentifier: globl2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: globl2
+                      None: 
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CDot: 
+                      TIdentifier: l
+                      CVar: 
+                        TIdentifier: globl2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: globl2
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: big
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CExpression: 
+                CCast: 
+                  CFunctionCall: 
+                    TIdentifier: return_in_reg
+                    List[0]: 
+                    None: 
+                  Void: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: return_in_reg
+                  List[0]: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: x
+                    CVar: 
+                      TIdentifier: globl
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: return_in_mem
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CCast: 
+                  CFunctionCall: 
+                    TIdentifier: return_in_mem
+                    List[0]: 
+                    None: 
+                  Void: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: globl2
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 5.000000
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CDot: 
+                        TIdentifier: x
+                        CVar: 
+                          TIdentifier: globl2
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 18
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: l
+                      CVar: 
+                        TIdentifier: globl2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4800
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

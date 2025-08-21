@@ -1,0 +1,238 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[233]:
+  int
+  identifier(check_one_int)
+  (
+  int
+  identifier(actual)
+  ,
+  int
+  identifier(expected)
+  )
+  ;
+  int
+  identifier(check_5_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(check_12_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(f)
+  ,
+  int
+  identifier(g)
+  ,
+  int
+  identifier(h)
+  ,
+  int
+  identifier(i)
+  ,
+  int
+  identifier(j)
+  ,
+  int
+  identifier(k)
+  ,
+  int
+  identifier(l)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(id)
+  (
+  int
+  identifier(x)
+  )
+  ;
+  int
+  identifier(flag)
+  =
+  const int(1)
+  ;
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  int
+  identifier(coalesce_into_eax)
+  =
+  const int(0)
+  ;
+  if
+  (
+  identifier(flag)
+  )
+  {
+  identifier(coalesce_into_eax)
+  =
+  identifier(id)
+  (
+  const int(10)
+  )
+  ;
+  }
+  int
+  identifier(high_degree)
+  =
+  const int(2)
+  *
+  identifier(coalesce_into_eax)
+  ;
+  if
+  (
+  identifier(coalesce_into_eax)
+  !=
+  const int(10)
+  )
+  {
+  return
+  -
+  const int(1)
+  ;
+  }
+  int
+  identifier(twelve)
+  =
+  const int(32)
+  -
+  identifier(high_degree)
+  ;
+  int
+  identifier(eleven)
+  =
+  const int(23)
+  -
+  identifier(twelve)
+  ;
+  int
+  identifier(ten)
+  =
+  const int(21)
+  -
+  identifier(eleven)
+  ;
+  int
+  identifier(nine)
+  =
+  const int(19)
+  -
+  identifier(ten)
+  ;
+  int
+  identifier(eight)
+  =
+  const int(17)
+  -
+  identifier(nine)
+  ;
+  int
+  identifier(seven)
+  =
+  const int(15)
+  -
+  identifier(eight)
+  ;
+  int
+  identifier(six)
+  =
+  const int(13)
+  -
+  identifier(seven)
+  ;
+  int
+  identifier(five)
+  =
+  const int(11)
+  -
+  identifier(six)
+  ;
+  int
+  identifier(four)
+  =
+  const int(24)
+  -
+  identifier(high_degree)
+  ;
+  int
+  identifier(three)
+  =
+  const int(23)
+  -
+  identifier(high_degree)
+  ;
+  int
+  identifier(two)
+  =
+  const int(22)
+  -
+  identifier(high_degree)
+  ;
+  int
+  identifier(one)
+  =
+  const int(21)
+  -
+  identifier(high_degree)
+  ;
+  identifier(check_5_ints)
+  (
+  identifier(one)
+  ,
+  identifier(two)
+  ,
+  identifier(three)
+  ,
+  identifier(four)
+  ,
+  identifier(five)
+  ,
+  const int(1)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }

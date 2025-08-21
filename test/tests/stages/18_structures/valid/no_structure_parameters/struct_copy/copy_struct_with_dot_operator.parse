@@ -1,0 +1,2368 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[10]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            SChar: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            SChar: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              SChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: substruct
+            Structure: 
+              TIdentifier: inner
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: x
+            SChar: 
+          CMemberDeclaration: 
+            TIdentifier: y
+            SChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outermost
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: nested
+            Structure: 
+              TIdentifier: outer
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_from_member
+        List[0]: 
+        CB: 
+          List[8]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 10
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 9
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 8
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 7
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 6
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 97
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 98
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 99
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: substruct
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr2
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 101
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 102
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Char: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: substruct
+                    None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CVar: 
+                      TIdentifier: big_struct
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CVar: 
+                              TIdentifier: substruct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: substruct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: substruct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 8
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: substruct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 7
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: substruct
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          COr: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: arr
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 97
+                              None: 
+                            None: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: arr
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 98
+                              None: 
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CSubscript: 
+                            CVar: 
+                              TIdentifier: arr
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 99
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: arr2
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: arr2
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 101
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr2
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 102
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_to_member
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: small_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                None: 
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 4
+                                None: 
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 5
+                                None: 
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CVar: 
+                      TIdentifier: big_struct
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: small_struct
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CDot: 
+                              TIdentifier: substruct
+                              CVar: 
+                                TIdentifier: big_struct
+                                None: 
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CDot: 
+                              TIdentifier: substruct
+                              CVar: 
+                                TIdentifier: big_struct
+                                None: 
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CDot: 
+                              TIdentifier: substruct
+                              CVar: 
+                                TIdentifier: big_struct
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CDot: 
+                            TIdentifier: substruct
+                            CVar: 
+                              TIdentifier: big_struct
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: substruct
+                          CVar: 
+                            TIdentifier: big_struct
+                            None: 
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CDot: 
+                    TIdentifier: x
+                    CVar: 
+                      TIdentifier: big_struct
+                      None: 
+                    None: 
+                  CDot: 
+                    TIdentifier: y
+                    CVar: 
+                      TIdentifier: big_struct
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_from_nested_member
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: biggest_struct
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    None: 
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    None: 
+                                  None: 
+                                None: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CUnary: 
+                                      CNegate: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 3
+                                        None: 
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CUnary: 
+                                      CNegate: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 4
+                                        None: 
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CUnary: 
+                                      CNegate: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 5
+                                        None: 
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 6
+                                None: 
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 7
+                                None: 
+                              None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outermost
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: small_struct
+                  None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: small_struct
+                    None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CDot: 
+                      TIdentifier: nested
+                      CVar: 
+                        TIdentifier: biggest_struct
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: small_struct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: small_struct
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_to_nested_member
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: biggest_struct
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              CCompoundInit: 
+                                List[3]: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      None: 
+                                    None: 
+                                  CSingleInit: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      None: 
+                                    None: 
+                                None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outermost
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: small_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 50
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 51
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 52
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 53
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 54
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CDot: 
+                      TIdentifier: nested
+                      CVar: 
+                        TIdentifier: biggest_struct
+                        None: 
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: small_struct
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CDot: 
+                              TIdentifier: substruct
+                              CDot: 
+                                TIdentifier: nested
+                                CVar: 
+                                  TIdentifier: biggest_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 50
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CDot: 
+                              TIdentifier: substruct
+                              CDot: 
+                                TIdentifier: nested
+                                CVar: 
+                                  TIdentifier: biggest_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 51
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CDot: 
+                              TIdentifier: substruct
+                              CDot: 
+                                TIdentifier: nested
+                                CVar: 
+                                  TIdentifier: biggest_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 52
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CDot: 
+                            TIdentifier: substruct
+                            CDot: 
+                              TIdentifier: nested
+                              CVar: 
+                                TIdentifier: biggest_struct
+                                None: 
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 53
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: substruct
+                          CDot: 
+                            TIdentifier: nested
+                            CVar: 
+                              TIdentifier: biggest_struct
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 54
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CDot: 
+                    TIdentifier: x
+                    CDot: 
+                      TIdentifier: nested
+                      CVar: 
+                        TIdentifier: biggest_struct
+                        None: 
+                      None: 
+                    None: 
+                  CDot: 
+                    TIdentifier: y
+                    CDot: 
+                      TIdentifier: nested
+                      CVar: 
+                        TIdentifier: biggest_struct
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: i
+                    CVar: 
+                      TIdentifier: biggest_struct
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_from_conditional
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 127
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 128
+                                None: 
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 61
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 62
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 63
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct2
+                  CCompoundInit: 
+                    List[3]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 2
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 3
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 4
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 6
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: t
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: f
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  Int: 
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: small_struct
+                  CSingleInit: 
+                    CDot: 
+                      TIdentifier: substruct
+                      CConditional: 
+                        CVar: 
+                          TIdentifier: f
+                          None: 
+                        CVar: 
+                          TIdentifier: big_struct
+                          None: 
+                        CVar: 
+                          TIdentifier: big_struct2
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: small_struct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: small_struct
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: small_struct
+                    None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CConditional: 
+                      CVar: 
+                        TIdentifier: t
+                        None: 
+                      CVar: 
+                        TIdentifier: big_struct
+                        None: 
+                      CVar: 
+                        TIdentifier: big_struct2
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 127
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 128
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 61
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: small_struct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 62
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: small_struct
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 63
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_copy_from_assignment
+        List[0]: 
+        CB: 
+          List[7]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 127
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 128
+                                None: 
+                              None: 
+                            None: 
+                          CCompoundInit: 
+                            List[3]: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 61
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 62
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 63
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: big_struct2
+                  None: 
+                  Structure: 
+                    TIdentifier: outer
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: small_struct
+                  None: 
+                  Structure: 
+                    TIdentifier: inner
+                    Bool: 0
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: small_struct
+                    None: 
+                  CDot: 
+                    TIdentifier: substruct
+                    CAssignment: 
+                      None: 
+                      CVar: 
+                        TIdentifier: big_struct2
+                        None: 
+                      CVar: 
+                        TIdentifier: big_struct
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: a
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 127
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CDot: 
+                            TIdentifier: b
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 128
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: small_struct
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 61
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: small_struct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 62
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: small_struct
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 63
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          COr: 
+                          CBinary: 
+                            COr: 
+                            CBinary: 
+                              CNotEqual: 
+                              CDot: 
+                                TIdentifier: a
+                                CDot: 
+                                  TIdentifier: substruct
+                                  CVar: 
+                                    TIdentifier: big_struct2
+                                    None: 
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 127
+                                None: 
+                              None: 
+                            CBinary: 
+                              CNotEqual: 
+                              CDot: 
+                                TIdentifier: b
+                                CDot: 
+                                  TIdentifier: substruct
+                                  CVar: 
+                                    TIdentifier: big_struct2
+                                    None: 
+                                  None: 
+                                None: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 128
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: arr
+                                CDot: 
+                                  TIdentifier: substruct
+                                  CVar: 
+                                    TIdentifier: big_struct2
+                                    None: 
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 61
+                              None: 
+                            None: 
+                          None: 
+                        CBinary: 
+                          CNotEqual: 
+                          CSubscript: 
+                            CDot: 
+                              TIdentifier: arr
+                              CDot: 
+                                TIdentifier: substruct
+                                CVar: 
+                                  TIdentifier: big_struct2
+                                  None: 
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 62
+                            None: 
+                          None: 
+                        None: 
+                      CBinary: 
+                        CNotEqual: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CDot: 
+                              TIdentifier: substruct
+                              CVar: 
+                                TIdentifier: big_struct2
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 63
+                          None: 
+                        None: 
+                      None: 
+                    CBinary: 
+                      CNotEqual: 
+                      CDot: 
+                        TIdentifier: x
+                        CVar: 
+                          TIdentifier: big_struct2
+                          None: 
+                        None: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: y
+                      CVar: 
+                        TIdentifier: big_struct2
+                        None: 
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 11
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_from_member
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_to_member
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_from_nested_member
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_to_nested_member
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_from_conditional
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_copy_from_assignment
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

@@ -1,0 +1,442 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[56]: 
+        TacFunCall: 
+          TIdentifier: overlap_with_globvar
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.2
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.2
+          TacVariable: 
+            TIdentifier: globvar
+        TacCopyFromOffset: 
+          TIdentifier: globvar
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.5
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.5
+          TacConstant: 
+            CConstLong: 
+              TLong: 400
+          TacVariable: 
+            TIdentifier: binop.6
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.3
+          TacVariable: 
+            TIdentifier: binop.6
+        TacCopyFromOffset: 
+          TIdentifier: globvar
+          TLong: 8
+          TacVariable: 
+            TIdentifier: smem.7
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 500
+          TacVariable: 
+            TIdentifier: binop.8
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.3
+          TacVariable: 
+            TIdentifier: binop.8
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.4
+        TacJump: 
+          TIdentifier: or_false.4
+        TacLabel: 
+          TIdentifier: or_true.3
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacLabel: 
+          TIdentifier: or_false.4
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.4
+        TacCopyFromOffset: 
+          TIdentifier: globvar
+          TLong: 16
+          TacVariable: 
+            TIdentifier: smem.9
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.9
+          TacConstant: 
+            CConstLong: 
+              TLong: 600
+          TacVariable: 
+            TIdentifier: binop.10
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.10
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacJump: 
+          TIdentifier: or_false.2
+        TacLabel: 
+          TIdentifier: or_true.1
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.3
+        TacLabel: 
+          TIdentifier: or_false.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacCopyToOffset: 
+          TIdentifier: my_struct.1
+          TLong: 16
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+        TacCopyToOffset: 
+          TIdentifier: my_struct.1
+          TLong: 8
+          TacConstant: 
+            CConstLong: 
+              TLong: 9
+        TacCopyToOffset: 
+          TIdentifier: my_struct.1
+          TLong: 0
+          TacConstant: 
+            CConstLong: 
+              TLong: 10
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: my_struct.1
+          TacVariable: 
+            TIdentifier: addr.11
+        TacFunCall: 
+          TIdentifier: overlap_with_pointer
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.11
+          TacVariable: 
+            TIdentifier: call.12
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: call.12
+          TacVariable: 
+            TIdentifier: my_struct.1
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.15
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.15
+          TacConstant: 
+            CConstLong: 
+              TLong: 20
+          TacVariable: 
+            TIdentifier: binop.16
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.8
+          TacVariable: 
+            TIdentifier: binop.16
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.1
+          TLong: 8
+          TacVariable: 
+            TIdentifier: smem.17
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.17
+          TacConstant: 
+            CConstLong: 
+              TLong: 18
+          TacVariable: 
+            TIdentifier: binop.18
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.8
+          TacVariable: 
+            TIdentifier: binop.18
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.14
+        TacJump: 
+          TIdentifier: or_false.9
+        TacLabel: 
+          TIdentifier: or_true.8
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.14
+        TacLabel: 
+          TIdentifier: or_false.9
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.6
+          TacVariable: 
+            TIdentifier: binop.14
+        TacCopyFromOffset: 
+          TIdentifier: my_struct.1
+          TLong: 16
+          TacVariable: 
+            TIdentifier: smem.19
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.19
+          TacConstant: 
+            CConstLong: 
+              TLong: 16
+          TacVariable: 
+            TIdentifier: binop.20
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.6
+          TacVariable: 
+            TIdentifier: binop.20
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.13
+        TacJump: 
+          TIdentifier: or_false.7
+        TacLabel: 
+          TIdentifier: or_true.6
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.13
+        TacLabel: 
+          TIdentifier: or_false.7
+        TacJumpIfZero: 
+          TIdentifier: if_false.5
+          TacVariable: 
+            TIdentifier: binop.13
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[3]: 
+        TIdentifier: l1
+        TIdentifier: l2
+        TIdentifier: l3
+      Dict[3]: 
+        [l1]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [l2]: 
+          StructMember: 
+            TLong: 8
+            Long: 
+        [l3]: 
+          StructMember: 
+            TLong: 16
+            Long: 
++
++
+@@ Symbol Table @@
+Dict(24):
+  [globvar]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [overlap_with_globvar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [overlap_with_pointer]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: s.0
+              Bool: 0
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [call.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [binop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.9]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.11]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.12]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.19]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.20]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

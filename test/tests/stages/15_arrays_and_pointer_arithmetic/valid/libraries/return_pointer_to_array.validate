@@ -1,0 +1,103 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_row
+        List[2]: 
+          TIdentifier: arr.0
+          TIdentifier: idx.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CAddrOf: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: arr.0
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Array: 
+                            TLong: 4
+                            Long: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: idx.1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 4
+                        Long: 
+                  Pointer: 
+                    Array: 
+                      TLong: 4
+                      Long: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 3
+                Array: 
+                  TLong: 4
+                  Long: 
+            Int: 
+          Pointer: 
+            Array: 
+              TLong: 4
+              Long: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(3):
+  [arr.0]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 4
+            Long: 
+      LocalAttr: 
+  [idx.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [return_row]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 4
+                Long: 
+          Int: 
+        Pointer: 
+          Array: 
+            TLong: 4
+            Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

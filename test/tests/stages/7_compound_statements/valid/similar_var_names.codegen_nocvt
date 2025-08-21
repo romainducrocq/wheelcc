@@ -1,0 +1,237 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[18]: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a1.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.3
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 2
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a1.4
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 20
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.13
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a.13
+          AsmPseudo: 
+            TIdentifier: result.1
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 5
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: a.14
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: result.1
+          AsmPseudo: 
+            TIdentifier: binop.15
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a.14
+          AsmPseudo: 
+            TIdentifier: binop.15
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.15
+          AsmPseudo: 
+            TIdentifier: result.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: result.1
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a1.4
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.16
+          AsmPseudo: 
+            TIdentifier: result.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: result.1
+          AsmPseudo: 
+            TIdentifier: binop.17
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: a1.2
+          AsmPseudo: 
+            TIdentifier: binop.17
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.17
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(19):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [result.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a1.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a1.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

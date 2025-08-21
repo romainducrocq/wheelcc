@@ -1,0 +1,591 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d1
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: d2
+            Double: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: global_one
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 1
+            None: 
+          None: 
+        Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_struct
+        List[0]: 
+        CB: 
+          List[13]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one.0
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      CVar: 
+                        TIdentifier: global_one
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two.1
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: one.0
+                        Int: 
+                      CVar: 
+                        TIdentifier: one.0
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: three.2
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      CVar: 
+                        TIdentifier: one.0
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: four.3
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: two.1
+                        Int: 
+                      CVar: 
+                        TIdentifier: two.1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: five.4
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 6
+                        Int: 
+                      CVar: 
+                        TIdentifier: one.0
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: six.5
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: two.1
+                        Int: 
+                      CVar: 
+                        TIdentifier: three.2
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: seven.6
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: one.0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 6
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight.7
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: two.1
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nine.8
+                  CSingleInit: 
+                    CBinary: 
+                      CMultiply: 
+                      CVar: 
+                        TIdentifier: three.2
+                        Int: 
+                      CVar: 
+                        TIdentifier: three.2
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ten.9
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: four.3
+                        Int: 
+                      CVar: 
+                        TIdentifier: six.5
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eleven.10
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 16
+                        Int: 
+                      CVar: 
+                        TIdentifier: five.4
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: twelve.11
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: six.5
+                        Int: 
+                      CVar: 
+                        TIdentifier: six.5
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CAnd: 
+                          CBinary: 
+                            CAnd: 
+                            CBinary: 
+                              CAnd: 
+                              CBinary: 
+                                CAnd: 
+                                CBinary: 
+                                  CAnd: 
+                                  CBinary: 
+                                    CAnd: 
+                                    CBinary: 
+                                      CAnd: 
+                                      CBinary: 
+                                        CEqual: 
+                                        CVar: 
+                                          TIdentifier: one.0
+                                          Int: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 1
+                                          Int: 
+                                        Int: 
+                                      CBinary: 
+                                        CEqual: 
+                                        CVar: 
+                                          TIdentifier: two.1
+                                          Int: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 2
+                                          Int: 
+                                        Int: 
+                                      Int: 
+                                    CBinary: 
+                                      CEqual: 
+                                      CVar: 
+                                        TIdentifier: three.2
+                                        Int: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 3
+                                        Int: 
+                                      Int: 
+                                    Int: 
+                                  CBinary: 
+                                    CEqual: 
+                                    CVar: 
+                                      TIdentifier: four.3
+                                      Int: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 4
+                                      Int: 
+                                    Int: 
+                                  Int: 
+                                CBinary: 
+                                  CEqual: 
+                                  CVar: 
+                                    TIdentifier: five.4
+                                    Int: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 5
+                                    Int: 
+                                  Int: 
+                                Int: 
+                              CBinary: 
+                                CEqual: 
+                                CVar: 
+                                  TIdentifier: six.5
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 6
+                                  Int: 
+                                Int: 
+                              Int: 
+                            CBinary: 
+                              CEqual: 
+                              CVar: 
+                                TIdentifier: seven.6
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 7
+                                Int: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CEqual: 
+                            CVar: 
+                              TIdentifier: eight.7
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 8
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: nine.8
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CVar: 
+                          TIdentifier: ten.9
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CVar: 
+                        TIdentifier: eleven.10
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 11
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: twelve.11
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: retval.12
+                            CCompoundInit: 
+                              List[2]: 
+                                CSingleInit: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 0.000000
+                                    Double: 
+                                  Double: 
+                                CSingleInit: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 200.000000
+                                    Double: 
+                                  Double: 
+                              Structure: 
+                                TIdentifier: s.0
+                                Bool: 0
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                            None: 
+                      CS: 
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: retval.12
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: retval.13
+                            CCompoundInit: 
+                              List[2]: 
+                                CSingleInit: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 1.000000
+                                    Double: 
+                                  Double: 
+                                CSingleInit: 
+                                  CUnary: 
+                                    CNegate: 
+                                    CConstant: 
+                                      CConstDouble: 
+                                        TDouble: 1.000000
+                                      Double: 
+                                    Double: 
+                                  Double: 
+                              Structure: 
+                                TIdentifier: s.0
+                                Bool: 0
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+                            None: 
+                      CS: 
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: retval.13
+                            Structure: 
+                              TIdentifier: s.0
+                              Bool: 0
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: s.0
+            Bool: 0
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [s.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: d1
+        TIdentifier: d2
+      Dict[2]: 
+        [d1]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [d2]: 
+          StructMember: 
+            TLong: 8
+            Double: 
++
++
+@@ Symbol Table @@
+Dict(16):
+  [global_one]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [return_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: s.0
+          Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [one.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [two.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [three.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [four.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [five.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [six.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [seven.6]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eight.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [nine.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ten.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [eleven.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [twelve.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [retval.12]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 
+  [retval.13]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: s.0
+        Bool: 0
+      LocalAttr: 

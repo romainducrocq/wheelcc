@@ -1,0 +1,371 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s.0
+                  CSingleInit: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 127
+                          Int: 
+                        Int: 
+                      SChar: 
+                      SChar: 
+                    SChar: 
+                  SChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s2.1
+                  CSingleInit: 
+                    CAssignment: 
+                      CPrefix: 
+                      None: 
+                      CCast: 
+                        CBinary: 
+                          CSubtract: 
+                          CCast: 
+                            CVar: 
+                              TIdentifier: s.0
+                              SChar: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        SChar: 
+                        SChar: 
+                      SChar: 
+                    SChar: 
+                  SChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s3.2
+                  CSingleInit: 
+                    CAssignment: 
+                      CPostfix: 
+                      None: 
+                      CCast: 
+                        CBinary: 
+                          CSubtract: 
+                          CCast: 
+                            CVar: 
+                              TIdentifier: s.0
+                              SChar: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        SChar: 
+                        SChar: 
+                      SChar: 
+                    SChar: 
+                  SChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc1.3
+                  CSingleInit: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 255
+                        Int: 
+                      UChar: 
+                      UChar: 
+                    UChar: 
+                  UChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc2.4
+                  CSingleInit: 
+                    CAssignment: 
+                      CPostfix: 
+                      None: 
+                      CCast: 
+                        CBinary: 
+                          CAdd: 
+                          CCast: 
+                            CVar: 
+                              TIdentifier: uc1.3
+                              UChar: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        UChar: 
+                        UChar: 
+                      UChar: 
+                    UChar: 
+                  UChar: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uc3.5
+                  CSingleInit: 
+                    CAssignment: 
+                      CPrefix: 
+                      None: 
+                      CCast: 
+                        CBinary: 
+                          CAdd: 
+                          CCast: 
+                            CVar: 
+                              TIdentifier: uc1.3
+                              UChar: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        UChar: 
+                        UChar: 
+                      UChar: 
+                    UChar: 
+                  UChar: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: s.0
+                            SChar: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 127
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: s2.1
+                            SChar: 
+                          Int: 
+                          Int: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 128
+                            Int: 
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: s3.2
+                          SChar: 
+                        Int: 
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 128
+                          Int: 
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: uc1.3
+                            UChar: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CVar: 
+                            TIdentifier: uc2.4
+                            UChar: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 255
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CVar: 
+                          TIdentifier: uc3.5
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[0]: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(8):
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [s.0]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [s2.1]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [s3.2]: 
+    Symbol: 
+      SChar: 
+      LocalAttr: 
+  [uc1.3]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [uc2.4]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [uc3.5]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

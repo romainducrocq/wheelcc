@@ -1,0 +1,209 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[204]:
+  int
+  identifier(check_one_int)
+  (
+  int
+  identifier(actual)
+  ,
+  int
+  identifier(expected)
+  )
+  ;
+  int
+  identifier(check_5_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(check_12_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(f)
+  ,
+  int
+  identifier(g)
+  ,
+  int
+  identifier(h)
+  ,
+  int
+  identifier(i)
+  ,
+  int
+  identifier(j)
+  ,
+  int
+  identifier(k)
+  ,
+  int
+  identifier(l)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(id)
+  (
+  int
+  identifier(x)
+  )
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  int
+  identifier(a)
+  =
+  identifier(id)
+  (
+  const int(1)
+  )
+  ;
+  int
+  identifier(b)
+  =
+  identifier(a)
+  +
+  identifier(a)
+  ;
+  identifier(check_one_int)
+  (
+  -
+  const int(1)
+  ,
+  -
+  const int(1)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(a)
+  ,
+  const int(1)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(b)
+  ,
+  const int(2)
+  )
+  ;
+  int
+  identifier(c)
+  =
+  identifier(id)
+  (
+  const int(3)
+  )
+  ;
+  int
+  identifier(d)
+  =
+  identifier(c)
+  -
+  identifier(c)
+  ;
+  identifier(check_one_int)
+  (
+  const int(0)
+  ,
+  const int(0)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(c)
+  ,
+  const int(3)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(d)
+  ,
+  const int(0)
+  )
+  ;
+  int
+  identifier(x)
+  =
+  identifier(id)
+  (
+  const int(4)
+  )
+  ;
+  int
+  identifier(y)
+  =
+  identifier(x)
+  *
+  identifier(x)
+  ;
+  identifier(check_one_int)
+  (
+  -
+  const int(1)
+  ,
+  -
+  const int(1)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(x)
+  ,
+  const int(4)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(y)
+  ,
+  const int(16)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }

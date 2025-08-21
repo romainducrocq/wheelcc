@@ -1,0 +1,406 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[13]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d1
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 2147483647
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d2
+        CSingleInit: 
+          CConstant: 
+            CConstUInt: 
+              TUInt: 4294967295
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d3
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 4611686018427389440
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d4
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 4611686018427389955
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d5
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372036854775810
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d6
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 4611686018427389955
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: d7
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372036854776832
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: uninitialized
+        None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: i
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 4.900000
+            None: 
+          None: 
+        Int: 
+        CStatic: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: u
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 4294967292.300000
+            None: 
+          None: 
+        UInt: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: l
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 4611686018427389952.000000
+            None: 
+          None: 
+        Long: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ul
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 18446744073709549568.000000
+            None: 
+          None: 
+        ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d1
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2147483647.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d2
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4294967295.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d3
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4611686018427389952.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d4
+                    None: 
+                  CVar: 
+                    TIdentifier: d3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d5
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 9223372036854775808.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d6
+                    None: 
+                  CVar: 
+                    TIdentifier: d3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d7
+                    None: 
+                  CVar: 
+                    TIdentifier: d5
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: uninitialized
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: u
+                    None: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 4294967292
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: l
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 4611686018427389952
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ul
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 18446744073709549568
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

@@ -1,0 +1,61 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[56]:
+  static
+  int
+  *
+  identifier(i)
+  ;
+  void
+  identifier(set_ptr)
+  (
+  int
+  *
+  identifier(arg)
+  )
+  {
+  identifier(i)
+  =
+  identifier(arg)
+  ;
+  }
+  int
+  identifier(get_ptr_val)
+  (
+  void
+  )
+  {
+  return
+  *
+  identifier(i)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  int
+  identifier(x)
+  =
+  const int(1)
+  ;
+  identifier(set_ptr)
+  (
+  &
+  identifier(x)
+  )
+  ;
+  identifier(x)
+  =
+  const int(4)
+  ;
+  return
+  identifier(get_ptr_val)
+  (
+  )
+  ;
+  }

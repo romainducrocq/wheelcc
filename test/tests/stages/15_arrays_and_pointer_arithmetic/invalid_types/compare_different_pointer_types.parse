@@ -1,0 +1,85 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                    None: 
+                  Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: x
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_ptr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: x
+                          None: 
+                        None: 
+                      Pointer: 
+                        Array: 
+                          TLong: 10
+                          Long: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Array: 
+                      TLong: 10
+                      Long: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: array_ptr
+                    None: 
+                  CVar: 
+                    TIdentifier: ptr
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

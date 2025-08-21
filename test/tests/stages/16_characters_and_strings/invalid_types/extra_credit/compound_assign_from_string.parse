@@ -1,0 +1,77 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[12]: 
+                          TChar: 115
+                          TChar: 111
+                          TChar: 109
+                          TChar: 101
+                          TChar: 32
+                          TChar: 115
+                          TChar: 116
+                          TChar: 114
+                          TChar: 105
+                          TChar: 110
+                          TChar: 103
+                          TChar: 32
+                      None: 
+                    None: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: s
+                      None: 
+                    CString: 
+                      CStringLiteral: 
+                        List[11]: 
+                          TChar: 97
+                          TChar: 110
+                          TChar: 111
+                          TChar: 116
+                          TChar: 104
+                          TChar: 101
+                          TChar: 114
+                          TChar: 32
+                          TChar: 115
+                          TChar: 116
+                          TChar: 114
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

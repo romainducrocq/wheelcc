@@ -1,0 +1,44 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[39]:
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  {
+  struct
+  identifier(s)
+  identifier(nested)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(my_union)
+  =
+  {
+  {
+  const int(1)
+  }
+  }
+  ;
+  return
+  identifier(my_union)
+  .
+  identifier(a)
+  ;
+  }

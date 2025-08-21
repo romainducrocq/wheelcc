@@ -1,0 +1,107 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[0]: 
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: missing_return_value
+      Bool: 1
+      Bool: 1
+      List[6]: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmDi: 
+          AsmMemory: 
+            TLong: -8
+            AsmBp: 
+        AsmMov: 
+          QuadWord: 
+          AsmRegister: 
+            AsmSi: 
+          AsmPseudo: 
+            TIdentifier: i.1
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: i.1
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 10
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmMemory: 
+            TLong: 0
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [big.0]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 25
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 25
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(2):
+  [missing_return_value]: 
+    Symbol: 
+      FunType: 
+        TULong: 48
+        TULong: 1
+        List[1]: 
+          Pointer: 
+            Int: 
+        Structure: 
+          TIdentifier: big.0
+          Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.1]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

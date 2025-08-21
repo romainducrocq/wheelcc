@@ -1,0 +1,83 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: add_variables
+        List[3]: 
+          TIdentifier: x.0
+          TIdentifier: y.1
+          TIdentifier: z.2
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: x.0
+                      Long: 
+                    CVar: 
+                      TIdentifier: y.1
+                      Long: 
+                    Long: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: z.2
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Long: 
+            Long: 
+            Int: 
+          Long: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [x.0]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [y.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [z.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [add_variables]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Long: 
+          Long: 
+          Int: 
+        Long: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

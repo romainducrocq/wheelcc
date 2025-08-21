@@ -1,0 +1,178 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[9]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: add_chars
+        List[2]: 
+          TIdentifier: c1
+          TIdentifier: c2
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CVar: 
+                    TIdentifier: c1
+                    None: 
+                  CVar: 
+                    TIdentifier: c2
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Char: 
+            Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: divide_chars
+        List[2]: 
+          TIdentifier: c1
+          TIdentifier: c2
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CVar: 
+                    TIdentifier: c1
+                    None: 
+                  CVar: 
+                    TIdentifier: c2
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: le
+        List[2]: 
+          TIdentifier: c1
+          TIdentifier: c2
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessOrEqual: 
+                  CVar: 
+                    TIdentifier: c1
+                    None: 
+                  CVar: 
+                    TIdentifier: c2
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Char: 
+            Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: subscript_char
+        List[2]: 
+          TIdentifier: ptr
+          TIdentifier: idx
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CSubscript: 
+                  CVar: 
+                    TIdentifier: ptr
+                    None: 
+                  CVar: 
+                    TIdentifier: idx
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Int: 
+            Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: sub_char_from_pointer
+        List[2]: 
+          TIdentifier: ptr
+          TIdentifier: idx
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CSubtract: 
+                  CVar: 
+                    TIdentifier: ptr
+                    None: 
+                  CVar: 
+                    TIdentifier: idx
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Int: 
+            SChar: 
+          Pointer: 
+            Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: and_char
+        List[2]: 
+          TIdentifier: c1
+          TIdentifier: i
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CVar: 
+                    TIdentifier: c1
+                    None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            SChar: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: or_char
+        List[2]: 
+          TIdentifier: c1
+          TIdentifier: c2
+    

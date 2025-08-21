@@ -1,0 +1,470 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: exit
+        List[1]: 
+          TIdentifier: status.0
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_pointers
+        List[4]: 
+          TIdentifier: a.1
+          TIdentifier: b.2
+          TIdentifier: ptr1.3
+          TIdentifier: ptr2.4
+        CB: 
+          List[3]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: a.1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: b.2
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 101
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ptr1.3
+                        Pointer: 
+                          Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 60
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: ptr2.4
+                        Pointer: 
+                          Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 61
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[4]: 
+            Int: 
+            Int: 
+            Pointer: 
+              Int: 
+            Pointer: 
+              Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: callee
+        List[2]: 
+          TIdentifier: p1.5
+          TIdentifier: p2.6
+        CB: 
+          List[3]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: p1.5
+                    Pointer: 
+                      Int: 
+                  CVar: 
+                    TIdentifier: p2.6
+                    Pointer: 
+                      Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: p2.6
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 4
+                                Int: 
+                            Void: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Int: 
+            Pointer: 
+              Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[2]: 
+          TIdentifier: ptr.7
+          TIdentifier: ptr2.8
+        CB: 
+          List[4]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_pointers
+                  List[4]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 101
+                      Int: 
+                    CVar: 
+                      TIdentifier: ptr.7
+                      Pointer: 
+                        Int: 
+                    CVar: 
+                      TIdentifier: ptr2.8
+                      Pointer: 
+                        Int: 
+                  Void: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: ptr2.8
+                    Pointer: 
+                      Int: 
+                  CVar: 
+                    TIdentifier: ptr.7
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: ptr.7
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: callee
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: ptr.7
+                      Pointer: 
+                        Int: 
+                    CVar: 
+                      TIdentifier: ptr2.8
+                      Pointer: 
+                        Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Int: 
+            Pointer: 
+              Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.9
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 60
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.10
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 61
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: target
+                  List[2]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: x.9
+                        Int: 
+                      Pointer: 
+                        Int: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: y.10
+                        Int: 
+                      Pointer: 
+                        Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(15):
+  [exit]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [a.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ptr1.3]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [ptr2.4]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [check_pointers]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[4]: 
+          Int: 
+          Int: 
+          Pointer: 
+            Int: 
+          Pointer: 
+            Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [p1.5]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [p2.6]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [callee]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Int: 
+          Pointer: 
+            Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr.7]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [ptr2.8]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Int: 
+          Pointer: 
+            Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,509 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
+-- Assembly generation ... OK
++
++
+@@ ASM AST @@
+AsmProgram: 
+  List[5]: 
+    AsmStaticConstant: 
+      TIdentifier: double.8
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4746794007250599936
+    AsmStaticConstant: 
+      TIdentifier: double.9
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4764808405757984768
+    AsmStaticConstant: 
+      TIdentifier: double.10
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4890909195324358657
+    AsmStaticConstant: 
+      TIdentifier: double.13
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 4890909195324358656
+    AsmStaticConstant: 
+      TIdentifier: double.14
+      TInt: 8
+      DoubleInit: 
+        TIdentifier: 9129546652158286818
+  List[1]: 
+    AsmFunction: 
+      TIdentifier: main
+      Bool: 1
+      Bool: 0
+      List[63]: 
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmJmpCC: 
+          TIdentifier: ternary_else.0
+          AsmE: 
+        AsmCvttsd2si: 
+          LongWord: 
+          AsmData: 
+            TIdentifier: double.8
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: cast.5
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.5
+          AsmPseudo: 
+            TIdentifier: ternop.4
+        AsmJmp: 
+          TIdentifier: ternary_false.1
+        AsmLabel: 
+          TIdentifier: ternary_else.0
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 100
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: ternop.4
+        AsmLabel: 
+          TIdentifier: ternary_false.1
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: ternop.4
+          AsmPseudo: 
+            TIdentifier: dead_int_cast.0
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmJmpCC: 
+          TIdentifier: ternary_else.2
+          AsmE: 
+        AsmCvttsd2si: 
+          QuadWord: 
+          AsmData: 
+            TIdentifier: double.9
+            TLong: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmMov: 
+          LongWord: 
+          AsmRegister: 
+            AsmAx: 
+          AsmPseudo: 
+            TIdentifier: cast.7
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.7
+          AsmPseudo: 
+            TIdentifier: ternop.6
+        AsmJmp: 
+          TIdentifier: ternary_false.3
+        AsmLabel: 
+          TIdentifier: ternary_else.2
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 200
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.8
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.8
+          AsmPseudo: 
+            TIdentifier: ternop.6
+        AsmLabel: 
+          TIdentifier: ternary_false.3
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: ternop.6
+          AsmPseudo: 
+            TIdentifier: dead_uint_cast.1
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmJmpCC: 
+          TIdentifier: ternary_else.4
+          AsmE: 
+        AsmCvtsi2sd: 
+          LongWord: 
+          AsmImm: 
+            TULong: 300
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.10
+        AsmMov: 
+          BackendDouble: 
+          AsmPseudo: 
+            TIdentifier: cast.10
+          AsmPseudo: 
+            TIdentifier: ternop.9
+        AsmJmp: 
+          TIdentifier: ternary_false.5
+        AsmLabel: 
+          TIdentifier: ternary_else.4
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.10
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: ternop.9
+        AsmLabel: 
+          TIdentifier: ternary_false.5
+        AsmCvttsd2si: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: ternop.9
+          AsmPseudo: 
+            TIdentifier: cast.11
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.11
+          AsmPseudo: 
+            TIdentifier: dead_long_cast.2
+        AsmCmp: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmImm: 
+            TULong: 1
+            Bool: 1
+            Bool: 0
+            Bool: 0
+        AsmJmpCC: 
+          TIdentifier: ternary_else.6
+          AsmE: 
+        AsmMovSx: 
+          LongWord: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 200
+            Bool: 0
+            Bool: 0
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.13
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.13
+          AsmPseudo: 
+            TIdentifier: ternop.12
+        AsmJmp: 
+          TIdentifier: ternary_false.7
+        AsmLabel: 
+          TIdentifier: ternary_else.6
+        AsmCmp: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.13
+            TLong: 0
+          AsmData: 
+            TIdentifier: double.14
+            TLong: 0
+        AsmJmpCC: 
+          TIdentifier: sd2si_out_of_range.11
+          AsmAE: 
+        AsmCvttsd2si: 
+          QuadWord: 
+          AsmData: 
+            TIdentifier: double.14
+            TLong: 0
+          AsmPseudo: 
+            TIdentifier: cast.14
+        AsmJmp: 
+          TIdentifier: sd2si_after.12
+        AsmLabel: 
+          TIdentifier: sd2si_out_of_range.11
+        AsmMov: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.14
+            TLong: 0
+          AsmRegister: 
+            AsmXMM1: 
+        AsmBinary: 
+          AsmSub: 
+          BackendDouble: 
+          AsmData: 
+            TIdentifier: double.13
+            TLong: 0
+          AsmRegister: 
+            AsmXMM1: 
+        AsmCvttsd2si: 
+          QuadWord: 
+          AsmRegister: 
+            AsmXMM1: 
+          AsmPseudo: 
+            TIdentifier: cast.14
+        AsmBinary: 
+          AsmAdd: 
+          QuadWord: 
+          AsmImm: 
+            TULong: 9223372036854775808
+            Bool: 0
+            Bool: 1
+            Bool: 0
+          AsmPseudo: 
+            TIdentifier: cast.14
+        AsmLabel: 
+          TIdentifier: sd2si_after.12
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.14
+          AsmPseudo: 
+            TIdentifier: ternop.12
+        AsmLabel: 
+          TIdentifier: ternary_false.7
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: ternop.12
+          AsmPseudo: 
+            TIdentifier: dead_ulong_cast.3
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: dead_int_cast.0
+          AsmPseudo: 
+            TIdentifier: cast.15
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.15
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmBinary: 
+          AsmAdd: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: dead_uint_cast.1
+          AsmPseudo: 
+            TIdentifier: binop.16
+        AsmMovZeroExtend: 
+          LongWord: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.16
+          AsmPseudo: 
+            TIdentifier: cast.17
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.17
+          AsmPseudo: 
+            TIdentifier: binop.18
+        AsmBinary: 
+          AsmAdd: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: dead_long_cast.2
+          AsmPseudo: 
+            TIdentifier: binop.18
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: binop.18
+          AsmPseudo: 
+            TIdentifier: cast.19
+        AsmMov: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: cast.19
+          AsmPseudo: 
+            TIdentifier: binop.20
+        AsmBinary: 
+          AsmAdd: 
+          QuadWord: 
+          AsmPseudo: 
+            TIdentifier: dead_ulong_cast.3
+          AsmPseudo: 
+            TIdentifier: binop.20
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: binop.20
+          AsmPseudo: 
+            TIdentifier: cast.21
+        AsmMov: 
+          LongWord: 
+          AsmPseudo: 
+            TIdentifier: cast.21
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
+        AsmMov: 
+          LongWord: 
+          AsmImm: 
+            TULong: 0
+            Bool: 1
+            Bool: 0
+            Bool: 0
+          AsmRegister: 
+            AsmAx: 
+        AsmRet: 
++
++
+@@ Addressed Set @@
+Set(0):
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(23):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 0
+        TULong: 1
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [dead_int_cast.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [dead_uint_cast.1]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [dead_long_cast.2]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [dead_ulong_cast.3]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [ternop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [ternop.6]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.8]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [ternop.9]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [cast.10]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [cast.11]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [ternop.12]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.13]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.14]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.15]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.19]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [binop.20]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [cast.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
++
++
+@@ Backend Symbol Table @@
+Dict(0):

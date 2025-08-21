@@ -1,0 +1,486 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[13]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: multi_dim.0
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 3
+                      Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_pointer.1
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: multi_dim.0
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      Pointer: 
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 3
+                            Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 3
+                          Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: row_pointer.2
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: array_pointer.1
+                        Pointer: 
+                          Array: 
+                            TLong: 2
+                            Array: 
+                              TLong: 3
+                              Int: 
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: row_pointer.2
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: multi_dim.0
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: row_pointer.2
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: row_pointer.2
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: row_pointer.2
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Int: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_ptr.3
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: row_pointer.2
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Int: 
+                      Pointer: 
+                        Int: 
+                      Pointer: 
+                        Int: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: elem_ptr.3
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: elem_ptr.3
+                    Pointer: 
+                      Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: elem_ptr.3
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Int: 
+                  Pointer: 
+                    Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CVar: 
+                      TIdentifier: elem_ptr.3
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: row_pointer.2
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: row_pointer.2
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 3
+                        Int: 
+                  Pointer: 
+                    Array: 
+                      TLong: 3
+                      Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: row_pointer.2
+                      Pointer: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 3
+                          Int: 
+                  CVar: 
+                    TIdentifier: array_pointer.1
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 3
+                          Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(5):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [multi_dim.0]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [array_pointer.1]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 2
+          Array: 
+            TLong: 3
+            Int: 
+      LocalAttr: 
+  [row_pointer.2]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Int: 
+      LocalAttr: 
+  [elem_ptr.3]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 

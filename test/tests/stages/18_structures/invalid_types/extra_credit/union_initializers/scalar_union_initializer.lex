@@ -1,0 +1,29 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[24]:
+  union
+  identifier(u)
+  {
+  int
+  identifier(a)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(my_union)
+  =
+  const int(1)
+  ;
+  return
+  const int(0)
+  ;
+  }

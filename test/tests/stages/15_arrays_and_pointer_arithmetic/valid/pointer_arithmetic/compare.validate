@@ -1,0 +1,1108 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[7]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: gt
+        List[2]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CGreaterThan: 
+                    CVar: 
+                      TIdentifier: a.0
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: b.1
+                      Pointer: 
+                        ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              ULong: 
+            Pointer: 
+              ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: lt
+        List[2]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CLessThan: 
+                    CVar: 
+                      TIdentifier: a.2
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: b.3
+                      Pointer: 
+                        ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              ULong: 
+            Pointer: 
+              ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ge
+        List[2]: 
+          TIdentifier: a.4
+          TIdentifier: b.5
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CGreaterOrEqual: 
+                    CVar: 
+                      TIdentifier: a.4
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: b.5
+                      Pointer: 
+                        ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              ULong: 
+            Pointer: 
+              ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: le
+        List[2]: 
+          TIdentifier: a.6
+          TIdentifier: b.7
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CLessOrEqual: 
+                    CVar: 
+                      TIdentifier: a.6
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: b.7
+                      Pointer: 
+                        ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              ULong: 
+            Pointer: 
+              ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: gt_nested
+        List[2]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CGreaterThan: 
+                    CVar: 
+                      TIdentifier: a.8
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    CVar: 
+                      TIdentifier: b.9
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                ULong: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ge_nested
+        List[2]: 
+          TIdentifier: a.10
+          TIdentifier: b.11
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CCast: 
+                  CBinary: 
+                    CGreaterOrEqual: 
+                    CVar: 
+                      TIdentifier: a.10
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    CVar: 
+                      TIdentifier: b.11
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    Int: 
+                  ULong: 
+                  ULong: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                ULong: 
+            Pointer: 
+              Array: 
+                TLong: 5
+                ULong: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[22]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr.12
+                  None: 
+                  Array: 
+                    TLong: 5
+                    ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_1.13
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.12
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_4.14
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.12
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: gt
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: elem_1.13
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: elem_4.14
+                      Pointer: 
+                        ULong: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: lt
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: elem_1.13
+                        Pointer: 
+                          ULong: 
+                      CVar: 
+                        TIdentifier: elem_4.14
+                        Pointer: 
+                          ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: ge
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: elem_1.13
+                        Pointer: 
+                          ULong: 
+                      CVar: 
+                        TIdentifier: elem_1.13
+                        Pointer: 
+                          ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: le
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: elem_4.14
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: elem_1.13
+                      Pointer: 
+                        ULong: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one_past_the_end.15
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: arr.12
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: gt
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: one_past_the_end.15
+                        Pointer: 
+                          ULong: 
+                      CVar: 
+                        TIdentifier: elem_4.14
+                        Pointer: 
+                          ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: one_past_the_end.15
+                    Pointer: 
+                      ULong: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: elem_4.14
+                      Pointer: 
+                        ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested_arr.16
+                  None: 
+                  Array: 
+                    TLong: 4
+                    Array: 
+                      TLong: 5
+                      ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_3_2.17
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CDereference: 
+                          CBinary: 
+                            CAdd: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: nested_arr.16
+                                Pointer: 
+                                  Array: 
+                                    TLong: 5
+                                    ULong: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem_3_3.18
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CDereference: 
+                          CBinary: 
+                            CAdd: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: nested_arr.16
+                                Pointer: 
+                                  Array: 
+                                    TLong: 5
+                                    ULong: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    Pointer: 
+                      ULong: 
+                  Pointer: 
+                    ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: lt
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: elem_3_3.18
+                      Pointer: 
+                        ULong: 
+                    CVar: 
+                      TIdentifier: elem_3_2.17
+                      Pointer: 
+                        ULong: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: ge
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: elem_3_3.18
+                        Pointer: 
+                          ULong: 
+                      CVar: 
+                        TIdentifier: elem_3_2.17
+                        Pointer: 
+                          ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: subarray_0.19
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: nested_arr.16
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            ULong: 
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    Pointer: 
+                      Array: 
+                        TLong: 5
+                        ULong: 
+                  Pointer: 
+                    Array: 
+                      TLong: 5
+                      ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: subarray_3.20
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested_arr.16
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              ULong: 
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    Pointer: 
+                      Array: 
+                        TLong: 5
+                        ULong: 
+                  Pointer: 
+                    Array: 
+                      TLong: 5
+                      ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: subarray_one_past_the_end.21
+                  CSingleInit: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested_arr.16
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              ULong: 
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    Pointer: 
+                      Array: 
+                        TLong: 5
+                        ULong: 
+                  Pointer: 
+                    Array: 
+                      TLong: 5
+                      ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: ge_nested
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: subarray_0.19
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    CVar: 
+                      TIdentifier: subarray_3.20
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: gt_nested
+                    List[2]: 
+                      CVar: 
+                        TIdentifier: subarray_one_past_the_end.21
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            ULong: 
+                      CVar: 
+                        TIdentifier: subarray_3.20
+                        Pointer: 
+                          Array: 
+                            TLong: 5
+                            ULong: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: subarray_3.20
+                    Pointer: 
+                      Array: 
+                        TLong: 5
+                        ULong: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: subarray_one_past_the_end.21
+                      Pointer: 
+                        Array: 
+                          TLong: 5
+                          ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Pointer: 
+                      Array: 
+                        TLong: 5
+                        ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(29):
+  [a.0]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [gt]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            ULong: 
+          Pointer: 
+            ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.2]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [b.3]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [lt]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            ULong: 
+          Pointer: 
+            ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.4]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [b.5]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [ge]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            ULong: 
+          Pointer: 
+            ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.6]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [b.7]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [le]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            ULong: 
+          Pointer: 
+            ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.8]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [b.9]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [gt_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              ULong: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.10]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [b.11]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [ge_nested]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              ULong: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              ULong: 
+        ULong: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arr.12]: 
+    Symbol: 
+      Array: 
+        TLong: 5
+        ULong: 
+      LocalAttr: 
+  [elem_1.13]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [elem_4.14]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [one_past_the_end.15]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [nested_arr.16]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [elem_3_2.17]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [elem_3_3.18]: 
+    Symbol: 
+      Pointer: 
+        ULong: 
+      LocalAttr: 
+  [subarray_0.19]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [subarray_3.20]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [subarray_one_past_the_end.21]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 

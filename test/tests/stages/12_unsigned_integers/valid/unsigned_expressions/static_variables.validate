@@ -1,0 +1,166 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: x
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372036854775803
+            None: 
+          None: 
+        ULong: 
+        CStatic: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: zero_long
+        None: 
+        ULong: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: zero_int
+        None: 
+        UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: x
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372036854775803
+                    ULong: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: x
+                    ULong: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: x
+                      ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: x
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372036854775813
+                    ULong: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CVar: 
+                    TIdentifier: zero_long
+                    ULong: 
+                  CVar: 
+                    TIdentifier: zero_int
+                    UInt: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [x]: 
+    Symbol: 
+      ULong: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ULongInit: 
+              TULong: 9223372036854775803
+  [zero_long]: 
+    Symbol: 
+      ULong: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [zero_int]: 
+    Symbol: 
+      UInt: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

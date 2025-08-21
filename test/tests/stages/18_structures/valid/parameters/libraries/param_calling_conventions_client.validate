@@ -1,0 +1,1936 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[22]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strncmp
+        List[3]: 
+          TIdentifier: s1.2
+          TIdentifier: s2.3
+          TIdentifier: n.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+            ULong: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_longs.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Long: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_int.1
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_int_exactly.2
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            ULong: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_ints.3
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_ints_nested.4
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Structure: 
+              TIdentifier: one_int.1
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: b
+            Structure: 
+              TIdentifier: one_int.1
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twelve_bytes.5
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 8
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_xmm.6
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_xmm.7
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Array: 
+              TLong: 2
+              Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: int_and_xmm.8
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: xmm_and_int.9
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: dbl
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: c
+            Array: 
+              TLong: 3
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: odd_size.10
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 5
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: memory.11
+        Bool: 0
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Array: 
+              TLong: 3
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_small_structs
+        List[6]: 
+          TIdentifier: two_xmm_struct.5
+          TIdentifier: int_struct.6
+          TIdentifier: xmm_struct.7
+          TIdentifier: mixed_struct.8
+          TIdentifier: int_struct_2.9
+          TIdentifier: another_int_struct.10
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Structure: 
+              TIdentifier: two_xmm.7
+              Bool: 0
+            Structure: 
+              TIdentifier: one_int.1
+              Bool: 0
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+            Structure: 
+              TIdentifier: xmm_and_int.9
+              Bool: 0
+            Structure: 
+              TIdentifier: twelve_bytes.5
+              Bool: 0
+            Structure: 
+              TIdentifier: one_int_exactly.2
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: a_bunch_of_arguments
+        List[7]: 
+          TIdentifier: i0.11
+          TIdentifier: i1.12
+          TIdentifier: i2.13
+          TIdentifier: i3.14
+          TIdentifier: i4.15
+          TIdentifier: param.16
+          TIdentifier: i5.17
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Structure: 
+              TIdentifier: two_longs.0
+              Bool: 0
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: structs_and_scalars
+        List[5]: 
+          TIdentifier: l.18
+          TIdentifier: d.19
+          TIdentifier: os.20
+          TIdentifier: mem.21
+          TIdentifier: xmm_struct.22
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[5]: 
+            Long: 
+            Double: 
+            Structure: 
+              TIdentifier: odd_size.10
+              Bool: 0
+            Structure: 
+              TIdentifier: memory.11
+              Bool: 0
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: struct_in_mem
+        List[9]: 
+          TIdentifier: a.23
+          TIdentifier: b.24
+          TIdentifier: c.25
+          TIdentifier: first_struct.26
+          TIdentifier: d.27
+          TIdentifier: second_struct.28
+          TIdentifier: l.29
+          TIdentifier: third_struct.30
+          TIdentifier: fourth_struct.31
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[9]: 
+            Double: 
+            Double: 
+            Double: 
+            Structure: 
+              TIdentifier: xmm_and_int.9
+              Bool: 0
+            Double: 
+            Structure: 
+              TIdentifier: two_xmm.7
+              Bool: 0
+            Long: 
+            Structure: 
+              TIdentifier: int_and_xmm.8
+              Bool: 0
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_borderline_struct_in_memory
+        List[6]: 
+          TIdentifier: t_i.32
+          TIdentifier: c.33
+          TIdentifier: i_x.34
+          TIdentifier: ptr.35
+          TIdentifier: t_i_n.36
+          TIdentifier: d.37
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Structure: 
+              TIdentifier: two_ints.3
+              Bool: 0
+            Int: 
+            Structure: 
+              TIdentifier: int_and_xmm.8
+              Bool: 0
+            Pointer: 
+              Void: 
+            Structure: 
+              TIdentifier: two_ints_nested.4
+              Bool: 0
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_uneven_struct_in_mem
+        List[6]: 
+          TIdentifier: struct1.38
+          TIdentifier: a.39
+          TIdentifier: b.40
+          TIdentifier: struct2.41
+          TIdentifier: os.42
+          TIdentifier: m.43
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Structure: 
+              TIdentifier: twelve_bytes.5
+              Bool: 0
+            Long: 
+            Long: 
+            Structure: 
+              TIdentifier: twelve_bytes.5
+              Bool: 0
+            Structure: 
+              TIdentifier: odd_size.10
+              Bool: 0
+            Structure: 
+              TIdentifier: memory.11
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: pass_later_structs_in_regs
+        List[3]: 
+          TIdentifier: m.44
+          TIdentifier: struct1.45
+          TIdentifier: struct2.46
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Structure: 
+              TIdentifier: memory.11
+              Bool: 0
+            Structure: 
+              TIdentifier: twelve_bytes.5
+              Bool: 0
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[24]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_longs.47
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 1234567
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 89101112
+                          Long: 
+                        Long: 
+                    Structure: 
+                      TIdentifier: two_longs.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: two_longs.0
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one_int.48
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 54320
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 99
+                            Int: 
+                          Char: 
+                          Char: 
+                        Char: 
+                    Structure: 
+                      TIdentifier: one_int.1
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: one_int.1
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one_long.49
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstLong: 
+                              TLong: 567890
+                            Long: 
+                          ULong: 
+                          ULong: 
+                        ULong: 
+                    Structure: 
+                      TIdentifier: one_int_exactly.2
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: one_int_exactly.2
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_ints.50
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 95
+                            Int: 
+                          Char: 
+                          Char: 
+                        Char: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 6
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 7
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Structure: 
+                      TIdentifier: two_ints.3
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: two_ints.3
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_ints_nested.51
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: one_int.48
+                          Structure: 
+                            TIdentifier: one_int.1
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: one_int.1
+                          Bool: 0
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: one_int.48
+                          Structure: 
+                            TIdentifier: one_int.1
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: one_int.1
+                          Bool: 0
+                    Structure: 
+                      TIdentifier: two_ints_nested.4
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: two_ints_nested.4
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xii.52
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 123
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[7]: 
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 105
+                              TChar: 110
+                              TChar: 103
+                              TChar: 33
+                          Array: 
+                            TLong: 8
+                            Char: 
+                        Array: 
+                          TLong: 8
+                          Char: 
+                    Structure: 
+                      TIdentifier: twelve_bytes.5
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: twelve_bytes.5
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: one_xmm.53
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 5.125000
+                          Double: 
+                        Double: 
+                    Structure: 
+                      TIdentifier: one_xmm.6
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: one_xmm.6
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_xmm.54
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 55.500000
+                              Double: 
+                            Double: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 44.400000
+                              Double: 
+                            Double: 
+                        Array: 
+                          TLong: 2
+                          Double: 
+                    Structure: 
+                      TIdentifier: two_xmm.7
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: two_xmm.7
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: int_and_xmm.55
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 112
+                            Int: 
+                          Char: 
+                          Char: 
+                        Char: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 4.560000
+                          Double: 
+                        Double: 
+                    Structure: 
+                      TIdentifier: int_and_xmm.8
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: int_and_xmm.8
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xmm_and_int.56
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[1]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 1.234000
+                              Double: 
+                            Double: 
+                        Structure: 
+                          TIdentifier: one_xmm.6
+                          Bool: 0
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 104
+                              TChar: 105
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                    Structure: 
+                      TIdentifier: xmm_and_int.9
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: xmm_and_int.9
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: odd.57
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[4]: 
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                          Array: 
+                            TLong: 5
+                            Char: 
+                        Array: 
+                          TLong: 5
+                          Char: 
+                    Structure: 
+                      TIdentifier: odd_size.10
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: odd_size.10
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: mem.58
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 15.750000
+                          Double: 
+                        Double: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 114
+                              TChar: 115
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                      CSingleInit: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4444
+                            Int: 
+                          Long: 
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3333
+                          Int: 
+                        Int: 
+                    Structure: 
+                      TIdentifier: memory.11
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: memory.11
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: pass_small_structs
+                    List[6]: 
+                      CVar: 
+                        TIdentifier: two_xmm.54
+                        Structure: 
+                          TIdentifier: two_xmm.7
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_int.48
+                        Structure: 
+                          TIdentifier: one_int.1
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_xmm.53
+                        Structure: 
+                          TIdentifier: one_xmm.6
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: xmm_and_int.56
+                        Structure: 
+                          TIdentifier: xmm_and_int.9
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: xii.52
+                        Structure: 
+                          TIdentifier: twelve_bytes.5
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_long.49
+                        Structure: 
+                          TIdentifier: one_int_exactly.2
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: a_bunch_of_arguments
+                    List[7]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      CVar: 
+                        TIdentifier: two_longs.47
+                        Structure: 
+                          TIdentifier: two_longs.0
+                          Bool: 0
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: structs_and_scalars
+                    List[5]: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Long: 
+                        Long: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 10.000000
+                        Double: 
+                      CVar: 
+                        TIdentifier: odd.57
+                        Structure: 
+                          TIdentifier: odd_size.10
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: mem.58
+                        Structure: 
+                          TIdentifier: memory.11
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_xmm.53
+                        Structure: 
+                          TIdentifier: one_xmm.6
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: struct_in_mem
+                    List[9]: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 10.000000
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 11.125000
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 12.000000
+                        Double: 
+                      CVar: 
+                        TIdentifier: xmm_and_int.56
+                        Structure: 
+                          TIdentifier: xmm_and_int.9
+                          Bool: 0
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 13.000000
+                        Double: 
+                      CVar: 
+                        TIdentifier: two_xmm.54
+                        Structure: 
+                          TIdentifier: two_xmm.7
+                          Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Long: 
+                        Long: 
+                      CVar: 
+                        TIdentifier: int_and_xmm.55
+                        Structure: 
+                          TIdentifier: int_and_xmm.8
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_xmm.53
+                        Structure: 
+                          TIdentifier: one_xmm.6
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: pass_borderline_struct_in_memory
+                    List[6]: 
+                      CVar: 
+                        TIdentifier: two_ints.50
+                        Structure: 
+                          TIdentifier: two_ints.3
+                          Bool: 0
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 33
+                        Int: 
+                      CVar: 
+                        TIdentifier: int_and_xmm.55
+                        Structure: 
+                          TIdentifier: int_and_xmm.8
+                          Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Pointer: 
+                          Void: 
+                        Pointer: 
+                          Void: 
+                      CVar: 
+                        TIdentifier: two_ints_nested.51
+                        Structure: 
+                          TIdentifier: two_ints_nested.4
+                          Bool: 0
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 7.800000
+                        Double: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: struct1.59
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        Int: 
+                      CCompoundInit: 
+                        List[8]: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 127
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 126
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 125
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                        Array: 
+                          TLong: 8
+                          Char: 
+                    Structure: 
+                      TIdentifier: twelve_bytes.5
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: twelve_bytes.5
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: struct2.60
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                          Int: 
+                        Int: 
+                      CCompoundInit: 
+                        List[8]: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 100
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 101
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 102
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstChar: 
+                                TChar: 0
+                              None: 
+                            None: 
+                        Array: 
+                          TLong: 8
+                          Char: 
+                    Structure: 
+                      TIdentifier: twelve_bytes.5
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: twelve_bytes.5
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: os.61
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[5]: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 100
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 99
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 98
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 97
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 96
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                        Array: 
+                          TLong: 5
+                          Char: 
+                    Structure: 
+                      TIdentifier: odd_size.10
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: odd_size.10
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: m.62
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 5.345000
+                          Double: 
+                        Double: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CCast: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 2
+                                  Int: 
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                          CSingleInit: 
+                            CCast: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 3
+                                  Int: 
+                                Int: 
+                              Char: 
+                              Char: 
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 4294967300
+                          Long: 
+                        Long: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10000
+                          Int: 
+                        Int: 
+                    Structure: 
+                      TIdentifier: memory.11
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: memory.11
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: pass_uneven_struct_in_mem
+                    List[6]: 
+                      CVar: 
+                        TIdentifier: struct1.59
+                        Structure: 
+                          TIdentifier: twelve_bytes.5
+                          Bool: 0
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 9223372036854775805
+                        Long: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 9223372036854775800
+                        Long: 
+                      CVar: 
+                        TIdentifier: struct2.60
+                        Structure: 
+                          TIdentifier: twelve_bytes.5
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: os.61
+                        Structure: 
+                          TIdentifier: odd_size.10
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: m.62
+                        Structure: 
+                          TIdentifier: memory.11
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: pass_later_structs_in_regs
+                    List[3]: 
+                      CVar: 
+                        TIdentifier: m.62
+                        Structure: 
+                          TIdentifier: memory.11
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: struct1.59
+                        Structure: 
+                          TIdentifier: twelve_bytes.5
+                          Bool: 0
+                      CVar: 
+                        TIdentifier: one_xmm.53
+                        Structure: 
+                          TIdentifier: one_xmm.6
+                          Bool: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(12):
+  [two_longs.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: a
+        TIdentifier: b
+      Dict[2]: 
+        [a]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [b]: 
+          StructMember: 
+            TLong: 8
+            Long: 
+  [one_int.1]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: c
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [c]: 
+          StructMember: 
+            TLong: 4
+            Char: 
+  [one_int_exactly.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: l
+      Dict[1]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            ULong: 
+  [two_ints.3]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 16
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: arr
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [arr]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 3
+              Int: 
+  [two_ints_nested.4]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 16
+      List[2]: 
+        TIdentifier: a
+        TIdentifier: b
+      Dict[2]: 
+        [a]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_int.1
+              Bool: 0
+        [b]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: one_int.1
+              Bool: 0
+  [twelve_bytes.5]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[2]: 
+        TIdentifier: i
+        TIdentifier: arr
+      Dict[2]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [arr]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 8
+              Char: 
+  [one_xmm.6]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[1]: 
+        TIdentifier: d
+      Dict[1]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+  [two_xmm.7]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[1]: 
+        TIdentifier: d
+      Dict[1]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+  [int_and_xmm.8]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: d
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+  [xmm_and_int.9]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: dbl
+        TIdentifier: c
+      Dict[2]: 
+        [dbl]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: one_xmm.6
+              Bool: 0
+        [c]: 
+          StructMember: 
+            TLong: 8
+            Array: 
+              TLong: 3
+              Char: 
+  [odd_size.10]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 5
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 5
+              Char: 
+  [memory.11]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[4]: 
+        TIdentifier: d
+        TIdentifier: c
+        TIdentifier: l
+        TIdentifier: i
+      Dict[4]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [c]: 
+          StructMember: 
+            TLong: 8
+            Array: 
+              TLong: 3
+              Char: 
+        [l]: 
+          StructMember: 
+            TLong: 16
+            Long: 
+        [i]: 
+          StructMember: 
+            TLong: 24
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(26):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [strncmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_small_structs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Structure: 
+            TIdentifier: two_xmm.7
+            Bool: 0
+          Structure: 
+            TIdentifier: one_int.1
+            Bool: 0
+          Structure: 
+            TIdentifier: one_xmm.6
+            Bool: 0
+          Structure: 
+            TIdentifier: xmm_and_int.9
+            Bool: 0
+          Structure: 
+            TIdentifier: twelve_bytes.5
+            Bool: 0
+          Structure: 
+            TIdentifier: one_int_exactly.2
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [a_bunch_of_arguments]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: two_longs.0
+            Bool: 0
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [structs_and_scalars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[5]: 
+          Long: 
+          Double: 
+          Structure: 
+            TIdentifier: odd_size.10
+            Bool: 0
+          Structure: 
+            TIdentifier: memory.11
+            Bool: 0
+          Structure: 
+            TIdentifier: one_xmm.6
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [struct_in_mem]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[9]: 
+          Double: 
+          Double: 
+          Double: 
+          Structure: 
+            TIdentifier: xmm_and_int.9
+            Bool: 0
+          Double: 
+          Structure: 
+            TIdentifier: two_xmm.7
+            Bool: 0
+          Long: 
+          Structure: 
+            TIdentifier: int_and_xmm.8
+            Bool: 0
+          Structure: 
+            TIdentifier: one_xmm.6
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_borderline_struct_in_memory]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Structure: 
+            TIdentifier: two_ints.3
+            Bool: 0
+          Int: 
+          Structure: 
+            TIdentifier: int_and_xmm.8
+            Bool: 0
+          Pointer: 
+            Void: 
+          Structure: 
+            TIdentifier: two_ints_nested.4
+            Bool: 0
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_uneven_struct_in_mem]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Structure: 
+            TIdentifier: twelve_bytes.5
+            Bool: 0
+          Long: 
+          Long: 
+          Structure: 
+            TIdentifier: twelve_bytes.5
+            Bool: 0
+          Structure: 
+            TIdentifier: odd_size.10
+            Bool: 0
+          Structure: 
+            TIdentifier: memory.11
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [pass_later_structs_in_regs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Structure: 
+            TIdentifier: memory.11
+            Bool: 0
+          Structure: 
+            TIdentifier: twelve_bytes.5
+            Bool: 0
+          Structure: 
+            TIdentifier: one_xmm.6
+            Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [two_longs.47]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_longs.0
+        Bool: 0
+      LocalAttr: 
+  [one_int.48]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_int.1
+        Bool: 0
+      LocalAttr: 
+  [one_long.49]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_int_exactly.2
+        Bool: 0
+      LocalAttr: 
+  [two_ints.50]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_ints.3
+        Bool: 0
+      LocalAttr: 
+  [two_ints_nested.51]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_ints_nested.4
+        Bool: 0
+      LocalAttr: 
+  [xii.52]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: twelve_bytes.5
+        Bool: 0
+      LocalAttr: 
+  [one_xmm.53]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: one_xmm.6
+        Bool: 0
+      LocalAttr: 
+  [two_xmm.54]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: two_xmm.7
+        Bool: 0
+      LocalAttr: 
+  [int_and_xmm.55]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: int_and_xmm.8
+        Bool: 0
+      LocalAttr: 
+  [xmm_and_int.56]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: xmm_and_int.9
+        Bool: 0
+      LocalAttr: 
+  [odd.57]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: odd_size.10
+        Bool: 0
+      LocalAttr: 
+  [mem.58]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: memory.11
+        Bool: 0
+      LocalAttr: 
+  [struct1.59]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: twelve_bytes.5
+        Bool: 0
+      LocalAttr: 
+  [struct2.60]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: twelve_bytes.5
+        Bool: 0
+      LocalAttr: 
+  [os.61]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: odd_size.10
+        Bool: 0
+      LocalAttr: 
+  [m.62]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: memory.11
+        Bool: 0
+      LocalAttr: 

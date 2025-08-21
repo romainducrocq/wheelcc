@@ -1,0 +1,1222 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[23]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: copysign
+        List[2]: 
+          TIdentifier: x
+          TIdentifier: y
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: is_positive_zero
+        List[1]: 
+          TIdentifier: d
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CFunctionCall: 
+                    TIdentifier: copysign
+                    List[2]: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 5.000000
+                        None: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 5.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: is_negative_zero
+        List[1]: 
+          TIdentifier: d
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CFunctionCall: 
+                    TIdentifier: copysign
+                    List[2]: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 5.000000
+                        None: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 5.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_infinity_equal
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: inf
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_infinity_gt
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CGreaterThan: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 178999999999999996376899522972626047077637637819240219954027593177370961667659291027329061638406108931437333529420935752785895444161234074984843178962619172326295244262722141766382622299223626438470088150218987997954747866198184686628013966119769261150988554952970462018533787926725176560021258785656871583744.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_neg_infinity_lt
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CLessThan: 
+                  CBinary: 
+                    CDivide: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 178999999999999996376899522972626047077637637819240219954027593177370961667659291027329061638406108931437333529420935752785895444161234074984843178962619172326295244262722141766382622299223626438470088150218987997954747866198184686628013966119769261150988554952970462018533787926725176560021258785656871583744.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_add_infinity
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10000000000000.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_sub_infinity
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CSubtract: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10000000000000.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_mult_infinity
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 25.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_mult_neg_infinity
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CBinary: 
+                    CDivide: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 25.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_mult_neg_infinity_by_neg_number
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CBinary: 
+                    CDivide: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 25.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_div_infinity_by_num
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 5.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_negate_inf
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: infin
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CUnary: 
+                  CNegate: 
+                  CVar: 
+                    TIdentifier: infin
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_mult_overflow
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2000000000000000105009520510408840497408937162216318309831708231023604915977816391572742750160895728087408887665767756353885046470720861151289584369573413965696774401853151607475660467589576180118737906469941599890162238077935281760149305485560284989158517577640113685676231338944392773730918801080320.000000
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1000000000000000000000.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_div_overflow
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 100000000000000001097906362944045541740492309677311846336810682903157585404911491537163328978494688899061249669721172515611590283743140088328307009198146046031271664502933027185697489699588559043338384466165001178426897626212945177628091195786707458122783970171784415105291802893207873272974885715430223118336.000000
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_add_overflow
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAdd: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 178999999999999996376899522972626047077637637819240219954027593177370961667659291027329061638406108931437333529420935752785895444161234074984843178962619172326295244262722141766382622299223626438470088150218987997954747866198184686628013966119769261150988554952970462018533787926725176560021258785656871583744.000000
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 100000000000000001097906362944045541740492309677311846336810682903157585404911491537163328978494688899061249669721172515611590283743140088328307009198146046031271664502933027185697489699588559043338384466165001178426897626212945177628091195786707458122783970171784415105291802893207873272974885715430223118336.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_sub_overflow
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CSubtract: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 100000000000000001097906362944045541740492309677311846336810682903157585404911491537163328978494688899061249669721172515611590283743140088328307009198146046031271664502933027185697489699588559043338384466165001178426897626212945177628091195786707458122783970171784415105291802893207873272974885715430223118336.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 100000000000000001097906362944045541740492309677311846336810682903157585404911491537163328978494688899061249669721172515611590283743140088328307009198146046031271664502933027185697489699588559043338384466165001178426897626212945177628091195786707458122783970171784415105291802893207873272974885715430223118336.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_zero_div_by_inf
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 3.000000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_zero_div_by_neg_inf
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 3.000000
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_negative_zero_div_by_inf
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CDivide: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.005000
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target_infinity_is_true
+        List[0]: 
+        CB: 
+          List[3]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: infin
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2345.000000
+                        None: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 0.000000
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: infin
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: zero
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[23]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: infinity
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 1.000000
+                        None: 
+                      CVar: 
+                        TIdentifier: zero
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: target_infinity_equal
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: target_infinity_gt
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: target_neg_infinity_lt
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_add_infinity
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_sub_infinity
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_mult_infinity
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_mult_neg_infinity
+                    List[0]: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: infinity
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_mult_neg_infinity_by_neg_number
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_div_infinity_by_num
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_negate_inf
+                    List[0]: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: infinity
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_mult_overflow
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_div_overflow
+                    List[0]: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: infinity
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_add_overflow
+                    List[0]: 
+                    None: 
+                  CVar: 
+                    TIdentifier: infinity
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_sub_overflow
+                    List[0]: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CVar: 
+                      TIdentifier: infinity
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 14
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: target_zero_div_by_inf
+                      List[0]: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: is_positive_zero
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: target_zero_div_by_neg_inf
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: is_negative_zero
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 16
+                            None: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: target_negative_zero_div_by_inf
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: is_negative_zero
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: d
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 17
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: target_infinity_is_true
+                    List[0]: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 18
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

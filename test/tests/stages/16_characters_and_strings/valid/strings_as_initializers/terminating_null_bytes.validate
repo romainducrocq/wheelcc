@@ -1,0 +1,2693 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[11]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_flat_static_with_null_byte
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flat.2
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[3]: 
+                          TChar: 100
+                          TChar: 111
+                          TChar: 103
+                      None: 
+                    None: 
+                  Array: 
+                    TLong: 4
+                    UChar: 
+                  CStatic: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: flat.2
+                                Pointer: 
+                                  UChar: 
+                              Pointer: 
+                                UChar: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            UChar: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: flat.2
+                                Pointer: 
+                                  UChar: 
+                              Pointer: 
+                                UChar: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            UChar: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 111
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: flat.2
+                              Pointer: 
+                                UChar: 
+                            Pointer: 
+                              UChar: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 103
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: flat.2
+                            Pointer: 
+                              UChar: 
+                          Pointer: 
+                            UChar: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        UChar: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_nested_static_with_null_byte
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested.3
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[3]: 
+                              TChar: 121
+                              TChar: 101
+                              TChar: 115
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[3]: 
+                              TChar: 121
+                              TChar: 117
+                              TChar: 112
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 4
+                      Char: 
+                  CStatic: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CAnd: 
+                          CBinary: 
+                            CAnd: 
+                            CBinary: 
+                              CAnd: 
+                              CBinary: 
+                                CEqual: 
+                                CCast: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CVar: 
+                                            TIdentifier: nested.3
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 4
+                                                Char: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 4
+                                              Char: 
+                                        CCast: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        Pointer: 
+                                          Char: 
+                                      Pointer: 
+                                        Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 0
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Char: 
+                                  Int: 
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 121
+                                  Int: 
+                                Int: 
+                              CBinary: 
+                                CEqual: 
+                                CCast: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CVar: 
+                                            TIdentifier: nested.3
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 4
+                                                Char: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 4
+                                              Char: 
+                                        CCast: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        Pointer: 
+                                          Char: 
+                                      Pointer: 
+                                        Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 1
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Char: 
+                                  Int: 
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 101
+                                  Int: 
+                                Int: 
+                              Int: 
+                            CBinary: 
+                              CEqual: 
+                              CCast: 
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CSubscript: 
+                                      CAddrOf: 
+                                        CVar: 
+                                          TIdentifier: nested.3
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 4
+                                              Char: 
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 4
+                                            Char: 
+                                      CCast: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 0
+                                          Int: 
+                                        Long: 
+                                        Long: 
+                                      Pointer: 
+                                        Char: 
+                                    Pointer: 
+                                      Char: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 2
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Char: 
+                                Int: 
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 115
+                                Int: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CEqual: 
+                            CCast: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CVar: 
+                                        TIdentifier: nested.3
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 4
+                                            Char: 
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 4
+                                          Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 0
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Pointer: 
+                                      Char: 
+                                  Pointer: 
+                                    Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 3
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Char: 
+                              Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CCast: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CVar: 
+                                      TIdentifier: nested.3
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 4
+                                          Char: 
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 4
+                                        Char: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Pointer: 
+                                    Char: 
+                                Pointer: 
+                                  Char: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Char: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 121
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: nested.3
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 4
+                                        Char: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 4
+                                      Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 117
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: nested.3
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 4
+                                      Char: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 4
+                                    Char: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 112
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: nested.3
+                                Pointer: 
+                                  Array: 
+                                    TLong: 4
+                                    Char: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 4
+                                  Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_flat_auto_with_null_byte
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: flat_auto.4
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[1]: 
+                          TChar: 120
+                      Array: 
+                        TLong: 2
+                        Char: 
+                    Array: 
+                      TLong: 2
+                      Char: 
+                  Array: 
+                    TLong: 2
+                    Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: flat_auto.4
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 120
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: flat_auto.4
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_nested_auto_with_null_byte
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested_auto.5
+                  CCompoundInit: 
+                    List[2]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[1]: 
+                                  TChar: 97
+                              Array: 
+                                TLong: 2
+                                Char: 
+                            Array: 
+                              TLong: 2
+                              Char: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[1]: 
+                                  TChar: 98
+                              Array: 
+                                TLong: 2
+                                Char: 
+                            Array: 
+                              TLong: 2
+                              Char: 
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 2
+                            Char: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[1]: 
+                                  TChar: 99
+                              Array: 
+                                TLong: 2
+                                Char: 
+                            Array: 
+                              TLong: 2
+                              Char: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[1]: 
+                                  TChar: 100
+                              Array: 
+                                TLong: 2
+                                Char: 
+                            Array: 
+                              TLong: 2
+                              Char: 
+                        Array: 
+                          TLong: 2
+                          Array: 
+                            TLong: 2
+                            Char: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 2
+                        Array: 
+                          TLong: 2
+                          Char: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 2
+                        Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CAnd: 
+                          CBinary: 
+                            CAnd: 
+                            CBinary: 
+                              CAnd: 
+                              CBinary: 
+                                CEqual: 
+                                CCast: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CSubscript: 
+                                            CAddrOf: 
+                                              CVar: 
+                                                TIdentifier: nested_auto.5
+                                                Pointer: 
+                                                  Array: 
+                                                    TLong: 2
+                                                    Array: 
+                                                      TLong: 2
+                                                      Char: 
+                                              Pointer: 
+                                                Array: 
+                                                  TLong: 2
+                                                  Array: 
+                                                    TLong: 2
+                                                    Char: 
+                                            CCast: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 0
+                                                Int: 
+                                              Long: 
+                                              Long: 
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 2
+                                                Char: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 2
+                                              Char: 
+                                        CCast: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        Pointer: 
+                                          Char: 
+                                      Pointer: 
+                                        Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 0
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Char: 
+                                  Int: 
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 97
+                                  Int: 
+                                Int: 
+                              CBinary: 
+                                CEqual: 
+                                CCast: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CSubscript: 
+                                            CAddrOf: 
+                                              CVar: 
+                                                TIdentifier: nested_auto.5
+                                                Pointer: 
+                                                  Array: 
+                                                    TLong: 2
+                                                    Array: 
+                                                      TLong: 2
+                                                      Char: 
+                                              Pointer: 
+                                                Array: 
+                                                  TLong: 2
+                                                  Array: 
+                                                    TLong: 2
+                                                    Char: 
+                                            CCast: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 0
+                                                Int: 
+                                              Long: 
+                                              Long: 
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 2
+                                                Char: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 2
+                                              Char: 
+                                        CCast: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        Pointer: 
+                                          Char: 
+                                      Pointer: 
+                                        Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 1
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Char: 
+                                  Int: 
+                                  Int: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Int: 
+                              Int: 
+                            CBinary: 
+                              CEqual: 
+                              CCast: 
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CSubscript: 
+                                      CAddrOf: 
+                                        CSubscript: 
+                                          CAddrOf: 
+                                            CVar: 
+                                              TIdentifier: nested_auto.5
+                                              Pointer: 
+                                                Array: 
+                                                  TLong: 2
+                                                  Array: 
+                                                    TLong: 2
+                                                    Char: 
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 2
+                                                Array: 
+                                                  TLong: 2
+                                                  Char: 
+                                          CCast: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 0
+                                              Int: 
+                                            Long: 
+                                            Long: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 2
+                                              Char: 
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 2
+                                            Char: 
+                                      CCast: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 1
+                                          Int: 
+                                        Long: 
+                                        Long: 
+                                      Pointer: 
+                                        Char: 
+                                    Pointer: 
+                                      Char: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Char: 
+                                Int: 
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 98
+                                Int: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CEqual: 
+                            CCast: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CVar: 
+                                            TIdentifier: nested_auto.5
+                                            Pointer: 
+                                              Array: 
+                                                TLong: 2
+                                                Array: 
+                                                  TLong: 2
+                                                  Char: 
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 2
+                                              Array: 
+                                                TLong: 2
+                                                Char: 
+                                        CCast: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 2
+                                            Char: 
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 2
+                                          Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 1
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Pointer: 
+                                      Char: 
+                                  Pointer: 
+                                    Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Char: 
+                              Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CCast: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CSubscript: 
+                                      CAddrOf: 
+                                        CVar: 
+                                          TIdentifier: nested_auto.5
+                                          Pointer: 
+                                            Array: 
+                                              TLong: 2
+                                              Array: 
+                                                TLong: 2
+                                                Char: 
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 2
+                                            Array: 
+                                              TLong: 2
+                                              Char: 
+                                      CCast: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 1
+                                          Int: 
+                                        Long: 
+                                        Long: 
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 2
+                                          Char: 
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 2
+                                        Char: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Pointer: 
+                                    Char: 
+                                Pointer: 
+                                  Char: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Char: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 99
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CSubscript: 
+                                    CAddrOf: 
+                                      CVar: 
+                                        TIdentifier: nested_auto.5
+                                        Pointer: 
+                                          Array: 
+                                            TLong: 2
+                                            Array: 
+                                              TLong: 2
+                                              Char: 
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 2
+                                          Array: 
+                                            TLong: 2
+                                            Char: 
+                                    CCast: 
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 1
+                                        Int: 
+                                      Long: 
+                                      Long: 
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 2
+                                        Char: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 2
+                                      Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 0
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CVar: 
+                                      TIdentifier: nested_auto.5
+                                      Pointer: 
+                                        Array: 
+                                          TLong: 2
+                                          Array: 
+                                            TLong: 2
+                                            Char: 
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 2
+                                        Array: 
+                                          TLong: 2
+                                          Char: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 2
+                                      Char: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 2
+                                    Char: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: nested_auto.5
+                                    Pointer: 
+                                      Array: 
+                                        TLong: 2
+                                        Array: 
+                                          TLong: 2
+                                          Char: 
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 2
+                                      Array: 
+                                        TLong: 2
+                                        Char: 
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 2
+                                    Char: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 2
+                                  Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_flat_static_without_null_byte
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: letters.6
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[4]: 
+                          TChar: 97
+                          TChar: 98
+                          TChar: 99
+                          TChar: 100
+                      None: 
+                    None: 
+                  Array: 
+                    TLong: 4
+                    Char: 
+                  CStatic: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: letters.6
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 97
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: letters.6
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 98
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: letters.6
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 99
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: letters.6
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: nested
+        CCompoundInit: 
+          List[3]: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[3]: 
+                    TChar: 121
+                    TChar: 101
+                    TChar: 115
+                None: 
+              None: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[2]: 
+                    TChar: 110
+                    TChar: 111
+                None: 
+              None: 
+            CSingleInit: 
+              CString: 
+                CStringLiteral: 
+                  List[2]: 
+                    TChar: 111
+                    TChar: 107
+                None: 
+              None: 
+          None: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 3
+            Char: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_nested_static_without_null_byte
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: whole_array.7
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Char: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word1.8
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word2.9
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word3.10
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CFunctionCall: 
+                          TIdentifier: strcmp
+                          List[2]: 
+                            CVar: 
+                              TIdentifier: whole_array.7
+                              Pointer: 
+                                Char: 
+                            CAddrOf: 
+                              CString: 
+                                CStringLiteral: 
+                                  List[5]: 
+                                    TChar: 121
+                                    TChar: 101
+                                    TChar: 115
+                                    TChar: 110
+                                    TChar: 111
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                          Int: 
+                        CFunctionCall: 
+                          TIdentifier: strcmp
+                          List[2]: 
+                            CVar: 
+                              TIdentifier: word1.8
+                              Pointer: 
+                                Char: 
+                            CAddrOf: 
+                              CString: 
+                                CStringLiteral: 
+                                  List[5]: 
+                                    TChar: 121
+                                    TChar: 101
+                                    TChar: 115
+                                    TChar: 110
+                                    TChar: 111
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                          Int: 
+                        Int: 
+                      CFunctionCall: 
+                        TIdentifier: strcmp
+                        List[2]: 
+                          CVar: 
+                            TIdentifier: word2.9
+                            Pointer: 
+                              Char: 
+                          CAddrOf: 
+                            CString: 
+                              CStringLiteral: 
+                                List[2]: 
+                                  TChar: 110
+                                  TChar: 111
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                        Int: 
+                      Int: 
+                    CFunctionCall: 
+                      TIdentifier: strcmp
+                      List[2]: 
+                        CVar: 
+                          TIdentifier: word3.10
+                          Pointer: 
+                            Char: 
+                        CAddrOf: 
+                          CString: 
+                            CStringLiteral: 
+                              List[2]: 
+                                TChar: 111
+                                TChar: 107
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_flat_auto_without_null_byte
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.11
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: letters.12
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[4]: 
+                          TChar: 97
+                          TChar: 98
+                          TChar: 99
+                          TChar: 100
+                      Array: 
+                        TLong: 4
+                        Char: 
+                    Array: 
+                      TLong: 4
+                      Char: 
+                  Array: 
+                    TLong: 4
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.13
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CAnd: 
+                          CBinary: 
+                            CEqual: 
+                            CVar: 
+                              TIdentifier: x.11
+                              Int: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CEqual: 
+                            CVar: 
+                              TIdentifier: y.13
+                              Int: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CCast: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: letters.12
+                                  Pointer: 
+                                    Char: 
+                                Pointer: 
+                                  Char: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Char: 
+                            Int: 
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 97
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CCast: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: letters.12
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          Int: 
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 98
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: letters.12
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 99
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: letters.12
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_nested_auto_without_null_byte
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested.14
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[3]: 
+                              TChar: 121
+                              TChar: 101
+                              TChar: 115
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 110
+                              TChar: 111
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 111
+                              TChar: 107
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                    Array: 
+                      TLong: 3
+                      Array: 
+                        TLong: 3
+                        Char: 
+                  Array: 
+                    TLong: 3
+                    Array: 
+                      TLong: 3
+                      Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: whole_array.15
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: nested.14
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Char: 
+                        Pointer: 
+                          Array: 
+                            TLong: 3
+                            Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word1.16
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested.14
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word2.17
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested.14
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: word3.18
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: nested.14
+                              Pointer: 
+                                Array: 
+                                  TLong: 3
+                                  Char: 
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                      Pointer: 
+                        Char: 
+                    Pointer: 
+                      Char: 
+                  Pointer: 
+                    Char: 
+                  None: 
+            CS: 
+              CReturn: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CFunctionCall: 
+                          TIdentifier: strcmp
+                          List[2]: 
+                            CVar: 
+                              TIdentifier: whole_array.15
+                              Pointer: 
+                                Char: 
+                            CAddrOf: 
+                              CString: 
+                                CStringLiteral: 
+                                  List[5]: 
+                                    TChar: 121
+                                    TChar: 101
+                                    TChar: 115
+                                    TChar: 110
+                                    TChar: 111
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                          Int: 
+                        CFunctionCall: 
+                          TIdentifier: strcmp
+                          List[2]: 
+                            CVar: 
+                              TIdentifier: word1.16
+                              Pointer: 
+                                Char: 
+                            CAddrOf: 
+                              CString: 
+                                CStringLiteral: 
+                                  List[5]: 
+                                    TChar: 121
+                                    TChar: 101
+                                    TChar: 115
+                                    TChar: 110
+                                    TChar: 111
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                          Int: 
+                        Int: 
+                      CFunctionCall: 
+                        TIdentifier: strcmp
+                        List[2]: 
+                          CVar: 
+                            TIdentifier: word2.17
+                            Pointer: 
+                              Char: 
+                          CAddrOf: 
+                            CString: 
+                              CStringLiteral: 
+                                List[2]: 
+                                  TChar: 110
+                                  TChar: 111
+                              Pointer: 
+                                Char: 
+                            Pointer: 
+                              Char: 
+                        Int: 
+                      Int: 
+                    CFunctionCall: 
+                      TIdentifier: strcmp
+                      List[2]: 
+                        CVar: 
+                          TIdentifier: word3.18
+                          Pointer: 
+                            Char: 
+                        CAddrOf: 
+                          CString: 
+                            CStringLiteral: 
+                              List[2]: 
+                                TChar: 111
+                                TChar: 107
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_flat_static_with_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_nested_static_with_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_flat_auto_with_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_nested_auto_with_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_flat_static_without_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_nested_static_without_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_flat_auto_without_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_nested_auto_without_null_byte
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(28):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_flat_static_with_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flat.2]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        UChar: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: dog
+              Bool: 1
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 100
+                  TChar: 111
+                  TChar: 103
+  [test_nested_static_with_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested.3]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 4
+          Char: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[2]: 
+            StringInit: 
+              TIdentifier: yes
+              Bool: 1
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 121
+                  TChar: 101
+                  TChar: 115
+            StringInit: 
+              TIdentifier: yup
+              Bool: 1
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 121
+                  TChar: 117
+                  TChar: 112
+  [test_flat_auto_with_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flat_auto.4]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Char: 
+      LocalAttr: 
+  [test_nested_auto_with_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested_auto.5]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 2
+          Array: 
+            TLong: 2
+            Char: 
+      LocalAttr: 
+  [test_flat_static_without_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [letters.6]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            StringInit: 
+              TIdentifier: abcd
+              Bool: 0
+              CStringLiteral: 
+                List[4]: 
+                  TChar: 97
+                  TChar: 98
+                  TChar: 99
+                  TChar: 100
+  [nested]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Array: 
+          TLong: 3
+          Char: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[3]: 
+            StringInit: 
+              TIdentifier: yes
+              Bool: 0
+              CStringLiteral: 
+                List[3]: 
+                  TChar: 121
+                  TChar: 101
+                  TChar: 115
+            StringInit: 
+              TIdentifier: no
+              Bool: 1
+              CStringLiteral: 
+                List[2]: 
+                  TChar: 110
+                  TChar: 111
+            StringInit: 
+              TIdentifier: ok
+              Bool: 1
+              CStringLiteral: 
+                List[2]: 
+                  TChar: 111
+                  TChar: 107
+  [test_nested_static_without_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [whole_array.7]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word1.8]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word2.9]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word3.10]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [test_flat_auto_without_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [letters.12]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      LocalAttr: 
+  [y.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [test_nested_auto_without_null_byte]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [nested.14]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Array: 
+          TLong: 3
+          Char: 
+      LocalAttr: 
+  [whole_array.15]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word1.16]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word2.17]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [word3.18]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

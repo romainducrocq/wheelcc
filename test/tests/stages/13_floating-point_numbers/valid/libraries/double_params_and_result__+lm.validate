@@ -1,0 +1,236 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fmax
+        List[2]: 
+          TIdentifier: x.0
+          TIdentifier: y.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_max
+        List[11]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: f.7
+          TIdentifier: g.8
+          TIdentifier: h.9
+          TIdentifier: i.10
+          TIdentifier: j.11
+          TIdentifier: k.12
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: max.13
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: fmax
+                      List[2]: 
+                        CFunctionCall: 
+                          TIdentifier: fmax
+                          List[2]: 
+                            CFunctionCall: 
+                              TIdentifier: fmax
+                              List[2]: 
+                                CFunctionCall: 
+                                  TIdentifier: fmax
+                                  List[2]: 
+                                    CVar: 
+                                      TIdentifier: a.2
+                                      Double: 
+                                    CVar: 
+                                      TIdentifier: b.3
+                                      Double: 
+                                  Double: 
+                                CFunctionCall: 
+                                  TIdentifier: fmax
+                                  List[2]: 
+                                    CVar: 
+                                      TIdentifier: c.4
+                                      Double: 
+                                    CVar: 
+                                      TIdentifier: d.5
+                                      Double: 
+                                  Double: 
+                              Double: 
+                            CFunctionCall: 
+                              TIdentifier: fmax
+                              List[2]: 
+                                CFunctionCall: 
+                                  TIdentifier: fmax
+                                  List[2]: 
+                                    CVar: 
+                                      TIdentifier: e.6
+                                      Double: 
+                                    CVar: 
+                                      TIdentifier: f.7
+                                      Double: 
+                                  Double: 
+                                CFunctionCall: 
+                                  TIdentifier: fmax
+                                  List[2]: 
+                                    CVar: 
+                                      TIdentifier: g.8
+                                      Double: 
+                                    CVar: 
+                                      TIdentifier: h.9
+                                      Double: 
+                                  Double: 
+                              Double: 
+                          Double: 
+                        CFunctionCall: 
+                          TIdentifier: fmax
+                          List[2]: 
+                            CVar: 
+                              TIdentifier: i.10
+                              Double: 
+                            CFunctionCall: 
+                              TIdentifier: fmax
+                              List[2]: 
+                                CVar: 
+                                  TIdentifier: j.11
+                                  Double: 
+                                CVar: 
+                                  TIdentifier: k.12
+                                  Double: 
+                              Double: 
+                          Double: 
+                      Double: 
+                    Double: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: max.13
+                  Double: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[11]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(14):
+  [fmax]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Double: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [a.2]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [b.3]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [c.4]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [d.5]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [e.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [f.7]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [g.8]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [h.9]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [i.10]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [j.11]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [k.12]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [get_max]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[11]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [max.13]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 

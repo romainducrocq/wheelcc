@@ -1,0 +1,337 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: puts
+        List[1]: 
+          TIdentifier: s.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strlen
+        List[1]: 
+          TIdentifier: s.3
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          ULong: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: atoi
+        List[1]: 
+          TIdentifier: s.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[3]: 
+                            TChar: 97
+                            TChar: 98
+                            TChar: 99
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[3]: 
+                            TChar: 97
+                            TChar: 98
+                            TChar: 99
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CGreaterOrEqual: 
+                  CFunctionCall: 
+                    TIdentifier: strcmp
+                    List[2]: 
+                      CAddrOf: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 97
+                              TChar: 98
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CAddrOf: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 120
+                              TChar: 121
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: puts
+                  List[1]: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[13]: 
+                            TChar: 72
+                            TChar: 101
+                            TChar: 108
+                            TChar: 108
+                            TChar: 111
+                            TChar: 44
+                            TChar: 32
+                            TChar: 87
+                            TChar: 111
+                            TChar: 114
+                            TChar: 108
+                            TChar: 100
+                            TChar: 33
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strlen
+                  List[1]: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[0]: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  ULong: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i.5
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: atoi
+                      List[1]: 
+                        CAddrOf: 
+                          CString: 
+                            CStringLiteral: 
+                              List[2]: 
+                                TChar: 49
+                                TChar: 48
+                            Pointer: 
+                              Char: 
+                          Pointer: 
+                            Char: 
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i.5
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [puts]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [strlen]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        ULong: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [atoi]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

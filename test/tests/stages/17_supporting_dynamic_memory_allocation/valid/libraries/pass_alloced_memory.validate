@@ -1,0 +1,256 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[6]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.0
+          TIdentifier: size.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: memset
+        List[3]: 
+          TIdentifier: s.2
+          TIdentifier: c.3
+          TIdentifier: n.4
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Void: 
+            Int: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: free
+        List[1]: 
+          TIdentifier: ptr.5
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Void: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: get_100_zeroed_bytes
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: calloc
+                  List[2]: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      ULong: 
+                      ULong: 
+                  Pointer: 
+                    Void: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fill_100_bytes
+        List[2]: 
+          TIdentifier: pointer.6
+          TIdentifier: byte.7
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: memset
+                  List[3]: 
+                    CVar: 
+                      TIdentifier: pointer.6
+                      Pointer: 
+                        Void: 
+                    CVar: 
+                      TIdentifier: byte.7
+                      Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      ULong: 
+                      ULong: 
+                  Pointer: 
+                    Void: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Void: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: free_bytes
+        List[1]: 
+          TIdentifier: ptr.8
+        CB: 
+          List[1]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: free
+                  List[1]: 
+                    CVar: 
+                      TIdentifier: ptr.8
+                      Pointer: 
+                        Void: 
+                  Void: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Void: 
+          Void: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(9):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [memset]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Pointer: 
+            Void: 
+          Int: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [free]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Void: 
+        Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [get_100_zeroed_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [pointer.6]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [byte.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [fill_100_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Void: 
+          Int: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr.8]: 
+    Symbol: 
+      Pointer: 
+        Void: 
+      LocalAttr: 
+  [free_bytes]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Void: 
+        Void: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

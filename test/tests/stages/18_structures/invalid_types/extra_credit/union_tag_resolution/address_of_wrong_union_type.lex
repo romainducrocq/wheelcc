@@ -1,0 +1,50 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[45]:
+  union
+  identifier(u)
+  {
+  int
+  identifier(i)
+  ;
+  char
+  identifier(c)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(foo)
+  =
+  {
+  const int(0)
+  }
+  ;
+  union
+  identifier(u)
+  {
+  int
+  identifier(i)
+  ;
+  char
+  identifier(c)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  *
+  identifier(ptr)
+  =
+  &
+  identifier(foo)
+  ;
+  }

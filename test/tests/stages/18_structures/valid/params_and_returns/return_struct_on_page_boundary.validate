@@ -1,0 +1,469 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: ten_bytes.0
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 10
+              Char: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: on_page_boundary
+        None: 
+        Structure: 
+          TIdentifier: ten_bytes.0
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_struct
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: on_page_boundary
+                          Structure: 
+                            TIdentifier: ten_bytes.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 9
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: on_page_boundary
+                          Structure: 
+                            TIdentifier: ten_bytes.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 8
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: arr
+                        CVar: 
+                          TIdentifier: on_page_boundary
+                          Structure: 
+                            TIdentifier: ten_bytes.0
+                            Bool: 0
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 7
+                        Int: 
+                      Long: 
+                      Long: 
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: on_page_boundary
+                  Structure: 
+                    TIdentifier: ten_bytes.0
+                    Bool: 0
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: ten_bytes.0
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.0
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: return_struct
+                      List[0]: 
+                      Structure: 
+                        TIdentifier: ten_bytes.0
+                        Bool: 0
+                    Structure: 
+                      TIdentifier: ten_bytes.0
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: ten_bytes.0
+                    Bool: 0
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.1
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.1
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CSubscript: 
+                            CAddrOf: 
+                              CDot: 
+                                TIdentifier: arr
+                                CVar: 
+                                  TIdentifier: x.0
+                                  Structure: 
+                                    TIdentifier: ten_bytes.0
+                                    Bool: 0
+                                Pointer: 
+                                  Char: 
+                              Pointer: 
+                                Char: 
+                            CCast: 
+                              CVar: 
+                                TIdentifier: i.1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Char: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                          None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: x.0
+                            Structure: 
+                              TIdentifier: ten_bytes.0
+                              Bool: 0
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 7
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: x.0
+                            Structure: 
+                              TIdentifier: ten_bytes.0
+                              Bool: 0
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 8
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: x.0
+                            Structure: 
+                              TIdentifier: ten_bytes.0
+                              Bool: 0
+                          Pointer: 
+                            Char: 
+                        Pointer: 
+                          Char: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 9
+                          Int: 
+                        Long: 
+                        Long: 
+                      Char: 
+                    Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [ten_bytes.0]: 
+    StructTypedef: 
+      TInt: 1
+      TLong: 10
+      List[1]: 
+        TIdentifier: arr
+      Dict[1]: 
+        [arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 10
+              Char: 
++
++
+@@ Symbol Table @@
+Dict(5):
+  [on_page_boundary]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: ten_bytes.0
+        Bool: 0
+      StaticAttr: 
+        Bool: 1
+        NoInitializer: 
+  [return_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: ten_bytes.0
+          Bool: 0
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: ten_bytes.0
+        Bool: 0
+      LocalAttr: 
+  [i.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

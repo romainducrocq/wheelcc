@@ -1,0 +1,437 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[14]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: point_one
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 0.100000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: point_two
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 0.200000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: point_three
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 0.300000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: two
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 2.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: three
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 3.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: four
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 4.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: twelveE30
+        CSingleInit: 
+          CConstant: 
+            CConstDouble: 
+              TDouble: 11999999999999999112715591221248.000000
+            None: 
+          None: 
+        Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: addition
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: point_one
+                      None: 
+                    CVar: 
+                      TIdentifier: point_two
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.300000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: subtraction
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: four
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 3.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiplication
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CMultiply: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 0.010000
+                      None: 
+                    CVar: 
+                      TIdentifier: point_three
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.003000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: division
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CBinary: 
+                    CDivide: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 7.000000
+                      None: 
+                    CVar: 
+                      TIdentifier: two
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 3.500000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: negation
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: neg
+                  CSingleInit: 
+                    CUnary: 
+                      CNegate: 
+                      CVar: 
+                        TIdentifier: twelveE30
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CUnary: 
+                  CNot: 
+                  CBinary: 
+                    CAdd: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 11999999999999999112715591221248.000000
+                      None: 
+                    CVar: 
+                      TIdentifier: neg
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: complex_expression
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: complex_expression
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: two
+                          None: 
+                        CVar: 
+                          TIdentifier: three
+                          None: 
+                        None: 
+                      CBinary: 
+                        CMultiply: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 127.500000
+                          None: 
+                        CVar: 
+                          TIdentifier: four
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: complex_expression
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 505.000000
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: addition
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: subtraction
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: multiplication
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: division
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: negation
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: complex_expression
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

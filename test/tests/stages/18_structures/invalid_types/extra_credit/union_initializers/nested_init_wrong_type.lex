@@ -1,0 +1,69 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[64]:
+  union
+  identifier(u)
+  {
+  double
+  identifier(d)
+  ;
+  int
+  identifier(i)
+  ;
+  char
+  identifier(c)
+  ;
+  }
+  ;
+  struct
+  identifier(s)
+  {
+  int
+  *
+  identifier(ptr)
+  ;
+  union
+  identifier(u)
+  identifier(arr)
+  [
+  const int(3)
+  ]
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  int
+  identifier(x)
+  ;
+  struct
+  identifier(s)
+  identifier(my_struct)
+  =
+  {
+  &
+  identifier(x)
+  ,
+  {
+  {
+  const double(1.0)
+  }
+  ,
+  {
+  const double(2.0)
+  }
+  ,
+  {
+  &
+  identifier(x)
+  }
+  }
+  }
+  ;
+  }

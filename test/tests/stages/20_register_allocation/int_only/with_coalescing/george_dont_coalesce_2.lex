@@ -1,0 +1,286 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[281]:
+  int
+  identifier(check_one_int)
+  (
+  int
+  identifier(actual)
+  ,
+  int
+  identifier(expected)
+  )
+  ;
+  int
+  identifier(check_5_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(check_12_ints)
+  (
+  int
+  identifier(a)
+  ,
+  int
+  identifier(b)
+  ,
+  int
+  identifier(c)
+  ,
+  int
+  identifier(d)
+  ,
+  int
+  identifier(e)
+  ,
+  int
+  identifier(f)
+  ,
+  int
+  identifier(g)
+  ,
+  int
+  identifier(h)
+  ,
+  int
+  identifier(i)
+  ,
+  int
+  identifier(j)
+  ,
+  int
+  identifier(k)
+  ,
+  int
+  identifier(l)
+  ,
+  int
+  identifier(start)
+  )
+  ;
+  int
+  identifier(id)
+  (
+  int
+  identifier(x)
+  )
+  ;
+  int
+  identifier(glob)
+  =
+  const int(1)
+  ;
+  int
+  identifier(update_glob)
+  (
+  void
+  )
+  {
+  identifier(glob)
+  =
+  const int(0)
+  ;
+  return
+  const int(0)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  int
+  identifier(a)
+  =
+  identifier(glob)
+  *
+  const int(2)
+  ;
+  int
+  identifier(b)
+  =
+  identifier(glob)
+  *
+  const int(3)
+  ;
+  int
+  identifier(c)
+  =
+  identifier(glob)
+  *
+  const int(4)
+  ;
+  int
+  identifier(d)
+  =
+  identifier(glob)
+  *
+  const int(5)
+  ;
+  int
+  identifier(e)
+  =
+  identifier(glob)
+  *
+  const int(6)
+  ;
+  identifier(update_glob)
+  (
+  )
+  ;
+  int
+  identifier(f)
+  =
+  identifier(a)
+  +
+  identifier(d)
+  ;
+  int
+  identifier(g)
+  =
+  identifier(b)
+  *
+  const int(3)
+  -
+  const int(1)
+  ;
+  int
+  identifier(h)
+  =
+  identifier(c)
+  +
+  identifier(d)
+  ;
+  int
+  identifier(i)
+  =
+  identifier(c)
+  +
+  identifier(e)
+  ;
+  int
+  identifier(j)
+  =
+  identifier(d)
+  *
+  const int(2)
+  +
+  const int(1)
+  ;
+  int
+  identifier(k)
+  =
+  identifier(e)
+  *
+  const int(2)
+  ;
+  int
+  identifier(l)
+  =
+  identifier(a)
+  +
+  identifier(b)
+  +
+  identifier(c)
+  +
+  identifier(d)
+  +
+  identifier(e)
+  ;
+  int
+  identifier(m)
+  =
+  const int(3)
+  *
+  identifier(f)
+  ;
+  int
+  identifier(n)
+  =
+  identifier(g)
+  *
+  const int(3)
+  -
+  const int(2)
+  ;
+  int
+  identifier(o)
+  =
+  identifier(h)
+  *
+  const int(2)
+  +
+  const int(5)
+  ;
+  int
+  identifier(p)
+  =
+  identifier(i)
+  *
+  const int(2)
+  +
+  const int(4)
+  ;
+  identifier(glob)
+  =
+  identifier(glob)
+  +
+  identifier(f)
+  +
+  identifier(g)
+  +
+  identifier(h)
+  +
+  identifier(i)
+  +
+  identifier(j)
+  +
+  identifier(k)
+  ;
+  identifier(check_5_ints)
+  (
+  identifier(l)
+  ,
+  identifier(m)
+  ,
+  identifier(n)
+  ,
+  identifier(o)
+  ,
+  identifier(p)
+  ,
+  const int(20)
+  )
+  ;
+  identifier(check_one_int)
+  (
+  identifier(glob)
+  ,
+  const int(57)
+  )
+  ;
+  return
+  const int(0)
+  ;
+  }

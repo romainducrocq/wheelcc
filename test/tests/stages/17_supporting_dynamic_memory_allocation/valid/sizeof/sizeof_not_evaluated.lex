@@ -1,0 +1,39 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[34]:
+  void
+  identifier(exit)
+  (
+  int
+  identifier(status)
+  )
+  ;
+  int
+  identifier(foo)
+  (
+  void
+  )
+  {
+  identifier(exit)
+  (
+  const int(10)
+  )
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  sizeof
+  (
+  identifier(foo)
+  (
+  )
+  )
+  ;
+  }

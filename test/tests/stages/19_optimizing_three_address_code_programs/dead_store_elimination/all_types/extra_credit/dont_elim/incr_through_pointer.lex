@@ -1,0 +1,41 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[36]:
+  void
+  identifier(f)
+  (
+  int
+  *
+  identifier(ptr)
+  )
+  {
+  ++
+  *
+  identifier(ptr)
+  ;
+  return
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  int
+  identifier(x)
+  =
+  const int(0)
+  ;
+  identifier(f)
+  (
+  &
+  identifier(x)
+  )
+  ;
+  return
+  identifier(x)
+  ;
+  }

@@ -1,0 +1,281 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1.0
+          TIdentifier: s2.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: multi_string.2
+                  CSingleInit: 
+                    CString: 
+                      CStringLiteral: 
+                        List[5]: 
+                          TChar: 121
+                          TChar: 101
+                          TChar: 115
+                          TChar: 110
+                          TChar: 111
+                      Array: 
+                        TLong: 6
+                        Char: 
+                    Array: 
+                      TLong: 6
+                      Char: 
+                  Array: 
+                    TLong: 6
+                    Char: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: nested_multi_string.3
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 97
+                              TChar: 98
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[2]: 
+                              TChar: 99
+                              TChar: 100
+                          Array: 
+                            TLong: 3
+                            Char: 
+                        Array: 
+                          TLong: 3
+                          Char: 
+                    Array: 
+                      TLong: 2
+                      Array: 
+                        TLong: 3
+                        Char: 
+                  Array: 
+                    TLong: 2
+                    Array: 
+                      TLong: 3
+                      Char: 
+                  None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: multi_string.2
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[5]: 
+                            TChar: 121
+                            TChar: 101
+                            TChar: 115
+                            TChar: 110
+                            TChar: 111
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: nested_multi_string.3
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[2]: 
+                            TChar: 97
+                            TChar: 98
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    Int: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: nested_multi_string.3
+                            Pointer: 
+                              Array: 
+                                TLong: 3
+                                Char: 
+                          Pointer: 
+                            Array: 
+                              TLong: 3
+                              Char: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                    CAddrOf: 
+                      CString: 
+                        CStringLiteral: 
+                          List[2]: 
+                            TChar: 99
+                            TChar: 100
+                        Pointer: 
+                          Char: 
+                      Pointer: 
+                        Char: 
+                  Int: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(4):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [multi_string.2]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      LocalAttr: 
+  [nested_multi_string.3]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 3
+          Char: 
+      LocalAttr: 

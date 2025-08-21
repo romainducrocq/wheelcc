@@ -1,0 +1,496 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[6]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: x
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: y
+            Long: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer.1
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: inner.0
+                Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: inner.0
+              Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.0
+          TIdentifier: size.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_small_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: inner.0
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_nested_struct
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: outer.1
+            Bool: 0
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: y
+                    CFunctionCall: 
+                      TIdentifier: return_small_struct
+                      List[0]: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 102
+                      Int: 
+                    Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CDot: 
+                        TIdentifier: d
+                        CFunctionCall: 
+                          TIdentifier: return_nested_struct
+                          List[0]: 
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        Double: 
+                      CConstant: 
+                        CConstDouble: 
+                          TDouble: 2.000000
+                        Double: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: x
+                          CDot: 
+                            TIdentifier: s
+                            CFunctionCall: 
+                              TIdentifier: return_nested_struct
+                              List[0]: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: y
+                      CDot: 
+                        TIdentifier: s
+                        CFunctionCall: 
+                          TIdentifier: return_nested_struct
+                          List[0]: 
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 11
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CArrow: 
+                        TIdentifier: x
+                        CDot: 
+                          TIdentifier: ptr
+                          CFunctionCall: 
+                            TIdentifier: return_nested_struct
+                            List[0]: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: y
+                      CDot: 
+                        TIdentifier: ptr
+                        CFunctionCall: 
+                          TIdentifier: return_nested_struct
+                          List[0]: 
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 13
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: x
+                    CDot: 
+                      TIdentifier: ptr
+                      CFunctionCall: 
+                        TIdentifier: return_nested_struct
+                        List[0]: 
+                        Structure: 
+                          TIdentifier: outer.1
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 70
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: y
+                    CDot: 
+                      TIdentifier: ptr
+                      CFunctionCall: 
+                        TIdentifier: return_nested_struct
+                        List[0]: 
+                        Structure: 
+                          TIdentifier: outer.1
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 71
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CArrow: 
+                        TIdentifier: x
+                        CDot: 
+                          TIdentifier: ptr
+                          CFunctionCall: 
+                            TIdentifier: return_nested_struct
+                            List[0]: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 70
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: y
+                      CDot: 
+                        TIdentifier: ptr
+                        CFunctionCall: 
+                          TIdentifier: return_nested_struct
+                          List[0]: 
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 71
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(2):
+  [inner.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: x
+        TIdentifier: y
+      Dict[2]: 
+        [x]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [y]: 
+          StructMember: 
+            TLong: 8
+            Long: 
+  [outer.1]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[3]: 
+        TIdentifier: d
+        TIdentifier: ptr
+        TIdentifier: s
+      Dict[3]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [ptr]: 
+          StructMember: 
+            TLong: 8
+            Pointer: 
+              Structure: 
+                TIdentifier: inner.0
+                Bool: 0
+        [s]: 
+          StructMember: 
+            TLong: 16
+            Structure: 
+              TIdentifier: inner.0
+              Bool: 0
++
++
+@@ Symbol Table @@
+Dict(4):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_small_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: inner.0
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [return_nested_struct]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Structure: 
+          TIdentifier: outer.1
+          Bool: 0
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

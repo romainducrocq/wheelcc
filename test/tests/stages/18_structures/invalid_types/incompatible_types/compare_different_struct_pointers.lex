@@ -1,0 +1,57 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[52]:
+  struct
+  identifier(s1)
+  ;
+  struct
+  identifier(s2)
+  ;
+  struct
+  identifier(s1)
+  *
+  identifier(get_s1_ptr)
+  (
+  void
+  )
+  ;
+  struct
+  identifier(s2)
+  *
+  identifier(get_s2_ptr)
+  (
+  void
+  )
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s1)
+  *
+  identifier(s1_ptr)
+  =
+  identifier(get_s1_ptr)
+  (
+  )
+  ;
+  struct
+  identifier(s2)
+  *
+  identifier(s2_ptr)
+  =
+  identifier(get_s2_ptr)
+  (
+  )
+  ;
+  return
+  identifier(s1_ptr)
+  ==
+  identifier(s2_ptr)
+  ;
+  }

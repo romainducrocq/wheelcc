@@ -1,0 +1,145 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[9]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: double_arr
+        CCompoundInit: 
+          List[2]: 
+            CCompoundInit: 
+              List[2]: 
+                CSingleInit: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1.100000
+                    None: 
+                  None: 
+                CSingleInit: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2.200000
+                    None: 
+                  None: 
+              None: 
+            CCompoundInit: 
+              List[2]: 
+                CSingleInit: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 3.300000
+                    None: 
+                  None: 
+                CSingleInit: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 4.400000
+                    None: 
+                  None: 
+              None: 
+          None: 
+        Array: 
+          TLong: 2
+          Array: 
+            TLong: 2
+            Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_double_arr
+        List[1]: 
+          TIdentifier: arr
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 1.100000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 2.200000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CConstant: 
+                 

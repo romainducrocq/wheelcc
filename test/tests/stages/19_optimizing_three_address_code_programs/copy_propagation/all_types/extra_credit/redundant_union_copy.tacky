@@ -1,0 +1,216 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[3]: 
+        TIdentifier: flag.0
+        TIdentifier: flag2.1
+        TIdentifier: y.2
+      List[12]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: x.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: flag.0
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: x.3
+          TacVariable: 
+            TIdentifier: y.2
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: flag2.1
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: x.3
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacCopyFromOffset: 
+          TIdentifier: x.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.5
+        TacCopyFromOffset: 
+          TIdentifier: y.2
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.6
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: smem.5
+          TacVariable: 
+            TIdentifier: smem.6
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[6]: 
+        TacCopyToOffset: 
+          TIdentifier: my_union.4
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacCopyToOffset: 
+          TIdentifier: my_union.4
+          TLong: 0
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 25.000000
+        TacFunCall: 
+          TIdentifier: target
+          List[3]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+            TacVariable: 
+              TIdentifier: my_union.4
+          TacVariable: 
+            TIdentifier: call.8
+        TacBinary: 
+          TacEqual: 
+          TacVariable: 
+            TIdentifier: call.8
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 50.000000
+          TacVariable: 
+            TIdentifier: binop.9
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.9
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: d
+        TIdentifier: i
+      Dict[2]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(12):
+  [flag.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [flag2.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Int: 
+          Int: 
+          Structure: 
+            TIdentifier: u.0
+            Bool: 1
+        Double: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_union.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [smem.5]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [smem.6]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [call.8]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

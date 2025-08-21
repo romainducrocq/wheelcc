@@ -1,0 +1,165 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[160]:
+  long
+  identifier(l)
+  =
+  const long(1l)
+  ;
+  int
+  identifier(i)
+  =
+  const int(2)
+  ;
+  unsigned
+  int
+  identifier(u)
+  =
+  const unsigned int(30u)
+  ;
+  struct
+  identifier(s)
+  {
+  int
+  identifier(a)
+  ;
+  int
+  identifier(b)
+  ;
+  int
+  identifier(c)
+  ;
+  }
+  ;
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  long
+  identifier(x)
+  =
+  (
+  long
+  )
+  identifier(i)
+  ;
+  unsigned
+  long
+  identifier(y)
+  =
+  (
+  unsigned
+  long
+  )
+  identifier(u)
+  ;
+  double
+  identifier(d)
+  =
+  (
+  double
+  )
+  identifier(y)
+  +
+  (
+  double
+  )
+  identifier(i)
+  ;
+  identifier(x)
+  =
+  (
+  long
+  )
+  identifier(d)
+  ;
+  identifier(y)
+  =
+  (
+  unsigned
+  long
+  )
+  identifier(d)
+  ;
+  int
+  identifier(arr)
+  [
+  const int(3)
+  ]
+  =
+  {
+  const int(1)
+  ,
+  const int(2)
+  ,
+  const int(3)
+  }
+  ;
+  int
+  identifier(j)
+  =
+  identifier(arr)
+  [
+  const int(2)
+  ]
+  ;
+  int
+  *
+  identifier(ptr)
+  =
+  &
+  identifier(i)
+  ;
+  char
+  identifier(c)
+  =
+  (
+  char
+  )
+  identifier(l)
+  ;
+  struct
+  identifier(s)
+  identifier(my_struct)
+  =
+  {
+  const int(0)
+  ,
+  const int(0)
+  ,
+  const int(0)
+  }
+  ;
+  identifier(j)
+  =
+  identifier(my_struct)
+  .
+  identifier(b)
+  ;
+  identifier(d)
+  =
+  -
+  identifier(d)
+  *
+  const double(5.0)
+  ;
+  return
+  const int(5)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(target)
+  (
+  )
+  ;
+  }

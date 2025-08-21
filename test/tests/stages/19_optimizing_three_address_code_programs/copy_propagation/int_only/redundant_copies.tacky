@@ -1,0 +1,146 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[3]: 
+        TIdentifier: flag.0
+        TIdentifier: flag2.1
+        TIdentifier: y.2
+      List[10]: 
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: x.3
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: flag.0
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: x.3
+          TacVariable: 
+            TIdentifier: y.2
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: flag2.1
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: x.3
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacBinary: 
+          TacAdd: 
+          TacVariable: 
+            TIdentifier: x.3
+          TacVariable: 
+            TIdentifier: y.2
+          TacVariable: 
+            TIdentifier: binop.4
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: binop.4
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[3]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+            TacConstant: 
+              CConstInt: 
+                TInt: 10
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: call.5
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(8):
+  [flag.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [flag2.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [y.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[3]: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [binop.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

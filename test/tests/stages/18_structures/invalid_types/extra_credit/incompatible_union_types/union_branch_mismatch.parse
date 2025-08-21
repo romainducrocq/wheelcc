@@ -1,0 +1,91 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: u1
+                  Bool: 1
+                  List[1]: 
+                    CMemberDeclaration: 
+                      TIdentifier: a
+                      Int: 
+            CD: 
+              CStructDecl: 
+                CStructDeclaration: 
+                  TIdentifier: u2
+                  Bool: 1
+                  List[1]: 
+                    CMemberDeclaration: 
+                      TIdentifier: a
+                      Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: u1
+                    Bool: 1
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 11
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: u2
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CConditional: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  CVar: 
+                    TIdentifier: y
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

@@ -1,0 +1,262 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[2]: 
+    TacFunction: 
+      TIdentifier: choose_union
+      Bool: 1
+      List[1]: 
+        TIdentifier: flag.0
+      List[14]: 
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.3
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: unop.3
+          TacVariable: 
+            TIdentifier: cast.4
+        TacCopyToOffset: 
+          TIdentifier: one.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.4
+        TacCopyToOffset: 
+          TIdentifier: two.2
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+        TacJumpIfZero: 
+          TIdentifier: ternary_else.0
+          TacVariable: 
+            TIdentifier: flag.0
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: one.1
+          TacVariable: 
+            TIdentifier: ternop.5
+        TacJump: 
+          TIdentifier: ternary_false.1
+        TacLabel: 
+          TIdentifier: ternary_else.0
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: two.2
+          TacVariable: 
+            TIdentifier: ternop.5
+        TacLabel: 
+          TIdentifier: ternary_false.1
+        TacCopyFromOffset: 
+          TIdentifier: ternop.5
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.6
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: smem.6
+          TacVariable: 
+            TIdentifier: cast.7
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[13]: 
+        TacFunCall: 
+          TIdentifier: choose_union
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 1
+          TacVariable: 
+            TIdentifier: call.8
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: unop.9
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.8
+          TacVariable: 
+            TIdentifier: unop.9
+          TacVariable: 
+            TIdentifier: binop.10
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.10
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacFunCall: 
+          TIdentifier: choose_union
+          List[1]: 
+            TacConstant: 
+              CConstInt: 
+                TInt: 0
+          TacVariable: 
+            TIdentifier: call.11
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.11
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: binop.12
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: binop.12
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[3]: 
+        TIdentifier: l
+        TIdentifier: i
+        TIdentifier: c
+      Dict[3]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
++
++
+@@ Symbol Table @@
+Dict(15):
+  [flag.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [choose_union]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [one.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [two.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [unop.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [ternop.5]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [smem.6]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.8]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

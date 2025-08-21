@@ -1,0 +1,6516 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[6]: 
+    TacStaticConstant: 
+      TIdentifier: string.19
+      Array: 
+        TLong: 19
+        Char: 
+      StringInit: 
+        TIdentifier: Important message!
+        Bool: 1
+        CStringLiteral: 
+          List[18]: 
+            TChar: 73
+            TChar: 109
+            TChar: 112
+            TChar: 111
+            TChar: 114
+            TChar: 116
+            TChar: 97
+            TChar: 110
+            TChar: 116
+            TChar: 32
+            TChar: 109
+            TChar: 101
+            TChar: 115
+            TChar: 115
+            TChar: 97
+            TChar: 103
+            TChar: 101
+            TChar: 33
+    TacStaticConstant: 
+      TIdentifier: string.25
+      Array: 
+        TLong: 8
+        Char: 
+      StringInit: 
+        TIdentifier: Partial
+        Bool: 1
+        CStringLiteral: 
+          List[7]: 
+            TChar: 80
+            TChar: 97
+            TChar: 114
+            TChar: 116
+            TChar: 105
+            TChar: 97
+            TChar: 108
+    TacStaticConstant: 
+      TIdentifier: string.54
+      Array: 
+        TLong: 6
+        Char: 
+      StringInit: 
+        TIdentifier: mixed
+        Bool: 1
+        CStringLiteral: 
+          List[5]: 
+            TChar: 109
+            TChar: 105
+            TChar: 120
+            TChar: 101
+            TChar: 100
+    TacStaticConstant: 
+      TIdentifier: string.77
+      Array: 
+        TLong: 2
+        Char: 
+      StringInit: 
+        TIdentifier: 7
+        Bool: 1
+        CStringLiteral: 
+          List[1]: 
+            TChar: 55
+    TacStaticConstant: 
+      TIdentifier: string.97
+      Array: 
+        TLong: 4
+        Char: 
+      StringInit: 
+        TIdentifier: 107
+        Bool: 1
+        CStringLiteral: 
+          List[3]: 
+            TChar: 49
+            TChar: 48
+            TChar: 55
+    TacStaticConstant: 
+      TIdentifier: string.117
+      Array: 
+        TLong: 4
+        Char: 
+      StringInit: 
+        TIdentifier: 207
+        Bool: 1
+        CStringLiteral: 
+          List[3]: 
+            TChar: 50
+            TChar: 48
+            TChar: 55
+  List[0]: 
+  List[4]: 
+    TacFunction: 
+      TIdentifier: validate_full_initialization
+      Bool: 1
+      List[1]: 
+        TIdentifier: ptr.6
+      List[115]: 
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacVariable: 
+            TIdentifier: sptr.19
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstLong: 
+              TLong: 200
+          TacVariable: 
+            TIdentifier: unop.20
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.19
+          TacVariable: 
+            TIdentifier: unop.20
+          TacVariable: 
+            TIdentifier: binop.21
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.17
+          TacVariable: 
+            TIdentifier: binop.21
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.22
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.22
+          TacVariable: 
+            TIdentifier: smem.23
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 171
+          TacVariable: 
+            TIdentifier: unop.24
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.23
+          TacVariable: 
+            TIdentifier: unop.24
+          TacVariable: 
+            TIdentifier: binop.25
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.17
+          TacVariable: 
+            TIdentifier: binop.25
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.18
+        TacJump: 
+          TIdentifier: or_false.18
+        TacLabel: 
+          TIdentifier: or_true.17
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.18
+        TacLabel: 
+          TIdentifier: or_false.18
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.15
+          TacVariable: 
+            TIdentifier: binop.18
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.26
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.26
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.27
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.28
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.27
+          TacVariable: 
+            TIdentifier: cast.28
+          TacVariable: 
+            TIdentifier: subscr.29
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.29
+          TacVariable: 
+            TIdentifier: subscr.30
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.30
+          TacVariable: 
+            TIdentifier: cast.31
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.31
+          TacConstant: 
+            CConstInt: 
+              TInt: 200
+          TacVariable: 
+            TIdentifier: binop.32
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.15
+          TacVariable: 
+            TIdentifier: binop.32
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.17
+        TacJump: 
+          TIdentifier: or_false.16
+        TacLabel: 
+          TIdentifier: or_true.15
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.17
+        TacLabel: 
+          TIdentifier: or_false.16
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.13
+          TacVariable: 
+            TIdentifier: binop.17
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.33
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.33
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.34
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.35
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.34
+          TacVariable: 
+            TIdentifier: cast.35
+          TacVariable: 
+            TIdentifier: subscr.36
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.36
+          TacVariable: 
+            TIdentifier: subscr.37
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.37
+          TacVariable: 
+            TIdentifier: cast.38
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.38
+          TacConstant: 
+            CConstInt: 
+              TInt: 202
+          TacVariable: 
+            TIdentifier: binop.39
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.13
+          TacVariable: 
+            TIdentifier: binop.39
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.16
+        TacJump: 
+          TIdentifier: or_false.14
+        TacLabel: 
+          TIdentifier: or_true.13
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.16
+        TacLabel: 
+          TIdentifier: or_false.14
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.11
+          TacVariable: 
+            TIdentifier: binop.16
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.40
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.40
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.41
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.42
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.41
+          TacVariable: 
+            TIdentifier: cast.42
+          TacVariable: 
+            TIdentifier: subscr.43
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.43
+          TacVariable: 
+            TIdentifier: subscr.44
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.44
+          TacVariable: 
+            TIdentifier: cast.45
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.45
+          TacConstant: 
+            CConstInt: 
+              TInt: 203
+          TacVariable: 
+            TIdentifier: binop.46
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.11
+          TacVariable: 
+            TIdentifier: binop.46
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.15
+        TacJump: 
+          TIdentifier: or_false.12
+        TacLabel: 
+          TIdentifier: or_true.11
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.15
+        TacLabel: 
+          TIdentifier: or_false.12
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.9
+          TacVariable: 
+            TIdentifier: binop.15
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.47
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.47
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.48
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.48
+          TacVariable: 
+            TIdentifier: smem.49
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.49
+          TacConstant: 
+            CConstUInt: 
+              TUInt: 40
+          TacVariable: 
+            TIdentifier: binop.50
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.9
+          TacVariable: 
+            TIdentifier: binop.50
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.14
+        TacJump: 
+          TIdentifier: or_false.10
+        TacLabel: 
+          TIdentifier: or_true.9
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.14
+        TacLabel: 
+          TIdentifier: or_false.10
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.7
+          TacVariable: 
+            TIdentifier: binop.14
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: sptr.51
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.51
+          TacVariable: 
+            TIdentifier: sptr.52
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.19
+          TacVariable: 
+            TIdentifier: addr.53
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: sptr.52
+            TacVariable: 
+              TIdentifier: addr.53
+          TacVariable: 
+            TIdentifier: call.54
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.7
+          TacVariable: 
+            TIdentifier: call.54
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.13
+        TacJump: 
+          TIdentifier: or_false.8
+        TacLabel: 
+          TIdentifier: or_true.7
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.13
+        TacLabel: 
+          TIdentifier: or_false.8
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.5
+          TacVariable: 
+            TIdentifier: binop.13
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: sptr.55
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.55
+          TacVariable: 
+            TIdentifier: sptr.56
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 22.000000
+          TacVariable: 
+            TIdentifier: unop.57
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.56
+          TacVariable: 
+            TIdentifier: unop.57
+          TacVariable: 
+            TIdentifier: binop.58
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.5
+          TacVariable: 
+            TIdentifier: binop.58
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.12
+        TacJump: 
+          TIdentifier: or_false.6
+        TacLabel: 
+          TIdentifier: or_true.5
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.12
+        TacLabel: 
+          TIdentifier: or_false.6
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.3
+          TacVariable: 
+            TIdentifier: binop.12
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.59
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.59
+          TacVariable: 
+            TIdentifier: smem.60
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.60
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.61
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.3
+          TacVariable: 
+            TIdentifier: binop.61
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.11
+        TacJump: 
+          TIdentifier: or_false.4
+        TacLabel: 
+          TIdentifier: or_true.3
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.11
+        TacLabel: 
+          TIdentifier: or_false.4
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.11
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.6
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.62
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.62
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.63
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.63
+          TacVariable: 
+            TIdentifier: smem.64
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.64
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: binop.65
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.1
+          TacVariable: 
+            TIdentifier: binop.65
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.10
+        TacJump: 
+          TIdentifier: or_false.2
+        TacLabel: 
+          TIdentifier: or_true.1
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.10
+        TacLabel: 
+          TIdentifier: or_false.2
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.10
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: validate_partial_initialization
+      Bool: 1
+      List[1]: 
+        TIdentifier: ptr.7
+      List[99]: 
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacVariable: 
+            TIdentifier: sptr.68
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1000
+          TacVariable: 
+            TIdentifier: cast.69
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.68
+          TacVariable: 
+            TIdentifier: cast.69
+          TacVariable: 
+            TIdentifier: binop.70
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.23
+          TacVariable: 
+            TIdentifier: binop.70
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.71
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.71
+          TacVariable: 
+            TIdentifier: smem.72
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.72
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.73
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.23
+          TacVariable: 
+            TIdentifier: binop.73
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.67
+        TacJump: 
+          TIdentifier: or_false.24
+        TacLabel: 
+          TIdentifier: or_true.23
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.67
+        TacLabel: 
+          TIdentifier: or_false.24
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.21
+          TacVariable: 
+            TIdentifier: binop.67
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: sptr.74
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.74
+          TacVariable: 
+            TIdentifier: sptr.75
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.25
+          TacVariable: 
+            TIdentifier: addr.76
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: sptr.75
+            TacVariable: 
+              TIdentifier: addr.76
+          TacVariable: 
+            TIdentifier: call.77
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.21
+          TacVariable: 
+            TIdentifier: call.77
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.66
+        TacJump: 
+          TIdentifier: or_false.22
+        TacLabel: 
+          TIdentifier: or_true.21
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.66
+        TacLabel: 
+          TIdentifier: or_false.22
+        TacJumpIfZero: 
+          TIdentifier: if_false.20
+          TacVariable: 
+            TIdentifier: binop.66
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.20
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.84
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.84
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.85
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.86
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.85
+          TacVariable: 
+            TIdentifier: cast.86
+          TacVariable: 
+            TIdentifier: subscr.87
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.87
+          TacVariable: 
+            TIdentifier: subscr.88
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.37
+          TacVariable: 
+            TIdentifier: subscr.88
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.89
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.89
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.90
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.91
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.90
+          TacVariable: 
+            TIdentifier: cast.91
+          TacVariable: 
+            TIdentifier: subscr.92
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.92
+          TacVariable: 
+            TIdentifier: subscr.93
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.37
+          TacVariable: 
+            TIdentifier: subscr.93
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.83
+        TacJump: 
+          TIdentifier: or_false.38
+        TacLabel: 
+          TIdentifier: or_true.37
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.83
+        TacLabel: 
+          TIdentifier: or_false.38
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.35
+          TacVariable: 
+            TIdentifier: binop.83
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.94
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.94
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.95
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.96
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.95
+          TacVariable: 
+            TIdentifier: cast.96
+          TacVariable: 
+            TIdentifier: subscr.97
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.97
+          TacVariable: 
+            TIdentifier: subscr.98
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.35
+          TacVariable: 
+            TIdentifier: subscr.98
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.82
+        TacJump: 
+          TIdentifier: or_false.36
+        TacLabel: 
+          TIdentifier: or_true.35
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.82
+        TacLabel: 
+          TIdentifier: or_false.36
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.33
+          TacVariable: 
+            TIdentifier: binop.82
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.99
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.99
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.100
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.100
+          TacVariable: 
+            TIdentifier: smem.101
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.33
+          TacVariable: 
+            TIdentifier: smem.101
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.81
+        TacJump: 
+          TIdentifier: or_false.34
+        TacLabel: 
+          TIdentifier: or_true.33
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.81
+        TacLabel: 
+          TIdentifier: or_false.34
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.31
+          TacVariable: 
+            TIdentifier: binop.81
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: sptr.102
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.102
+          TacVariable: 
+            TIdentifier: sptr.103
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.31
+          TacVariable: 
+            TIdentifier: sptr.103
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.80
+        TacJump: 
+          TIdentifier: or_false.32
+        TacLabel: 
+          TIdentifier: or_true.31
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.80
+        TacLabel: 
+          TIdentifier: or_false.32
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.29
+          TacVariable: 
+            TIdentifier: binop.80
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.104
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.104
+          TacVariable: 
+            TIdentifier: smem.105
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.29
+          TacVariable: 
+            TIdentifier: smem.105
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.79
+        TacJump: 
+          TIdentifier: or_false.30
+        TacLabel: 
+          TIdentifier: or_true.29
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.79
+        TacLabel: 
+          TIdentifier: or_false.30
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.27
+          TacVariable: 
+            TIdentifier: binop.79
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.7
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.106
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.106
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.107
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.107
+          TacVariable: 
+            TIdentifier: smem.108
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.27
+          TacVariable: 
+            TIdentifier: smem.108
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.78
+        TacJump: 
+          TIdentifier: or_false.28
+        TacLabel: 
+          TIdentifier: or_true.27
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.78
+        TacLabel: 
+          TIdentifier: or_false.28
+        TacJumpIfZero: 
+          TIdentifier: if_false.26
+          TacVariable: 
+            TIdentifier: binop.78
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.26
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: validate_mixed_initialization
+      Bool: 1
+      List[1]: 
+        TIdentifier: ptr.8
+      List[105]: 
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacVariable: 
+            TIdentifier: sptr.116
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 200
+          TacVariable: 
+            TIdentifier: cast.117
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.116
+          TacVariable: 
+            TIdentifier: cast.117
+          TacVariable: 
+            TIdentifier: binop.118
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.52
+          TacVariable: 
+            TIdentifier: binop.118
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.119
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.119
+          TacVariable: 
+            TIdentifier: smem.120
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.120
+          TacConstant: 
+            CConstInt: 
+              TInt: 20
+          TacVariable: 
+            TIdentifier: binop.121
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.52
+          TacVariable: 
+            TIdentifier: binop.121
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.115
+        TacJump: 
+          TIdentifier: or_false.53
+        TacLabel: 
+          TIdentifier: or_true.52
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.115
+        TacLabel: 
+          TIdentifier: or_false.53
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.50
+          TacVariable: 
+            TIdentifier: binop.115
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.122
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.122
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.123
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.124
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.123
+          TacVariable: 
+            TIdentifier: cast.124
+          TacVariable: 
+            TIdentifier: subscr.125
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.125
+          TacVariable: 
+            TIdentifier: subscr.126
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.126
+          TacVariable: 
+            TIdentifier: cast.127
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.127
+          TacConstant: 
+            CConstInt: 
+              TInt: 21
+          TacVariable: 
+            TIdentifier: binop.128
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.50
+          TacVariable: 
+            TIdentifier: binop.128
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.114
+        TacJump: 
+          TIdentifier: or_false.51
+        TacLabel: 
+          TIdentifier: or_true.50
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.114
+        TacLabel: 
+          TIdentifier: or_false.51
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.48
+          TacVariable: 
+            TIdentifier: binop.114
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.129
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.129
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.130
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.130
+          TacVariable: 
+            TIdentifier: smem.131
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.131
+          TacConstant: 
+            CConstUInt: 
+              TUInt: 22
+          TacVariable: 
+            TIdentifier: binop.132
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.48
+          TacVariable: 
+            TIdentifier: binop.132
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.113
+        TacJump: 
+          TIdentifier: or_false.49
+        TacLabel: 
+          TIdentifier: or_true.48
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.113
+        TacLabel: 
+          TIdentifier: or_false.49
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.46
+          TacVariable: 
+            TIdentifier: binop.113
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: sptr.133
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.133
+          TacVariable: 
+            TIdentifier: sptr.134
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.54
+          TacVariable: 
+            TIdentifier: addr.135
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: sptr.134
+            TacVariable: 
+              TIdentifier: addr.135
+          TacVariable: 
+            TIdentifier: call.136
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.46
+          TacVariable: 
+            TIdentifier: call.136
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.112
+        TacJump: 
+          TIdentifier: or_false.47
+        TacLabel: 
+          TIdentifier: or_true.46
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.112
+        TacLabel: 
+          TIdentifier: or_false.47
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.44
+          TacVariable: 
+            TIdentifier: binop.112
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: sptr.137
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.137
+          TacVariable: 
+            TIdentifier: sptr.138
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: sptr.138
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 10.000000
+          TacVariable: 
+            TIdentifier: binop.139
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.44
+          TacVariable: 
+            TIdentifier: binop.139
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.111
+        TacJump: 
+          TIdentifier: or_false.45
+        TacLabel: 
+          TIdentifier: or_true.44
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.111
+        TacLabel: 
+          TIdentifier: or_false.45
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.42
+          TacVariable: 
+            TIdentifier: binop.111
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.140
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: sptr.140
+          TacVariable: 
+            TIdentifier: smem.141
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.141
+          TacConstant: 
+            CConstInt: 
+              TInt: 99
+          TacVariable: 
+            TIdentifier: binop.142
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.42
+          TacVariable: 
+            TIdentifier: binop.142
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.110
+        TacJump: 
+          TIdentifier: or_false.43
+        TacLabel: 
+          TIdentifier: or_true.42
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.110
+        TacLabel: 
+          TIdentifier: or_false.43
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.40
+          TacVariable: 
+            TIdentifier: binop.110
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: sptr.143
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.143
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.144
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.144
+          TacVariable: 
+            TIdentifier: smem.145
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.145
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: binop.146
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.40
+          TacVariable: 
+            TIdentifier: binop.146
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.109
+        TacJump: 
+          TIdentifier: or_false.41
+        TacLabel: 
+          TIdentifier: or_true.40
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.109
+        TacLabel: 
+          TIdentifier: or_false.41
+        TacJumpIfZero: 
+          TIdentifier: if_false.39
+          TacVariable: 
+            TIdentifier: binop.109
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.39
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.148
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.148
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.149
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.150
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.149
+          TacVariable: 
+            TIdentifier: cast.150
+          TacVariable: 
+            TIdentifier: subscr.151
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.151
+          TacVariable: 
+            TIdentifier: subscr.152
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.56
+          TacVariable: 
+            TIdentifier: subscr.152
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: ptr.8
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: sptr.153
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: sptr.153
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.154
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.155
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.154
+          TacVariable: 
+            TIdentifier: cast.155
+          TacVariable: 
+            TIdentifier: subscr.156
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.156
+          TacVariable: 
+            TIdentifier: subscr.157
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.56
+          TacVariable: 
+            TIdentifier: subscr.157
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.147
+        TacJump: 
+          TIdentifier: or_false.57
+        TacLabel: 
+          TIdentifier: or_true.56
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.147
+        TacLabel: 
+          TIdentifier: or_false.57
+        TacJumpIfZero: 
+          TIdentifier: if_false.55
+          TacVariable: 
+            TIdentifier: binop.147
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.55
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: validate_array_of_structs
+      Bool: 1
+      List[1]: 
+        TIdentifier: struct_array.9
+      List[509]: 
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.167
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.167
+          TacVariable: 
+            TIdentifier: subscr.168
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.168
+          TacVariable: 
+            TIdentifier: smem.169
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.170
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.169
+          TacVariable: 
+            TIdentifier: cast.170
+          TacVariable: 
+            TIdentifier: binop.171
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.75
+          TacVariable: 
+            TIdentifier: binop.171
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.172
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.172
+          TacVariable: 
+            TIdentifier: subscr.173
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.173
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.174
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.174
+          TacVariable: 
+            TIdentifier: smem.175
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.175
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: binop.176
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.75
+          TacVariable: 
+            TIdentifier: binop.176
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.166
+        TacJump: 
+          TIdentifier: or_false.76
+        TacLabel: 
+          TIdentifier: or_true.75
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.166
+        TacLabel: 
+          TIdentifier: or_false.76
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.73
+          TacVariable: 
+            TIdentifier: binop.166
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.177
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.177
+          TacVariable: 
+            TIdentifier: subscr.178
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.178
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.179
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.179
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.180
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.181
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.180
+          TacVariable: 
+            TIdentifier: cast.181
+          TacVariable: 
+            TIdentifier: subscr.182
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.182
+          TacVariable: 
+            TIdentifier: subscr.183
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.183
+          TacVariable: 
+            TIdentifier: cast.184
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.184
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: binop.185
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.73
+          TacVariable: 
+            TIdentifier: binop.185
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.165
+        TacJump: 
+          TIdentifier: or_false.74
+        TacLabel: 
+          TIdentifier: or_true.73
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.165
+        TacLabel: 
+          TIdentifier: or_false.74
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.71
+          TacVariable: 
+            TIdentifier: binop.165
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.186
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.186
+          TacVariable: 
+            TIdentifier: subscr.187
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.187
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.188
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.188
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.189
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.190
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.189
+          TacVariable: 
+            TIdentifier: cast.190
+          TacVariable: 
+            TIdentifier: subscr.191
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.191
+          TacVariable: 
+            TIdentifier: subscr.192
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.192
+          TacVariable: 
+            TIdentifier: cast.193
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.193
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+          TacVariable: 
+            TIdentifier: binop.194
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.71
+          TacVariable: 
+            TIdentifier: binop.194
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.164
+        TacJump: 
+          TIdentifier: or_false.72
+        TacLabel: 
+          TIdentifier: or_true.71
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.164
+        TacLabel: 
+          TIdentifier: or_false.72
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.69
+          TacVariable: 
+            TIdentifier: binop.164
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.195
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.195
+          TacVariable: 
+            TIdentifier: subscr.196
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.196
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.197
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.197
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.198
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.199
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.198
+          TacVariable: 
+            TIdentifier: cast.199
+          TacVariable: 
+            TIdentifier: subscr.200
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.200
+          TacVariable: 
+            TIdentifier: subscr.201
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.201
+          TacVariable: 
+            TIdentifier: cast.202
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.202
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+          TacVariable: 
+            TIdentifier: binop.203
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.69
+          TacVariable: 
+            TIdentifier: binop.203
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.163
+        TacJump: 
+          TIdentifier: or_false.70
+        TacLabel: 
+          TIdentifier: or_true.69
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.163
+        TacLabel: 
+          TIdentifier: or_false.70
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.67
+          TacVariable: 
+            TIdentifier: binop.163
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.204
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.204
+          TacVariable: 
+            TIdentifier: subscr.205
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.205
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.206
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.206
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.207
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.207
+          TacVariable: 
+            TIdentifier: smem.208
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 6
+          TacVariable: 
+            TIdentifier: cast.209
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.208
+          TacVariable: 
+            TIdentifier: cast.209
+          TacVariable: 
+            TIdentifier: binop.210
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.67
+          TacVariable: 
+            TIdentifier: binop.210
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.162
+        TacJump: 
+          TIdentifier: or_false.68
+        TacLabel: 
+          TIdentifier: or_true.67
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.162
+        TacLabel: 
+          TIdentifier: or_false.68
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.65
+          TacVariable: 
+            TIdentifier: binop.162
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.211
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.211
+          TacVariable: 
+            TIdentifier: subscr.212
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.212
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: smem.213
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.213
+          TacVariable: 
+            TIdentifier: smem.214
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.77
+          TacVariable: 
+            TIdentifier: addr.215
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: smem.214
+            TacVariable: 
+              TIdentifier: addr.215
+          TacVariable: 
+            TIdentifier: call.216
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.65
+          TacVariable: 
+            TIdentifier: call.216
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.161
+        TacJump: 
+          TIdentifier: or_false.66
+        TacLabel: 
+          TIdentifier: or_true.65
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.161
+        TacLabel: 
+          TIdentifier: or_false.66
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.63
+          TacVariable: 
+            TIdentifier: binop.161
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.217
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.217
+          TacVariable: 
+            TIdentifier: subscr.218
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.218
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: smem.219
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.219
+          TacVariable: 
+            TIdentifier: smem.220
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.220
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 8.000000
+          TacVariable: 
+            TIdentifier: binop.221
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.63
+          TacVariable: 
+            TIdentifier: binop.221
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.160
+        TacJump: 
+          TIdentifier: or_false.64
+        TacLabel: 
+          TIdentifier: or_true.63
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.160
+        TacLabel: 
+          TIdentifier: or_false.64
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.61
+          TacVariable: 
+            TIdentifier: binop.160
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.222
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.222
+          TacVariable: 
+            TIdentifier: subscr.223
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.223
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.224
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.224
+          TacVariable: 
+            TIdentifier: smem.225
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.225
+          TacConstant: 
+            CConstInt: 
+              TInt: 9
+          TacVariable: 
+            TIdentifier: binop.226
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.61
+          TacVariable: 
+            TIdentifier: binop.226
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.159
+        TacJump: 
+          TIdentifier: or_false.62
+        TacLabel: 
+          TIdentifier: or_true.61
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.159
+        TacLabel: 
+          TIdentifier: or_false.62
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.59
+          TacVariable: 
+            TIdentifier: binop.159
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.227
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.227
+          TacVariable: 
+            TIdentifier: subscr.228
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.228
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.229
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.229
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.230
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.230
+          TacVariable: 
+            TIdentifier: smem.231
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.231
+          TacConstant: 
+            CConstInt: 
+              TInt: 10
+          TacVariable: 
+            TIdentifier: binop.232
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.59
+          TacVariable: 
+            TIdentifier: binop.232
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.158
+        TacJump: 
+          TIdentifier: or_false.60
+        TacLabel: 
+          TIdentifier: or_true.59
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.158
+        TacLabel: 
+          TIdentifier: or_false.60
+        TacJumpIfZero: 
+          TIdentifier: if_false.58
+          TacVariable: 
+            TIdentifier: binop.158
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.58
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.242
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.242
+          TacVariable: 
+            TIdentifier: subscr.243
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.243
+          TacVariable: 
+            TIdentifier: smem.244
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 101
+          TacVariable: 
+            TIdentifier: cast.245
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.244
+          TacVariable: 
+            TIdentifier: cast.245
+          TacVariable: 
+            TIdentifier: binop.246
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.95
+          TacVariable: 
+            TIdentifier: binop.246
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.247
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.247
+          TacVariable: 
+            TIdentifier: subscr.248
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.248
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.249
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.249
+          TacVariable: 
+            TIdentifier: smem.250
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.250
+          TacConstant: 
+            CConstInt: 
+              TInt: 102
+          TacVariable: 
+            TIdentifier: binop.251
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.95
+          TacVariable: 
+            TIdentifier: binop.251
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.241
+        TacJump: 
+          TIdentifier: or_false.96
+        TacLabel: 
+          TIdentifier: or_true.95
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.241
+        TacLabel: 
+          TIdentifier: or_false.96
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.93
+          TacVariable: 
+            TIdentifier: binop.241
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.252
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.252
+          TacVariable: 
+            TIdentifier: subscr.253
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.253
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.254
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.254
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.255
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.256
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.255
+          TacVariable: 
+            TIdentifier: cast.256
+          TacVariable: 
+            TIdentifier: subscr.257
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.257
+          TacVariable: 
+            TIdentifier: subscr.258
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.258
+          TacVariable: 
+            TIdentifier: cast.259
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.259
+          TacConstant: 
+            CConstInt: 
+              TInt: 103
+          TacVariable: 
+            TIdentifier: binop.260
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.93
+          TacVariable: 
+            TIdentifier: binop.260
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.240
+        TacJump: 
+          TIdentifier: or_false.94
+        TacLabel: 
+          TIdentifier: or_true.93
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.240
+        TacLabel: 
+          TIdentifier: or_false.94
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.91
+          TacVariable: 
+            TIdentifier: binop.240
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.261
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.261
+          TacVariable: 
+            TIdentifier: subscr.262
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.262
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.263
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.263
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.264
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.265
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.264
+          TacVariable: 
+            TIdentifier: cast.265
+          TacVariable: 
+            TIdentifier: subscr.266
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.266
+          TacVariable: 
+            TIdentifier: subscr.267
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.267
+          TacVariable: 
+            TIdentifier: cast.268
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.268
+          TacConstant: 
+            CConstInt: 
+              TInt: 104
+          TacVariable: 
+            TIdentifier: binop.269
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.91
+          TacVariable: 
+            TIdentifier: binop.269
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.239
+        TacJump: 
+          TIdentifier: or_false.92
+        TacLabel: 
+          TIdentifier: or_true.91
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.239
+        TacLabel: 
+          TIdentifier: or_false.92
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.89
+          TacVariable: 
+            TIdentifier: binop.239
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.270
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.270
+          TacVariable: 
+            TIdentifier: subscr.271
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.271
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.272
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.272
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.273
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.274
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.273
+          TacVariable: 
+            TIdentifier: cast.274
+          TacVariable: 
+            TIdentifier: subscr.275
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.275
+          TacVariable: 
+            TIdentifier: subscr.276
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.276
+          TacVariable: 
+            TIdentifier: cast.277
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.277
+          TacConstant: 
+            CConstInt: 
+              TInt: 105
+          TacVariable: 
+            TIdentifier: binop.278
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.89
+          TacVariable: 
+            TIdentifier: binop.278
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.238
+        TacJump: 
+          TIdentifier: or_false.90
+        TacLabel: 
+          TIdentifier: or_true.89
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.238
+        TacLabel: 
+          TIdentifier: or_false.90
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.87
+          TacVariable: 
+            TIdentifier: binop.238
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.279
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.279
+          TacVariable: 
+            TIdentifier: subscr.280
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.280
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.281
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.281
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.282
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.282
+          TacVariable: 
+            TIdentifier: smem.283
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 106
+          TacVariable: 
+            TIdentifier: cast.284
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.283
+          TacVariable: 
+            TIdentifier: cast.284
+          TacVariable: 
+            TIdentifier: binop.285
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.87
+          TacVariable: 
+            TIdentifier: binop.285
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.237
+        TacJump: 
+          TIdentifier: or_false.88
+        TacLabel: 
+          TIdentifier: or_true.87
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.237
+        TacLabel: 
+          TIdentifier: or_false.88
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.85
+          TacVariable: 
+            TIdentifier: binop.237
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.286
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.286
+          TacVariable: 
+            TIdentifier: subscr.287
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.287
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: smem.288
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.288
+          TacVariable: 
+            TIdentifier: smem.289
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.97
+          TacVariable: 
+            TIdentifier: addr.290
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: smem.289
+            TacVariable: 
+              TIdentifier: addr.290
+          TacVariable: 
+            TIdentifier: call.291
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.85
+          TacVariable: 
+            TIdentifier: call.291
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.236
+        TacJump: 
+          TIdentifier: or_false.86
+        TacLabel: 
+          TIdentifier: or_true.85
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.236
+        TacLabel: 
+          TIdentifier: or_false.86
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.83
+          TacVariable: 
+            TIdentifier: binop.236
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.292
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.292
+          TacVariable: 
+            TIdentifier: subscr.293
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.293
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: smem.294
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.294
+          TacVariable: 
+            TIdentifier: smem.295
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.295
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 108.000000
+          TacVariable: 
+            TIdentifier: binop.296
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.83
+          TacVariable: 
+            TIdentifier: binop.296
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.235
+        TacJump: 
+          TIdentifier: or_false.84
+        TacLabel: 
+          TIdentifier: or_true.83
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.235
+        TacLabel: 
+          TIdentifier: or_false.84
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.81
+          TacVariable: 
+            TIdentifier: binop.235
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.297
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.297
+          TacVariable: 
+            TIdentifier: subscr.298
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.298
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.299
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.299
+          TacVariable: 
+            TIdentifier: smem.300
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.300
+          TacConstant: 
+            CConstInt: 
+              TInt: 109
+          TacVariable: 
+            TIdentifier: binop.301
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.81
+          TacVariable: 
+            TIdentifier: binop.301
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.234
+        TacJump: 
+          TIdentifier: or_false.82
+        TacLabel: 
+          TIdentifier: or_true.81
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.234
+        TacLabel: 
+          TIdentifier: or_false.82
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.79
+          TacVariable: 
+            TIdentifier: binop.234
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.302
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.302
+          TacVariable: 
+            TIdentifier: subscr.303
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.303
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.304
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.304
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.305
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.305
+          TacVariable: 
+            TIdentifier: smem.306
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.306
+          TacConstant: 
+            CConstInt: 
+              TInt: 110
+          TacVariable: 
+            TIdentifier: binop.307
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.79
+          TacVariable: 
+            TIdentifier: binop.307
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.233
+        TacJump: 
+          TIdentifier: or_false.80
+        TacLabel: 
+          TIdentifier: or_true.79
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.233
+        TacLabel: 
+          TIdentifier: or_false.80
+        TacJumpIfZero: 
+          TIdentifier: if_false.78
+          TacVariable: 
+            TIdentifier: binop.233
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.78
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.317
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.317
+          TacVariable: 
+            TIdentifier: subscr.318
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.318
+          TacVariable: 
+            TIdentifier: smem.319
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 201
+          TacVariable: 
+            TIdentifier: cast.320
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.319
+          TacVariable: 
+            TIdentifier: cast.320
+          TacVariable: 
+            TIdentifier: binop.321
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.115
+          TacVariable: 
+            TIdentifier: binop.321
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.322
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.322
+          TacVariable: 
+            TIdentifier: subscr.323
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.323
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.324
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.324
+          TacVariable: 
+            TIdentifier: smem.325
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.325
+          TacConstant: 
+            CConstInt: 
+              TInt: 202
+          TacVariable: 
+            TIdentifier: binop.326
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.115
+          TacVariable: 
+            TIdentifier: binop.326
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.316
+        TacJump: 
+          TIdentifier: or_false.116
+        TacLabel: 
+          TIdentifier: or_true.115
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.316
+        TacLabel: 
+          TIdentifier: or_false.116
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.113
+          TacVariable: 
+            TIdentifier: binop.316
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.327
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.327
+          TacVariable: 
+            TIdentifier: subscr.328
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.328
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.329
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.329
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.330
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.331
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.330
+          TacVariable: 
+            TIdentifier: cast.331
+          TacVariable: 
+            TIdentifier: subscr.332
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.332
+          TacVariable: 
+            TIdentifier: subscr.333
+        TacZeroExtend: 
+          TacVariable: 
+            TIdentifier: subscr.333
+          TacVariable: 
+            TIdentifier: cast.334
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: cast.334
+          TacConstant: 
+            CConstInt: 
+              TInt: 203
+          TacVariable: 
+            TIdentifier: binop.335
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.113
+          TacVariable: 
+            TIdentifier: binop.335
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.315
+        TacJump: 
+          TIdentifier: or_false.114
+        TacLabel: 
+          TIdentifier: or_true.113
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.315
+        TacLabel: 
+          TIdentifier: or_false.114
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.111
+          TacVariable: 
+            TIdentifier: binop.315
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.336
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.336
+          TacVariable: 
+            TIdentifier: subscr.337
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.337
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.338
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.338
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.339
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.340
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.339
+          TacVariable: 
+            TIdentifier: cast.340
+          TacVariable: 
+            TIdentifier: subscr.341
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.341
+          TacVariable: 
+            TIdentifier: subscr.342
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.111
+          TacVariable: 
+            TIdentifier: subscr.342
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.314
+        TacJump: 
+          TIdentifier: or_false.112
+        TacLabel: 
+          TIdentifier: or_true.111
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.314
+        TacLabel: 
+          TIdentifier: or_false.112
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.109
+          TacVariable: 
+            TIdentifier: binop.314
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.343
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.343
+          TacVariable: 
+            TIdentifier: subscr.344
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.344
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.345
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.345
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.346
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.347
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.346
+          TacVariable: 
+            TIdentifier: cast.347
+          TacVariable: 
+            TIdentifier: subscr.348
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.348
+          TacVariable: 
+            TIdentifier: subscr.349
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.109
+          TacVariable: 
+            TIdentifier: subscr.349
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.313
+        TacJump: 
+          TIdentifier: or_false.110
+        TacLabel: 
+          TIdentifier: or_true.109
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.313
+        TacLabel: 
+          TIdentifier: or_false.110
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.107
+          TacVariable: 
+            TIdentifier: binop.313
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.350
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.350
+          TacVariable: 
+            TIdentifier: subscr.351
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.351
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.352
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.352
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.353
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.353
+          TacVariable: 
+            TIdentifier: smem.354
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.107
+          TacVariable: 
+            TIdentifier: smem.354
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.312
+        TacJump: 
+          TIdentifier: or_false.108
+        TacLabel: 
+          TIdentifier: or_true.107
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.312
+        TacLabel: 
+          TIdentifier: or_false.108
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.105
+          TacVariable: 
+            TIdentifier: binop.312
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.355
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.355
+          TacVariable: 
+            TIdentifier: subscr.356
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.356
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: smem.357
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.357
+          TacVariable: 
+            TIdentifier: smem.358
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: string.117
+          TacVariable: 
+            TIdentifier: addr.359
+        TacFunCall: 
+          TIdentifier: strcmp
+          List[2]: 
+            TacVariable: 
+              TIdentifier: smem.358
+            TacVariable: 
+              TIdentifier: addr.359
+          TacVariable: 
+            TIdentifier: call.360
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.105
+          TacVariable: 
+            TIdentifier: call.360
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.311
+        TacJump: 
+          TIdentifier: or_false.106
+        TacLabel: 
+          TIdentifier: or_true.105
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.311
+        TacLabel: 
+          TIdentifier: or_false.106
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.103
+          TacVariable: 
+            TIdentifier: binop.311
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.361
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.361
+          TacVariable: 
+            TIdentifier: subscr.362
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.362
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: smem.363
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.363
+          TacVariable: 
+            TIdentifier: smem.364
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.364
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 208.000000
+          TacVariable: 
+            TIdentifier: binop.365
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.103
+          TacVariable: 
+            TIdentifier: binop.365
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.310
+        TacJump: 
+          TIdentifier: or_false.104
+        TacLabel: 
+          TIdentifier: or_true.103
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.310
+        TacLabel: 
+          TIdentifier: or_false.104
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.101
+          TacVariable: 
+            TIdentifier: binop.310
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.366
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.366
+          TacVariable: 
+            TIdentifier: subscr.367
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.367
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.368
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.368
+          TacVariable: 
+            TIdentifier: smem.369
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.369
+          TacConstant: 
+            CConstInt: 
+              TInt: 209
+          TacVariable: 
+            TIdentifier: binop.370
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.101
+          TacVariable: 
+            TIdentifier: binop.370
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.309
+        TacJump: 
+          TIdentifier: or_false.102
+        TacLabel: 
+          TIdentifier: or_true.101
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.309
+        TacLabel: 
+          TIdentifier: or_false.102
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.99
+          TacVariable: 
+            TIdentifier: binop.309
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.371
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.371
+          TacVariable: 
+            TIdentifier: subscr.372
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.372
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.373
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.373
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.374
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.374
+          TacVariable: 
+            TIdentifier: smem.375
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.99
+          TacVariable: 
+            TIdentifier: smem.375
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.308
+        TacJump: 
+          TIdentifier: or_false.100
+        TacLabel: 
+          TIdentifier: or_true.99
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.308
+        TacLabel: 
+          TIdentifier: or_false.100
+        TacJumpIfZero: 
+          TIdentifier: if_false.98
+          TacVariable: 
+            TIdentifier: binop.308
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.98
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.385
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.385
+          TacVariable: 
+            TIdentifier: subscr.386
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.386
+          TacVariable: 
+            TIdentifier: smem.387
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 301
+          TacVariable: 
+            TIdentifier: cast.388
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.387
+          TacVariable: 
+            TIdentifier: cast.388
+          TacVariable: 
+            TIdentifier: binop.389
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.135
+          TacVariable: 
+            TIdentifier: binop.389
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.390
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.390
+          TacVariable: 
+            TIdentifier: subscr.391
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.391
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.392
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.392
+          TacVariable: 
+            TIdentifier: smem.393
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.135
+          TacVariable: 
+            TIdentifier: smem.393
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.384
+        TacJump: 
+          TIdentifier: or_false.136
+        TacLabel: 
+          TIdentifier: or_true.135
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.384
+        TacLabel: 
+          TIdentifier: or_false.136
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.133
+          TacVariable: 
+            TIdentifier: binop.384
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.394
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.394
+          TacVariable: 
+            TIdentifier: subscr.395
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.395
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.396
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.396
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.397
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.398
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.397
+          TacVariable: 
+            TIdentifier: cast.398
+          TacVariable: 
+            TIdentifier: subscr.399
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.399
+          TacVariable: 
+            TIdentifier: subscr.400
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.133
+          TacVariable: 
+            TIdentifier: subscr.400
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.383
+        TacJump: 
+          TIdentifier: or_false.134
+        TacLabel: 
+          TIdentifier: or_true.133
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.383
+        TacLabel: 
+          TIdentifier: or_false.134
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.131
+          TacVariable: 
+            TIdentifier: binop.383
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.401
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.401
+          TacVariable: 
+            TIdentifier: subscr.402
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.402
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.403
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.403
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.404
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.405
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.404
+          TacVariable: 
+            TIdentifier: cast.405
+          TacVariable: 
+            TIdentifier: subscr.406
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.406
+          TacVariable: 
+            TIdentifier: subscr.407
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.131
+          TacVariable: 
+            TIdentifier: subscr.407
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.382
+        TacJump: 
+          TIdentifier: or_false.132
+        TacLabel: 
+          TIdentifier: or_true.131
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.382
+        TacLabel: 
+          TIdentifier: or_false.132
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.129
+          TacVariable: 
+            TIdentifier: binop.382
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.408
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.408
+          TacVariable: 
+            TIdentifier: subscr.409
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.409
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.410
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.410
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.411
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.412
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.411
+          TacVariable: 
+            TIdentifier: cast.412
+          TacVariable: 
+            TIdentifier: subscr.413
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: subscr.413
+          TacVariable: 
+            TIdentifier: subscr.414
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.129
+          TacVariable: 
+            TIdentifier: subscr.414
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.381
+        TacJump: 
+          TIdentifier: or_false.130
+        TacLabel: 
+          TIdentifier: or_true.129
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.381
+        TacLabel: 
+          TIdentifier: or_false.130
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.127
+          TacVariable: 
+            TIdentifier: binop.381
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.415
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.415
+          TacVariable: 
+            TIdentifier: subscr.416
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.416
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.417
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.417
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: smem.418
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.418
+          TacVariable: 
+            TIdentifier: smem.419
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.127
+          TacVariable: 
+            TIdentifier: smem.419
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.380
+        TacJump: 
+          TIdentifier: or_false.128
+        TacLabel: 
+          TIdentifier: or_true.127
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.380
+        TacLabel: 
+          TIdentifier: or_false.128
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.125
+          TacVariable: 
+            TIdentifier: binop.380
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.420
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.420
+          TacVariable: 
+            TIdentifier: subscr.421
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.421
+          TacConstant: 
+            CConstLong: 
+              TLong: 24
+          TacVariable: 
+            TIdentifier: smem.422
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.422
+          TacVariable: 
+            TIdentifier: smem.423
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.125
+          TacVariable: 
+            TIdentifier: smem.423
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.379
+        TacJump: 
+          TIdentifier: or_false.126
+        TacLabel: 
+          TIdentifier: or_true.125
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.379
+        TacLabel: 
+          TIdentifier: or_false.126
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.123
+          TacVariable: 
+            TIdentifier: binop.379
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.424
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.424
+          TacVariable: 
+            TIdentifier: subscr.425
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.425
+          TacConstant: 
+            CConstLong: 
+              TLong: 32
+          TacVariable: 
+            TIdentifier: smem.426
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.426
+          TacVariable: 
+            TIdentifier: smem.427
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.123
+          TacVariable: 
+            TIdentifier: smem.427
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.378
+        TacJump: 
+          TIdentifier: or_false.124
+        TacLabel: 
+          TIdentifier: or_true.123
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.378
+        TacLabel: 
+          TIdentifier: or_false.124
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.121
+          TacVariable: 
+            TIdentifier: binop.378
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.428
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.428
+          TacVariable: 
+            TIdentifier: subscr.429
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.429
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.430
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.430
+          TacVariable: 
+            TIdentifier: smem.431
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.121
+          TacVariable: 
+            TIdentifier: smem.431
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.377
+        TacJump: 
+          TIdentifier: or_false.122
+        TacLabel: 
+          TIdentifier: or_true.121
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.377
+        TacLabel: 
+          TIdentifier: or_false.122
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.119
+          TacVariable: 
+            TIdentifier: binop.377
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.432
+        TacAddPtr: 
+          TLong: 48
+          TacVariable: 
+            TIdentifier: struct_array.9
+          TacVariable: 
+            TIdentifier: cast.432
+          TacVariable: 
+            TIdentifier: subscr.433
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.433
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: smem.434
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: smem.434
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: smem.435
+        TacLoad: 
+          TacVariable: 
+            TIdentifier: smem.435
+          TacVariable: 
+            TIdentifier: smem.436
+        TacJumpIfNotZero: 
+          TIdentifier: or_true.119
+          TacVariable: 
+            TIdentifier: smem.436
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: binop.376
+        TacJump: 
+          TIdentifier: or_false.120
+        TacLabel: 
+          TIdentifier: or_true.119
+        TacCopy: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: binop.376
+        TacLabel: 
+          TIdentifier: or_false.120
+        TacJumpIfZero: 
+          TIdentifier: if_false.118
+          TacVariable: 
+            TIdentifier: binop.376
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacLabel: 
+          TIdentifier: if_false.118
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(6):
+  [Important message!]: 
+    String: "Important message!"
+  [Partial]: 
+    String: "Partial"
+  [mixed]: 
+    String: "mixed"
+  [7]: 
+    String: "7"
+  [107]: 
+    String: "107"
+  [207]: 
+    String: "207"
++
++
+@@ Structure Typedef Table @@
+Dict(3):
+  [pair.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: a
+        TIdentifier: b
+      Dict[2]: 
+        [a]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [b]: 
+          StructMember: 
+            TLong: 4
+            Int: 
+  [inner.1]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 12
+      List[3]: 
+        TIdentifier: one_i
+        TIdentifier: two_arr
+        TIdentifier: three_u
+      Dict[3]: 
+        [one_i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [two_arr]: 
+          StructMember: 
+            TLong: 4
+            Array: 
+              TLong: 3
+              UChar: 
+        [three_u]: 
+          StructMember: 
+            TLong: 8
+            UInt: 
+  [outer.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 48
+      List[5]: 
+        TIdentifier: one_l
+        TIdentifier: two_struct
+        TIdentifier: three_msg
+        TIdentifier: four_d
+        TIdentifier: five_pair
+      Dict[5]: 
+        [one_l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [two_struct]: 
+          StructMember: 
+            TLong: 8
+            Structure: 
+              TIdentifier: inner.1
+              Bool: 0
+        [three_msg]: 
+          StructMember: 
+            TLong: 24
+            Pointer: 
+              Char: 
+        [four_d]: 
+          StructMember: 
+            TLong: 32
+            Double: 
+        [five_pair]: 
+          StructMember: 
+            TLong: 40
+            Structure: 
+              TIdentifier: pair.0
+              Bool: 0
++
++
+@@ Symbol Table @@
+Dict(442):
+  [strcmp]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Char: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [validate_full_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: outer.2
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [validate_partial_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: outer.2
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [validate_mixed_initialization]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: outer.2
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [validate_array_of_structs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Structure: 
+              TIdentifier: outer.2
+              Bool: 0
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr.6]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: outer.2
+          Bool: 0
+      LocalAttr: 
+  [ptr.7]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: outer.2
+          Bool: 0
+      LocalAttr: 
+  [ptr.8]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: outer.2
+          Bool: 0
+      LocalAttr: 
+  [struct_array.9]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: outer.2
+          Bool: 0
+      LocalAttr: 
+  [binop.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.12]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.19]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [unop.20]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.21]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.22]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.24]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.25]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.26]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.27]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.28]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.29]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.30]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.31]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.32]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.33]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.34]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.35]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.36]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.37]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.38]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.39]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.40]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.41]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.42]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.43]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.44]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.45]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.46]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.47]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.48]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.49]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [binop.50]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.51]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.52]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.19]: 
+    Symbol: 
+      Array: 
+        TLong: 19
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Important message!
+          Bool: 1
+          CStringLiteral: 
+            List[18]: 
+              TChar: 73
+              TChar: 109
+              TChar: 112
+              TChar: 111
+              TChar: 114
+              TChar: 116
+              TChar: 97
+              TChar: 110
+              TChar: 116
+              TChar: 32
+              TChar: 109
+              TChar: 101
+              TChar: 115
+              TChar: 115
+              TChar: 97
+              TChar: 103
+              TChar: 101
+              TChar: 33
+  [addr.53]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.54]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.55]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.56]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [unop.57]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.58]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.59]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.60]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.61]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.62]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.63]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.64]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.65]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.66]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.67]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.68]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.69]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.70]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.71]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.72]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.73]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.74]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.75]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.25]: 
+    Symbol: 
+      Array: 
+        TLong: 8
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: Partial
+          Bool: 1
+          CStringLiteral: 
+            List[7]: 
+              TChar: 80
+              TChar: 97
+              TChar: 114
+              TChar: 116
+              TChar: 105
+              TChar: 97
+              TChar: 108
+  [addr.76]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.77]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.78]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.79]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.80]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.81]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.82]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.83]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.84]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.85]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.86]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.87]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.88]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [sptr.89]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.90]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.91]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.92]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.93]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [sptr.94]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.95]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.96]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.97]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.98]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [sptr.99]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.100]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.101]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [sptr.102]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.103]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [sptr.104]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.105]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.106]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.107]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.108]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.109]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.110]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.111]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.112]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.113]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.114]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.115]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.116]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.117]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.118]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.119]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.120]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.121]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.122]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.123]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.124]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.125]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.126]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.127]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.128]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.129]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.130]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.131]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [binop.132]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.133]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.134]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.54]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: mixed
+          Bool: 1
+          CStringLiteral: 
+            List[5]: 
+              TChar: 109
+              TChar: 105
+              TChar: 120
+              TChar: 101
+              TChar: 100
+  [addr.135]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.136]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.137]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [sptr.138]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.139]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.140]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.141]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.142]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.143]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.144]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.145]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.146]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.147]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [sptr.148]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.149]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.150]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.151]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.152]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [sptr.153]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.154]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.155]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.156]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.157]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [binop.158]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.159]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.160]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.161]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.162]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.163]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.164]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.165]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.166]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.167]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.168]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.169]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.170]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.171]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.172]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.173]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.174]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.175]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.176]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.177]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.178]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.179]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.180]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.181]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.182]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.183]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.184]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.185]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.186]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.187]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.188]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.189]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.190]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.191]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.192]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.193]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.194]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.195]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.196]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.197]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.198]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.199]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.200]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.201]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.202]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.203]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.204]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.205]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.206]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.207]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.208]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.209]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [binop.210]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.211]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.212]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.213]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.214]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.77]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: 7
+          Bool: 1
+          CStringLiteral: 
+            List[1]: 
+              TChar: 55
+  [addr.215]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.216]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.217]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.218]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.219]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.220]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.221]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.222]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.223]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.224]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.225]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.226]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.227]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.228]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.229]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.230]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.231]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.232]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.233]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.234]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.235]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.236]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.237]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.238]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.239]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.240]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.241]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.242]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.243]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.244]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.245]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.246]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.247]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.248]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.249]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.250]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.251]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.252]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.253]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.254]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.255]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.256]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.257]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.258]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.259]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.260]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.261]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.262]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.263]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.264]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.265]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.266]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.267]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.268]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.269]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.270]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.271]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.272]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.273]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.274]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.275]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.276]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.277]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.278]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.279]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.280]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.281]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.282]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.283]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.284]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [binop.285]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.286]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.287]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.288]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.289]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.97]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: 107
+          Bool: 1
+          CStringLiteral: 
+            List[3]: 
+              TChar: 49
+              TChar: 48
+              TChar: 55
+  [addr.290]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.291]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.292]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.293]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.294]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.295]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.296]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.297]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.298]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.299]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.300]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.301]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.302]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.303]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.304]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.305]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.306]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.307]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.308]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.309]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.310]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.311]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.312]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.313]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.314]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.315]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.316]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.317]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.318]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.319]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.320]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.321]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.322]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.323]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.324]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.325]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.326]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.327]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.328]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.329]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.330]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.331]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.332]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.333]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.334]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.335]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.336]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.337]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.338]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.339]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.340]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.341]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.342]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.343]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.344]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.345]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.346]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.347]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.348]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.349]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.350]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.351]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.352]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.353]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.354]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.355]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.356]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.357]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.358]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [string.117]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      ConstantAttr: 
+        StringInit: 
+          TIdentifier: 207
+          Bool: 1
+          CStringLiteral: 
+            List[3]: 
+              TChar: 50
+              TChar: 48
+              TChar: 55
+  [addr.359]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.360]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.361]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.362]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.363]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.364]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [binop.365]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.366]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.367]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.368]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.369]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.370]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.371]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.372]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.373]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.374]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.375]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.376]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.377]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.378]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.379]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.380]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.381]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.382]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.383]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.384]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.385]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.386]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.387]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.388]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.389]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.390]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.391]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.392]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.393]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.394]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.395]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.396]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.397]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.398]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.399]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.400]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.401]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.402]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.403]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.404]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.405]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.406]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.407]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.408]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.409]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.410]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.411]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.412]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.413]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.414]: 
+    Symbol: 
+      UChar: 
+      LocalAttr: 
+  [cast.415]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.416]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.417]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.418]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.419]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [cast.420]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.421]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.422]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.423]: 
+    Symbol: 
+      Pointer: 
+        Char: 
+      LocalAttr: 
+  [cast.424]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.425]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.426]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.427]: 
+    Symbol: 
+      Double: 
+      LocalAttr: 
+  [cast.428]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.429]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.430]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.431]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.432]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.433]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.434]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.435]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [smem.436]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

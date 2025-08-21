@@ -1,0 +1,89 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[5]: 
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 0
+          TacConstant: 
+            CConstDouble: 
+              TDouble: 0.000000
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1000
+          TacVariable: 
+            TIdentifier: cast.1
+        TacCopyToOffset: 
+          TIdentifier: x.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: l
+        TIdentifier: d
+      Dict[2]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
++
++
+@@ Symbol Table @@
+Dict(3):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [cast.1]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 

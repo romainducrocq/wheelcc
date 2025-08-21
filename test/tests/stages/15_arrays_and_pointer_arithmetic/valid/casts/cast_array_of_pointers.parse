@@ -1,0 +1,110 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: simple_array
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 2
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr_arr
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: simple_array
+                            None: 
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: simple_array
+                            None: 
+                          None: 
+                        None: 
+                    None: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Array: 
+                        TLong: 2
+                        Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: other_ptr
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: ptr_arr
+                        None: 
+                      Pointer: 
+                        Long: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Long: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: other_ptr
+                      None: 
+                    Pointer: 
+                      Pointer: 
+                        Array: 
+                          TLong: 2
+                          Int: 
+                    None: 
+                  CVar: 
+                    TIdentifier: ptr_arr
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

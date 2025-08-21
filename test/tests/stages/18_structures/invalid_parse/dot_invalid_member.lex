@@ -1,0 +1,31 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[26]:
+  struct
+  identifier(s)
+  {
+  int
+  identifier(y)
+  ;
+  }
+  ;
+  struct
+  identifier(s)
+  identifier(x)
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(x)
+  .
+  (
+  identifier(y)
+  )
+  ;
+  }

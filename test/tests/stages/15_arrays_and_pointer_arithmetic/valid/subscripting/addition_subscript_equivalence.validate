@@ -1,0 +1,689 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.0
+                  None: 
+                  Array: 
+                    TLong: 300
+                    Array: 
+                      TLong: 5
+                      ULong: 
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.1
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 300
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.1
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CFor: 
+                          TIdentifier: for.1
+                          CInitDecl: 
+                            CVariableDeclaration: 
+                              TIdentifier: j.2
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Int: 
+                              Int: 
+                              None: 
+                          CBinary: 
+                            CLessThan: 
+                            CVar: 
+                              TIdentifier: j.2
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              Int: 
+                            Int: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: j.2
+                              Int: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: j.2
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Int: 
+                            Int: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CExpression: 
+                                    CAssignment: 
+                                      None: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CSubscript: 
+                                            CAddrOf: 
+                                              CVar: 
+                                                TIdentifier: x.0
+                                                Pointer: 
+                                                  Array: 
+                                                    TLong: 5
+                                                    ULong: 
+                                              Pointer: 
+                                                Array: 
+                                                  TLong: 5
+                                                  ULong: 
+                                            CCast: 
+                                              CVar: 
+                                                TIdentifier: i.1
+                                                Int: 
+                                              Long: 
+                                              Long: 
+                                            Pointer: 
+                                              ULong: 
+                                          Pointer: 
+                                            ULong: 
+                                        CCast: 
+                                          CVar: 
+                                            TIdentifier: j.2
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        ULong: 
+                                      CCast: 
+                                        CBinary: 
+                                          CAdd: 
+                                          CBinary: 
+                                            CMultiply: 
+                                            CVar: 
+                                              TIdentifier: i.1
+                                              Int: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 5
+                                              Int: 
+                                            Int: 
+                                          CVar: 
+                                            TIdentifier: j.2
+                                            Int: 
+                                          Int: 
+                                        ULong: 
+                                        ULong: 
+                                      ULong: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDereference: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CDereference: 
+                          CBinary: 
+                            CAdd: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: x.0
+                                Pointer: 
+                                  Array: 
+                                    TLong: 5
+                                    ULong: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 20
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    ULong: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: x.0
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              ULong: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 20
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          ULong: 
+                      Pointer: 
+                        ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        Int: 
+                      Long: 
+                      Long: 
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAddrOf: 
+                    CDereference: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CDereference: 
+                            CBinary: 
+                              CAdd: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: x.0
+                                  Pointer: 
+                                    Array: 
+                                      TLong: 5
+                                      ULong: 
+                                Pointer: 
+                                  Array: 
+                                    TLong: 5
+                                    ULong: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 290
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            Pointer: 
+                              ULong: 
+                          Pointer: 
+                            ULong: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          ULong: 
+                      ULong: 
+                    Pointer: 
+                      ULong: 
+                  CAddrOf: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: x.0
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 290
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Long: 
+                        Long: 
+                      ULong: 
+                    Pointer: 
+                      ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CFor: 
+                TIdentifier: for.2
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.3
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 300
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.3
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CFor: 
+                          TIdentifier: for.3
+                          CInitDecl: 
+                            CVariableDeclaration: 
+                              TIdentifier: j.4
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  Int: 
+                                Int: 
+                              Int: 
+                              None: 
+                          CBinary: 
+                            CLessThan: 
+                            CVar: 
+                              TIdentifier: j.4
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 5
+                              Int: 
+                            Int: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: j.4
+                              Int: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: j.4
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Int: 
+                            Int: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CIf: 
+                                    CBinary: 
+                                      CNotEqual: 
+                                      CDereference: 
+                                        CBinary: 
+                                          CAdd: 
+                                          CAddrOf: 
+                                            CDereference: 
+                                              CBinary: 
+                                                CAdd: 
+                                                CAddrOf: 
+                                                  CVar: 
+                                                    TIdentifier: x.0
+                                                    Pointer: 
+                                                      Array: 
+                                                        TLong: 5
+                                                        ULong: 
+                                                  Pointer: 
+                                                    Array: 
+                                                      TLong: 5
+                                                      ULong: 
+                                                CCast: 
+                                                  CVar: 
+                                                    TIdentifier: i.3
+                                                    Int: 
+                                                  Long: 
+                                                  Long: 
+                                                Pointer: 
+                                                  Array: 
+                                                    TLong: 5
+                                                    ULong: 
+                                              Pointer: 
+                                                ULong: 
+                                            Pointer: 
+                                              ULong: 
+                                          CCast: 
+                                            CVar: 
+                                              TIdentifier: j.4
+                                              Int: 
+                                            Long: 
+                                            Long: 
+                                          Pointer: 
+                                            ULong: 
+                                        ULong: 
+                                      CSubscript: 
+                                        CAddrOf: 
+                                          CSubscript: 
+                                            CAddrOf: 
+                                              CVar: 
+                                                TIdentifier: x.0
+                                                Pointer: 
+                                                  Array: 
+                                                    TLong: 5
+                                                    ULong: 
+                                              Pointer: 
+                                                Array: 
+                                                  TLong: 5
+                                                  ULong: 
+                                            CCast: 
+                                              CVar: 
+                                                TIdentifier: i.3
+                                                Int: 
+                                              Long: 
+                                              Long: 
+                                            Pointer: 
+                                              ULong: 
+                                          Pointer: 
+                                            ULong: 
+                                        CCast: 
+                                          CVar: 
+                                            TIdentifier: j.4
+                                            Int: 
+                                          Long: 
+                                          Long: 
+                                        ULong: 
+                                      Int: 
+                                    CCompound: 
+                                      CB: 
+                                        List[1]: 
+                                          CS: 
+                                            CReturn: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 3
+                                                Int: 
+                                    None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDereference: 
+                    CBinary: 
+                      CAdd: 
+                      CAddrOf: 
+                        CDereference: 
+                          CBinary: 
+                            CAdd: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: x.0
+                                Pointer: 
+                                  Array: 
+                                    TLong: 5
+                                    ULong: 
+                              Pointer: 
+                                Array: 
+                                  TLong: 5
+                                  ULong: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 275
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            ULong: 
+                        Pointer: 
+                          ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          Int: 
+                        Long: 
+                        Long: 
+                      Pointer: 
+                        ULong: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 22000
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: x.0
+                            Pointer: 
+                              Array: 
+                                TLong: 5
+                                ULong: 
+                          Pointer: 
+                            Array: 
+                              TLong: 5
+                              ULong: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 275
+                            Int: 
+                          Long: 
+                          Long: 
+                        Pointer: 
+                          ULong: 
+                      Pointer: 
+                        ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Long: 
+                      Long: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 22000
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.0]: 
+    Symbol: 
+      Array: 
+        TLong: 300
+        Array: 
+          TLong: 5
+          ULong: 
+      LocalAttr: 
+  [i.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [i.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [j.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

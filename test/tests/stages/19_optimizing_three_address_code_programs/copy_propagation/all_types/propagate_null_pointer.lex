@@ -1,0 +1,53 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[48]:
+  long
+  *
+  identifier(target)
+  (
+  void
+  )
+  {
+  int
+  *
+  identifier(ptr)
+  =
+  const int(0)
+  ;
+  long
+  *
+  identifier(ptr2)
+  =
+  (
+  long
+  *
+  )
+  identifier(ptr)
+  ;
+  return
+  identifier(ptr2)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  long
+  *
+  identifier(result)
+  =
+  identifier(target)
+  (
+  )
+  ;
+  return
+  (
+  !
+  identifier(result)
+  )
+  ;
+  }

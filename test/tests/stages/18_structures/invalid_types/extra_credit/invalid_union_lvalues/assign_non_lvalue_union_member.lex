@@ -1,0 +1,67 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[62]:
+  union
+  identifier(inner)
+  {
+  int
+  identifier(y)
+  ;
+  long
+  identifier(z)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  {
+  int
+  identifier(x)
+  ;
+  union
+  identifier(inner)
+  identifier(i)
+  ;
+  }
+  ;
+  union
+  identifier(u)
+  identifier(return_union)
+  (
+  void
+  )
+  {
+  union
+  identifier(u)
+  identifier(result)
+  =
+  {
+  const int(1)
+  }
+  ;
+  return
+  identifier(result)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  identifier(return_union)
+  (
+  )
+  .
+  identifier(i)
+  .
+  identifier(y)
+  =
+  const int(1)
+  ;
+  return
+  const int(0)
+  ;
+  }

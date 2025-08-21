@@ -1,0 +1,266 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[9]: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: u
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 1152921506754330636
+            None: 
+          None: 
+        UInt: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: i
+        CSingleInit: 
+          CConstant: 
+            CConstUInt: 
+              TUInt: 2147483650
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: l
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372036854775900
+            None: 
+          None: 
+        Long: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: l2
+        CSingleInit: 
+          CConstant: 
+            CConstUInt: 
+              TUInt: 2147483650
+            None: 
+          None: 
+        Long: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ul
+        CSingleInit: 
+          CConstant: 
+            CConstUInt: 
+              TUInt: 4294967294
+            None: 
+          None: 
+        ULong: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ul2
+        CSingleInit: 
+          CConstant: 
+            CConstLong: 
+              TLong: 9223372036854775798
+            None: 
+          None: 
+        ULong: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: i2
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372039002259606
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: ui2
+        CSingleInit: 
+          CConstant: 
+            CConstULong: 
+              TULong: 9223372039002259606
+            None: 
+          None: 
+        UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: u
+                    None: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 2147483660
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2147483646
+                      None: 
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: l
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 9223372036854775716
+                      None: 
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: l2
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 2147483650
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ul
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 4294967294
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ul2
+                    None: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372036854775798
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 6
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: i2
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2147483498
+                      None: 
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ui2
+                    None: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 2147483798
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

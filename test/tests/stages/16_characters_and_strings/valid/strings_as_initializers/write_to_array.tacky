@@ -1,0 +1,394 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[1]: 
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[37]: 
+        TacCopyToOffset: 
+          TIdentifier: flat_arr.1
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 6513249
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: flat_arr.1
+          TacVariable: 
+            TIdentifier: addr.3
+        TacFunCall: 
+          TIdentifier: puts
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.3
+          TacVariable: 
+            TIdentifier: call.4
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 120
+          TacVariable: 
+            TIdentifier: cast.5
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: flat_arr.1
+          TacVariable: 
+            TIdentifier: addr.6
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.7
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: addr.6
+          TacVariable: 
+            TIdentifier: cast.7
+          TacVariable: 
+            TIdentifier: subscr.8
+        TacStore: 
+          TacVariable: 
+            TIdentifier: cast.5
+          TacVariable: 
+            TIdentifier: subscr.8
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: flat_arr.1
+          TacVariable: 
+            TIdentifier: addr.9
+        TacFunCall: 
+          TIdentifier: puts
+          List[1]: 
+            TacVariable: 
+              TIdentifier: addr.9
+          TacVariable: 
+            TIdentifier: call.10
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 1819043144
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 4
+          TacConstant: 
+            CConstChar: 
+              TChar: 111
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 5
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 6
+          TacConstant: 
+            CConstInt: 
+              TInt: 1819438935
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 10
+          TacConstant: 
+            CConstChar: 
+              TChar: 100
+        TacCopyToOffset: 
+          TIdentifier: nested_array.2
+          TLong: 11
+          TacConstant: 
+            CConstChar: 
+              TChar: 0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_array.2
+          TacVariable: 
+            TIdentifier: addr.11
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.12
+        TacAddPtr: 
+          TLong: 6
+          TacVariable: 
+            TIdentifier: addr.11
+          TacVariable: 
+            TIdentifier: cast.12
+          TacVariable: 
+            TIdentifier: subscr.13
+        TacFunCall: 
+          TIdentifier: puts
+          List[1]: 
+            TacVariable: 
+              TIdentifier: subscr.13
+          TacVariable: 
+            TIdentifier: call.14
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_array.2
+          TacVariable: 
+            TIdentifier: addr.15
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.16
+        TacAddPtr: 
+          TLong: 6
+          TacVariable: 
+            TIdentifier: addr.15
+          TacVariable: 
+            TIdentifier: cast.16
+          TacVariable: 
+            TIdentifier: subscr.17
+        TacFunCall: 
+          TIdentifier: puts
+          List[1]: 
+            TacVariable: 
+              TIdentifier: subscr.17
+          TacVariable: 
+            TIdentifier: call.18
+        TacTruncate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 74
+          TacVariable: 
+            TIdentifier: cast.19
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_array.2
+          TacVariable: 
+            TIdentifier: addr.20
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.21
+        TacAddPtr: 
+          TLong: 6
+          TacVariable: 
+            TIdentifier: addr.20
+          TacVariable: 
+            TIdentifier: cast.21
+          TacVariable: 
+            TIdentifier: subscr.22
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.23
+        TacAddPtr: 
+          TLong: 1
+          TacVariable: 
+            TIdentifier: subscr.22
+          TacVariable: 
+            TIdentifier: cast.23
+          TacVariable: 
+            TIdentifier: subscr.24
+        TacStore: 
+          TacVariable: 
+            TIdentifier: cast.19
+          TacVariable: 
+            TIdentifier: subscr.24
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: nested_array.2
+          TacVariable: 
+            TIdentifier: addr.25
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.26
+        TacAddPtr: 
+          TLong: 6
+          TacVariable: 
+            TIdentifier: addr.25
+          TacVariable: 
+            TIdentifier: cast.26
+          TacVariable: 
+            TIdentifier: subscr.27
+        TacFunCall: 
+          TIdentifier: puts
+          List[1]: 
+            TacVariable: 
+              TIdentifier: subscr.27
+          TacVariable: 
+            TIdentifier: call.28
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(30):
+  [puts]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Pointer: 
+            Char: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [flat_arr.1]: 
+    Symbol: 
+      Array: 
+        TLong: 4
+        Char: 
+      LocalAttr: 
+  [nested_array.2]: 
+    Symbol: 
+      Array: 
+        TLong: 2
+        Array: 
+          TLong: 6
+          Char: 
+      LocalAttr: 
+  [addr.3]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.5]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [addr.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.7]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.8]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.9]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.10]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.11]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.16]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.17]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.18]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.19]: 
+    Symbol: 
+      Char: 
+      LocalAttr: 
+  [addr.20]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.21]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.22]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.23]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.24]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.25]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.26]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.27]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

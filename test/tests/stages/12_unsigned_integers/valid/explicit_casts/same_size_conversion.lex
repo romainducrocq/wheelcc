@@ -1,0 +1,161 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[156]:
+  int
+  identifier(uint_to_int)
+  (
+  unsigned
+  int
+  identifier(ui)
+  ,
+  int
+  identifier(expected)
+  )
+  {
+  return
+  (
+  int
+  )
+  identifier(ui)
+  ==
+  identifier(expected)
+  ;
+  }
+  int
+  identifier(int_to_uint)
+  (
+  int
+  identifier(i)
+  ,
+  unsigned
+  int
+  identifier(expected)
+  )
+  {
+  return
+  (
+  unsigned
+  int
+  )
+  identifier(i)
+  ==
+  identifier(expected)
+  ;
+  }
+  int
+  identifier(ulong_to_long)
+  (
+  unsigned
+  long
+  identifier(ul)
+  ,
+  signed
+  long
+  identifier(expected)
+  )
+  {
+  return
+  (
+  signed
+  long
+  )
+  identifier(ul)
+  ==
+  identifier(expected)
+  ;
+  }
+  int
+  identifier(long_to_ulong)
+  (
+  long
+  identifier(l)
+  ,
+  unsigned
+  long
+  identifier(expected)
+  )
+  {
+  return
+  (
+  unsigned
+  long
+  )
+  identifier(l)
+  ==
+  identifier(expected)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  if
+  (
+  !
+  identifier(int_to_uint)
+  (
+  const int(10)
+  ,
+  const unsigned int(10u)
+  )
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  if
+  (
+  !
+  identifier(uint_to_int)
+  (
+  const unsigned int(10u)
+  ,
+  const int(10)
+  )
+  )
+  {
+  return
+  const int(2)
+  ;
+  }
+  if
+  (
+  !
+  identifier(long_to_ulong)
+  (
+  -
+  const long(1000l)
+  ,
+  const unsigned long(18446744073709550616ul)
+  )
+  )
+  {
+  return
+  const int(3)
+  ;
+  }
+  if
+  (
+  !
+  identifier(ulong_to_long)
+  (
+  const unsigned long(18446744073709550616ul)
+  ,
+  -
+  const long(1000l)
+  )
+  )
+  {
+  return
+  const int(4)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

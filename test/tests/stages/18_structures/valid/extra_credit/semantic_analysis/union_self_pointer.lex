@@ -1,0 +1,51 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[46]:
+  union
+  identifier(self_ptr)
+  {
+  union
+  identifier(self_ptr)
+  *
+  identifier(ptr)
+  ;
+  long
+  identifier(l)
+  ;
+  }
+  ;
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  union
+  identifier(self_ptr)
+  identifier(u)
+  =
+  {
+  &
+  identifier(u)
+  }
+  ;
+  if
+  (
+  &
+  identifier(u)
+  !=
+  identifier(u)
+  .
+  identifier(ptr)
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

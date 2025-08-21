@@ -1,0 +1,63 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[58]:
+  struct
+  identifier(s)
+  {
+  int
+  identifier(i)
+  ;
+  }
+  ;
+  struct
+  identifier(s)
+  identifier(glob_struct)
+  =
+  {
+  const int(15)
+  }
+  ;
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  struct
+  identifier(s)
+  identifier(my_struct)
+  =
+  {
+  const int(4)
+  }
+  ;
+  identifier(my_struct)
+  .
+  identifier(i)
+  /=
+  const int(2)
+  ;
+  identifier(my_struct)
+  =
+  identifier(glob_struct)
+  ;
+  return
+  identifier(my_struct)
+  .
+  identifier(i)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(target)
+  (
+  )
+  ;
+  }

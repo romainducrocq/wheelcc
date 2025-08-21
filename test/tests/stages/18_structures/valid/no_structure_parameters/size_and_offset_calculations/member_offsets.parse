@@ -1,0 +1,2828 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[18]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: eight_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_bytes
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 2
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: three_bytes
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 3
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: sixteen_bytes
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: eight
+            Structure: 
+              TIdentifier: eight_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: seven_bytes
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: three
+            Structure: 
+              TIdentifier: three_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two2
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twentyfour_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: seven
+            Structure: 
+              TIdentifier: seven_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: twenty_bytes
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: sixteen
+            Structure: 
+              TIdentifier: sixteen_bytes
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: two
+            Structure: 
+              TIdentifier: two_bytes
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: wonky
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 19
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: internal_padding
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: contains_struct_array
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: struct_array
+            Array: 
+              TLong: 3
+              Structure: 
+                TIdentifier: eight_bytes
+                Bool: 0
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_eightbytes
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s
+                  None: 
+                  Structure: 
+                    TIdentifier: eight_bytes
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: start_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: s
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: i_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: i
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: c
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: end_addr
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CRemainder: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: i_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: c_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: end_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_internal_padding
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s_ptr
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: malloc
+                      List[1]: 
+                        CSizeOfT: 
+                          Structure: 
+                            TIdentifier: internal_padding
+                            Bool: 0
+                          None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: internal_padding
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: start_addr
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: s_ptr
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: c
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: d
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: end_ptr
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: s_ptr
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CRemainder: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: c_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: d_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: c_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: end_ptr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 16
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_three_bytes
+        List[0]: 
+        CB: 
+          List[17]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s
+                  None: 
+                  Structure: 
+                    TIdentifier: three_bytes
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: start_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: s
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr0_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr1_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr1_addr_alt
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CDot: 
+                          TIdentifier: arr
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr2_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CDot: 
+                            TIdentifier: arr
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: struct_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: arr_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: arr0_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: arr1_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: arr1_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: arr1_addr_alt
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: arr2_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: arr_end
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: struct_end
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_sixteen_bytes
+        List[0]: 
+        CB: 
+          List[39]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s
+                  None: 
+                  Structure: 
+                    TIdentifier: sixteen_bytes
+                    Bool: 0
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: s_ptr
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: s
+                        None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: sixteen_bytes
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: start_addr
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: s_ptr
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: eight
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight_i_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: i
+                          CArrow: 
+                            TIdentifier: eight
+                            CVar: 
+                              TIdentifier: s_ptr
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight_c_addr
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: c
+                          CArrow: 
+                            TIdentifier: eight
+                            CVar: 
+                              TIdentifier: s_ptr
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: two
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr
+                  CSingleInit: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: arr
+                        CArrow: 
+                          TIdentifier: two
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr0
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CArrow: 
+                              TIdentifier: two
+                              CVar: 
+                                TIdentifier: s_ptr
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr1
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CArrow: 
+                              TIdentifier: two
+                              CVar: 
+                                TIdentifier: s_ptr
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CDot: 
+                            TIdentifier: arr
+                            CArrow: 
+                              TIdentifier: two
+                              CVar: 
+                                TIdentifier: s_ptr
+                                None: 
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CArrow: 
+                            TIdentifier: two
+                            CVar: 
+                              TIdentifier: s_ptr
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: three
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: three
+                          CVar: 
+                            TIdentifier: s_ptr
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: three_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CAddrOf: 
+                          CArrow: 
+                            TIdentifier: three
+                            CVar: 
+                              TIdentifier: s_ptr
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: struct_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: s_ptr
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CRemainder: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: eight_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: start_addr
+                    None: 
+                  CVar: 
+                    TIdentifier: eight_i_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: eight_c_addr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: two
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: two_arr
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: two_arr0
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: two_arr1
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 9
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: two_arr_end
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: two_arr_end
+                    None: 
+                  CVar: 
+                    TIdentifier: two_end
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: three
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: three_end
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 13
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: struct_end
+                      None: 
+                    CVar: 
+                      TIdentifier: start_addr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 16
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight_i_addr_alt
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: i
+                          CDot: 
+                            TIdentifier: eight
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: eight_c_addr_alt
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: c
+                          CDot: 
+                            TIdentifier: eight
+                            CVar: 
+                              TIdentifier: s
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr_alt
+                  CSingleInit: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: arr
+                        CDot: 
+                          TIdentifier: two
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: two_arr1_alt
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CDot: 
+                              TIdentifier: two
+                              CVar: 
+                                TIdentifier: s
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: three_alt
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: three
+                          CVar: 
+                            TIdentifier: s
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: eight_i_addr_alt
+                    None: 
+                  CVar: 
+                    TIdentifier: eight_i_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: eight_c_addr_alt
+                    None: 
+                  CVar: 
+                    TIdentifier: eight_c_addr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: two_arr_alt
+                    None: 
+                  CVar: 
+                    TIdentifier: two_arr
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: two_arr1_alt
+                    None: 
+                  CVar: 
+                    TIdentifier: two_arr1
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: three_alt
+                    None: 
+                  CVar: 
+                    TIdentifier: three
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_wonky_array
+        List[0]: 
+        CB: 
+          List[14]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: wonky_array
+                  None: 
+                  Array: 
+                    TLong: 5
+                    Structure: 
+                      TIdentifier: wonky
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_start
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: wonky_array
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem3
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: wonky_array
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem3_arr
+                  CSingleInit: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: arr
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: wonky_array
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem2_arr2
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: arr
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: wonky_array
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                None: 
+                              None: 
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem2_arr_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CDot: 
+                          TIdentifier: arr
+                          CSubscript: 
+                            CVar: 
+                              TIdentifier: wonky_array
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 19
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: elem4_arr_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CDot: 
+                          TIdentifier: arr
+                          CSubscript: 
+                            CVar: 
+                              TIdentifier: wonky_array
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              None: 
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 19
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: wonky_array
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: elem3
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CBinary: 
+                    CMultiply: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 19
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: elem3_arr
+                    None: 
+                  CVar: 
+                    TIdentifier: elem3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: elem2_arr2
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CBinary: 
+                      CMultiply: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 19
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: elem2_arr_end
+                    None: 
+                  CVar: 
+                    TIdentifier: elem3
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: elem4_arr_end
+                    None: 
+                  CVar: 
+                    TIdentifier: array_end
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_contains_struct_array_array
+        List[0]: 
+        CB: 
+          List[20]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr
+                  None: 
+                  Array: 
+                    TLong: 3
+                    Structure: 
+                      TIdentifier: contains_struct_array
+                      Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: array_start
+                  CSingleInit: 
+                    CCast: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: first_scalar_elem
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CDot: 
+                          TIdentifier: c
+                          CSubscript: 
+                            CVar: 
+                              TIdentifier: arr
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer0_inner0_i
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: i
+                          CDot: 
+                            TIdentifier: struct_array
+                            CSubscript: 
+                              CVar: 
+                                TIdentifier: arr
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                None: 
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer0_inner0_c
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: c
+                          CArrow: 
+                            TIdentifier: struct_array
+                            CVar: 
+                              TIdentifier: arr
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer0_end
+                  CSingleInit: 
+                    CCast: 
+                      CBinary: 
+                        CAdd: 
+                        CArrow: 
+                          TIdentifier: struct_array
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer1
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer1_arr
+                  CSingleInit: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: struct_array
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: arr
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer1_inner1_i
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: i
+                          CBinary: 
+                            CAdd: 
+                            CArrow: 
+                              TIdentifier: struct_array
+                              CBinary: 
+                                CAdd: 
+                                CVar: 
+                                  TIdentifier: arr
+                                  None: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  None: 
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer2_inner0_c
+                  CSingleInit: 
+                    CCast: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: c
+                          CArrow: 
+                            TIdentifier: struct_array
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: arr
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                None: 
+                              None: 
+                            None: 
+                          None: 
+                        None: 
+                      ULong: 
+                      None: 
+                    None: 
+                  ULong: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CRemainder: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: first_scalar_elem
+                    None: 
+                  CVar: 
+                    TIdentifier: array_start
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer0_inner0_i
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer0_inner0_c
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: outer0_end
+                    None: 
+                  CVar: 
+                    TIdentifier: outer1
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer1_arr
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 32
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer1_arr
+                      None: 
+                    CVar: 
+                      TIdentifier: outer1
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 4
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer1_inner1_i
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 40
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CBinary: 
+                    CSubtract: 
+                    CVar: 
+                      TIdentifier: outer2_inner0_c
+                      None: 
+                    CVar: 
+                      TIdentifier: array_start
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 64
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_eightbytes
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_internal_padding
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_three_bytes
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_sixteen_bytes
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_wonky_array
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_contains_struct_array_array
+                    List[0]: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

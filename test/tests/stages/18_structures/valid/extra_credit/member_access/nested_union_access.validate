@@ -1,0 +1,2958 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[15]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.0
+          TIdentifier: size.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: malloc
+        List[1]: 
+          TIdentifier: size.2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: simple.0
+        Bool: 1
+        List[4]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: uc_arr
+            Array: 
+              TLong: 3
+              UChar: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_union.1
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: simple.0
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: u_ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: simple.0
+                Bool: 1
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: simple_struct.2
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            UInt: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_struct.3
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: simple_struct.2
+              Bool: 0
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: struct_with_union.4
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: simple.0
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: ul
+            ULong: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: complex_union.5
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d_arr
+            Array: 
+              TLong: 2
+              Double: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: struct_with_union.4
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: u_ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: has_union.1
+                Bool: 1
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_auto_dot
+        List[0]: 
+        CB: 
+          List[17]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.3
+                  None: 
+                  Structure: 
+                    TIdentifier: has_union.1
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CDot: 
+                      TIdentifier: u
+                      CVar: 
+                        TIdentifier: x.3
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 200000
+                      UInt: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: u
+                      CVar: 
+                        TIdentifier: x.3
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 200000
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.4
+                  None: 
+                  Structure: 
+                    TIdentifier: has_struct.3
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.4
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 5555
+                      Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.4
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10.000000
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: u
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.4
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    UInt: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    UInt: 
+                    UInt: 
+                  UInt: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: y.4
+                      Structure: 
+                        TIdentifier: has_struct.3
+                        Bool: 1
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 5555
+                      Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: z.5
+                  None: 
+                  Structure: 
+                    TIdentifier: complex_union.5
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: u
+                      CDot: 
+                        TIdentifier: s
+                        CVar: 
+                          TIdentifier: z.5
+                          Structure: 
+                            TIdentifier: complex_union.5
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: struct_with_union.4
+                          Bool: 0
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 12345
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: ul
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: z.5
+                        Structure: 
+                          TIdentifier: complex_union.5
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: struct_with_union.4
+                        Bool: 0
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CDot: 
+                        TIdentifier: u
+                        CDot: 
+                          TIdentifier: s
+                          CVar: 
+                            TIdentifier: z.5
+                            Structure: 
+                              TIdentifier: complex_union.5
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: struct_with_union.4
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 57
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CSubscript: 
+                  CAddrOf: 
+                    CDot: 
+                      TIdentifier: d_arr
+                      CVar: 
+                        TIdentifier: z.5
+                        Structure: 
+                          TIdentifier: complex_union.5
+                          Bool: 1
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Long: 
+                    Long: 
+                  Double: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: some_int_ptr.6
+                  CSingleInit: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: u
+                        CDot: 
+                          TIdentifier: s
+                          CVar: 
+                            TIdentifier: y.4
+                            Structure: 
+                              TIdentifier: has_struct.3
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: simple_struct.2
+                            Bool: 0
+                        UInt: 
+                      Pointer: 
+                        UInt: 
+                    Pointer: 
+                      UInt: 
+                  Pointer: 
+                    UInt: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: some_union_ptr.7
+                  CSingleInit: 
+                    CAddrOf: 
+                      CDot: 
+                        TIdentifier: u
+                        CDot: 
+                          TIdentifier: s
+                          CVar: 
+                            TIdentifier: z.5
+                            Structure: 
+                              TIdentifier: complex_union.5
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: struct_with_union.4
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: simple.0
+                      Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDereference: 
+                      CVar: 
+                        TIdentifier: some_int_ptr.6
+                        Pointer: 
+                          UInt: 
+                      UInt: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 100
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: i
+                      CDereference: 
+                        CVar: 
+                          TIdentifier: some_union_ptr.7
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12345
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_static_dot
+        List[0]: 
+        CB: 
+          List[14]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: x.8
+                  None: 
+                  Structure: 
+                    TIdentifier: has_union.1
+                    Bool: 1
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CDot: 
+                      TIdentifier: u
+                      CVar: 
+                        TIdentifier: x.8
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Long: 
+                  CCast: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 200000
+                      UInt: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: u
+                      CVar: 
+                        TIdentifier: x.8
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 200000
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: y.9
+                  None: 
+                  Structure: 
+                    TIdentifier: has_struct.3
+                    Bool: 1
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.9
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 5555
+                      Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.9
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    Double: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 10.000000
+                    Double: 
+                  Double: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: u
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: y.9
+                        Structure: 
+                          TIdentifier: has_struct.3
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple_struct.2
+                        Bool: 0
+                    UInt: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      Int: 
+                    UInt: 
+                    UInt: 
+                  UInt: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: y.9
+                      Structure: 
+                        TIdentifier: has_struct.3
+                        Bool: 1
+                    Long: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstLong: 
+                        TLong: 5555
+                      Long: 
+                    Long: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: z.10
+                  None: 
+                  Structure: 
+                    TIdentifier: complex_union.5
+                    Bool: 1
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: u
+                      CDot: 
+                        TIdentifier: s
+                        CVar: 
+                          TIdentifier: z.10
+                          Structure: 
+                            TIdentifier: complex_union.5
+                            Bool: 1
+                        Structure: 
+                          TIdentifier: struct_with_union.4
+                          Bool: 0
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 12345
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: ul
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: z.10
+                        Structure: 
+                          TIdentifier: complex_union.5
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: struct_with_union.4
+                        Bool: 0
+                    ULong: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      Int: 
+                    ULong: 
+                    ULong: 
+                  ULong: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CDot: 
+                        TIdentifier: u
+                        CDot: 
+                          TIdentifier: s
+                          CVar: 
+                            TIdentifier: z.10
+                            Structure: 
+                              TIdentifier: complex_union.5
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: struct_with_union.4
+                            Bool: 0
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 57
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CSubscript: 
+                  CAddrOf: 
+                    CDot: 
+                      TIdentifier: d_arr
+                      CVar: 
+                        TIdentifier: z.10
+                        Structure: 
+                          TIdentifier: complex_union.5
+                          Bool: 1
+                      Pointer: 
+                        Double: 
+                    Pointer: 
+                      Double: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Long: 
+                    Long: 
+                  Double: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_auto_arrow
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: inner.11
+                  CCompoundInit: 
+                    List[4]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          Int: 
+                        Int: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 0
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstChar: 
+                            TChar: 0
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstUChar: 
+                                TUChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstUChar: 
+                                TUChar: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstUChar: 
+                                TUChar: 0
+                              None: 
+                            None: 
+                        None: 
+                    Structure: 
+                      TIdentifier: simple.0
+                      Bool: 1
+                  Structure: 
+                    TIdentifier: simple.0
+                    Bool: 1
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer.12
+                  None: 
+                  Structure: 
+                    TIdentifier: has_union.1
+                    Bool: 1
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer_ptr.13
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: outer.12
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: has_union.1
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: has_union.1
+                      Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: u_ptr
+                    CVar: 
+                      TIdentifier: outer_ptr.13
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: inner.11
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: simple.0
+                      Bool: 1
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: i
+                    CArrow: 
+                      TIdentifier: u_ptr
+                      CVar: 
+                        TIdentifier: outer_ptr.13
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: has_union.1
+                            Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CArrow: 
+                      TIdentifier: u_ptr
+                      CVar: 
+                        TIdentifier: outer_ptr.13
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: has_union.1
+                            Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                    Long: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CArrow: 
+                          TIdentifier: c
+                          CArrow: 
+                            TIdentifier: u_ptr
+                            CVar: 
+                              TIdentifier: outer_ptr.13
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: simple.0
+                                Bool: 1
+                          Char: 
+                        Int: 
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: i
+                        CArrow: 
+                          TIdentifier: u_ptr
+                          CVar: 
+                            TIdentifier: outer_ptr.13
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: l
+                      CArrow: 
+                        TIdentifier: u_ptr
+                        CVar: 
+                          TIdentifier: outer_ptr.13
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: simple.0
+                            Bool: 1
+                      Long: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CArrow: 
+                              TIdentifier: uc_arr
+                              CArrow: 
+                                TIdentifier: u_ptr
+                                CVar: 
+                                  TIdentifier: outer_ptr.13
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: simple.0
+                                    Bool: 1
+                              Pointer: 
+                                UChar: 
+                            Pointer: 
+                              UChar: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 246
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CArrow: 
+                              TIdentifier: uc_arr
+                              CArrow: 
+                                TIdentifier: u_ptr
+                                CVar: 
+                                  TIdentifier: outer_ptr.13
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: simple.0
+                                    Bool: 1
+                              Pointer: 
+                                UChar: 
+                            Pointer: 
+                              UChar: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 255
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CArrow: 
+                            TIdentifier: uc_arr
+                            CArrow: 
+                              TIdentifier: u_ptr
+                              CVar: 
+                                TIdentifier: outer_ptr.13
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: simple.0
+                                  Bool: 1
+                            Pointer: 
+                              UChar: 
+                          Pointer: 
+                            UChar: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        UChar: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 255
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_static_arrow
+        List[0]: 
+        CB: 
+          List[10]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: inner.14
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: simple.0
+                    Bool: 1
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer.15
+                  None: 
+                  Structure: 
+                    TIdentifier: has_union.1
+                    Bool: 1
+                  CStatic: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: outer_ptr.16
+                  None: 
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: has_union.1
+                      Bool: 1
+                  CStatic: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: outer_ptr.16
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: has_union.1
+                        Bool: 1
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: outer.15
+                      Structure: 
+                        TIdentifier: has_union.1
+                        Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: has_union.1
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: has_union.1
+                      Bool: 1
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: u_ptr
+                    CVar: 
+                      TIdentifier: outer_ptr.16
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: inner.14
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: simple.0
+                      Bool: 1
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: i
+                    CArrow: 
+                      TIdentifier: u_ptr
+                      CVar: 
+                        TIdentifier: outer_ptr.16
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: has_union.1
+                            Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CArrow: 
+                    TIdentifier: l
+                    CArrow: 
+                      TIdentifier: u_ptr
+                      CVar: 
+                        TIdentifier: outer_ptr.16
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: has_union.1
+                            Bool: 1
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: simple.0
+                          Bool: 1
+                    Long: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CArrow: 
+                          TIdentifier: c
+                          CArrow: 
+                            TIdentifier: u_ptr
+                            CVar: 
+                              TIdentifier: outer_ptr.16
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: simple.0
+                                Bool: 1
+                          Char: 
+                        Int: 
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: i
+                        CArrow: 
+                          TIdentifier: u_ptr
+                          CVar: 
+                            TIdentifier: outer_ptr.16
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: l
+                      CArrow: 
+                        TIdentifier: u_ptr
+                        CVar: 
+                          TIdentifier: outer_ptr.16
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: simple.0
+                            Bool: 1
+                      Long: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CArrow: 
+                              TIdentifier: uc_arr
+                              CArrow: 
+                                TIdentifier: u_ptr
+                                CVar: 
+                                  TIdentifier: outer_ptr.16
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: simple.0
+                                    Bool: 1
+                              Pointer: 
+                                UChar: 
+                            Pointer: 
+                              UChar: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 246
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CSubscript: 
+                          CAddrOf: 
+                            CArrow: 
+                              TIdentifier: uc_arr
+                              CArrow: 
+                                TIdentifier: u_ptr
+                                CVar: 
+                                  TIdentifier: outer_ptr.16
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: simple.0
+                                    Bool: 1
+                              Pointer: 
+                                UChar: 
+                            Pointer: 
+                              UChar: 
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          UChar: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 255
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CArrow: 
+                            TIdentifier: uc_arr
+                            CArrow: 
+                              TIdentifier: u_ptr
+                              CVar: 
+                                TIdentifier: outer_ptr.16
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: simple.0
+                                  Bool: 1
+                            Pointer: 
+                              UChar: 
+                          Pointer: 
+                            UChar: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        UChar: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 255
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_array_of_unions
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: arr.17
+                  None: 
+                  Array: 
+                    TLong: 3
+                    Structure: 
+                      TIdentifier: has_union.1
+                      Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr.17
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Long: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10000
+                        Int: 
+                      Int: 
+                    Long: 
+                    Long: 
+                  Long: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr.17
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 200
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: arr.17
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: has_union.1
+                          Bool: 1
+                      Structure: 
+                        TIdentifier: simple.0
+                        Bool: 1
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 120
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CDot: 
+                        TIdentifier: l
+                        CDot: 
+                          TIdentifier: u
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: arr.17
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                          Structure: 
+                            TIdentifier: simple.0
+                            Bool: 1
+                        Long: 
+                      CCast: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10000
+                            Int: 
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CCast: 
+                        CDot: 
+                          TIdentifier: c
+                          CDot: 
+                            TIdentifier: u
+                            CSubscript: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: arr.17
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                          Char: 
+                        Int: 
+                        Int: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 56
+                          Int: 
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CDot: 
+                            TIdentifier: uc_arr
+                            CDot: 
+                              TIdentifier: u
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: arr.17
+                                    Pointer: 
+                                      Structure: 
+                                        TIdentifier: has_union.1
+                                        Bool: 1
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                CCast: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                              Structure: 
+                                TIdentifier: simple.0
+                                Bool: 1
+                            Pointer: 
+                              UChar: 
+                          Pointer: 
+                            UChar: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        UChar: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 136
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_array_of_union_pointers
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ptr_arr.18
+                  None: 
+                  Array: 
+                    TLong: 3
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: has_union.1
+                        Bool: 1
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: for.0
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i.19
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i.19
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    Int: 
+                  Int: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i.19
+                    Int: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i.19
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[3]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CSubscript: 
+                              CAddrOf: 
+                                CVar: 
+                                  TIdentifier: ptr_arr.18
+                                  Pointer: 
+                                    Pointer: 
+                                      Structure: 
+                                        TIdentifier: has_union.1
+                                        Bool: 1
+                                Pointer: 
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                              CCast: 
+                                CVar: 
+                                  TIdentifier: i.19
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                            CCast: 
+                              CFunctionCall: 
+                                TIdentifier: calloc
+                                List[2]: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                                    ULong: 
+                                    ULong: 
+                                  CSizeOfT: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                    ULong: 
+                                Pointer: 
+                                  Void: 
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CArrow: 
+                              TIdentifier: u_ptr
+                              CSubscript: 
+                                CAddrOf: 
+                                  CVar: 
+                                    TIdentifier: ptr_arr.18
+                                    Pointer: 
+                                      Pointer: 
+                                        Structure: 
+                                          TIdentifier: has_union.1
+                                          Bool: 1
+                                  Pointer: 
+                                    Pointer: 
+                                      Structure: 
+                                        TIdentifier: has_union.1
+                                        Bool: 1
+                                CCast: 
+                                  CVar: 
+                                    TIdentifier: i.19
+                                    Int: 
+                                  Long: 
+                                  Long: 
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: simple.0
+                                  Bool: 1
+                            CCast: 
+                              CFunctionCall: 
+                                TIdentifier: calloc
+                                List[2]: 
+                                  CCast: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      Int: 
+                                    ULong: 
+                                    ULong: 
+                                  CSizeOfT: 
+                                    Structure: 
+                                      TIdentifier: simple.0
+                                      Bool: 1
+                                    ULong: 
+                                Pointer: 
+                                  Void: 
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: simple.0
+                                  Bool: 1
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: simple.0
+                                  Bool: 1
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: simple.0
+                                Bool: 1
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CArrow: 
+                              TIdentifier: l
+                              CArrow: 
+                                TIdentifier: u_ptr
+                                CSubscript: 
+                                  CAddrOf: 
+                                    CVar: 
+                                      TIdentifier: ptr_arr.18
+                                      Pointer: 
+                                        Pointer: 
+                                          Structure: 
+                                            TIdentifier: has_union.1
+                                            Bool: 1
+                                    Pointer: 
+                                      Pointer: 
+                                        Structure: 
+                                          TIdentifier: has_union.1
+                                          Bool: 1
+                                  CCast: 
+                                    CVar: 
+                                      TIdentifier: i.19
+                                      Int: 
+                                    Long: 
+                                    Long: 
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: simple.0
+                                    Bool: 1
+                              Long: 
+                            CCast: 
+                              CVar: 
+                                TIdentifier: i.19
+                                Int: 
+                              Long: 
+                              Long: 
+                            Long: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: l
+                        CArrow: 
+                          TIdentifier: u_ptr
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: ptr_arr.18
+                                Pointer: 
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                              Pointer: 
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                        Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CArrow: 
+                        TIdentifier: l
+                        CArrow: 
+                          TIdentifier: u_ptr
+                          CSubscript: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: ptr_arr.18
+                                Pointer: 
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: has_union.1
+                                      Bool: 1
+                              Pointer: 
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                Int: 
+                              Long: 
+                              Long: 
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: has_union.1
+                                Bool: 1
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: simple.0
+                              Bool: 1
+                        Long: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CArrow: 
+                      TIdentifier: l
+                      CArrow: 
+                        TIdentifier: u_ptr
+                        CSubscript: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: ptr_arr.18
+                              Pointer: 
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: has_union.1
+                                    Bool: 1
+                            Pointer: 
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: has_union.1
+                                  Bool: 1
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: has_union.1
+                              Bool: 1
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: simple.0
+                            Bool: 1
+                      Long: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[7]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_auto_dot
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_static_dot
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_auto_arrow
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_static_arrow
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_array_of_unions
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_array_of_union_pointers
+                    List[0]: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(6):
+  [simple.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[4]: 
+        TIdentifier: i
+        TIdentifier: l
+        TIdentifier: c
+        TIdentifier: uc_arr
+      Dict[4]: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [uc_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 3
+              UChar: 
+  [has_union.1]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[3]: 
+        TIdentifier: d
+        TIdentifier: u
+        TIdentifier: u_ptr
+      Dict[3]: 
+        [d]: 
+          StructMember: 
+            TLong: 0
+            Double: 
+        [u]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: simple.0
+              Bool: 1
+        [u_ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: simple.0
+                Bool: 1
+  [simple_struct.2]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[3]: 
+        TIdentifier: l
+        TIdentifier: d
+        TIdentifier: u
+      Dict[3]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [d]: 
+          StructMember: 
+            TLong: 8
+            Double: 
+        [u]: 
+          StructMember: 
+            TLong: 16
+            UInt: 
+  [has_struct.3]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 24
+      List[2]: 
+        TIdentifier: l
+        TIdentifier: s
+      Dict[2]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [s]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: simple_struct.2
+              Bool: 0
+  [struct_with_union.4]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[2]: 
+        TIdentifier: u
+        TIdentifier: ul
+      Dict[2]: 
+        [u]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: simple.0
+              Bool: 1
+        [ul]: 
+          StructMember: 
+            TLong: 8
+            ULong: 
+  [complex_union.5]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 16
+      List[3]: 
+        TIdentifier: d_arr
+        TIdentifier: s
+        TIdentifier: u_ptr
+      Dict[3]: 
+        [d_arr]: 
+          StructMember: 
+            TLong: 0
+            Array: 
+              TLong: 2
+              Double: 
+        [s]: 
+          StructMember: 
+            TLong: 0
+            Structure: 
+              TIdentifier: struct_with_union.4
+              Bool: 0
+        [u_ptr]: 
+          StructMember: 
+            TLong: 0
+            Pointer: 
+              Structure: 
+                TIdentifier: has_union.1
+                Bool: 1
++
++
+@@ Symbol Table @@
+Dict(26):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [malloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [test_auto_dot]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union.1
+        Bool: 1
+      LocalAttr: 
+  [y.4]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_struct.3
+        Bool: 1
+      LocalAttr: 
+  [z.5]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: complex_union.5
+        Bool: 1
+      LocalAttr: 
+  [some_int_ptr.6]: 
+    Symbol: 
+      Pointer: 
+        UInt: 
+      LocalAttr: 
+  [some_union_ptr.7]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: simple.0
+          Bool: 1
+      LocalAttr: 
+  [test_static_dot]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [x.8]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union.1
+        Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [y.9]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_struct.3
+        Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 24
+  [z.10]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: complex_union.5
+        Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 16
+  [test_auto_arrow]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [inner.11]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: simple.0
+        Bool: 1
+      LocalAttr: 
+  [outer.12]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union.1
+        Bool: 1
+      LocalAttr: 
+  [outer_ptr.13]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: has_union.1
+          Bool: 1
+      LocalAttr: 
+  [test_static_arrow]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [inner.14]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: simple.0
+        Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[2]: 
+            IntInit: 
+              TInt: 100
+            ZeroInit: 
+              TLong: 4
+  [outer.15]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: has_union.1
+        Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [outer_ptr.16]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: has_union.1
+          Bool: 1
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 8
+  [test_array_of_unions]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arr.17]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Structure: 
+          TIdentifier: has_union.1
+          Bool: 1
+      LocalAttr: 
+  [test_array_of_union_pointers]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr_arr.18]: 
+    Symbol: 
+      Array: 
+        TLong: 3
+        Pointer: 
+          Structure: 
+            TIdentifier: has_union.1
+            Bool: 1
+      LocalAttr: 
+  [i.19]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

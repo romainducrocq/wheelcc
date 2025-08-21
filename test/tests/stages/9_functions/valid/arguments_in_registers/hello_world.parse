@@ -1,0 +1,172 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: putchar
+        List[1]: 
+          TIdentifier: c
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[14]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 72
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 101
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 108
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 108
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 111
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 44
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 32
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 87
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 111
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 114
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 108
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 100
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 33
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: putchar
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

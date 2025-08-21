@@ -1,0 +1,174 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[13]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1
+          TIdentifier: s2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: simple
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: ptr
+            Pointer: 
+              Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner
+        Bool: 1
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 9
+              Char: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: my_struct
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: inner
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: nested
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: str
+            Structure: 
+              TIdentifier: my_struct
+              Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: simple
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: simple
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple_converted
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: simple
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_nested
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: nested
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_nested_partial
+        List[1]: 
+          TIdentifier: ptr
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: nested
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple
+        List[1]: 
+          TIdentifier: ptr
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CArrow: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 123.450000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+ 

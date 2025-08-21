@@ -1,0 +1,145 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fma
+        List[3]: 
+          TIdentifier: x
+          TIdentifier: y
+          TIdentifier: z
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Double: 
+            Double: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ldexp
+        List[2]: 
+          TIdentifier: x
+          TIdentifier: exp
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Int: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: fma_result
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: fma
+                      List[3]: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 5.000000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 10000000000000000000000.000000
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 4000000.000000
+                          None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ldexp_result
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: ldexp
+                      List[2]: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 919999999999999940451288903657654387337909419689323468892649675111897497600.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: fma_result
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 50000000000000004194304.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: ldexp_result
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 29439999999999998094441244917044940394813101430058351004564789603580719923200.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

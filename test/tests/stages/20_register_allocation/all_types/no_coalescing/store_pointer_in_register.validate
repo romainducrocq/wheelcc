@@ -1,0 +1,1710 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[27]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_int
+        List[2]: 
+          TIdentifier: actual.0
+          TIdentifier: expected.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_5_ints
+        List[6]: 
+          TIdentifier: a.2
+          TIdentifier: b.3
+          TIdentifier: c.4
+          TIdentifier: d.5
+          TIdentifier: e.6
+          TIdentifier: start.7
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[6]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_ints
+        List[13]: 
+          TIdentifier: a.8
+          TIdentifier: b.9
+          TIdentifier: c.10
+          TIdentifier: d.11
+          TIdentifier: e.12
+          TIdentifier: f.13
+          TIdentifier: g.14
+          TIdentifier: h.15
+          TIdentifier: i.16
+          TIdentifier: j.17
+          TIdentifier: k.18
+          TIdentifier: l.19
+          TIdentifier: start.20
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uchar
+        List[2]: 
+          TIdentifier: actual.21
+          TIdentifier: expected.22
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UChar: 
+            UChar: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_uint
+        List[2]: 
+          TIdentifier: actual.23
+          TIdentifier: expected.24
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UInt: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_long
+        List[2]: 
+          TIdentifier: actual.25
+          TIdentifier: expected.26
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_ulong
+        List[2]: 
+          TIdentifier: actual.27
+          TIdentifier: expected.28
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_one_double
+        List[2]: 
+          TIdentifier: actual.29
+          TIdentifier: expected.30
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_longs
+        List[13]: 
+          TIdentifier: a.31
+          TIdentifier: b.32
+          TIdentifier: c.33
+          TIdentifier: d.34
+          TIdentifier: e.35
+          TIdentifier: f.36
+          TIdentifier: g.37
+          TIdentifier: h.38
+          TIdentifier: i.39
+          TIdentifier: j.40
+          TIdentifier: k.41
+          TIdentifier: l.42
+          TIdentifier: start.43
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_six_chars
+        List[7]: 
+          TIdentifier: a.44
+          TIdentifier: b.45
+          TIdentifier: c.46
+          TIdentifier: d.47
+          TIdentifier: e.48
+          TIdentifier: f.49
+          TIdentifier: start.50
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[7]: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Char: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_14_doubles
+        List[15]: 
+          TIdentifier: a.51
+          TIdentifier: b.52
+          TIdentifier: c.53
+          TIdentifier: d.54
+          TIdentifier: e.55
+          TIdentifier: f.56
+          TIdentifier: g.57
+          TIdentifier: h.58
+          TIdentifier: i.59
+          TIdentifier: j.60
+          TIdentifier: k.61
+          TIdentifier: l.62
+          TIdentifier: m.63
+          TIdentifier: n.64
+          TIdentifier: start.65
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[15]: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: check_12_vals
+        List[13]: 
+          TIdentifier: a.66
+          TIdentifier: b.67
+          TIdentifier: c.68
+          TIdentifier: d.69
+          TIdentifier: e.70
+          TIdentifier: f.71
+          TIdentifier: g.72
+          TIdentifier: h.73
+          TIdentifier: i.74
+          TIdentifier: j.75
+          TIdentifier: k.76
+          TIdentifier: l.77
+          TIdentifier: start.78
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[13]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Pointer: 
+              Long: 
+            Pointer: 
+              Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: id
+        List[1]: 
+          TIdentifier: x.79
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: dbl_id
+        List[1]: 
+          TIdentifier: x.80
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Double: 
+          Double: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_id
+        List[1]: 
+          TIdentifier: l.81
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Long: 
+          Long: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: unsigned_id
+        List[1]: 
+          TIdentifier: u.82
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          UInt: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uchar_id
+        List[1]: 
+          TIdentifier: uc.83
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UChar: 
+          UChar: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob1
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 1
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob2
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 2
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob3
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 3
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob4
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 4
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob5
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 5
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob6
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 6
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: glob7
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 7
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: flag
+        CSingleInit: 
+          CConstant: 
+            CConstInt: 
+              TInt: 1
+            None: 
+          None: 
+        Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: store_a
+        None: 
+        Pointer: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: target
+        List[0]: 
+        CB: 
+          List[19]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: callee_saved1.84
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob1
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: callee_saved2.85
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob2
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: callee_saved3.86
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob3
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: callee_saved4.87
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob4
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: callee_saved5.88
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: glob5
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a.89
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b.90
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c.91
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.92
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: e.93
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: f.94
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: g.95
+                  None: 
+                  Pointer: 
+                    Int: 
+                  None: 
+            CS: 
+              CIf: 
+                CVar: 
+                  TIdentifier: flag
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[15]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: a.89
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob1
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: a.89
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: b.90
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob2
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: b.90
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: c.91
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob3
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: c.91
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 6
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: d.92
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob4
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: d.92
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 8
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: e.93
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob5
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: e.93
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 10
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: f.94
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob6
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: f.94
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 12
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: g.95
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob7
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDereference: 
+                              CVar: 
+                                TIdentifier: g.95
+                                Pointer: 
+                                  Int: 
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 14
+                              Int: 
+                            Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: store_a
+                              Pointer: 
+                                Int: 
+                            CVar: 
+                              TIdentifier: a.89
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                CCompound: 
+                  CB: 
+                    List[7]: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: a.89
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: b.90
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: c.91
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: d.92
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: e.93
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: f.94
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: g.95
+                              Pointer: 
+                                Int: 
+                            CCast: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                Int: 
+                              Pointer: 
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Pointer: 
+                              Int: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          COr: 
+                          CBinary: 
+                            CNotEqual: 
+                            CVar: 
+                              TIdentifier: b.90
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob2
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Int: 
+                          CBinary: 
+                            CNotEqual: 
+                            CVar: 
+                              TIdentifier: c.91
+                              Pointer: 
+                                Int: 
+                            CAddrOf: 
+                              CVar: 
+                                TIdentifier: glob3
+                                Int: 
+                              Pointer: 
+                                Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CNotEqual: 
+                          CVar: 
+                            TIdentifier: d.92
+                            Pointer: 
+                              Int: 
+                          CAddrOf: 
+                            CVar: 
+                              TIdentifier: glob4
+                              Int: 
+                            Pointer: 
+                              Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CVar: 
+                          TIdentifier: e.93
+                          Pointer: 
+                            Int: 
+                        CAddrOf: 
+                          CVar: 
+                            TIdentifier: glob5
+                            Int: 
+                          Pointer: 
+                            Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CVar: 
+                        TIdentifier: f.94
+                        Pointer: 
+                          Int: 
+                      CAddrOf: 
+                        CVar: 
+                          TIdentifier: glob6
+                          Int: 
+                        Pointer: 
+                          Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: g.95
+                      Pointer: 
+                        Int: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: glob7
+                        Int: 
+                      Pointer: 
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          COr: 
+                          CBinary: 
+                            COr: 
+                            CBinary: 
+                              CNotEqual: 
+                              CVar: 
+                                TIdentifier: glob1
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              Int: 
+                            CBinary: 
+                              CNotEqual: 
+                              CVar: 
+                                TIdentifier: glob2
+                                Int: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 4
+                                Int: 
+                              Int: 
+                            Int: 
+                          CBinary: 
+                            CNotEqual: 
+                            CVar: 
+                              TIdentifier: glob3
+                              Int: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 6
+                              Int: 
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CNotEqual: 
+                          CVar: 
+                            TIdentifier: glob4
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CVar: 
+                          TIdentifier: glob5
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 10
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CVar: 
+                        TIdentifier: glob6
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 12
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: glob7
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CVar: 
+                    TIdentifier: store_a
+                    Pointer: 
+                      Int: 
+                  CAddrOf: 
+                    CVar: 
+                      TIdentifier: glob1
+                      Int: 
+                    Pointer: 
+                      Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    COr: 
+                    CBinary: 
+                      COr: 
+                      CBinary: 
+                        COr: 
+                        CBinary: 
+                          CNotEqual: 
+                          CVar: 
+                            TIdentifier: callee_saved1.84
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CNotEqual: 
+                          CVar: 
+                            TIdentifier: callee_saved2.85
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CNotEqual: 
+                        CVar: 
+                          TIdentifier: callee_saved3.86
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CNotEqual: 
+                      CVar: 
+                        TIdentifier: callee_saved4.87
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 4
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CVar: 
+                      TIdentifier: callee_saved5.88
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(39):
+  [check_one_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_5_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[6]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_ints]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uchar]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UChar: 
+          UChar: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UInt: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_one_double]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_longs]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_six_chars]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[7]: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Char: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_14_doubles]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[15]: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+          Double: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [check_12_vals]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[13]: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Int: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Double: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [dbl_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Double: 
+        Double: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [long_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          Long: 
+        Long: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [unsigned_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UInt: 
+        UInt: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [uchar_id]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[1]: 
+          UChar: 
+        UChar: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [glob1]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [glob2]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 2
+  [glob3]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 3
+  [glob4]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 4
+  [glob5]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 5
+  [glob6]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 6
+  [glob7]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 7
+  [flag]: 
+    Symbol: 
+      Int: 
+      StaticAttr: 
+        Bool: 1
+        Initial: 
+          List[1]: 
+            IntInit: 
+              TInt: 1
+  [store_a]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      StaticAttr: 
+        Bool: 1
+        Tentative: 
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [callee_saved1.84]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee_saved2.85]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee_saved3.86]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee_saved4.87]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [callee_saved5.88]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [a.89]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [b.90]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [c.91]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [d.92]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [e.93]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [f.94]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [g.95]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 

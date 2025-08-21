@@ -1,0 +1,74 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: pair
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Int: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: x
+        CCompoundInit: 
+          List[2]: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 1
+                None: 
+              None: 
+            CSingleInit: 
+              CConstant: 
+                CConstInt: 
+                  TInt: 2
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: pair
+          Bool: 0
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: inner
+            Structure: 
+              TIdentifier: pair
+              Bool: 0
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: y
+        CCompoundInit: 
+          List[2]: 
+            CSingleInit: 
+              CConstant: 
+                CConstDouble: 
+                  TDouble: 1.000000
+                None: 
+              None: 
+            CSingleInit: 
+              CVar: 
+                TIdentifier: x
+                None: 
+              None: 
+          None: 
+        Structure: 
+          TIdentifier: outer
+          Bool: 0
+        None: 

@@ -1,0 +1,181 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[20]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: strcmp
+        List[2]: 
+          TIdentifier: s1
+          TIdentifier: s2
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Char: 
+            Pointer: 
+              Char: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: simple
+        Bool: 1
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: i
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: s
+        None: 
+        Structure: 
+          TIdentifier: simple
+          Bool: 1
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_union
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            Structure: 
+              TIdentifier: simple
+              Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: h
+        None: 
+        Structure: 
+          TIdentifier: has_union
+          Bool: 1
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_has_union
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: has_union_array
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: union_array
+            Array: 
+              TLong: 4
+              Structure: 
+                TIdentifier: has_union
+                Bool: 1
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: s
+            Structure: 
+              TIdentifier: simple
+              Bool: 1
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: my_struct
+        None: 
+        Structure: 
+          TIdentifier: has_union_array
+          Bool: 0
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_has_union_array
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: all_zeros
+        None: 
+        Structure: 
+          TIdentifier: has_union
+          Bool: 1
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_uninitialized
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: with_padding
+        Bool: 1
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: arr
+            Array: 
+              TLong: 13
+              Char: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            Long: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: padded_union_array
+        None: 
+        Array: 
+          TLong: 3
+          Structure: 
+            TIdentifier: with_padding
+            Bool: 1
+        CExtern: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_padded_union_array
+        List[0]: 
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        N

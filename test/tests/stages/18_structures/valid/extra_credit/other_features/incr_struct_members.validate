@@ -1,0 +1,1219 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[4]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: inner.0
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: u
+            UInt: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: outer.1
+        Bool: 0
+        List[3]: 
+          CMemberDeclaration: 
+            TIdentifier: l
+            ULong: 
+          CMemberDeclaration: 
+            TIdentifier: in_ptr
+            Pointer: 
+              Structure: 
+                TIdentifier: inner.0
+                Bool: 0
+          CMemberDeclaration: 
+            TIdentifier: array
+            Array: 
+              TLong: 3
+              Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: calloc
+        List[2]: 
+          TIdentifier: nmemb.0
+          TIdentifier: size.1
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            ULong: 
+          Pointer: 
+            Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[22]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct.2
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstULong: 
+                            TULong: 9223372036854775900
+                          ULong: 
+                        ULong: 
+                      CSingleInit: 
+                        CCast: 
+                          CFunctionCall: 
+                            TIdentifier: calloc
+                            List[2]: 
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 3
+                                  Int: 
+                                ULong: 
+                                ULong: 
+                              CSizeOfT: 
+                                Structure: 
+                                  TIdentifier: inner.0
+                                  Bool: 0
+                                ULong: 
+                            Pointer: 
+                              Void: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1000
+                                Int: 
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2000
+                                Int: 
+                              Int: 
+                            Int: 
+                          CSingleInit: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 3000
+                                Int: 
+                              Int: 
+                            Int: 
+                        Array: 
+                          TLong: 3
+                          Int: 
+                    Structure: 
+                      TIdentifier: outer.1
+                      Bool: 0
+                  Structure: 
+                    TIdentifier: outer.1
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct_ptr.3
+                  CSingleInit: 
+                    CAddrOf: 
+                      CVar: 
+                        TIdentifier: my_struct.2
+                        Structure: 
+                          TIdentifier: outer.1
+                          Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: outer.1
+                          Bool: 0
+                    Pointer: 
+                      Structure: 
+                        TIdentifier: outer.1
+                        Bool: 0
+                  Pointer: 
+                    Structure: 
+                      TIdentifier: outer.1
+                      Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAssignment: 
+                    CPrefix: 
+                    None: 
+                    CBinary: 
+                      CAdd: 
+                      CDot: 
+                        TIdentifier: l
+                        CVar: 
+                          TIdentifier: my_struct.2
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        ULong: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        ULong: 
+                        ULong: 
+                      ULong: 
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372036854775901
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAssignment: 
+                    CPrefix: 
+                    None: 
+                    CBinary: 
+                      CSubtract: 
+                      CDot: 
+                        TIdentifier: u
+                        CSubscript: 
+                          CDot: 
+                            TIdentifier: in_ptr
+                            CVar: 
+                              TIdentifier: my_struct.2
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                        UInt: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        UInt: 
+                        UInt: 
+                      UInt: 
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 4294967295
+                    UInt: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CAssignment: 
+                  CPostfix: 
+                  None: 
+                  CCast: 
+                    CBinary: 
+                      CAdd: 
+                      CCast: 
+                        CArrow: 
+                          TIdentifier: c
+                          CDot: 
+                            TIdentifier: in_ptr
+                            CVar: 
+                              TIdentifier: my_struct.2
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CAssignment: 
+                    CPostfix: 
+                    None: 
+                    CBinary: 
+                      CSubtract: 
+                      CSubscript: 
+                        CAddrOf: 
+                          CArrow: 
+                            TIdentifier: array
+                            CVar: 
+                              TIdentifier: my_struct_ptr.3
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: outer.1
+                                  Bool: 0
+                            Pointer: 
+                              Int: 
+                          Pointer: 
+                            Int: 
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Long: 
+                          Long: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2000
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: my_struct_ptr.3
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: outer.1
+                          Bool: 0
+                    ULong: 
+                  CConstant: 
+                    CConstULong: 
+                      TULong: 9223372036854775901
+                    ULong: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 5
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CArrow: 
+                      TIdentifier: c
+                      CDot: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct.2
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      Char: 
+                    Int: 
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 6
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CArrow: 
+                    TIdentifier: u
+                    CArrow: 
+                      TIdentifier: in_ptr
+                      CVar: 
+                        TIdentifier: my_struct_ptr.3
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: outer.1
+                            Bool: 0
+                      Pointer: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 4294967295
+                    UInt: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 7
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CAddrOf: 
+                      CArrow: 
+                        TIdentifier: array
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Int: 
+                      Pointer: 
+                        Int: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Long: 
+                      Long: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2001
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 8
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: array
+                          CVar: 
+                            TIdentifier: my_struct_ptr.3
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 0
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1000
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CAddrOf: 
+                        CArrow: 
+                          TIdentifier: array
+                          CVar: 
+                            TIdentifier: my_struct_ptr.3
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                          Pointer: 
+                            Int: 
+                        Pointer: 
+                          Int: 
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Int: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3000
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 9
+                            Int: 
+                None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CSubscript: 
+                      CArrow: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    Char: 
+                  CCast: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: u
+                    CSubscript: 
+                      CArrow: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Long: 
+                        Long: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 1
+                    UInt: 
+                  UInt: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CSubscript: 
+                      CArrow: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    Char: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 88
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: u
+                    CSubscript: 
+                      CArrow: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCast: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          Int: 
+                        Long: 
+                        Long: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    UInt: 
+                  CConstant: 
+                    CConstUInt: 
+                      TUInt: 100000
+                    UInt: 
+                  UInt: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  CPostfix: 
+                  None: 
+                  CCast: 
+                    CBinary: 
+                      CSubtract: 
+                      CCast: 
+                        CArrow: 
+                          TIdentifier: c
+                          CAssignment: 
+                            CPrefix: 
+                            None: 
+                            CBinary: 
+                              CAdd: 
+                              CArrow: 
+                                TIdentifier: in_ptr
+                                CVar: 
+                                  TIdentifier: my_struct_ptr.3
+                                  Pointer: 
+                                    Structure: 
+                                      TIdentifier: outer.1
+                                      Bool: 0
+                                Pointer: 
+                                  Structure: 
+                                    TIdentifier: inner.0
+                                    Bool: 0
+                              CCast: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  Int: 
+                                Long: 
+                                Long: 
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: inner.0
+                                  Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          Char: 
+                        Int: 
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Char: 
+                    Char: 
+                  Char: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  CPostfix: 
+                  None: 
+                  CBinary: 
+                    CAdd: 
+                    CArrow: 
+                      TIdentifier: u
+                      CAssignment: 
+                        CPostfix: 
+                        None: 
+                        CBinary: 
+                          CAdd: 
+                          CArrow: 
+                            TIdentifier: in_ptr
+                            CVar: 
+                              TIdentifier: my_struct_ptr.3
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: outer.1
+                                  Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Long: 
+                            Long: 
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      UInt: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    UInt: 
+                  UInt: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: c
+                        CSubscript: 
+                          CArrow: 
+                            TIdentifier: in_ptr
+                            CVar: 
+                              TIdentifier: my_struct_ptr.3
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: outer.1
+                                  Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          CCast: 
+                            CUnary: 
+                              CNegate: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 2
+                                Int: 
+                              Int: 
+                            Long: 
+                            Long: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CArrow: 
+                          TIdentifier: in_ptr
+                          CVar: 
+                            TIdentifier: my_struct_ptr.3
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                      UInt: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 4294967295
+                      UInt: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 10
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CCast: 
+                    CDot: 
+                      TIdentifier: c
+                      CSubscript: 
+                        CArrow: 
+                          TIdentifier: in_ptr
+                          CVar: 
+                            TIdentifier: my_struct_ptr.3
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        CCast: 
+                          CUnary: 
+                            CNegate: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              Int: 
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                      Char: 
+                    Int: 
+                    Int: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 11
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: u
+                    CSubscript: 
+                      CArrow: 
+                        TIdentifier: in_ptr
+                        CVar: 
+                          TIdentifier: my_struct_ptr.3
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: outer.1
+                              Bool: 0
+                        Pointer: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                      CCast: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        Long: 
+                        Long: 
+                      Structure: 
+                        TIdentifier: inner.0
+                        Bool: 0
+                    UInt: 
+                  CCast: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      Int: 
+                    UInt: 
+                    UInt: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 12
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CCast: 
+                      CDot: 
+                        TIdentifier: c
+                        CSubscript: 
+                          CArrow: 
+                            TIdentifier: in_ptr
+                            CVar: 
+                              TIdentifier: my_struct_ptr.3
+                              Pointer: 
+                                Structure: 
+                                  TIdentifier: outer.1
+                                  Bool: 0
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: inner.0
+                                Bool: 0
+                          CCast: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              Int: 
+                            Long: 
+                            Long: 
+                          Structure: 
+                            TIdentifier: inner.0
+                            Bool: 0
+                        Char: 
+                      Int: 
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 88
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CArrow: 
+                          TIdentifier: in_ptr
+                          CVar: 
+                            TIdentifier: my_struct_ptr.3
+                            Pointer: 
+                              Structure: 
+                                TIdentifier: outer.1
+                                Bool: 0
+                          Pointer: 
+                            Structure: 
+                              TIdentifier: inner.0
+                              Bool: 0
+                        CCast: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            Int: 
+                          Long: 
+                          Long: 
+                        Structure: 
+                          TIdentifier: inner.0
+                          Bool: 0
+                      UInt: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 100000
+                      UInt: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(2):
+  [inner.0]: 
+    StructTypedef: 
+      TInt: 4
+      TLong: 8
+      List[2]: 
+        TIdentifier: c
+        TIdentifier: u
+      Dict[2]: 
+        [c]: 
+          StructMember: 
+            TLong: 0
+            Char: 
+        [u]: 
+          StructMember: 
+            TLong: 4
+            UInt: 
+  [outer.1]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 32
+      List[3]: 
+        TIdentifier: l
+        TIdentifier: in_ptr
+        TIdentifier: array
+      Dict[3]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            ULong: 
+        [in_ptr]: 
+          StructMember: 
+            TLong: 8
+            Pointer: 
+              Structure: 
+                TIdentifier: inner.0
+                Bool: 0
+        [array]: 
+          StructMember: 
+            TLong: 16
+            Array: 
+              TLong: 3
+              Int: 
++
++
+@@ Symbol Table @@
+Dict(4):
+  [calloc]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          ULong: 
+        Pointer: 
+          Void: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [my_struct.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: outer.1
+        Bool: 0
+      LocalAttr: 
+  [my_struct_ptr.3]: 
+    Symbol: 
+      Pointer: 
+        Structure: 
+          TIdentifier: outer.1
+          Bool: 0
+      LocalAttr: 

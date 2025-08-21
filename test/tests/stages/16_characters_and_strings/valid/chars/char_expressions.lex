@@ -1,0 +1,385 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[380]:
+  int
+  identifier(add_chars)
+  (
+  char
+  identifier(c1)
+  ,
+  char
+  identifier(c2)
+  )
+  {
+  return
+  identifier(c1)
+  +
+  identifier(c2)
+  ;
+  }
+  int
+  identifier(divide_chars)
+  (
+  unsigned
+  char
+  identifier(c1)
+  ,
+  unsigned
+  char
+  identifier(c2)
+  )
+  {
+  return
+  identifier(c1)
+  /
+  identifier(c2)
+  ;
+  }
+  int
+  identifier(le)
+  (
+  char
+  identifier(c1)
+  ,
+  char
+  identifier(c2)
+  )
+  {
+  return
+  identifier(c1)
+  <=
+  identifier(c2)
+  ;
+  }
+  int
+  identifier(subscript_char)
+  (
+  int
+  *
+  identifier(ptr)
+  ,
+  char
+  identifier(idx)
+  )
+  {
+  return
+  identifier(ptr)
+  [
+  identifier(idx)
+  ]
+  ;
+  }
+  int
+  *
+  identifier(sub_char_from_pointer)
+  (
+  int
+  *
+  identifier(ptr)
+  ,
+  signed
+  char
+  identifier(idx)
+  )
+  {
+  return
+  identifier(ptr)
+  -
+  identifier(idx)
+  ;
+  }
+  int
+  identifier(and_char)
+  (
+  signed
+  char
+  identifier(c1)
+  ,
+  int
+  identifier(i)
+  )
+  {
+  return
+  identifier(c1)
+  &&
+  identifier(i)
+  ;
+  }
+  int
+  identifier(or_char)
+  (
+  signed
+  char
+  identifier(c1)
+  ,
+  unsigned
+  char
+  identifier(c2)
+  )
+  {
+  return
+  identifier(c1)
+  ||
+  identifier(c2)
+  ;
+  }
+  int
+  identifier(test_for_loop_char)
+  (
+  void
+  )
+  {
+  int
+  identifier(counter)
+  =
+  const int(0)
+  ;
+  for
+  (
+  signed
+  char
+  identifier(s)
+  =
+  const int(127)
+  ;
+  identifier(s)
+  >
+  const int(0)
+  ;
+  identifier(s)
+  =
+  identifier(s)
+  -
+  const int(1)
+  )
+  {
+  identifier(counter)
+  =
+  identifier(counter)
+  +
+  const int(1)
+  ;
+  }
+  return
+  (
+  identifier(counter)
+  ==
+  const int(127)
+  )
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  char
+  identifier(c1)
+  =
+  const int(8)
+  ;
+  char
+  identifier(c2)
+  =
+  const int(4)
+  ;
+  if
+  (
+  identifier(add_chars)
+  (
+  identifier(c1)
+  ,
+  identifier(c2)
+  )
+  !=
+  const int(12)
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  unsigned
+  char
+  identifier(uc1)
+  =
+  const int(250)
+  ;
+  unsigned
+  char
+  identifier(uc2)
+  =
+  const int(25)
+  ;
+  if
+  (
+  identifier(divide_chars)
+  (
+  identifier(uc1)
+  ,
+  identifier(uc2)
+  )
+  !=
+  const int(10)
+  )
+  {
+  return
+  const int(2)
+  ;
+  }
+  if
+  (
+  identifier(le)
+  (
+  identifier(c1)
+  ,
+  identifier(c2)
+  )
+  )
+  {
+  return
+  const int(3)
+  ;
+  }
+  if
+  (
+  !
+  identifier(le)
+  (
+  identifier(c2)
+  ,
+  identifier(c2)
+  )
+  )
+  {
+  return
+  const int(4)
+  ;
+  }
+  int
+  identifier(arr)
+  [
+  const int(4)
+  ]
+  =
+  {
+  const int(11)
+  ,
+  const int(12)
+  ,
+  const int(13)
+  ,
+  const int(14)
+  }
+  ;
+  char
+  identifier(idx)
+  =
+  const int(2)
+  ;
+  if
+  (
+  identifier(subscript_char)
+  (
+  identifier(arr)
+  ,
+  identifier(idx)
+  )
+  !=
+  const int(13)
+  )
+  {
+  return
+  const int(5)
+  ;
+  }
+  signed
+  char
+  identifier(offset)
+  =
+  const int(1)
+  ;
+  if
+  (
+  identifier(sub_char_from_pointer)
+  (
+  identifier(arr)
+  +
+  const int(1)
+  ,
+  identifier(offset)
+  )
+  !=
+  identifier(arr)
+  )
+  {
+  return
+  const int(6)
+  ;
+  }
+  signed
+  char
+  identifier(zero)
+  =
+  const int(0)
+  ;
+  if
+  (
+  identifier(zero)
+  )
+  {
+  return
+  const int(7)
+  ;
+  }
+  if
+  (
+  identifier(and_char)
+  (
+  identifier(zero)
+  ,
+  const int(12)
+  )
+  )
+  {
+  return
+  const int(8)
+  ;
+  }
+  identifier(uc2)
+  =
+  const int(0)
+  ;
+  if
+  (
+  identifier(or_char)
+  (
+  identifier(zero)
+  ,
+  identifier(uc2)
+  )
+  )
+  {
+  return
+  const int(9)
+  ;
+  }
+  if
+  (
+  !
+  identifier(test_for_loop_char)
+  (
+  )
+  )
+  {
+  return
+  const int(10)
+  ;
+  }
+  return
+  const int(0)
+  ;
+  }

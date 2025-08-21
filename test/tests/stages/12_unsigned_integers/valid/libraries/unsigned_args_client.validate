@@ -1,0 +1,156 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: accept_unsigned
+        List[9]: 
+          TIdentifier: a.0
+          TIdentifier: b.1
+          TIdentifier: c.2
+          TIdentifier: d.3
+          TIdentifier: e.4
+          TIdentifier: f.5
+          TIdentifier: g.6
+          TIdentifier: h.7
+          TIdentifier: i.8
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[9]: 
+            UInt: 
+            UInt: 
+            ULong: 
+            ULong: 
+            UInt: 
+            UInt: 
+            ULong: 
+            UInt: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CFunctionCall: 
+                  TIdentifier: accept_unsigned
+                  List[9]: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    CCast: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          Int: 
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 9223372036854775808
+                      ULong: 
+                    CCast: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 2147483648
+                        ULong: 
+                      UInt: 
+                      UInt: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      UInt: 
+                      UInt: 
+                    CCast: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 123456
+                        Int: 
+                      ULong: 
+                      ULong: 
+                    CConstant: 
+                      CConstUInt: 
+                        TUInt: 2147487744
+                      UInt: 
+                    CConstant: 
+                      CConstULong: 
+                        TULong: 9223372041149743104
+                      ULong: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [accept_unsigned]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[9]: 
+          UInt: 
+          UInt: 
+          ULong: 
+          ULong: 
+          UInt: 
+          UInt: 
+          ULong: 
+          UInt: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 0
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

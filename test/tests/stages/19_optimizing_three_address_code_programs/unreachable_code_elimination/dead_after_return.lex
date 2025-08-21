@@ -1,0 +1,66 @@
+-- Lexing ... OK
++
++
+@@ Tokens @@
+List[61]:
+  int
+  identifier(callee)
+  (
+  void
+  )
+  {
+  return
+  const int(1)
+  ;
+  }
+  int
+  identifier(target)
+  (
+  void
+  )
+  {
+  return
+  const int(2)
+  ;
+  int
+  identifier(x)
+  =
+  identifier(callee)
+  (
+  )
+  ;
+  if
+  (
+  identifier(x)
+  )
+  {
+  identifier(x)
+  =
+  const int(10)
+  ;
+  }
+  int
+  identifier(y)
+  =
+  identifier(callee)
+  (
+  )
+  ;
+  return
+  identifier(x)
+  +
+  identifier(y)
+  ;
+  }
+  int
+  identifier(main)
+  (
+  void
+  )
+  {
+  return
+  identifier(target)
+  (
+  )
+  ;
+  }

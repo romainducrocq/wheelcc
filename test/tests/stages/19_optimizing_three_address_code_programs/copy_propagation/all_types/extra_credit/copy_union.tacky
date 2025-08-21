@@ -1,0 +1,319 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[0]: 
+  List[3]: 
+    TacFunction: 
+      TIdentifier: callee
+      Bool: 1
+      List[2]: 
+        TIdentifier: a.0
+        TIdentifier: b.1
+      List[16]: 
+        TacCopyFromOffset: 
+          TIdentifier: a.0
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.4
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: unop.5
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: unop.5
+          TacVariable: 
+            TIdentifier: cast.6
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.4
+          TacVariable: 
+            TIdentifier: cast.6
+          TacVariable: 
+            TIdentifier: binop.7
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.7
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacCopyFromOffset: 
+          TIdentifier: b.1
+          TLong: 0
+          TacVariable: 
+            TIdentifier: smem.8
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: unop.9
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: unop.9
+          TacVariable: 
+            TIdentifier: cast.10
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: smem.8
+          TacVariable: 
+            TIdentifier: cast.10
+          TacVariable: 
+            TIdentifier: binop.11
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.11
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: target
+      Bool: 1
+      List[0]: 
+      List[11]: 
+        TacCopyToOffset: 
+          TIdentifier: u1.2
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+          TacVariable: 
+            TIdentifier: cast.12
+        TacCopyToOffset: 
+          TIdentifier: u1.2
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.12
+        TacCopyToOffset: 
+          TIdentifier: u2.3
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 100
+          TacVariable: 
+            TIdentifier: unop.13
+        TacSignExtend: 
+          TacVariable: 
+            TIdentifier: unop.13
+          TacVariable: 
+            TIdentifier: cast.14
+        TacCopyToOffset: 
+          TIdentifier: u2.3
+          TLong: 0
+          TacVariable: 
+            TIdentifier: cast.14
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: u2.3
+          TacVariable: 
+            TIdentifier: u1.2
+        TacFunCall: 
+          TIdentifier: callee
+          List[2]: 
+            TacVariable: 
+              TIdentifier: u1.2
+            TacVariable: 
+              TIdentifier: u2.3
+          TacVariable: 
+            TIdentifier: call.15
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: call.15
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[3]: 
+        TacFunCall: 
+          TIdentifier: target
+          List[0]: 
+          TacVariable: 
+            TIdentifier: call.16
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: call.16
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(1):
+  [u.0]: 
+    StructTypedef: 
+      TInt: 8
+      TLong: 8
+      List[2]: 
+        TIdentifier: l
+        TIdentifier: i
+      Dict[2]: 
+        [l]: 
+          StructMember: 
+            TLong: 0
+            Long: 
+        [i]: 
+          StructMember: 
+            TLong: 0
+            Int: 
++
++
+@@ Symbol Table @@
+Dict(20):
+  [a.0]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [callee]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Structure: 
+            TIdentifier: u.0
+            Bool: 1
+          Structure: 
+            TIdentifier: u.0
+            Bool: 1
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [target]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [u1.2]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [u2.3]: 
+    Symbol: 
+      Structure: 
+        TIdentifier: u.0
+        Bool: 1
+      LocalAttr: 
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [smem.4]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [unop.5]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.7]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [smem.8]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [unop.9]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.10]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.11]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [unop.13]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [cast.14]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.15]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [call.16]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

@@ -1,0 +1,80 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[3]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s1
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: field
+            Int: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s2
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: field
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: s1
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b
+                  None: 
+                  Structure: 
+                    TIdentifier: s2
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  CVar: 
+                    TIdentifier: a
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CDot: 
+                  TIdentifier: field
+                  CVar: 
+                    TIdentifier: b
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

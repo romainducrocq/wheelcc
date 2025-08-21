@@ -1,0 +1,920 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
+-- TAC representation ... OK
++
++
+@@ TAC AST @@
+TacProgram: 
+  List[0]: 
+  List[1]: 
+    TacStaticVariable: 
+      TIdentifier: multidim.11
+      Bool: 0
+      Array: 
+        TLong: 6
+        Array: 
+          TLong: 7
+          Array: 
+            TLong: 3
+            Array: 
+              TLong: 5
+              Double: 
+      List[1]: 
+        ZeroInit: 
+          TLong: 5040
+  List[5]: 
+    TacFunction: 
+      TIdentifier: get_ptr_diff
+      Bool: 1
+      List[2]: 
+        TIdentifier: ptr1.0
+        TIdentifier: ptr2.1
+      List[5]: 
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: ptr2.1
+          TacVariable: 
+            TIdentifier: ptr1.0
+          TacVariable: 
+            TIdentifier: binop.12
+        TacBinary: 
+          TacDivide: 
+          TacVariable: 
+            TIdentifier: binop.12
+          TacConstant: 
+            CConstLong: 
+              TLong: 4
+          TacVariable: 
+            TIdentifier: binop.13
+        TacTruncate: 
+          TacVariable: 
+            TIdentifier: binop.13
+          TacVariable: 
+            TIdentifier: cast.14
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.14
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: get_long_ptr_diff
+      Bool: 1
+      List[2]: 
+        TIdentifier: ptr1.2
+        TIdentifier: ptr2.3
+      List[5]: 
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: ptr2.3
+          TacVariable: 
+            TIdentifier: ptr1.2
+          TacVariable: 
+            TIdentifier: binop.15
+        TacBinary: 
+          TacDivide: 
+          TacVariable: 
+            TIdentifier: binop.15
+          TacConstant: 
+            CConstLong: 
+              TLong: 8
+          TacVariable: 
+            TIdentifier: binop.16
+        TacTruncate: 
+          TacVariable: 
+            TIdentifier: binop.16
+          TacVariable: 
+            TIdentifier: cast.17
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.17
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: get_multidim_ptr_diff
+      Bool: 1
+      List[2]: 
+        TIdentifier: ptr1.4
+        TIdentifier: ptr2.5
+      List[5]: 
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: ptr2.5
+          TacVariable: 
+            TIdentifier: ptr1.4
+          TacVariable: 
+            TIdentifier: binop.18
+        TacBinary: 
+          TacDivide: 
+          TacVariable: 
+            TIdentifier: binop.18
+          TacConstant: 
+            CConstLong: 
+              TLong: 120
+          TacVariable: 
+            TIdentifier: binop.19
+        TacTruncate: 
+          TacVariable: 
+            TIdentifier: binop.19
+          TacVariable: 
+            TIdentifier: cast.20
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.20
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: get_multidim_ptr_diff_2
+      Bool: 1
+      List[2]: 
+        TIdentifier: ptr1.6
+        TIdentifier: ptr2.7
+      List[5]: 
+        TacBinary: 
+          TacSubtract: 
+          TacVariable: 
+            TIdentifier: ptr2.7
+          TacVariable: 
+            TIdentifier: ptr1.6
+          TacVariable: 
+            TIdentifier: binop.21
+        TacBinary: 
+          TacDivide: 
+          TacVariable: 
+            TIdentifier: binop.21
+          TacConstant: 
+            CConstLong: 
+              TLong: 40
+          TacVariable: 
+            TIdentifier: binop.22
+        TacTruncate: 
+          TacVariable: 
+            TIdentifier: binop.22
+          TacVariable: 
+            TIdentifier: cast.23
+        TacReturn: 
+          TacVariable: 
+            TIdentifier: cast.23
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+    TacFunction: 
+      TIdentifier: main
+      Bool: 1
+      List[0]: 
+      List[60]: 
+        TacCopyToOffset: 
+          TIdentifier: arr.8
+          TLong: 0
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+        TacCopyToOffset: 
+          TIdentifier: arr.8
+          TLong: 4
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacCopyToOffset: 
+          TIdentifier: arr.8
+          TLong: 8
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacCopyToOffset: 
+          TIdentifier: arr.8
+          TLong: 12
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacCopyToOffset: 
+          TIdentifier: arr.8
+          TLong: 16
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: arr.8
+          TacVariable: 
+            TIdentifier: addr.24
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+          TacVariable: 
+            TIdentifier: cast.25
+        TacAddPtr: 
+          TLong: 4
+          TacVariable: 
+            TIdentifier: addr.24
+          TacVariable: 
+            TIdentifier: cast.25
+          TacVariable: 
+            TIdentifier: binop.26
+        TacCopy: 
+          TacVariable: 
+            TIdentifier: binop.26
+          TacVariable: 
+            TIdentifier: end_of_array.9
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: arr.8
+          TacVariable: 
+            TIdentifier: addr.27
+        TacFunCall: 
+          TIdentifier: get_ptr_diff
+          List[2]: 
+            TacVariable: 
+              TIdentifier: addr.27
+            TacVariable: 
+              TIdentifier: end_of_array.9
+          TacVariable: 
+            TIdentifier: call.28
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.28
+          TacConstant: 
+            CConstInt: 
+              TInt: 5
+          TacVariable: 
+            TIdentifier: binop.29
+        TacJumpIfZero: 
+          TIdentifier: if_false.0
+          TacVariable: 
+            TIdentifier: binop.29
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+        TacLabel: 
+          TIdentifier: if_false.0
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: long_arr.10
+          TacVariable: 
+            TIdentifier: addr.30
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: cast.31
+        TacAddPtr: 
+          TLong: 8
+          TacVariable: 
+            TIdentifier: addr.30
+          TacVariable: 
+            TIdentifier: cast.31
+          TacVariable: 
+            TIdentifier: binop.32
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: long_arr.10
+          TacVariable: 
+            TIdentifier: addr.33
+        TacFunCall: 
+          TIdentifier: get_long_ptr_diff
+          List[2]: 
+            TacVariable: 
+              TIdentifier: binop.32
+            TacVariable: 
+              TIdentifier: addr.33
+          TacVariable: 
+            TIdentifier: call.34
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: unop.35
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.34
+          TacVariable: 
+            TIdentifier: unop.35
+          TacVariable: 
+            TIdentifier: binop.36
+        TacJumpIfZero: 
+          TIdentifier: if_false.1
+          TacVariable: 
+            TIdentifier: binop.36
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+        TacLabel: 
+          TIdentifier: if_false.1
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: multidim.11
+          TacVariable: 
+            TIdentifier: addr.37
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.38
+        TacAddPtr: 
+          TLong: 840
+          TacVariable: 
+            TIdentifier: addr.37
+          TacVariable: 
+            TIdentifier: cast.38
+          TacVariable: 
+            TIdentifier: subscr.39
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 1
+          TacVariable: 
+            TIdentifier: cast.40
+        TacAddPtr: 
+          TLong: 120
+          TacVariable: 
+            TIdentifier: subscr.39
+          TacVariable: 
+            TIdentifier: cast.40
+          TacVariable: 
+            TIdentifier: binop.41
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: multidim.11
+          TacVariable: 
+            TIdentifier: addr.42
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.43
+        TacAddPtr: 
+          TLong: 840
+          TacVariable: 
+            TIdentifier: addr.42
+          TacVariable: 
+            TIdentifier: cast.43
+          TacVariable: 
+            TIdentifier: subscr.44
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+          TacVariable: 
+            TIdentifier: cast.45
+        TacAddPtr: 
+          TLong: 120
+          TacVariable: 
+            TIdentifier: subscr.44
+          TacVariable: 
+            TIdentifier: cast.45
+          TacVariable: 
+            TIdentifier: binop.46
+        TacFunCall: 
+          TIdentifier: get_multidim_ptr_diff
+          List[2]: 
+            TacVariable: 
+              TIdentifier: binop.41
+            TacVariable: 
+              TIdentifier: binop.46
+          TacVariable: 
+            TIdentifier: call.47
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.47
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+          TacVariable: 
+            TIdentifier: binop.48
+        TacJumpIfZero: 
+          TIdentifier: if_false.2
+          TacVariable: 
+            TIdentifier: binop.48
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 3
+        TacLabel: 
+          TIdentifier: if_false.2
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: multidim.11
+          TacVariable: 
+            TIdentifier: addr.49
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.50
+        TacAddPtr: 
+          TLong: 840
+          TacVariable: 
+            TIdentifier: addr.49
+          TacVariable: 
+            TIdentifier: cast.50
+          TacVariable: 
+            TIdentifier: subscr.51
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.52
+        TacAddPtr: 
+          TLong: 120
+          TacVariable: 
+            TIdentifier: subscr.51
+          TacVariable: 
+            TIdentifier: cast.52
+          TacVariable: 
+            TIdentifier: subscr.53
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.54
+        TacAddPtr: 
+          TLong: 40
+          TacVariable: 
+            TIdentifier: subscr.53
+          TacVariable: 
+            TIdentifier: cast.54
+          TacVariable: 
+            TIdentifier: binop.55
+        TacGetAddress: 
+          TacVariable: 
+            TIdentifier: multidim.11
+          TacVariable: 
+            TIdentifier: addr.56
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.57
+        TacAddPtr: 
+          TLong: 840
+          TacVariable: 
+            TIdentifier: addr.56
+          TacVariable: 
+            TIdentifier: cast.57
+          TacVariable: 
+            TIdentifier: subscr.58
+        TacSignExtend: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: cast.59
+        TacAddPtr: 
+          TLong: 120
+          TacVariable: 
+            TIdentifier: subscr.58
+          TacVariable: 
+            TIdentifier: cast.59
+          TacVariable: 
+            TIdentifier: subscr.60
+        TacFunCall: 
+          TIdentifier: get_multidim_ptr_diff_2
+          List[2]: 
+            TacVariable: 
+              TIdentifier: binop.55
+            TacVariable: 
+              TIdentifier: subscr.60
+          TacVariable: 
+            TIdentifier: call.61
+        TacUnary: 
+          TacNegate: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 2
+          TacVariable: 
+            TIdentifier: unop.62
+        TacBinary: 
+          TacNotEqual: 
+          TacVariable: 
+            TIdentifier: call.61
+          TacVariable: 
+            TIdentifier: unop.62
+          TacVariable: 
+            TIdentifier: binop.63
+        TacJumpIfZero: 
+          TIdentifier: if_false.3
+          TacVariable: 
+            TIdentifier: binop.63
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 4
+        TacLabel: 
+          TIdentifier: if_false.3
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
+        TacReturn: 
+          TacConstant: 
+            CConstInt: 
+              TInt: 0
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(69):
+  [ptr1.0]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [ptr2.1]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [get_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Int: 
+          Pointer: 
+            Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.2]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [ptr2.3]: 
+    Symbol: 
+      Pointer: 
+        Long: 
+      LocalAttr: 
+  [get_long_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Long: 
+          Pointer: 
+            Long: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.4]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 5
+            Double: 
+      LocalAttr: 
+  [ptr2.5]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 3
+          Array: 
+            TLong: 5
+            Double: 
+      LocalAttr: 
+  [get_multidim_ptr_diff]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 5
+                Double: 
+          Pointer: 
+            Array: 
+              TLong: 3
+              Array: 
+                TLong: 5
+                Double: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ptr1.6]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          Double: 
+      LocalAttr: 
+  [ptr2.7]: 
+    Symbol: 
+      Pointer: 
+        Array: 
+          TLong: 5
+          Double: 
+      LocalAttr: 
+  [get_multidim_ptr_diff_2]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              Double: 
+          Pointer: 
+            Array: 
+              TLong: 5
+              Double: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [arr.8]: 
+    Symbol: 
+      Array: 
+        TLong: 5
+        Int: 
+      LocalAttr: 
+  [end_of_array.9]: 
+    Symbol: 
+      Pointer: 
+        Int: 
+      LocalAttr: 
+  [long_arr.10]: 
+    Symbol: 
+      Array: 
+        TLong: 8
+        Long: 
+      LocalAttr: 
+  [multidim.11]: 
+    Symbol: 
+      Array: 
+        TLong: 6
+        Array: 
+          TLong: 7
+          Array: 
+            TLong: 3
+            Array: 
+              TLong: 5
+              Double: 
+      StaticAttr: 
+        Bool: 0
+        Initial: 
+          List[1]: 
+            ZeroInit: 
+              TLong: 5040
+  [binop.12]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.13]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.14]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.15]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.16]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.17]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.18]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.19]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.20]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.21]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.22]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.23]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.24]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.25]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.26]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.27]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.28]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.29]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.30]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.31]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.32]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.33]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.34]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.35]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.36]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.37]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.38]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.39]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.40]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.41]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.42]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.43]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.44]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.45]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.46]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.47]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.48]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [addr.49]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.50]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.51]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.52]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.53]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.54]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [binop.55]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [addr.56]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.57]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.58]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [cast.59]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [subscr.60]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [call.61]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [unop.62]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [binop.63]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

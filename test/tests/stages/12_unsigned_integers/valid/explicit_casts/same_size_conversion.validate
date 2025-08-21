@@ -1,0 +1,362 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[5]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: uint_to_int
+        List[2]: 
+          TIdentifier: ui.0
+          TIdentifier: expected.1
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: ui.0
+                      UInt: 
+                    Int: 
+                    Int: 
+                  CVar: 
+                    TIdentifier: expected.1
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            UInt: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: int_to_uint
+        List[2]: 
+          TIdentifier: i.2
+          TIdentifier: expected.3
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: i.2
+                      Int: 
+                    UInt: 
+                    UInt: 
+                  CVar: 
+                    TIdentifier: expected.3
+                    UInt: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Int: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: ulong_to_long
+        List[2]: 
+          TIdentifier: ul.4
+          TIdentifier: expected.5
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: ul.4
+                      ULong: 
+                    Long: 
+                    Long: 
+                  CVar: 
+                    TIdentifier: expected.5
+                    Long: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            ULong: 
+            Long: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: long_to_ulong
+        List[2]: 
+          TIdentifier: l.6
+          TIdentifier: expected.7
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CCast: 
+                    CVar: 
+                      TIdentifier: l.6
+                      Long: 
+                    ULong: 
+                    ULong: 
+                  CVar: 
+                    TIdentifier: expected.7
+                    ULong: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Long: 
+            ULong: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: int_to_uint
+                    List[2]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 10
+                        UInt: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: uint_to_int
+                    List[2]: 
+                      CConstant: 
+                        CConstUInt: 
+                          TUInt: 10
+                        UInt: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        Int: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: long_to_ulong
+                    List[2]: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 1000
+                          Long: 
+                        Long: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 18446744073709550616
+                        ULong: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 3
+                            Int: 
+                None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: ulong_to_long
+                    List[2]: 
+                      CConstant: 
+                        CConstULong: 
+                          TULong: 18446744073709550616
+                        ULong: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstLong: 
+                            TLong: 1000
+                          Long: 
+                        Long: 
+                    Int: 
+                  Int: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 4
+                            Int: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(13):
+  [ui.0]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [expected.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [uint_to_int]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          UInt: 
+          Int: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [i.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [expected.3]: 
+    Symbol: 
+      UInt: 
+      LocalAttr: 
+  [int_to_uint]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Int: 
+          UInt: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [ul.4]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [expected.5]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [ulong_to_long]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          ULong: 
+          Long: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [l.6]: 
+    Symbol: 
+      Long: 
+      LocalAttr: 
+  [expected.7]: 
+    Symbol: 
+      ULong: 
+      LocalAttr: 
+  [long_to_ulong]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[2]: 
+          Long: 
+          ULong: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1

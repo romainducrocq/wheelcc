@@ -1,0 +1,162 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fun
+        List[18]: 
+          TIdentifier: i1
+          TIdentifier: d1
+          TIdentifier: i2
+          TIdentifier: d2
+          TIdentifier: i3
+          TIdentifier: d3
+          TIdentifier: i4
+          TIdentifier: d4
+          TIdentifier: i5
+          TIdentifier: d5
+          TIdentifier: i6
+          TIdentifier: d6
+          TIdentifier: i7
+          TIdentifier: d7
+          TIdentifier: i8
+          TIdentifier: d8
+          TIdentifier: i9
+          TIdentifier: d9
+        None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[18]: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+            Int: 
+            Double: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d
+                  CSingleInit: 
+                    CFunctionCall: 
+                      TIdentifier: fun
+                      List[18]: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 2.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 4.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 5
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 6.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 7
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 8.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 9
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 10.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 11
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 12.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 13
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 14.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 15
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 16.000000
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 17
+                          None: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 18.000000
+                          None: 
+                      None: 
+                    None: 
+                  Double: 
+                  None: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CVar: 
+                    TIdentifier: d
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 78.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

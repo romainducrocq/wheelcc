@@ -1,0 +1,123 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[9]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CLabel: 
+                TIdentifier: label_if.0
+                CIf: 
+                  CVar: 
+                    TIdentifier: a.0
+                    Int: 
+                  CGoto: 
+                    TIdentifier: label_expression.1
+                  CGoto: 
+                    TIdentifier: label_empty.2
+            CS: 
+              CLabel: 
+                TIdentifier: label_goto.3
+                CGoto: 
+                  TIdentifier: label_return.4
+            CS: 
+              CIf: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  Int: 
+                CLabel: 
+                  TIdentifier: label_expression.1
+                  CExpression: 
+                    CAssignment: 
+                      None: 
+                      CVar: 
+                        TIdentifier: a.0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      Int: 
+                None: 
+            CS: 
+              CGoto: 
+                TIdentifier: label_if.0
+            CS: 
+              CLabel: 
+                TIdentifier: label_return.4
+                CReturn: 
+                  CVar: 
+                    TIdentifier: a.0
+                    Int: 
+            CS: 
+              CLabel: 
+                TIdentifier: label_empty.2
+                CNull: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: a.0
+                    Int: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    Int: 
+                  Int: 
+            CS: 
+              CGoto: 
+                TIdentifier: label_goto.3
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(2):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

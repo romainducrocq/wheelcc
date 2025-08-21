@@ -1,0 +1,293 @@
+-- Lexing ... OK
+-- Parsing ... OK
+-- Semantic analysis ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[11]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: a.0
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: b.1
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CBitAnd: 
+                    CVar: 
+                      TIdentifier: a.0
+                      Int: 
+                    CBinary: 
+                      COr: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        Int: 
+                      CVar: 
+                        TIdentifier: b.1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CBitXor: 
+                    CVar: 
+                      TIdentifier: b.1
+                      Int: 
+                    CBinary: 
+                      COr: 
+                      CVar: 
+                        TIdentifier: a.0
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: c.2
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CBitOr: 
+                    CVar: 
+                      TIdentifier: c.2
+                      Int: 
+                    CBinary: 
+                      COr: 
+                      CVar: 
+                        TIdentifier: a.0
+                        Int: 
+                      CVar: 
+                        TIdentifier: b.1
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: d.3
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CBitShrArithmetic: 
+                    CVar: 
+                      TIdentifier: d.3
+                      Int: 
+                    CBinary: 
+                      COr: 
+                      CVar: 
+                        TIdentifier: c.2
+                        Int: 
+                      CVar: 
+                        TIdentifier: d.3
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: e.4
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 18
+                      Int: 
+                    Int: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  None: 
+                  CBinary: 
+                    CBitShiftLeft: 
+                    CVar: 
+                      TIdentifier: e.4
+                      Int: 
+                    CBinary: 
+                      COr: 
+                      CVar: 
+                        TIdentifier: c.2
+                        Int: 
+                      CVar: 
+                        TIdentifier: d.3
+                        Int: 
+                      Int: 
+                    Int: 
+                  Int: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CAnd: 
+                      CBinary: 
+                        CAnd: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: a.0
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            Int: 
+                          Int: 
+                        CBinary: 
+                          CEqual: 
+                          CVar: 
+                            TIdentifier: b.1
+                            Int: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 13
+                            Int: 
+                          Int: 
+                        Int: 
+                      CBinary: 
+                        CEqual: 
+                        CVar: 
+                          TIdentifier: c.2
+                          Int: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 15
+                          Int: 
+                        Int: 
+                      Int: 
+                    CBinary: 
+                      CEqual: 
+                      CVar: 
+                        TIdentifier: d.3
+                        Int: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 8
+                        Int: 
+                      Int: 
+                    Int: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: e.4
+                      Int: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 36
+                      Int: 
+                    Int: 
+                  Int: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
++
++
+@@ String Constant Table @@
+Dict(0):
++
++
+@@ Structure Typedef Table @@
+Dict(0):
++
++
+@@ Symbol Table @@
+Dict(6):
+  [main]: 
+    Symbol: 
+      FunType: 
+        TULong: 67108864
+        TULong: 67108864
+        List[0]: 
+        Int: 
+      FunAttr: 
+        Bool: 1
+        Bool: 1
+  [a.0]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [b.1]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [c.2]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [d.3]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 
+  [e.4]: 
+    Symbol: 
+      Int: 
+      LocalAttr: 

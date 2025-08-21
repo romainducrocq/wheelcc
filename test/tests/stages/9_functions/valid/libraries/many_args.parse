@@ -1,0 +1,173 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: fib
+        List[1]: 
+          TIdentifier: n
+        CB: 
+          List[1]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: n
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: n
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CVar: 
+                            TIdentifier: n
+                            None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CBinary: 
+                            CAdd: 
+                            CFunctionCall: 
+                              TIdentifier: fib
+                              List[1]: 
+                                CBinary: 
+                                  CSubtract: 
+                                  CVar: 
+                                    TIdentifier: n
+                                    None: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    None: 
+                                  None: 
+                              None: 
+                            CFunctionCall: 
+                              TIdentifier: fib
+                              List[1]: 
+                                CBinary: 
+                                  CSubtract: 
+                                  CVar: 
+                                    TIdentifier: n
+                                    None: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    None: 
+                                  None: 
+                              None: 
+                            None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: multiply_many_args
+        List[8]: 
+          TIdentifier: a
+          TIdentifier: b
+          TIdentifier: c
+          TIdentifier: d
+          TIdentifier: e
+          TIdentifier: f
+          TIdentifier: g
+          TIdentifier: h
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CMultiply: 
+                  CBinary: 
+                    CMultiply: 
+                    CBinary: 
+                      CMultiply: 
+                      CBinary: 
+                        CMultiply: 
+                        CBinary: 
+                          CMultiply: 
+                          CBinary: 
+                            CMultiply: 
+                            CBinary: 
+                              CMultiply: 
+                              CVar: 
+                                TIdentifier: a
+                                None: 
+                              CVar: 
+                                TIdentifier: b
+                                None: 
+                              None: 
+                            CVar: 
+                              TIdentifier: c
+                              None: 
+                            None: 
+                          CVar: 
+                            TIdentifier: d
+                            None: 
+                          None: 
+                        CVar: 
+                          TIdentifier: e
+                          None: 
+                        None: 
+                      CVar: 
+                        TIdentifier: f
+                        None: 
+                      None: 
+                    CFunctionCall: 
+                      TIdentifier: fib
+                      List[1]: 
+                        CVar: 
+                          TIdentifier: g
+                          None: 
+                      None: 
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: fib
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: h
+                        None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[8]: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 
