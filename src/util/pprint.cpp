@@ -44,7 +44,7 @@ void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
                 break;
         }
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 
 typedef IdentifierContext* Ctx;
@@ -1690,19 +1690,19 @@ static void print_AsmProgram(Ctx ctx, AsmProgram* node, size_t tab) {
 void pprint_c_ast(IdentifierContext* ctx, CProgram* node) {
     print_title("C AST");
     print_CProgram(ctx, node, 0);
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_tac_ast(IdentifierContext* ctx, TacProgram* node) {
     print_title("TAC AST");
     print_TacProgram(ctx, node, 0);
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_asm_ast(IdentifierContext* ctx, AsmProgram* node) {
     print_title("ASM AST");
     print_AsmProgram(ctx, node, 0);
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
@@ -1712,7 +1712,7 @@ void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
         TIdentifier name = element_get(frontend->addressed_set[i]);
         print_field(2, ": %s", map_get(ctx->hash_table, name));
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend) {
@@ -1775,7 +1775,7 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
         }
         THROW_ABORT;
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend) {
@@ -1786,7 +1786,7 @@ void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* fronte
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*struct_typedef)));
         print_StructTypedef(ctx, pair_second(*struct_typedef).get(), 2);
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
@@ -1797,7 +1797,7 @@ void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*symbol)));
         print_Symbol(ctx, pair_second(*symbol).get(), 2);
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 
 void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend) {
@@ -1808,6 +1808,6 @@ void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*bakend_symbol)));
         print_BackendSymbol(ctx, pair_second(*bakend_symbol).get(), 2);
     }
-    std::cout << std::endl;
+    printf("\n");
 }
 #endif
