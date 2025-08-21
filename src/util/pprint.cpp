@@ -21,7 +21,7 @@
 
 // Pretty print
 
-static void print_title(const char* title) { std::cout << "+\n+\n@@ " << std::string(title) << " @@"; }
+static void print_title(const char* title) { printf("+\n+\n@@ %s @@", title); }
 
 void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
     print_title("Tokens");
@@ -1732,44 +1732,44 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
                     TChar byte = string_init->literal.get()->value[i];
                     switch (byte) {
                         case 39:
-                            std::cout << "\\'";
+                            printf("\\'");
                             break;
                         case 34:
-                            std::cout << "\\\"";
+                            printf("\\\"");
                             break;
                         case 63:
-                            std::cout << "\\?";
+                            printf("\\?");
                             break;
                         case 92:
-                            std::cout << "\\\\";
+                            printf("\\\\");
                             break;
                         case 7:
-                            std::cout << "\\a";
+                            printf("\\a");
                             break;
                         case 8:
-                            std::cout << "\\b";
+                            printf("\\b");
                             break;
                         case 12:
-                            std::cout << "\\f";
+                            printf("\\f");
                             break;
                         case 10:
-                            std::cout << "\\n";
+                            printf("\\n");
                             break;
                         case 13:
-                            std::cout << "\\r";
+                            printf("\\r");
                             break;
                         case 9:
-                            std::cout << "\\t";
+                            printf("\\t");
                             break;
                         case 11:
-                            std::cout << "\\v";
+                            printf("\\v");
                             break;
                         default:
-                            std::cout << byte;
+                            printf("%c", (char)byte);
                             break;
                     }
                 }
-                std::cout << "\"";
+                printf("\"");
                 continue;
             }
         }
