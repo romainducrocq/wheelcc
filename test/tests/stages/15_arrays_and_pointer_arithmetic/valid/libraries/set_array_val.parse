@@ -1,0 +1,310 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: set_nth_element
+        List[2]: 
+          TIdentifier: arr
+          TIdentifier: idx
+        CB: 
+          List[3]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CSubscript: 
+                            CVar: 
+                              TIdentifier: arr
+                              None: 
+                            CVar: 
+                              TIdentifier: i
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 1
+                                      None: 
+                          None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CVar: 
+                      TIdentifier: arr
+                      None: 
+                    CVar: 
+                      TIdentifier: idx
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 8
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[2]: 
+            Pointer: 
+              Double: 
+            Int: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: set_nested_element
+        List[3]: 
+          TIdentifier: arr
+          TIdentifier: i
+          TIdentifier: j
+        CB: 
+          List[3]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: x
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: x
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: x
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CFor: 
+                          TIdentifier: (null)
+                          CInitDecl: 
+                            CVariableDeclaration: 
+                              TIdentifier: y
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              Int: 
+                              None: 
+                          CBinary: 
+                            CLessThan: 
+                            CVar: 
+                              TIdentifier: y
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: y
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: y
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[2]: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: expected
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CAdd: 
+                                          CBinary: 
+                                            CAdd: 
+                                            CUnary: 
+                                              CNegate: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 10
+                                                None: 
+                                              None: 
+                                            CBinary: 
+                                              CMultiply: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 2
+                                                None: 
+                                              CVar: 
+                                                TIdentifier: x
+                                                None: 
+                                              None: 
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: y
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CS: 
+                                  CIf: 
+                                    CBinary: 
+                                      CNotEqual: 
+                                      CSubscript: 
+                                        CSubscript: 
+                                          CVar: 
+                                            TIdentifier: arr
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: x
+                                            None: 
+                                          None: 
+                                        CVar: 
+                                          TIdentifier: y
+                                          None: 
+                                        None: 
+                                      CVar: 
+                                        TIdentifier: expected
+                                        None: 
+                                      None: 
+                                    CCompound: 
+                                      CB: 
+                                        List[1]: 
+                                          CS: 
+                                            CReturn: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 4
+                                                None: 
+                                    None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: arr
+                        None: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                    CVar: 
+                      TIdentifier: j
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 10
+                    None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Pointer: 
+              Array: 
+                TLong: 2
+                Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 

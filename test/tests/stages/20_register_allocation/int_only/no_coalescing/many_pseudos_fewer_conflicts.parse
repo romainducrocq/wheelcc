@@ -168,4 +168,524 @@ CProgram:
                         CAdd: 
                         CVar: 
                           TIdentifier: three
-                  
+                          None: 
+                        CVar: 
+                          TIdentifier: two
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: sum
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: product
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_one_int
+                  List[2]: 
+                    CVar: 
+                      TIdentifier: diff
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      None: 
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CBinary: 
+                            CRemainder: 
+                            CVar: 
+                              TIdentifier: i
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[7]: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: five
+                                      CSingleInit: 
+                                        CFunctionCall: 
+                                          TIdentifier: return_five
+                                          List[0]: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: quotient
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CDivide: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 25
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: five
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: remainder
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CRemainder: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 27
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: five
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: complex
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CMultiply: 
+                                          CBinary: 
+                                            CAdd: 
+                                            CVar: 
+                                              TIdentifier: quotient
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 3
+                                              None: 
+                                            None: 
+                                          CBinary: 
+                                            CAdd: 
+                                            CVar: 
+                                              TIdentifier: remainder
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 4
+                                              None: 
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: quotient
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 5
+                                          None: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: remainder
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 2
+                                          None: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: complex
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 48
+                                          None: 
+                                      None: 
+                          CCompound: 
+                            CB: 
+                              List[8]: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: hundred
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CMultiply: 
+                                          CFunctionCall: 
+                                            TIdentifier: return_five
+                                            List[0]: 
+                                            None: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 20
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: ninety
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CSubtract: 
+                                          CVar: 
+                                            TIdentifier: hundred
+                                            None: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 10
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: seventy
+                                      CSingleInit: 
+                                        CConditional: 
+                                          CBinary: 
+                                            CRemainder: 
+                                            CVar: 
+                                              TIdentifier: i
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 2
+                                              None: 
+                                            None: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 0
+                                            None: 
+                                          CBinary: 
+                                            CAdd: 
+                                            CBinary: 
+                                              CDivide: 
+                                              CVar: 
+                                                TIdentifier: hundred
+                                                None: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 2
+                                                None: 
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 20
+                                              None: 
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CD: 
+                                  CVarDecl: 
+                                    CVariableDeclaration: 
+                                      TIdentifier: negative_one_forty_five
+                                      CSingleInit: 
+                                        CBinary: 
+                                          CSubtract: 
+                                          CBinary: 
+                                            CDivide: 
+                                            CUnary: 
+                                              CNegate: 
+                                              CVar: 
+                                                TIdentifier: ninety
+                                                None: 
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 2
+                                              None: 
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: hundred
+                                            None: 
+                                          None: 
+                                        None: 
+                                      Int: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: hundred
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 100
+                                          None: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: ninety
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 90
+                                          None: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: seventy
+                                          None: 
+                                        CConstant: 
+                                          CConstInt: 
+                                            TInt: 70
+                                          None: 
+                                      None: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: check_one_int
+                                      List[2]: 
+                                        CVar: 
+                                          TIdentifier: negative_one_forty_five
+                                          None: 
+                                        CUnary: 
+                                          CNegate: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 145
+                                            None: 
+                                          None: 
+                                      None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: negative_six
+                  CSingleInit: 
+                    CUnary: 
+                      CComplement: 
+                      CFunctionCall: 
+                        TIdentifier: return_five
+                        List[0]: 
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: negative_five
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CUnary: 
+                        CNegate: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 11
+                          None: 
+                        None: 
+                      CVar: 
+                        TIdentifier: negative_six
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: negative_four
+                  CSingleInit: 
+                    CBinary: 
+                      CSubtract: 
+                      CFunctionCall: 
+                        TIdentifier: return_five
+                        List[0]: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 9
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: negative_three
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CVar: 
+                        TIdentifier: negative_six
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: negative_two
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CVar: 
+                        TIdentifier: negative_six
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 3
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: check_5_ints
+                  List[6]: 
+                    CVar: 
+                      TIdentifier: negative_six
+                      None: 
+                    CVar: 
+                      TIdentifier: negative_five
+                      None: 
+                    CVar: 
+                      TIdentifier: negative_four
+                      None: 
+                    CVar: 
+                      TIdentifier: negative_three
+                      None: 
+                    CVar: 
+                      TIdentifier: negative_two
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 6
+                        None: 
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[3]: 
+            Int: 
+            Int: 
+            Int: 
+          Int: 
+        None: 

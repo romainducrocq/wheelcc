@@ -171,4 +171,269 @@ CProgram:
           TULong: 67108864
           TULong: 67108864
           List[1]: 
- 
+            Pointer: 
+              Structure: 
+                TIdentifier: simple
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple_converted
+        List[1]: 
+          TIdentifier: ptr
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CEqual: 
+                  CArrow: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: ptr
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 18446744073709549568.000000
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: simple
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_nested
+        List[1]: 
+          TIdentifier: ptr
+        CB: 
+          List[3]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: l
+                    CArrow: 
+                      TIdentifier: str
+                      CVar: 
+                        TIdentifier: ptr
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 4294967395
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 9
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: arr
+                                CDot: 
+                                  TIdentifier: u
+                                  CArrow: 
+                                    TIdentifier: str
+                                    CVar: 
+                                      TIdentifier: ptr
+                                      None: 
+                                    None: 
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              None: 
+                            CBinary: 
+                              CSubtract: 
+                              CUnary: 
+                                CNegate: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 1
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      None: 
+                          None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: nested
+                Bool: 1
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_nested_partial
+        List[1]: 
+          TIdentifier: ptr
+        CB: 
+          List[3]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: l
+                    CArrow: 
+                      TIdentifier: str
+                      CVar: 
+                        TIdentifier: ptr
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstLong: 
+                      TLong: 9000372036854775800
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CFunctionCall: 
+                  TIdentifier: strcmp
+                  List[2]: 
+                    CDot: 
+                      TIdentifier: arr
+                      CDot: 
+                        TIdentifier: u
+                        CArrow: 
+                          TIdentifier: str
+                          CVar: 
+                            TIdentifier: ptr
+                            None: 
+                          None: 
+                        None: 
+                      None: 
+                    CString: 
+                      CStringLiteral: 
+                        List[6]: 
+                          TChar: 115
+                          TChar: 116
+                          TChar: 114
+                          TChar: 105
+                          TChar: 110
+                          TChar: 103
+                      None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Pointer: 
+              Structure: 
+                TIdentifier: nested
+                Bool: 1
+          Int: 
+        None: 

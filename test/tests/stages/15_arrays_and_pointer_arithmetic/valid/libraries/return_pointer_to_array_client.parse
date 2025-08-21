@@ -120,4 +120,229 @@ CProgram:
                 CVariableDeclaration: 
                   TIdentifier: row_pointer
                   CSingleInit: 
-     
+                    CFunctionCall: 
+                      TIdentifier: return_row
+                      List[2]: 
+                        CVar: 
+                          TIdentifier: nested_array
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                      None: 
+                    None: 
+                  Pointer: 
+                    Array: 
+                      TLong: 4
+                      Long: 
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CFor: 
+                          TIdentifier: (null)
+                          CInitDecl: 
+                            CVariableDeclaration: 
+                              TIdentifier: j
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              Int: 
+                              None: 
+                          CBinary: 
+                            CLessThan: 
+                            CVar: 
+                              TIdentifier: j
+                              None: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 4
+                              None: 
+                            None: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: j
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: j
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 1
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CIf: 
+                                    CBinary: 
+                                      CNotEqual: 
+                                      CSubscript: 
+                                        CSubscript: 
+                                          CVar: 
+                                            TIdentifier: row_pointer
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: i
+                                            None: 
+                                          None: 
+                                        CVar: 
+                                          TIdentifier: j
+                                          None: 
+                                        None: 
+                                      CSubscript: 
+                                        CSubscript: 
+                                          CSubscript: 
+                                            CVar: 
+                                              TIdentifier: nested_array
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 1
+                                              None: 
+                                            None: 
+                                          CVar: 
+                                            TIdentifier: i
+                                            None: 
+                                          None: 
+                                        CVar: 
+                                          TIdentifier: j
+                                          None: 
+                                        None: 
+                                      None: 
+                                    CCompound: 
+                                      CB: 
+                                        List[1]: 
+                                          CS: 
+                                            CReturn: 
+                                              CConstant: 
+                                                CConstInt: 
+                                                  TInt: 1
+                                                None: 
+                                    None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CSubscript: 
+                      CVar: 
+                        TIdentifier: row_pointer
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CSubscript: 
+                    CSubscript: 
+                      CSubscript: 
+                        CVar: 
+                          TIdentifier: nested_array
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 100
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

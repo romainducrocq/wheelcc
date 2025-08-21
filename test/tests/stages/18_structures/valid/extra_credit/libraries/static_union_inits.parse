@@ -178,4 +178,598 @@ CProgram:
           TULong: 67108864
           List[0]: 
           Int: 
-        N
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_simple
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CEqual: 
+                    CDot: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: s
+                        None: 
+                      None: 
+                    CUnary: 
+                      CNegate: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 39
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CEqual: 
+                    CDot: 
+                      TIdentifier: i
+                      CVar: 
+                        TIdentifier: s
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 217
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_has_union
+        List[0]: 
+        CB: 
+          List[1]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CAnd: 
+                    CBinary: 
+                      CEqual: 
+                      CDot: 
+                        TIdentifier: c
+                        CDot: 
+                          TIdentifier: u
+                          CVar: 
+                            TIdentifier: h
+                            None: 
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 77
+                        None: 
+                      None: 
+                    CBinary: 
+                      CEqual: 
+                      CDot: 
+                        TIdentifier: c
+                        CVar: 
+                          TIdentifier: h
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 77
+                        None: 
+                      None: 
+                    None: 
+                  CBinary: 
+                    CEqual: 
+                    CDot: 
+                      TIdentifier: i
+                      CDot: 
+                        TIdentifier: u
+                        CVar: 
+                          TIdentifier: h
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 77
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_has_union_array
+        List[0]: 
+        CB: 
+          List[5]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: expected
+                            CSingleInit: 
+                              CBinary: 
+                                CAdd: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 97
+                                  None: 
+                                CVar: 
+                                  TIdentifier: i
+                                  None: 
+                                None: 
+                              None: 
+                            Int: 
+                            None: 
+                      CS: 
+                        CIf: 
+                          CBinary: 
+                            COr: 
+                            CBinary: 
+                              COr: 
+                              CBinary: 
+                                CNotEqual: 
+                                CDot: 
+                                  TIdentifier: c
+                                  CDot: 
+                                    TIdentifier: u
+                                    CSubscript: 
+                                      CDot: 
+                                        TIdentifier: union_array
+                                        CVar: 
+                                          TIdentifier: my_struct
+                                          None: 
+                                        None: 
+                                      CVar: 
+                                        TIdentifier: i
+                                        None: 
+                                      None: 
+                                    None: 
+                                  None: 
+                                CVar: 
+                                  TIdentifier: expected
+                                  None: 
+                                None: 
+                              CBinary: 
+                                CNotEqual: 
+                                CDot: 
+                                  TIdentifier: c
+                                  CSubscript: 
+                                    CDot: 
+                                      TIdentifier: union_array
+                                      CVar: 
+                                        TIdentifier: my_struct
+                                        None: 
+                                      None: 
+                                    CVar: 
+                                      TIdentifier: i
+                                      None: 
+                                    None: 
+                                  None: 
+                                CVar: 
+                                  TIdentifier: expected
+                                  None: 
+                                None: 
+                              None: 
+                            CBinary: 
+                              CNotEqual: 
+                              CDot: 
+                                TIdentifier: i
+                                CDot: 
+                                  TIdentifier: u
+                                  CSubscript: 
+                                    CDot: 
+                                      TIdentifier: union_array
+                                      CVar: 
+                                        TIdentifier: my_struct
+                                        None: 
+                                      None: 
+                                    CVar: 
+                                      TIdentifier: i
+                                      None: 
+                                    None: 
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: expected
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CReturn: 
+                                    CConstant: 
+                                      CConstInt: 
+                                        TInt: 0
+                                      None: 
+                          None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: u
+                      CSubscript: 
+                        CDot: 
+                          TIdentifier: union_array
+                          CVar: 
+                            TIdentifier: my_struct
+                            None: 
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 3
+                          None: 
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: c
+                    CVar: 
+                      TIdentifier: my_struct
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 35
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: c
+                      CDot: 
+                        TIdentifier: s
+                        CVar: 
+                          TIdentifier: my_struct
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 33
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: i
+                      CDot: 
+                        TIdentifier: s
+                        CVar: 
+                          TIdentifier: my_struct
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 33
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_uninitialized
+        List[0]: 
+        CB: 
+          List[2]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: u
+                      CVar: 
+                        TIdentifier: all_zeros
+                        None: 
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 0.000000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_padded_union_array
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: strcmp
+                    List[2]: 
+                      CDot: 
+                        TIdentifier: arr
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: padded_union_array
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          None: 
+                        None: 
+                      CString: 
+                        CStringLiteral: 
+                          List[12]: 
+                            TChar: 102
+                            TChar: 105
+                            TChar: 114
+                            TChar: 115
+                            TChar: 116
+                            TChar: 32
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 105
+                            TChar: 110
+                            TChar: 103
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: strcmp
+                    List[2]: 
+                      CDot: 
+                        TIdentifier: arr
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: padded_union_array
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          None: 
+                        None: 
+                      CString: 
+                        CStringLiteral: 
+                          List[9]: 
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 105
+                            TChar: 110
+                            TChar: 103
+                            TChar: 32
+                            TChar: 35
+                            TChar: 50
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: strcmp
+                    List[2]: 
+                      CDot: 
+                        TIdentifier: arr
+                        CSubscript: 
+                          CVar: 
+                            TIdentifier: padded_union_array
+                            None: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          None: 
+                        None: 
+                      CString: 
+                        CStringLiteral: 
+                          List[9]: 
+                            TChar: 115
+                            TChar: 116
+                            TChar: 114
+                            TChar: 105
+                            TChar: 110
+                            TChar: 103
+                            TChar: 32
+                            TChar: 35
+                            TChar: 51
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 1
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

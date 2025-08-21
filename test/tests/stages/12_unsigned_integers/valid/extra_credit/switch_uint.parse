@@ -1,0 +1,163 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: switch_on_uint
+        List[1]: 
+          TIdentifier: ui
+        CB: 
+          List[1]: 
+            CS: 
+              CSwitch: 
+                TIdentifier: (null)
+                Bool: 0
+                CVar: 
+                  TIdentifier: ui
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[4]: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstUInt: 
+                              TUInt: 5
+                            None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstLong: 
+                              TLong: 4294967286
+                            None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 1
+                              None: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstULong: 
+                              TULong: 34359738378
+                            None: 
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 2
+                              None: 
+                      CS: 
+                        CDefault: 
+                          TIdentifier: (null)
+                          CReturn: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 3
+                              None: 
+                List[0]: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            UInt: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: switch_on_uint
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: switch_on_uint
+                    List[1]: 
+                      CConstant: 
+                        CConstLong: 
+                          TLong: 4294967286
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 1
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                None: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CFunctionCall: 
+                    TIdentifier: switch_on_uint
+                    List[1]: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 10
+                        None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 2
+                    None: 
+                  None: 
+                CReturn: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 3
+                    None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

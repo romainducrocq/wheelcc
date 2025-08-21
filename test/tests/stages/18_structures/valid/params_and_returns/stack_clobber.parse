@@ -149,4 +149,1996 @@ CProgram:
                               CConstInt: 
                                 TInt: 0
                               None: 
-                    
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 0
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_int_reg
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: one_int_reg
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: one_int_struct
+        None: 
+        Structure: 
+          TIdentifier: one_int_reg
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_one_int_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 7
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CSubscript: 
+                            CDot: 
+                              TIdentifier: cs
+                              CVar: 
+                                TIdentifier: one_int_struct
+                                None: 
+                              None: 
+                            CVar: 
+                              TIdentifier: i
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: exit
+                                      List[1]: 
+                                        CVar: 
+                                          TIdentifier: code
+                                          None: 
+                                      None: 
+                          None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_int_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: one_int_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_int_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_one_int_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 2
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_int_regs
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: cs
+            Array: 
+              TLong: 15
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_two_int_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[15]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 20
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 21
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 22
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 23
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 24
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 25
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 26
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 27
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 28
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 29
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 30
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 31
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 32
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 33
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 34
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: two_int_regs
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: two_int_regs
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: two_int_struct
+        None: 
+        Structure: 
+          TIdentifier: two_int_regs
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_two_int_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 15
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CIf: 
+                  CBinary: 
+                    CNotEqual: 
+                    CSubscript: 
+                      CDot: 
+                        TIdentifier: cs
+                        CVar: 
+                          TIdentifier: two_int_struct
+                          None: 
+                        None: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      None: 
+                    CBinary: 
+                      CAdd: 
+                      CVar: 
+                        TIdentifier: i
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 20
+                        None: 
+                      None: 
+                    None: 
+                  CCompound: 
+                    CB: 
+                      List[1]: 
+                        CS: 
+                          CExpression: 
+                            CFunctionCall: 
+                              TIdentifier: exit
+                              List[1]: 
+                                CVar: 
+                                  TIdentifier: code
+                                  None: 
+                              None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_int_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: two_int_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_two_int_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 3
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_two_int_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: one_xmm_reg
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_one_xmm_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 234.500000
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: one_xmm_reg
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: one_xmm_reg
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: one_double_struct
+        None: 
+        Structure: 
+          TIdentifier: one_xmm_reg
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_one_double_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  CNotEqual: 
+                  CDot: 
+                    TIdentifier: d
+                    CVar: 
+                      TIdentifier: one_double_struct
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstDouble: 
+                      TDouble: 234.500000
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code
+                                None: 
+                            None: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_one_double_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: one_double_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_one_xmm_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_one_double_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 6
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: two_xmm_regs
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: d1
+            Double: 
+          CMemberDeclaration: 
+            TIdentifier: d2
+            Double: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_two_xmm_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 234.500000
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 678.250000
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: two_xmm_regs
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: two_xmm_regs
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: two_doubles_struct
+        None: 
+        Structure: 
+          TIdentifier: two_xmm_regs
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_two_doubles_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: d1
+                      CVar: 
+                        TIdentifier: two_doubles_struct
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 234.500000
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: d2
+                      CVar: 
+                        TIdentifier: two_doubles_struct
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 678.250000
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code
+                                None: 
+                            None: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_two_doubles_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: two_doubles_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_two_xmm_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 7
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_two_doubles_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: int_and_xmm
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: c
+            Char: 
+          CMemberDeclaration: 
+            TIdentifier: d
+            Double: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_mixed_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 125
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 678.250000
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: int_and_xmm
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: int_and_xmm
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: mixed_struct
+        None: 
+        Structure: 
+          TIdentifier: int_and_xmm
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_mixed_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CIf: 
+                CBinary: 
+                  COr: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: c
+                      CVar: 
+                        TIdentifier: mixed_struct
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 125
+                      None: 
+                    None: 
+                  CBinary: 
+                    CNotEqual: 
+                    CDot: 
+                      TIdentifier: d
+                      CVar: 
+                        TIdentifier: mixed_struct
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 678.250000
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CExpression: 
+                          CFunctionCall: 
+                            TIdentifier: exit
+                            List[1]: 
+                              CVar: 
+                                TIdentifier: code
+                                None: 
+                            None: 
+                None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_mixed_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: mixed_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_mixed_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 9
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_mixed_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 10
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: stack
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: cs
+            Array: 
+              TLong: 28
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_stack_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[28]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 90
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 91
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 92
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 93
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 94
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 95
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 96
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 97
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 98
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 99
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 100
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 101
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 102
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 103
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 104
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 105
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 106
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 107
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 108
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 109
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 110
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 111
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 112
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 113
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 114
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 115
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 116
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 117
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: stack
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: stack_struct
+        None: 
+        Structure: 
+          TIdentifier: stack
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_stack_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 28
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: cs
+                                CVar: 
+                                  TIdentifier: stack_struct
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 90
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: exit
+                                      List[1]: 
+                                        CVar: 
+                                          TIdentifier: code
+                                          None: 
+                                      None: 
+                          None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_stack_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: stack_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_stack_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 11
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 12
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: stack_irregular
+        Bool: 0
+        List[1]: 
+          CMemberDeclaration: 
+            TIdentifier: cs
+            Array: 
+              TLong: 19
+              Char: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: return_irregular_stack_struct
+        List[0]: 
+        CB: 
+          List[2]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: retval
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[19]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 70
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 71
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 72
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 73
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 74
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 75
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 76
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 77
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 78
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 79
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 80
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 81
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 82
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 83
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 84
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 85
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 86
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 87
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 88
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_irregular
+                    Bool: 0
+                  None: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: retval
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Structure: 
+            TIdentifier: stack_irregular
+            Bool: 0
+        None: 
+    CVarDecl: 
+      CVariableDeclaration: 
+        TIdentifier: irregular_stack_struct
+        None: 
+        Structure: 
+          TIdentifier: stack_irregular
+          Bool: 0
+        CStatic: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: validate_irregular_stack_struct
+        List[1]: 
+          TIdentifier: code
+        CB: 
+          List[1]: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 19
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CIf: 
+                          CBinary: 
+                            CNotEqual: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: cs
+                                CVar: 
+                                  TIdentifier: irregular_stack_struct
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 70
+                                None: 
+                              None: 
+                            None: 
+                          CCompound: 
+                            CB: 
+                              List[1]: 
+                                CS: 
+                                  CExpression: 
+                                    CFunctionCall: 
+                                      TIdentifier: exit
+                                      List[1]: 
+                                        CVar: 
+                                          TIdentifier: code
+                                          None: 
+                                      None: 
+                          None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[1]: 
+            Int: 
+          Void: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: test_irregular_stack_struct
+        List[0]: 
+        CB: 
+          List[6]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: bytes
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[15]: 
+                              TChar: 101
+                              TChar: 102
+                              TChar: 103
+                              TChar: 104
+                              TChar: 105
+                              TChar: 106
+                              TChar: 107
+                              TChar: 108
+                              TChar: 109
+                              TChar: 110
+                              TChar: 111
+                              TChar: 112
+                              TChar: 113
+                              TChar: 114
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: stack_bytes
+                    Bool: 0
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: irregular_stack_struct
+                    None: 
+                  CFunctionCall: 
+                    TIdentifier: return_irregular_stack_struct
+                    List[0]: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: to_validate
+                    None: 
+                  CVar: 
+                    TIdentifier: bytes
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_stack_bytes
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 13
+                      None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: validate_irregular_stack_struct
+                  List[1]: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 14
+                      None: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[8]: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_int_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_two_int_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_one_double_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_two_doubles_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_mixed_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_stack_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CExpression: 
+                CFunctionCall: 
+                  TIdentifier: test_irregular_stack_struct
+                  List[0]: 
+                  None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

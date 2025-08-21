@@ -2124,4 +2124,1233 @@ CProgram:
                     List[1]: 
                       CS: 
                         CReturn: 
-                          CConsta
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 15
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ts
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 120
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 5550000.000000
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: two_structs
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_two_structs
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ts
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 16
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hnbs
+                  None: 
+                  Structure: 
+                    TIdentifier: has_nine_byte_struct
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: s
+                      CVar: 
+                        TIdentifier: hnbs
+                        None: 
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 16711936
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CFor: 
+                TIdentifier: (null)
+                CInitDecl: 
+                  CVariableDeclaration: 
+                    TIdentifier: i
+                    CSingleInit: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 0
+                        None: 
+                      None: 
+                    Int: 
+                    None: 
+                CBinary: 
+                  CLessThan: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    None: 
+                  None: 
+                CAssignment: 
+                  None: 
+                  CVar: 
+                    TIdentifier: i
+                    None: 
+                  CBinary: 
+                    CAdd: 
+                    CVar: 
+                      TIdentifier: i
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[2]: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: byte
+                            CSingleInit: 
+                              CConditional: 
+                                CBinary: 
+                                  CRemainder: 
+                                  CVar: 
+                                    TIdentifier: i
+                                    None: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 2
+                                    None: 
+                                  None: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    None: 
+                                  None: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 0
+                                  None: 
+                                None: 
+                              None: 
+                            Char: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CSubscript: 
+                              CDot: 
+                                TIdentifier: arr
+                                CDot: 
+                                  TIdentifier: s
+                                  CVar: 
+                                    TIdentifier: hnbs
+                                    None: 
+                                  None: 
+                                None: 
+                              CVar: 
+                                TIdentifier: i
+                                None: 
+                              None: 
+                            CVar: 
+                              TIdentifier: byte
+                              None: 
+                            None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: arr
+                      CDot: 
+                        TIdentifier: s
+                        CVar: 
+                          TIdentifier: hnbs
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_nine_byte_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hnbs
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 17
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: huu
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CUnary: 
+                          CNegate: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2147483647
+                            None: 
+                          None: 
+                        None: 
+                      CCompoundInit: 
+                        List[1]: 
+                          CSingleInit: 
+                            CString: 
+                              CStringLiteral: 
+                                List[4]: 
+                                  TChar: 33
+                                  TChar: 64
+                                  TChar: 35
+                                  TChar: 36
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: has_uneven_union
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_uneven_union
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: huu
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 18
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hou
+                  None: 
+                  Structure: 
+                    TIdentifier: has_other_unions
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: n
+                    CVar: 
+                      TIdentifier: hou
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: hnbs
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: arr
+                      CDot: 
+                        TIdentifier: s
+                        CDot: 
+                          TIdentifier: n
+                          CVar: 
+                            TIdentifier: hou
+                            None: 
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 4
+                      None: 
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 0
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_other_unions
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hou
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 19
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ua
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 20.000000
+                                    None: 
+                                  None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CSingleInit: 
+                                CUnary: 
+                                  CNegate: 
+                                  CConstant: 
+                                    CConstDouble: 
+                                      TDouble: 30.000000
+                                    None: 
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: union_array
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ua
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 20
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: uua
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[4]: 
+                                      TChar: 81
+                                      TChar: 87
+                                      TChar: 69
+                                      TChar: 82
+                                  None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[1]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[4]: 
+                                      TChar: 84
+                                      TChar: 89
+                                      TChar: 85
+                                      TChar: 73
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: uneven_union_array
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_uneven_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: uua
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 21
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: hssa
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 65
+                                      TChar: 83
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 10
+                                  None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 68
+                                      TChar: 70
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 11
+                                  None: 
+                                None: 
+                            None: 
+                          CCompoundInit: 
+                            List[2]: 
+                              CSingleInit: 
+                                CString: 
+                                  CStringLiteral: 
+                                    List[2]: 
+                                      TChar: 71
+                                      TChar: 72
+                                  None: 
+                                None: 
+                              CSingleInit: 
+                                CConstant: 
+                                  CConstInt: 
+                                    TInt: 12
+                                  None: 
+                                None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: has_small_struct_array
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_small_struct_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: hssa
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 22
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: gax
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 11.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstInt: 
+                                TInt: 12
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: gp_and_xmm
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_gp_and_xmm
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: gax
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 23
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: sas
+                  None: 
+                  Structure: 
+                    TIdentifier: scalar_and_struct
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: c
+                    CDot: 
+                      TIdentifier: cfe
+                      CVar: 
+                        TIdentifier: sas
+                        None: 
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 5
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: cfe
+                      CVar: 
+                        TIdentifier: sas
+                        None: 
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 88.800000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_scalar_and_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: sas
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 24
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: htu
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: cim
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: od
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: has_two_unions
+                    Bool: 0
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_has_two_unions
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: htu
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 25
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: ssaad
+                  None: 
+                  Structure: 
+                    TIdentifier: small_struct_arr_and_dbl
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: arr
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: ssaad
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 22.000000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: arr
+                      CDot: 
+                        TIdentifier: d
+                        CVar: 
+                          TIdentifier: ssaad
+                          None: 
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 32.000000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_small_struct_arr_and_dbl
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: ssaad
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 26
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xag
+                  None: 
+                  Structure: 
+                    TIdentifier: xmm_and_gp
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: d
+                    CDot: 
+                      TIdentifier: ise
+                      CVar: 
+                        TIdentifier: xag
+                        None: 
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 8.000000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: i
+                    CDot: 
+                      TIdentifier: ise
+                      CVar: 
+                        TIdentifier: xag
+                        None: 
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 8
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_xmm_and_gp
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: xag
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 27
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: xagn
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CVar: 
+                          TIdentifier: xag
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: xmm_and_gp_nested
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_xmm_and_gp_nested
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: xagn
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 28
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: dbls
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[3]: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 99.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 98.000000
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 97.000000
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: lotsa_doubles
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_lotsa_doubles
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: dbls
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 29
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: chars
+                  CCompoundInit: 
+                    List[1]: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[14]: 
+                              TChar: 97
+                              TChar: 115
+                              TChar: 102
+                              TChar: 108
+                              TChar: 97
+                              TChar: 107
+                              TChar: 106
+                              TChar: 115
+                              TChar: 100
+                              TChar: 102
+                              TChar: 108
+                              TChar: 107
+                              TChar: 106
+                              TChar: 115
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: lotsa_chars
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_lotsa_chars
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: chars
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 30
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: large_struct
+                  CCompoundInit: 
+                    List[3]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 100
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstDouble: 
+                            TDouble: 100.000000
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CString: 
+                          CStringLiteral: 
+                            List[9]: 
+                              TChar: 65
+                              TChar: 32
+                              TChar: 115
+                              TChar: 116
+                              TChar: 114
+                              TChar: 117
+                              TChar: 99
+                              TChar: 116
+                              TChar: 33
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: large
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: cls
+                  None: 
+                  Structure: 
+                    TIdentifier: contains_large_struct
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CDot: 
+                    TIdentifier: l
+                    CVar: 
+                      TIdentifier: cls
+                      None: 
+                    None: 
+                  CVar: 
+                    TIdentifier: large_struct
+                    None: 
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_contains_large_struct
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: cls
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 31
+                            None: 
+                None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: gax2
+                  CSingleInit: 
+                    CVar: 
+                      TIdentifier: gax
+                      None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: gp_and_xmm
+                    Bool: 1
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: d_arr
+                      CVar: 
+                        TIdentifier: gax2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 2.000000
+                      None: 
+                    None: 
+                  None: 
+            CS: 
+              CExpression: 
+                CAssignment: 
+                  None: 
+                  CSubscript: 
+                    CDot: 
+                      TIdentifier: d_arr
+                      CVar: 
+                        TIdentifier: gax2
+                        None: 
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 1
+                      None: 
+                    None: 
+                  CUnary: 
+                    CNegate: 
+                    CConstant: 
+                      CConstDouble: 
+                        TDouble: 1.000000
+                      None: 
+                    None: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: cua
+                  CCompoundInit: 
+                    List[1]: 
+                      CCompoundInit: 
+                        List[2]: 
+                          CSingleInit: 
+                            CVar: 
+                              TIdentifier: gax
+                              None: 
+                            None: 
+                          CSingleInit: 
+                            CVar: 
+                              TIdentifier: gax2
+                              None: 
+                            None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: contains_union_array
+                    Bool: 1
+                  None: 
+            CS: 
+              CIf: 
+                CUnary: 
+                  CNot: 
+                  CFunctionCall: 
+                    TIdentifier: test_contains_union_array
+                    List[1]: 
+                      CVar: 
+                        TIdentifier: cua
+                        None: 
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CReturn: 
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 32
+                            None: 
+                None: 
+            CS: 
+              CReturn: 
+                CConstant: 
+                  CConstInt: 
+                    TInt: 0
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

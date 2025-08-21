@@ -1,0 +1,287 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[2]: 
+    CStructDecl: 
+      CStructDeclaration: 
+        TIdentifier: s
+        Bool: 0
+        List[2]: 
+          CMemberDeclaration: 
+            TIdentifier: a
+            Int: 
+          CMemberDeclaration: 
+            TIdentifier: b
+            Int: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: my_struct
+                  CCompoundInit: 
+                    List[2]: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 1
+                          None: 
+                        None: 
+                      CSingleInit: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 2
+                          None: 
+                        None: 
+                    None: 
+                  Structure: 
+                    TIdentifier: s
+                    Bool: 0
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: result
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CSwitch: 
+                TIdentifier: (null)
+                Bool: 0
+                CDot: 
+                  TIdentifier: a
+                  CVar: 
+                    TIdentifier: my_struct
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[13]: 
+                      CD: 
+                        CStructDecl: 
+                          CStructDeclaration: 
+                            TIdentifier: s
+                            Bool: 0
+                            List[3]: 
+                              CMemberDeclaration: 
+                                TIdentifier: x
+                                Double: 
+                              CMemberDeclaration: 
+                                TIdentifier: y
+                                Double: 
+                              CMemberDeclaration: 
+                                TIdentifier: z
+                                Double: 
+                      CD: 
+                        CVarDecl: 
+                          CVariableDeclaration: 
+                            TIdentifier: my_struct
+                            None: 
+                            Structure: 
+                              TIdentifier: s
+                              Bool: 0
+                            None: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 1
+                            None: 
+                          CExpression: 
+                            CAssignment: 
+                              None: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstDouble: 
+                                  TDouble: 20.000000
+                                None: 
+                              None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDot: 
+                              TIdentifier: y
+                              CVar: 
+                                TIdentifier: my_struct
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 30.000000
+                              None: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: result
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CDot: 
+                                TIdentifier: y
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                      CS: 
+                        CBreak: 
+                          TIdentifier: (null)
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 2
+                            None: 
+                          CExpression: 
+                            CAssignment: 
+                              None: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstDouble: 
+                                  TDouble: 11.000000
+                                None: 
+                              None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDot: 
+                              TIdentifier: y
+                              CVar: 
+                                TIdentifier: my_struct
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 12.000000
+                              None: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: result
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CDot: 
+                                TIdentifier: y
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                      CS: 
+                        CBreak: 
+                          TIdentifier: (null)
+                      CS: 
+                        CDefault: 
+                          TIdentifier: (null)
+                          CExpression: 
+                            CAssignment: 
+                              None: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstDouble: 
+                                  TDouble: 0.000000
+                                None: 
+                              None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CDot: 
+                              TIdentifier: y
+                              CVar: 
+                                TIdentifier: my_struct
+                                None: 
+                              None: 
+                            CConstant: 
+                              CConstDouble: 
+                                TDouble: 0.000000
+                              None: 
+                            None: 
+                      CS: 
+                        CExpression: 
+                          CAssignment: 
+                            None: 
+                            CVar: 
+                              TIdentifier: result
+                              None: 
+                            CBinary: 
+                              CAdd: 
+                              CDot: 
+                                TIdentifier: x
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              CDot: 
+                                TIdentifier: y
+                                CVar: 
+                                  TIdentifier: my_struct
+                                  None: 
+                                None: 
+                              None: 
+                            None: 
+                List[0]: 
+            CS: 
+              CReturn: 
+                CVar: 
+                  TIdentifier: result
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 

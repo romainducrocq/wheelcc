@@ -1,0 +1,248 @@
+-- Lexing ... OK
+-- Parsing ... OK
++
++
+@@ C AST @@
+CProgram: 
+  List[1]: 
+    CFunDecl: 
+      CFunctionDeclaration: 
+        TIdentifier: main
+        List[0]: 
+        CB: 
+          List[4]: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: count
+                  CSingleInit: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 37
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CD: 
+              CVarDecl: 
+                CVariableDeclaration: 
+                  TIdentifier: iterations
+                  CSingleInit: 
+                    CBinary: 
+                      CDivide: 
+                      CBinary: 
+                        CAdd: 
+                        CVar: 
+                          TIdentifier: count
+                          None: 
+                        CConstant: 
+                          CConstInt: 
+                            TInt: 4
+                          None: 
+                        None: 
+                      CConstant: 
+                        CConstInt: 
+                          TInt: 5
+                        None: 
+                      None: 
+                    None: 
+                  Int: 
+                  None: 
+            CS: 
+              CSwitch: 
+                TIdentifier: (null)
+                Bool: 0
+                CBinary: 
+                  CRemainder: 
+                  CVar: 
+                    TIdentifier: count
+                    None: 
+                  CConstant: 
+                    CConstInt: 
+                      TInt: 5
+                    None: 
+                  None: 
+                CCompound: 
+                  CB: 
+                    List[1]: 
+                      CS: 
+                        CCase: 
+                          TIdentifier: (null)
+                          CConstant: 
+                            CConstInt: 
+                              TInt: 0
+                            None: 
+                          CDoWhile: 
+                            TIdentifier: (null)
+                            CBinary: 
+                              CGreaterThan: 
+                              CAssignment: 
+                                None: 
+                                CVar: 
+                                  TIdentifier: iterations
+                                  None: 
+                                CBinary: 
+                                  CSubtract: 
+                                  CVar: 
+                                    TIdentifier: iterations
+                                    None: 
+                                  CConstant: 
+                                    CConstInt: 
+                                      TInt: 1
+                                    None: 
+                                  None: 
+                                None: 
+                              CConstant: 
+                                CConstInt: 
+                                  TInt: 0
+                                None: 
+                              None: 
+                            CCompound: 
+                              CB: 
+                                List[5]: 
+                                  CS: 
+                                    CExpression: 
+                                      CAssignment: 
+                                        None: 
+                                        CVar: 
+                                          TIdentifier: count
+                                          None: 
+                                        CBinary: 
+                                          CSubtract: 
+                                          CVar: 
+                                            TIdentifier: count
+                                            None: 
+                                          CConstant: 
+                                            CConstInt: 
+                                              TInt: 1
+                                            None: 
+                                          None: 
+                                        None: 
+                                  CS: 
+                                    CCase: 
+                                      TIdentifier: (null)
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 4
+                                        None: 
+                                      CExpression: 
+                                        CAssignment: 
+                                          None: 
+                                          CVar: 
+                                            TIdentifier: count
+                                            None: 
+                                          CBinary: 
+                                            CSubtract: 
+                                            CVar: 
+                                              TIdentifier: count
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 1
+                                              None: 
+                                            None: 
+                                          None: 
+                                  CS: 
+                                    CCase: 
+                                      TIdentifier: (null)
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 3
+                                        None: 
+                                      CExpression: 
+                                        CAssignment: 
+                                          None: 
+                                          CVar: 
+                                            TIdentifier: count
+                                            None: 
+                                          CBinary: 
+                                            CSubtract: 
+                                            CVar: 
+                                              TIdentifier: count
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 1
+                                              None: 
+                                            None: 
+                                          None: 
+                                  CS: 
+                                    CCase: 
+                                      TIdentifier: (null)
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 2
+                                        None: 
+                                      CExpression: 
+                                        CAssignment: 
+                                          None: 
+                                          CVar: 
+                                            TIdentifier: count
+                                            None: 
+                                          CBinary: 
+                                            CSubtract: 
+                                            CVar: 
+                                              TIdentifier: count
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 1
+                                              None: 
+                                            None: 
+                                          None: 
+                                  CS: 
+                                    CCase: 
+                                      TIdentifier: (null)
+                                      CConstant: 
+                                        CConstInt: 
+                                          TInt: 1
+                                        None: 
+                                      CExpression: 
+                                        CAssignment: 
+                                          None: 
+                                          CVar: 
+                                            TIdentifier: count
+                                            None: 
+                                          CBinary: 
+                                            CSubtract: 
+                                            CVar: 
+                                              TIdentifier: count
+                                              None: 
+                                            CConstant: 
+                                              CConstInt: 
+                                                TInt: 1
+                                              None: 
+                                            None: 
+                                          None: 
+                List[0]: 
+            CS: 
+              CReturn: 
+                CBinary: 
+                  CAnd: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: count
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  CBinary: 
+                    CEqual: 
+                    CVar: 
+                      TIdentifier: iterations
+                      None: 
+                    CConstant: 
+                      CConstInt: 
+                        TInt: 0
+                      None: 
+                    None: 
+                  None: 
+        FunType: 
+          TULong: 67108864
+          TULong: 67108864
+          List[0]: 
+          Int: 
+        None: 
