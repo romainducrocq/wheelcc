@@ -67,9 +67,21 @@ static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
     }
 }
 
-static void debug_ast(Ctx ctx, Ast* node, const char* name) {
+static void debug_c_ast(Ctx ctx, CProgram* node) {
     if (ctx->is_verbose) {
-        pprint_ast(ctx->identifiers, node, name);
+        pprint_c_ast(ctx->identifiers, node);
+    }
+}
+
+static void debug_tac_ast(Ctx ctx, TacProgram* node) {
+    if (ctx->is_verbose) {
+        pprint_tac_ast(ctx->identifiers, node);
+    }
+}
+
+static void debug_asm_ast(Ctx ctx, AsmProgram* node) {
+    if (ctx->is_verbose) {
+        pprint_asm_ast(ctx->identifiers, node);
     }
 }
 
@@ -200,7 +212,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
-        debug_ast(ctx, c_ast.get(), "C AST");
+        debug_c_ast(ctx, c_ast.get());
         EARLY_EXIT;
     }
 #endif
@@ -210,7 +222,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 253) {
-        debug_ast(ctx, c_ast.get(), "C AST");
+        debug_c_ast(ctx, c_ast.get());
         debug_string_const_table(ctx);
         debug_struct_typedef_table(ctx);
         debug_symbol_table(ctx);
@@ -227,7 +239,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 252) {
-        debug_ast(ctx, tac_ast.get(), "TAC AST");
+        debug_tac_ast(ctx, tac_ast.get());
         debug_string_const_table(ctx);
         debug_struct_typedef_table(ctx);
         debug_symbol_table(ctx);
@@ -246,7 +258,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 251) {
-        debug_ast(ctx, asm_ast.get(), "ASM AST");
+        debug_asm_ast(ctx, asm_ast.get());
         debug_addressed_set(ctx);
         debug_string_const_table(ctx);
         debug_struct_typedef_table(ctx);
