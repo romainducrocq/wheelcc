@@ -24,7 +24,7 @@ The wheelcc C compiler supports a large subset of C17 (International Standard IS
 wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
 - [x] Replace throwing exceptions in user error handling with progragating error codes
-- [ ] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
+- [x] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
 - [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
 - [ ] Replace smart pointers with manual memory management for runtime polymorphism
 
@@ -33,7 +33,7 @@ wheelcc is implemented in C++, but wouldn't it be nice if it was written in plai
 ### Distros
 
 The tip of `master` branch has passed all tests and validation for these GNU/Linux distributions (x86-64):  
-Debian GNU/Linux 12|Linux Mint 22|Ubuntu 22.04.5 LTS|openSUSE Leap 15.6|Rocky Linux 9.5|Arch Linux|EndeavourOS Linux|
+Debian GNU/Linux 12|Linux Mint 22.1|Ubuntu 24.04.3 LTS|openSUSE Leap 15.6|Rocky Linux 10.0|Arch Linux|EndeavourOS Linux|
 :---:|:---:|:---:|:---:|:---:|:---:|:---:|
 :heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|:heavy_check_mark:|
 
@@ -235,7 +235,7 @@ There is no built-in linker, the compiler outputs assembly that is then assemble
 
 > **TL;DR** No dependencies are required other than the system tools already installed.
 
-wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a header-only dependency included in the sources ([tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
+wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a few header-only dependencies included in the sources ([sds](https://github.com/antirez/sds), [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h) and [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
 
 ### Limitations
 
