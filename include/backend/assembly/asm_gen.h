@@ -12,7 +12,13 @@ typedef struct IdentifierContext IdentifierContext;
 
 // Assembly generation
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 std::unique_ptr<AsmProgram> generate_assembly(
     std::unique_ptr<TacProgram>* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
