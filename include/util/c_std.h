@@ -5,7 +5,9 @@
 #include "stb_ds/stb_ds.h"
 #include <inttypes.h>
 // TODO
+#ifdef __cplusplus
 #include <new>
+#endif
 #include <stdbool.h>
 #include <stddef.h>
 

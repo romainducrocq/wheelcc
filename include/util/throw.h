@@ -24,7 +24,7 @@ typedef struct FileOpenLine {
 } FileOpenLine;
 
 typedef struct ErrorsContext {
-    ErrorsContext* errors;
+    struct ErrorsContext* errors;
     FileIoContext* fileio;
     // Throw
     char msg[1024];

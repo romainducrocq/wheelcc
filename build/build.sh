@@ -57,7 +57,7 @@ SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/backend/emitter/gas_code.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/fileio.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/pprint.cpp"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/str2t.cpp"
-SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/throw.cpp"
+SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/src/util/throw.c"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/lib/sds/sds.c"
 SOURCE_FILES="${SOURCE_FILES} ${PROJECT_DIR}/lib/stb_ds/stb_ds.c"
 
