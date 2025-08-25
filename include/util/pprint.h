@@ -17,6 +17,9 @@ typedef struct IdentifierContext IdentifierContext;
 
 // Pretty print
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens);
 void pprint_c_ast(IdentifierContext* ctx, CProgram* node);
 void pprint_tac_ast(IdentifierContext* ctx, TacProgram* node);
@@ -26,6 +29,9 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
 void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend);
 void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend);
 void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 #endif

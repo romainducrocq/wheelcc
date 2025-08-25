@@ -49,11 +49,15 @@ typedef struct ErrorsContext {
     while (0)
 
 #ifdef __cplusplus
+extern "C" {
 [[noreturn]]
 #else
 _Noreturn
 #endif
 void raise_sigabrt(const char* func, const char* file, int line);
+#ifdef __cplusplus
+}
+#endif
 #define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
 #ifdef __NDEBUG__
 #define THROW_ABORT_IF(X)
@@ -63,9 +67,15 @@ void raise_sigabrt(const char* func, const char* file, int line);
     THROW_ABORT
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void raise_init_error(ErrorsContext* ctx);
 void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
 size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
+#ifdef __cplusplus
+}
+#endif
 #define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
 #define THROW_INIT(...)                                                               \
     do {                                                                              \

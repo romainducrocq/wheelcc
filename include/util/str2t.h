@@ -12,6 +12,9 @@ typedef struct ErrorsContext ErrorsContext;
 
 // String to type
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 int32_t intmax_to_int32(intmax_t intmax);
 int64_t intmax_to_int64(intmax_t intmax);
 uint32_t uintmax_to_uint32(uintmax_t uintmax);
@@ -26,5 +29,8 @@ uint64_t dbl_to_binary(double decimal);
 error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, intmax_t* value);
 error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, uintmax_t* value);
 error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, double* value);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -28,6 +28,9 @@ typedef struct FileIoContext {
     vector_t(FileRead) file_reads;
 } FileIoContext;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 bool find_file(const char* filename);
 const char* get_filename(FileIoContext* ctx);
 void set_filename(FileIoContext* ctx, const string_t filename);
@@ -38,5 +41,8 @@ void write_buffer(FileIoContext* ctx, const char* buf);
 error_t close_fread(FileIoContext* ctx, size_t linenum);
 void close_fwrite(FileIoContext* ctx);
 void free_fileio(FileIoContext* ctx);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
