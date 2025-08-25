@@ -104,12 +104,12 @@ struct Dummy : Ast {
 
 PairKeyValue(TIdentifier, string_t);
 
-struct IdentifierContext {
+typedef struct IdentifierContext {
     uint32_t label_count;
     uint32_t var_count;
     uint32_t struct_count;
     hashmap_t(TIdentifier, string_t) hash_table;
-};
+} IdentifierContext;
 
 TIdentifier make_string_identifier(IdentifierContext* ctx, string_t* value);
 TIdentifier make_label_identifier(IdentifierContext* ctx, string_t* name);

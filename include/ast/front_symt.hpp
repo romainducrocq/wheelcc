@@ -327,12 +327,12 @@ typedef std::unique_ptr<Symbol> UPtrSymbol;
 PairKeyValue(TIdentifier, UPtrSymbol);
 ElementKey(TIdentifier);
 
-struct FrontEndContext {
+typedef struct FrontEndContext {
     hashmap_t(TIdentifier, TIdentifier) string_const_table;
     hashmap_t(TIdentifier, UPtrStructTypedef) struct_typedef_table;
     hashmap_t(TIdentifier, UPtrSymbol) symbol_table;
     hashset_t(TIdentifier) addressed_set;
-};
+} FrontEndContext;
 
 StructMember* get_struct_typedef_member(FrontEndContext* ctx, TIdentifier tag, TIdentifier member_name);
 StructMember* get_struct_typedef_back(FrontEndContext* ctx, TIdentifier tag);

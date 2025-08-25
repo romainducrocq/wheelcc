@@ -3,10 +3,10 @@
 
 #include "util/throw.hpp"
 
-struct CProgram;
-struct ErrorsContext;
-struct FrontEndContext;
-struct IdentifierContext;
+typedef struct CProgram CProgram;
+typedef struct ErrorsContext ErrorsContext;
+typedef struct FrontEndContext FrontEndContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

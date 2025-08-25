@@ -3,9 +3,9 @@
 
 #include <inttypes.h>
 
-struct AsmProgram;
-struct BackEndContext;
-struct FrontEndContext;
+typedef struct AsmProgram AsmProgram;
+typedef struct BackEndContext BackEndContext;
+typedef struct FrontEndContext FrontEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

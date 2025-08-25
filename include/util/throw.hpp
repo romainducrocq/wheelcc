@@ -7,7 +7,7 @@
 
 #include "util/c_std.hpp"
 
-struct FileIoContext;
+typedef struct FileIoContext FileIoContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,13 +17,13 @@ typedef int error_t;
 typedef size_t hash_t;
 PairKeyValue(hash_t, size_t);
 
-struct FileOpenLine {
+typedef struct FileOpenLine {
     size_t linenum;
     size_t total_linenum;
     string_t filename;
-};
+} FileOpenLine;
 
-struct ErrorsContext {
+typedef struct ErrorsContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
     // Throw
@@ -32,7 +32,7 @@ struct ErrorsContext {
     size_t linebuf;
     hashmap_t(hash_t, size_t) linebuf_map;
     vector_t(FileOpenLine) fopen_lines;
-};
+} ErrorsContext;
 
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval

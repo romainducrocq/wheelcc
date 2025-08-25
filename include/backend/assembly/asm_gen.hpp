@@ -3,10 +3,10 @@
 
 #include <memory>
 
-struct TacProgram;
-struct AsmProgram;
-struct FrontEndContext;
-struct IdentifierContext;
+typedef struct TacProgram TacProgram;
+typedef struct AsmProgram AsmProgram;
+typedef struct FrontEndContext FrontEndContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

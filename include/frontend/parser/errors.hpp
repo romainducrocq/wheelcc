@@ -12,13 +12,13 @@
 
 #include "intermediate/messages.hpp" // frontend
 
-struct Token;
-struct Type;
-struct CConst;
-struct CUnaryOp;
-struct CBinaryOp;
-struct CStorageClass;
-struct IdentifierContext;
+typedef struct Token Token;
+typedef struct Type Type;
+typedef struct CConst CConst;
+typedef struct CUnaryOp CUnaryOp;
+typedef struct CBinaryOp CBinaryOp;
+typedef struct CStorageClass CStorageClass;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -5,9 +5,9 @@
 
 #include "ast_t.hpp" // ast
 
-struct AsmBinary;
-struct AsmProgram;
-struct BackEndContext;
+typedef struct AsmBinary AsmBinary;
+typedef struct AsmProgram AsmProgram;
+typedef struct BackEndContext BackEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

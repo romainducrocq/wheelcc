@@ -3,10 +3,10 @@
 
 #include <memory>
 
-struct AsmProgram;
-struct BackEndContext;
-struct FileIoContext;
-struct IdentifierContext;
+typedef struct AsmProgram AsmProgram;
+typedef struct BackEndContext BackEndContext;
+typedef struct FileIoContext FileIoContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -7,10 +7,10 @@
 
 #include "assembly/regs.hpp" // backend
 
-struct AsmReg;
-struct AsmRegister;
-struct AsmMemory;
-struct AsmIndexed;
+typedef struct AsmReg AsmReg;
+typedef struct AsmRegister AsmRegister;
+typedef struct AsmMemory AsmMemory;
+typedef struct AsmIndexed AsmIndexed;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

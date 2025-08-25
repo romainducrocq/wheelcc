@@ -5,8 +5,8 @@
 
 #include "intermediate/labels.hpp" // frontend
 
-struct CExp;
-struct IdentifierContext;
+typedef struct CExp CExp;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

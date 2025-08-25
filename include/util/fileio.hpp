@@ -6,27 +6,27 @@
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
 
-struct ErrorsContext;
+typedef struct ErrorsContext ErrorsContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // File io
 
-struct FileRead {
+typedef struct FileRead {
     size_t len;
     char* buf;
     FILE* fd;
     string_t filename;
-};
+} FileRead;
 
-struct FileIoContext {
+typedef struct FileIoContext {
     ErrorsContext* errors;
     // File io
     FILE* fd_write;
     string_t write_buf;
     string_t filename;
     vector_t(FileRead) file_reads;
-};
+} FileIoContext;
 
 bool find_file(const char* filename);
 const char* get_filename(FileIoContext* ctx);

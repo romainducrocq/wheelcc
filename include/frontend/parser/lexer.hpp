@@ -8,19 +8,19 @@
 
 #include "parser/tokens.hpp" // frontend
 
-struct ErrorsContext;
-struct FileIoContext;
-struct IdentifierContext;
+typedef struct ErrorsContext ErrorsContext;
+typedef struct FileIoContext FileIoContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Lexer
 
-struct Token {
+typedef struct Token {
     TOKEN_KIND tok_kind;
     TIdentifier tok;
     size_t line;
-};
+} Token;
 
 error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
     FileIoContext* fileio, IdentifierContext* identifiers, vector_t(Token) * tokens);

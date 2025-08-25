@@ -6,10 +6,10 @@
 #include "util/c_std.hpp"
 #include "util/throw.hpp"
 
-struct Token;
-struct CProgram;
-struct ErrorsContext;
-struct IdentifierContext;
+typedef struct Token Token;
+typedef struct CProgram CProgram;
+typedef struct ErrorsContext ErrorsContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

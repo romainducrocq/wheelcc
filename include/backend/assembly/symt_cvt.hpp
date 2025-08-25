@@ -5,11 +5,11 @@
 
 #include "ast_t.hpp" // ast
 
-struct Type;
-struct AssemblyType;
-struct AsmProgram;
-struct BackEndContext;
-struct FrontEndContext;
+typedef struct Type Type;
+typedef struct AssemblyType AssemblyType;
+typedef struct AsmProgram AsmProgram;
+typedef struct BackEndContext BackEndContext;
+typedef struct FrontEndContext FrontEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

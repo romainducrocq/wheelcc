@@ -86,8 +86,8 @@ struct Dummy : Ast {
 typedef std::unique_ptr<BackendSymbol> UPtrBackendSymbol;
 PairKeyValue(TIdentifier, UPtrBackendSymbol);
 
-struct BackEndContext {
+typedef struct BackEndContext {
     hashmap_t(TIdentifier, UPtrBackendSymbol) symbol_table;
-};
+} BackEndContext;
 
 #endif

@@ -3,8 +3,8 @@
 
 #include <inttypes.h>
 
-struct TacProgram;
-struct FrontEndContext;
+typedef struct TacProgram TacProgram;
+typedef struct FrontEndContext FrontEndContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

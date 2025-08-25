@@ -4,14 +4,14 @@
 #ifndef __NDEBUG__
 #include "util/c_std.hpp"
 
-struct Token;
-struct Ast;
-struct CProgram;
-struct TacProgram;
-struct AsmProgram;
-struct BackEndContext;
-struct FrontEndContext;
-struct IdentifierContext;
+typedef struct Token Token;
+typedef struct Ast Ast;
+typedef struct CProgram CProgram;
+typedef struct TacProgram TacProgram;
+typedef struct AsmProgram AsmProgram;
+typedef struct BackEndContext BackEndContext;
+typedef struct FrontEndContext FrontEndContext;
+typedef struct IdentifierContext IdentifierContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
