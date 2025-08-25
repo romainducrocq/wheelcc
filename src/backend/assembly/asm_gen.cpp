@@ -1212,7 +1212,7 @@ static void quad_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset) {
 }
 
 static void long_stack_arg_call_instr(
-    Ctx ctx, TIdentifier name, TLong offset, std::shared_ptr<AssemblyType>&& asm_type) {
+    Ctx ctx, TIdentifier name, TLong offset, std::shared_ptr<AssemblyType>* asm_type) {
     std::shared_ptr<AsmOperand> src;
     {
         TIdentifier src_name = name;
@@ -1224,7 +1224,7 @@ static void long_stack_arg_call_instr(
         std::shared_ptr<AsmOperand> dst_cp = dst;
         push_instr(ctx, std::make_unique<AsmPush>(std::move(dst_cp)));
     }
-    std::shared_ptr<AssemblyType> asm_type_src = std::move(asm_type);
+    std::shared_ptr<AssemblyType> asm_type_src = std::move(*asm_type);
     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
 }
 
@@ -1280,7 +1280,7 @@ static void stack_8b_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, Str
             bytearr_stack_arg_call_instr(ctx, name, offset, static_cast<ByteArray*>(asm_type.get()));
             break;
         default:
-            long_stack_arg_call_instr(ctx, name, offset, std::move(asm_type));
+            long_stack_arg_call_instr(ctx, name, offset, &asm_type);
             break;
     }
 }
