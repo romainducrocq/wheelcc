@@ -483,22 +483,22 @@ static std::unique_ptr<TacPlainOperand> binary_res_instr(Ctx ctx, CBinary* node)
     }
 }
 
-static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, std::shared_ptr<TacValue>& dst) {
+static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, std::shared_ptr<TacValue>* dst) {
     std::shared_ptr<TacValue> src = res->val;
-    std::shared_ptr<TacValue> dst_cp = dst;
+    std::shared_ptr<TacValue> dst_cp = *dst;
     push_instr(ctx, std::make_unique<TacCopy>(std::move(src), std::move(dst_cp)));
 }
 
-static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, std::shared_ptr<TacValue>& dst) {
+static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, std::shared_ptr<TacValue>* dst) {
     std::shared_ptr<TacValue> src = res->val;
-    std::shared_ptr<TacValue> dst_cp = dst;
+    std::shared_ptr<TacValue> dst_cp = *dst;
     push_instr(ctx, std::make_unique<TacLoad>(std::move(src), std::move(dst_cp)));
 }
 
-static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, std::shared_ptr<TacValue>& dst) {
+static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, std::shared_ptr<TacValue>* dst) {
     TIdentifier src_name = res->base_name;
     TLong offset = res->offset;
-    std::shared_ptr<TacValue> dst_cp = dst;
+    std::shared_ptr<TacValue> dst_cp = *dst;
     push_instr(ctx, std::make_unique<TacCopyFromOffset>(src_name, offset, std::move(dst_cp)));
 }
 
@@ -577,13 +577,13 @@ static std::unique_ptr<TacExpResult> assign_res_instr(Ctx ctx, CAssignment* node
                 std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
                 switch (res->type()) {
                     case AST_TacPlainOperand_t:
-                        plain_op_postfix_exp_instr(ctx, static_cast<TacPlainOperand*>(res.get()), dst);
+                        plain_op_postfix_exp_instr(ctx, static_cast<TacPlainOperand*>(res.get()), &dst);
                         break;
                     case AST_TacDereferencedPointer_t:
-                        deref_ptr_postfix_exp_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), dst);
+                        deref_ptr_postfix_exp_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), &dst);
                         break;
                     case AST_TacSubObject_t:
-                        sub_obj_postfix_exp_instr(ctx, static_cast<TacSubObject*>(res.get()), dst);
+                        sub_obj_postfix_exp_instr(ctx, static_cast<TacSubObject*>(res.get()), &dst);
                         break;
                     default:
                         THROW_ABORT;
@@ -1160,7 +1160,7 @@ static void statement_instr(Ctx ctx, CStatement* node) {
     }
 }
 
-static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong& size);
+static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size);
 
 static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TIdentifier symbol, TLong size) {
     size_t byte_at = 0;
@@ -1242,39 +1242,39 @@ static void single_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIden
     }
 }
 
-static void scalar_compound_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
+static void scalar_compound_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
     if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
         string_single_init_instr(
-            ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, size);
+            ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, *size);
     }
     else {
         TIdentifier dst_name = symbol;
-        TLong offset = size;
+        TLong offset = *size;
         std::shared_ptr<TacValue> src = repr_exp_instr(ctx, node->exp.get());
         push_instr(ctx, std::make_unique<TacCopyToOffset>(dst_name, offset, std::move(src)));
     }
 }
 
-static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong& size) {
+static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong* size) {
     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
         compound_init_instr(ctx, node->initializers[i].get(), arr_type->elem_type.get(), symbol, size);
         if (node->initializers[i]->type() == AST_CSingleInit_t) {
-            size += get_type_scale(ctx, arr_type->elem_type.get());
+            *size += get_type_scale(ctx, arr_type->elem_type.get());
         }
     }
 }
 
 static void struct_compound_init_instr(
-    Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong& size) {
+    Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong* size) {
     for (size_t i = vec_size(node->initializers); i-- > 0;) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-        TLong offset = size + member->offset;
-        compound_init_instr(ctx, node->initializers[i].get(), member->member_type.get(), symbol, offset);
+        TLong offset = *size + member->offset;
+        compound_init_instr(ctx, node->initializers[i].get(), member->member_type.get(), symbol, &offset);
     }
-    size += get_type_scale(ctx, struct_type);
+    *size += get_type_scale(ctx, struct_type);
 }
 
-static void aggr_compound_init_instr(Ctx ctx, CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong& size) {
+static void aggr_compound_init_instr(Ctx ctx, CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
     switch (init_type->type()) {
         case AST_Array_t:
             arr_compound_init_instr(ctx, node, static_cast<Array*>(init_type), symbol, size);
@@ -1287,7 +1287,7 @@ static void aggr_compound_init_instr(Ctx ctx, CCompoundInit* node, Type* init_ty
     }
 }
 
-static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong& size) {
+static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size) {
     switch (node->type()) {
         case AST_CSingleInit_t:
             scalar_compound_init_instr(ctx, static_cast<CSingleInit*>(node), init_type, symbol, size);
@@ -1309,7 +1309,7 @@ static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
         case AST_CCompoundInit_t: {
             TLong size = 0l;
             aggr_compound_init_instr(ctx, static_cast<CCompoundInit*>(node->init.get()),
-                map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name, size);
+                map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name, &size);
             break;
         }
         default:
