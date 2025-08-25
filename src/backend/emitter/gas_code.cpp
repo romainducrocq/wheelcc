@@ -1054,7 +1054,7 @@ static void emit_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, BackEndContext* backend, FileIoContext* fileio,
+void emit_gas_code(std::unique_ptr<AsmProgram>* asm_ast, BackEndContext* backend, FileIoContext* fileio,
     IdentifierContext* identifiers) {
     GasCodeContext ctx;
     {
@@ -1062,6 +1062,6 @@ void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, BackEndContext* backen
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
     }
-    emit_program(&ctx, asm_ast.get());
-    asm_ast.reset();
+    emit_program(&ctx, asm_ast->get());
+    asm_ast->reset();
 }

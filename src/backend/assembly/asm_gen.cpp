@@ -2727,7 +2727,7 @@ static std::unique_ptr<AsmProgram> gen_program(Ctx ctx, TacProgram* node) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<AsmProgram> generate_assembly(
-    std::unique_ptr<TacProgram>&& tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
+    std::unique_ptr<TacProgram>* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
     AsmGenContext ctx;
     {
         ctx.frontend = frontend;
@@ -2752,9 +2752,9 @@ std::unique_ptr<AsmProgram> generate_assembly(
         ctx.dbl_const_table = map_new();
         ctx.struct_8b_cls_map = map_new();
     }
-    std::unique_ptr<AsmProgram> asm_ast = gen_program(&ctx, tac_ast.get());
+    std::unique_ptr<AsmProgram> asm_ast = gen_program(&ctx, tac_ast->get());
 
-    tac_ast.reset();
+    tac_ast->reset();
     THROW_ABORT_IF(!asm_ast);
     map_delete(ctx.dbl_const_table);
     for (size_t i = 0; i < map_size(ctx.struct_8b_cls_map); ++i) {

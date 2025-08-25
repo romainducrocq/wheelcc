@@ -12,7 +12,7 @@ struct IdentifierContext;
 
 // Gnu assembler code emission
 
-void emit_gas_code(std::unique_ptr<AsmProgram>&& asm_ast, BackEndContext* backend, FileIoContext* fileio,
+void emit_gas_code(std::unique_ptr<AsmProgram>* asm_ast, BackEndContext* backend, FileIoContext* fileio,
     IdentifierContext* identifiers);
 
 #endif

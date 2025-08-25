@@ -231,7 +231,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- TAC representation ... ");
-    tac_ast = represent_three_address_code(std::move(c_ast), &frontend, &identifiers);
+    tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
         verbose(ctx, "OK\n-- Level 1 optimization ... ");
         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
@@ -248,7 +248,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Assembly generation ... ");
-    asm_ast = generate_assembly(std::move(tac_ast), &frontend, &identifiers);
+    asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
     convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
         verbose(ctx, "OK\n-- Level 2 optimization ... ");
@@ -271,7 +271,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     verbose(ctx, "-- Code emission ... ");
     set_filename_ext(ctx, "s");
     TRY(open_fwrite(fileio, ctx->filename));
-    emit_gas_code(std::move(asm_ast), &backend, fileio, &identifiers);
+    emit_gas_code(&asm_ast, &backend, fileio, &identifiers);
     close_fwrite(fileio);
     verbose(ctx, "OK\n");
 
