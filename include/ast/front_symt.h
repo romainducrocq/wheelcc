@@ -334,7 +334,13 @@ typedef struct FrontEndContext {
     hashset_t(TIdentifier) addressed_set;
 } FrontEndContext;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 StructMember* get_struct_typedef_member(FrontEndContext* ctx, TIdentifier tag, TIdentifier member_name);
 StructMember* get_struct_typedef_back(FrontEndContext* ctx, TIdentifier tag);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

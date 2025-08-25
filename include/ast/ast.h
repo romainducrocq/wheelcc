@@ -111,10 +111,16 @@ typedef struct IdentifierContext {
     hashmap_t(TIdentifier, string_t) hash_table;
 } IdentifierContext;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 TIdentifier make_string_identifier(IdentifierContext* ctx, string_t* value);
 TIdentifier make_label_identifier(IdentifierContext* ctx, string_t* name);
 TIdentifier make_var_identifier(IdentifierContext* ctx, string_t* name);
 TIdentifier make_struct_identifier(IdentifierContext* ctx, string_t* name);
+#ifdef __cplusplus
+}
+#endif
 #define UID_SEPARATOR "."
 
 #endif
