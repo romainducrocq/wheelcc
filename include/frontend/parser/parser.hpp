@@ -15,7 +15,7 @@ struct IdentifierContext;
 
 // Parser
 
-error_t parse_tokens(vector_t(Token) * tokens, ErrorsContext* errors, IdentifierContext* identifiers,
-    return_t(std::unique_ptr<CProgram>) c_ast);
+error_t parse_tokens(
+    vector_t(Token) * tokens, ErrorsContext* errors, IdentifierContext* identifiers, std::unique_ptr<CProgram>* c_ast);
 
 #endif

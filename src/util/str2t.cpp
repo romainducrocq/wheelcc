@@ -214,7 +214,7 @@ uint64_t dbl_to_binary(double decimal) {
     return binary;
 }
 
-error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, return_t(intmax_t) value) {
+error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, intmax_t* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtoimax(str_int, &end_ptr, 10);
@@ -225,7 +225,7 @@ error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, r
     CATCH_EXIT;
 }
 
-error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, return_t(uintmax_t) value) {
+error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, uintmax_t* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtoumax(str_uint, &end_ptr, 10);
@@ -236,7 +236,7 @@ error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line,
     CATCH_EXIT;
 }
 
-error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, return_t(double) value) {
+error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, double* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtod(str_dbl, &end_ptr);

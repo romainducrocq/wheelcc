@@ -34,7 +34,6 @@ struct ErrorsContext {
     vector_t(FileOpenLine) fopen_lines;
 };
 
-#define return_t(X) X*
 #define CATCH_ENTER error_t _errval = 0
 #define CATCH_EXIT return _errval
 #define EARLY_EXIT goto _Lfinally

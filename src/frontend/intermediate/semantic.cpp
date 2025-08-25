@@ -362,7 +362,7 @@ static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
     }
 }
 
-static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, return_t(std::shared_ptr<Type>) joint_type) {
+static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, std::shared_ptr<Type>* joint_type) {
     string_t type_fmt_1 = str_new(NULL);
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
@@ -636,7 +636,7 @@ static error_t check_cast_exp(Ctx ctx, CCast* node) {
     CATCH_EXIT;
 }
 
-static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>* exp_type, return_t(std::unique_ptr<CExp>) exp) {
+static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>* exp_type, std::unique_ptr<CExp>* exp) {
     std::shared_ptr<Type> exp_type_cp;
     CATCH_ENTER;
     size_t line = (*exp)->line;
@@ -647,7 +647,7 @@ static error_t cast_exp(Ctx ctx, std::shared_ptr<Type>* exp_type, return_t(std::
     CATCH_EXIT;
 }
 
-static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>* exp_type, return_t(std::unique_ptr<CExp>) exp) {
+static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>* exp_type, std::unique_ptr<CExp>* exp) {
     string_t type_fmt_1 = str_new(NULL);
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
@@ -673,7 +673,7 @@ static error_t cast_assign(Ctx ctx, std::shared_ptr<Type>* exp_type, return_t(st
     CATCH_EXIT;
 }
 
-static error_t promote_char_to_int(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+static error_t promote_char_to_int(Ctx ctx, std::unique_ptr<CExp>* exp) {
     std::shared_ptr<Type> promote_type;
     CATCH_ENTER;
     promote_type = std::make_shared<Int>();
@@ -1354,7 +1354,7 @@ static error_t check_struct_typed_exp(Ctx ctx, CExp* node) {
     CATCH_EXIT;
 }
 
-static error_t check_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+static error_t check_typed_exp(Ctx ctx, std::unique_ptr<CExp>* exp) {
     CATCH_ENTER;
     switch ((*exp)->exp_type->type()) {
         case AST_Array_t:
@@ -2198,7 +2198,7 @@ static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_
 }
 
 static error_t check_initializer(
-    Ctx ctx, CInitializer* node, Type* static_init_type, return_t(std::shared_ptr<InitialValue>) init_value) {
+    Ctx ctx, CInitializer* node, Type* static_init_type, std::shared_ptr<InitialValue>* init_value) {
     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
     CATCH_ENTER;
     {
@@ -2708,7 +2708,7 @@ static error_t reslv_struct_type(Ctx ctx, Type* type) {
 }
 
 static error_t reslv_exp(Ctx ctx, CExp* node);
-static error_t reslv_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp);
+static error_t reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>* exp);
 
 static void reslv_const_exp(CConstant* node) { check_const_exp(node); }
 
@@ -2913,7 +2913,7 @@ static error_t reslv_exp(Ctx ctx, CExp* node) {
     CATCH_EXIT;
 }
 
-static error_t reslv_typed_exp(Ctx ctx, return_t(std::unique_ptr<CExp>) exp) {
+static error_t reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>* exp) {
     CATCH_ENTER;
     TRY(reslv_exp(ctx, exp->get()));
     TRY(check_typed_exp(ctx, exp));
