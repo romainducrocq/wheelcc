@@ -5,7 +5,7 @@
 #include <stdnoreturn.h>
 #endif
 
-#include "util/c_std.hpp"
+#include "util/c_std.h"
 
 typedef struct FileIoContext FileIoContext;
 

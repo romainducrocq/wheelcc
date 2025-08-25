@@ -1,9 +1,9 @@
 #include <memory>
 
-#include "util/c_std.hpp"
+#include "util/c_std.h"
 
-#include "ast/ast.hpp"
-#include "ast/back_symt.hpp"
+#include "ast/ast.h"
+#include "ast/back_symt.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

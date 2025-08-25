@@ -4,9 +4,9 @@
 #include <stdnoreturn.h>
 #endif
 
-#include "util/c_std.hpp"
-#include "util/fileio.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/fileio.h"
+#include "util/throw.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

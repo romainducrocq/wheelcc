@@ -1,36 +1,36 @@
 #ifndef __NDEBUG__
-#include "util/pprint.hpp"
+#include "util/pprint.h"
 #endif
 #include <inttypes.h>
 #include <memory>
 #include <stdio.h>
 
-#include "util/c_std.hpp"
-#include "util/fileio.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/fileio.h"
+#include "util/throw.h"
 
-#include "ast/ast.hpp"
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/front_ast.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/interm_ast.hpp"
+#include "ast/ast.h"
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
+#include "ast/front_ast.h"
+#include "ast/front_symt.h"
+#include "ast/interm_ast.h"
 
-#include "frontend/parser/errors.hpp"
-#include "frontend/parser/lexer.hpp"
-#include "frontend/parser/parser.hpp"
+#include "frontend/parser/errors.h"
+#include "frontend/parser/lexer.h"
+#include "frontend/parser/parser.h"
 
-#include "frontend/intermediate/semantic.hpp"
-#include "frontend/intermediate/tac_repr.hpp"
+#include "frontend/intermediate/semantic.h"
+#include "frontend/intermediate/tac_repr.h"
 
-#include "backend/assembly/asm_gen.hpp"
-#include "backend/assembly/stack_fix.hpp"
-#include "backend/assembly/symt_cvt.hpp"
+#include "backend/assembly/asm_gen.h"
+#include "backend/assembly/stack_fix.h"
+#include "backend/assembly/symt_cvt.h"
 
-#include "backend/emitter/gas_code.hpp"
+#include "backend/emitter/gas_code.h"
 
-#include "optimization/optim_tac.hpp"
-#include "optimization/reg_alloc.hpp"
+#include "optimization/optim_tac.h"
+#include "optimization/reg_alloc.h"
 
 typedef struct MainContext {
     ErrorsContext* errors;

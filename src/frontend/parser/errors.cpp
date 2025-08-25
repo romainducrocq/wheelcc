@@ -1,12 +1,12 @@
-#include "util/c_std.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/throw.h"
 
-#include "ast/ast.hpp"
-#include "ast/front_ast.hpp"
-#include "ast/front_symt.hpp"
+#include "ast/ast.h"
+#include "ast/front_ast.h"
+#include "ast/front_symt.h"
 
-#include "frontend/parser/errors.hpp"
-#include "frontend/parser/lexer.hpp"
+#include "frontend/parser/errors.h"
+#include "frontend/parser/lexer.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

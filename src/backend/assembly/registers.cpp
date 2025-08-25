@@ -1,10 +1,10 @@
 #include <memory>
 
-#include "util/throw.hpp"
+#include "util/throw.h"
 
-#include "ast/back_ast.hpp"
+#include "ast/back_ast.h"
 
-#include "backend/assembly/registers.hpp"
+#include "backend/assembly/registers.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

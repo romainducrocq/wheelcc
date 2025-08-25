@@ -1,14 +1,14 @@
 #include <memory>
 
-#include "util/c_std.hpp"
-#include "util/fileio.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/fileio.h"
+#include "util/throw.h"
 
-#include "ast/ast.hpp"
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
+#include "ast/ast.h"
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
 
-#include "backend/emitter/gas_code.hpp"
+#include "backend/emitter/gas_code.h"
 
 typedef struct GasCodeContext {
     BackEndContext* backend;

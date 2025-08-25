@@ -1,15 +1,15 @@
 #include <memory>
 
-#include "util/c_std.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/throw.h"
 
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/front_symt.hpp"
-#include "ast_t.hpp" // ast
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
+#include "ast/front_symt.h"
+#include "ast_t.h" // ast
 
-#include "assembly/regs.hpp" // backend
-#include "backend/assembly/symt_cvt.hpp"
+#include "assembly/regs.h" // backend
+#include "backend/assembly/symt_cvt.h"
 
 typedef struct SymtCvtContext {
     BackEndContext* backend;

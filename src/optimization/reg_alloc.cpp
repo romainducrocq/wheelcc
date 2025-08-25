@@ -2,17 +2,17 @@
 #include <memory>
 #include <string.h>
 
-#include "util/c_std.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/throw.h"
 
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/front_symt.hpp"
-#include "ast_t.hpp" // ast
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
+#include "ast/front_symt.h"
+#include "ast_t.h" // ast
 
-#include "backend/assembly/registers.hpp"
+#include "backend/assembly/registers.h"
 
-#include "optimization/reg_alloc.hpp"
+#include "optimization/reg_alloc.h"
 
 typedef TULong mask_t;
 
@@ -66,7 +66,7 @@ typedef struct RegAllocContext {
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 2
 #undef _OPTIMIZATION_IMPL_OLVL_H
-#include "impl_olvl.hpp" // optimization
+#include "impl_olvl.h" // optimization
 #undef __OPTIM_LEVEL__
 #endif
 

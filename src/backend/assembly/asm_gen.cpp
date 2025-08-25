@@ -1,19 +1,19 @@
 #include <memory>
 
-#include "util/c_std.hpp"
-#include "util/str2t.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/str2t.h"
+#include "util/throw.h"
 
-#include "ast/ast.hpp"
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/interm_ast.hpp"
+#include "ast/ast.h"
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
+#include "ast/front_symt.h"
+#include "ast/interm_ast.h"
 
-#include "backend/assembly/asm_gen.hpp"
-#include "backend/assembly/registers.hpp"
-#include "backend/assembly/stack_fix.hpp"
-#include "backend/assembly/symt_cvt.hpp"
+#include "backend/assembly/asm_gen.h"
+#include "backend/assembly/registers.h"
+#include "backend/assembly/stack_fix.h"
+#include "backend/assembly/symt_cvt.h"
 
 typedef enum STRUCT_8B_CLS {
     CLS_integer,

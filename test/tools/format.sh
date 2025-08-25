@@ -27,13 +27,13 @@ fi
 if [ ! -z "${1}" ]; then
     format ${1}
 else
-    for FILE in $(find ${ROOT}/include/ -name "*.hpp" -type f | sort --uniq); do
+    for FILE in $(find ${ROOT}/include/ -name "*.h" -type f | sort --uniq); do
         format ${FILE}
     done
     for FILE in $(find ${ROOT}/src/ -name "*.cpp" -type f | sort --uniq); do
         format ${FILE}
     done
-    for FILE in $(find ${ROOT}/src/ -name "*.hpp" -type f | sort --uniq); do
+    for FILE in $(find ${ROOT}/src/ -name "*.h" -type f | sort --uniq); do
         format ${FILE}
     done
 fi

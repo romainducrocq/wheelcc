@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "util/c_std.hpp"
-#include "util/str2t.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/str2t.h"
+#include "util/throw.h"
 
-#include "frontend/parser/errors.hpp"
+#include "frontend/parser/errors.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

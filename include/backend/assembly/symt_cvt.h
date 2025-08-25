@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "ast_t.hpp" // ast
+#include "ast_t.h" // ast
 
 typedef struct Type Type;
 typedef struct AssemblyType AssemblyType;

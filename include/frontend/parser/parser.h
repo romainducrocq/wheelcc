@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "util/c_std.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/throw.h"
 
 typedef struct Token Token;
 typedef struct CProgram CProgram;

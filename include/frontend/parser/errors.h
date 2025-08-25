@@ -3,14 +3,14 @@
 
 #include <stdio.h>
 
-#include "util/c_std.hpp"
+#include "util/c_std.h"
 
-#include "ast_t.hpp" // ast
+#include "ast_t.h" // ast
 
-#include "parser/messages.hpp" // frontend
-#include "parser/tokens.hpp"   // frontend
+#include "parser/messages.h" // frontend
+#include "parser/tokens.h"   // frontend
 
-#include "intermediate/messages.hpp" // frontend
+#include "intermediate/messages.h" // frontend
 
 typedef struct Token Token;
 typedef struct Type Type;

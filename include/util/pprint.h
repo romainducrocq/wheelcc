@@ -2,7 +2,7 @@
 #define _UTIL_PPRINT_H
 
 #ifndef __NDEBUG__
-#include "util/c_std.hpp"
+#include "util/c_std.h"
 
 typedef struct Token Token;
 typedef struct Ast Ast;

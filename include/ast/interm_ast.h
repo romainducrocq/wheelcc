@@ -3,10 +3,10 @@
 
 #include <memory>
 
-#include "util/c_std.hpp"
+#include "util/c_std.h"
 
-#include "ast/ast.hpp"
-#include "ast/front_symt.hpp"
+#include "ast/ast.h"
+#include "ast/front_symt.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

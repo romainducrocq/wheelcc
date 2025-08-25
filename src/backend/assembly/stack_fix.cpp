@@ -1,14 +1,14 @@
 #include <memory>
 
-#include "util/c_std.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/throw.h"
 
-#include "ast/back_ast.hpp"
-#include "ast/back_symt.hpp"
-#include "ast_t.hpp" // ast
+#include "ast/back_ast.h"
+#include "ast/back_symt.h"
+#include "ast_t.h" // ast
 
-#include "backend/assembly/registers.hpp"
-#include "backend/assembly/stack_fix.hpp"
+#include "backend/assembly/registers.h"
+#include "backend/assembly/stack_fix.h"
 
 PairKeyValue(TIdentifier, TLong);
 

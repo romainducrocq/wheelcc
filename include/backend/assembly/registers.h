@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "ast_t.hpp" // ast
+#include "ast_t.h" // ast
 
-#include "assembly/regs.hpp" // backend
+#include "assembly/regs.h" // backend
 
 typedef struct AsmReg AsmReg;
 typedef struct AsmRegister AsmRegister;

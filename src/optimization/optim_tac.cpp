@@ -2,16 +2,16 @@
 #include <memory>
 #include <string.h>
 
-#include "util/c_std.hpp"
-#include "util/str2t.hpp"
-#include "util/throw.hpp"
+#include "util/c_std.h"
+#include "util/str2t.h"
+#include "util/throw.h"
 
-#include "ast/front_ast.hpp"
-#include "ast/front_symt.hpp"
-#include "ast/interm_ast.hpp"
-#include "ast_t.hpp" // ast
+#include "ast/front_ast.h"
+#include "ast/front_symt.h"
+#include "ast/interm_ast.h"
+#include "ast_t.h" // ast
 
-#include "optimization/optim_tac.hpp"
+#include "optimization/optim_tac.h"
 
 typedef struct ControlFlowGraph ControlFlowGraph;
 typedef struct DataFlowAnalysis DataFlowAnalysis;
@@ -38,7 +38,7 @@ typedef struct OptimTacContext {
 #ifndef __OPTIM_LEVEL__
 #define __OPTIM_LEVEL__ 1
 #undef _OPTIMIZATION_IMPL_OLVL_H
-#include "impl_olvl.hpp" // optimization
+#include "impl_olvl.h" // optimization
 #undef __OPTIM_LEVEL__
 #endif
 

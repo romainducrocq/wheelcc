@@ -1,7 +1,7 @@
 #ifndef _FRONT_INTERMEDIATE_SEMANTIC_H
 #define _FRONT_INTERMEDIATE_SEMANTIC_H
 
-#include "util/throw.hpp"
+#include "util/throw.h"
 
 typedef struct CProgram CProgram;
 typedef struct ErrorsContext ErrorsContext;

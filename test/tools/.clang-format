@@ -75,22 +75,22 @@ ForEachMacros:
   - BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^"optimization/|^"impl_olvl.hpp"$'
+  - Regex:           '^"optimization/|^"impl_olvl.h"$'
     Priority:        8
     SortPriority:    0
-  - Regex:           '^"backend/emitter/|^"emitter/.+\.hpp"$'
+  - Regex:           '^"backend/emitter/|^"emitter/.+\.h"$'
     Priority:        7
     SortPriority:    0
-  - Regex:           '^"backend/assembly/|^"assembly/.+\.hpp"$'
+  - Regex:           '^"backend/assembly/|^"assembly/.+\.h"$'
     Priority:        6
     SortPriority:    0
-  - Regex:           '^"frontend/intermediate/|^"intermediate/.+\.hpp"$'
+  - Regex:           '^"frontend/intermediate/|^"intermediate/.+\.h"$'
     Priority:        5
     SortPriority:    0
-  - Regex:           '^"frontend/parser/|^"parser/.+\.hpp"$'
+  - Regex:           '^"frontend/parser/|^"parser/.+\.h"$'
     Priority:        4
     SortPriority:    0
-  - Regex:           '^"ast/|^"ast_t.hpp"$'
+  - Regex:           '^"ast/|^"ast_t.h"$'
     Priority:        3
     SortPriority:    0
   - Regex:           '^"util/'
