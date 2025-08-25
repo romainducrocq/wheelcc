@@ -17,6 +17,12 @@ typedef struct FrontEndContext FrontEndContext;
 // Copy propagation
 // Dead store elimination
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, uint8_t optim_1_mask);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
