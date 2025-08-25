@@ -53,6 +53,9 @@ typedef enum MESSAGE_UTIL {
     MSG_failed_strtod
 } MESSAGE_UTIL;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 const char* get_tok_kind_fmt(TOKEN_KIND tok_kind);
 const char* get_tok_fmt(IdentifierContext* ctx, Token* token);
 const char* get_const_fmt(CConst* node);
@@ -63,17 +66,26 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt);
 const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, string_t* struct_fmt);
 const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt);
+#ifdef __cplusplus
+}
+#endif
 #define str_fmt_tok(X) get_tok_fmt(ctx->identifiers, X)
 #define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
 #define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
 #define str_fmt_type(X, Y) get_type_fmt(ctx->identifiers, X, Y)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 const char* get_fatal_msg(MESSAGE_FATAL msg);
 const char* get_arg_msg(MESSAGE_ARG msg);
 const char* get_util_msg(MESSAGE_UTIL msg);
 const char* get_lexer_msg(MESSAGE_LEXER msg);
 const char* get_parser_msg(MESSAGE_PARSER msg);
 const char* get_semantic_msg(MESSAGE_SEMANTIC msg);
+#ifdef __cplusplus
+}
+#endif
 #define GET_FATAL_MSG(X, ...) get_fatal_msg(X), (int)X, __VA_ARGS__
 #define GET_ARG_MSG(X, ...) get_arg_msg(X), (int)X, __VA_ARGS__
 #define GET_UTIL_MSG(X, ...) get_util_msg(X), (int)X, __VA_ARGS__
