@@ -2,6 +2,8 @@
 #include "util/fileio.h"
 #include "util/throw.h"
 
+// TODO rm
+#define _LEXER_IMPL
 #include "ast/ast.h"
 
 #include "frontend/parser/errors.h"
@@ -735,7 +737,7 @@ static error_t tokenize_file(Ctx ctx) {
             break;
         Lcontinue:
             continue;
-        Lpass:
+        Lpass:;
             Token token = {match_kind, match_tok, ctx->total_linenum};
             vec_push_back(*ctx->p_toks, token);
         }
