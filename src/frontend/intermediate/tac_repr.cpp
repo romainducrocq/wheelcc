@@ -97,11 +97,11 @@ static std::shared_ptr<TacVariable> var_value(CVar* node) {
     return std::make_shared<TacVariable>(name);
 }
 
-static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>&& inner_type) {
+static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>* inner_type) {
     TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
     if (map_find(ctx->frontend->symbol_table, inner_name) == map_end()) {
         std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
-        std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(inner_type), std::move(inner_attrs));
+        std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(*inner_type), std::move(inner_attrs));
         map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
     }
     return std::make_shared<TacVariable>(inner_name);
@@ -109,12 +109,12 @@ static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::sh
 
 static std::shared_ptr<TacValue> plain_inner_value(Ctx ctx, CExp* node) {
     std::shared_ptr<Type> inner_type = node->exp_type;
-    return exp_inner_value(ctx, node, std::move(inner_type));
+    return exp_inner_value(ctx, node, &inner_type);
 }
 
 static std::shared_ptr<TacValue> ptr_inner_value(Ctx ctx, CExp* node) {
     std::shared_ptr<Type> inner_type = std::make_shared<Long>();
-    return exp_inner_value(ctx, node, std::move(inner_type));
+    return exp_inner_value(ctx, node, &inner_type);
 }
 
 // val = Constant(int) | Var(identifier)
@@ -502,26 +502,26 @@ static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, std::shared_pt
     push_instr(ctx, std::make_unique<TacCopyFromOffset>(src_name, offset, std::move(dst_cp)));
 }
 
-static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, std::shared_ptr<TacValue>&& src) {
+static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, std::shared_ptr<TacValue>* src) {
     std::shared_ptr<TacValue> dst = res->val;
-    push_instr(ctx, std::make_unique<TacCopy>(std::move(src), std::move(dst)));
+    push_instr(ctx, std::make_unique<TacCopy>(std::move(*src), std::move(dst)));
 }
 
 static std::unique_ptr<TacPlainOperand> deref_ptr_assign_res_instr(
-    Ctx ctx, TacDereferencedPointer* res, std::shared_ptr<TacValue>&& src) {
-    std::shared_ptr<TacValue> src_cp = src;
+    Ctx ctx, TacDereferencedPointer* res, std::shared_ptr<TacValue>* src) {
+    std::shared_ptr<TacValue> src_cp = *src;
     std::shared_ptr<TacValue> dst = std::move(res->val);
     push_instr(ctx, std::make_unique<TacStore>(std::move(src_cp), std::move(dst)));
-    return std::make_unique<TacPlainOperand>(std::move(src));
+    return std::make_unique<TacPlainOperand>(std::move(*src));
 }
 
 static std::unique_ptr<TacPlainOperand> sub_obj_assign_res_instr(
-    Ctx ctx, TacSubObject* res, std::shared_ptr<TacValue>&& src) {
+    Ctx ctx, TacSubObject* res, std::shared_ptr<TacValue>* src) {
     TIdentifier dst_name = res->base_name;
     TLong offset = res->offset;
-    std::shared_ptr<TacValue> src_cp = src;
+    std::shared_ptr<TacValue> src_cp = *src;
     push_instr(ctx, std::make_unique<TacCopyToOffset>(dst_name, offset, std::move(src_cp)));
-    return std::make_unique<TacPlainOperand>(std::move(src));
+    return std::make_unique<TacPlainOperand>(std::move(*src));
 }
 
 static std::unique_ptr<TacExpResult> assign_res_instr(Ctx ctx, CAssignment* node) {
@@ -594,14 +594,14 @@ static std::unique_ptr<TacExpResult> assign_res_instr(Ctx ctx, CAssignment* node
     }
     switch (res->type()) {
         case AST_TacPlainOperand_t:
-            plain_op_assign_res_instr(ctx, static_cast<TacPlainOperand*>(res.get()), std::move(src));
+            plain_op_assign_res_instr(ctx, static_cast<TacPlainOperand*>(res.get()), &src);
             break;
         case AST_TacDereferencedPointer_t: {
-            res = deref_ptr_assign_res_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), std::move(src));
+            res = deref_ptr_assign_res_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), &src);
             break;
         }
         case AST_TacSubObject_t: {
-            res = sub_obj_assign_res_instr(ctx, static_cast<TacSubObject*>(res.get()), std::move(src));
+            res = sub_obj_assign_res_instr(ctx, static_cast<TacSubObject*>(res.get()), &src);
             break;
         }
         default:
