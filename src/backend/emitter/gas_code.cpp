@@ -10,12 +10,12 @@
 
 #include "backend/emitter/gas_code.hpp"
 
-struct GasCodeContext {
+typedef struct GasCodeContext {
     BackEndContext* backend;
     FileIoContext* fileio;
     IdentifierContext* identifiers;
     // Gnu assembler code emission
-};
+} GasCodeContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -11,12 +11,12 @@
 #include "assembly/regs.hpp" // backend
 #include "backend/assembly/symt_cvt.hpp"
 
-struct SymtCvtContext {
+typedef struct SymtCvtContext {
     BackEndContext* backend;
     FrontEndContext* frontend;
     // Symbol table conversion
     TIdentifier symbol;
-};
+} SymtCvtContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

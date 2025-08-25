@@ -9,7 +9,7 @@
 
 ElementKey(hash_t);
 
-struct LexerContext {
+typedef struct LexerContext {
     ErrorsContext* errors;
     FileIoContext* fileio;
     IdentifierContext* identifiers;
@@ -23,7 +23,7 @@ struct LexerContext {
     vector_t(const char*) * p_includedirs;
     vector_t(Token) * p_toks;
     size_t total_linenum;
-};
+} LexerContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

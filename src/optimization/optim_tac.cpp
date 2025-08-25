@@ -13,11 +13,11 @@
 
 #include "optimization/optim_tac.hpp"
 
-struct ControlFlowGraph;
-struct DataFlowAnalysis;
-struct DataFlowAnalysisO1;
+typedef struct ControlFlowGraph ControlFlowGraph;
+typedef struct DataFlowAnalysis DataFlowAnalysis;
+typedef struct DataFlowAnalysisO1 DataFlowAnalysisO1;
 
-struct OptimTacContext {
+typedef struct OptimTacContext {
     FrontEndContext* frontend;
     // Constant folding
     // Unreachable code elimination
@@ -29,7 +29,7 @@ struct OptimTacContext {
     std::unique_ptr<DataFlowAnalysis> dfa;
     std::unique_ptr<DataFlowAnalysisO1> dfa_o1;
     vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
-};
+} OptimTacContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

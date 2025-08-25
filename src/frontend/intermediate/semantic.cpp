@@ -15,7 +15,7 @@
 
 PairKeyValue(TIdentifier, Structure);
 
-struct SemanticContext {
+typedef struct SemanticContext {
     ErrorsContext* errors;
     FrontEndContext* frontend;
     IdentifierContext* identifiers;
@@ -35,7 +35,7 @@ struct SemanticContext {
     hashset_t(TIdentifier) struct_def_set;
     hashset_t(TIdentifier) union_def_set;
     vector_t(std::shared_ptr<StaticInit>) * p_static_inits;
-};
+} SemanticContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -15,17 +15,17 @@
 
 #include "frontend/intermediate/idents.hpp"
 
-struct AbstractDeclarator {
+typedef struct AbstractDeclarator {
     std::shared_ptr<Type> derived_type;
-};
+} AbstractDeclarator;
 
-struct Declarator {
+typedef struct Declarator {
     TIdentifier name;
     std::shared_ptr<Type> derived_type;
     vector_t(TIdentifier) params;
-};
+} Declarator;
 
-struct ParserContext {
+typedef struct ParserContext {
     ErrorsContext* errors;
     IdentifierContext* identifiers;
     // Parser
@@ -35,7 +35,7 @@ struct ParserContext {
     Token* next_tok_i;
     Token* peek_tok_i;
     vector_t(Token) * p_toks;
-};
+} ParserContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

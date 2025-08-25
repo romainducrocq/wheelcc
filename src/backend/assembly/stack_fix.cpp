@@ -12,14 +12,14 @@
 
 PairKeyValue(TIdentifier, TLong);
 
-struct StackFixContext {
+typedef struct StackFixContext {
     BackEndContext* backend;
     // Pseudo register replacement
     TLong stack_bytes;
     hashmap_t(TIdentifier, TLong) pseudo_stack_map;
     // Instruction fix up
     vector_t(std::unique_ptr<AsmInstruction>) * p_fix_instrs;
-};
+} StackFixContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

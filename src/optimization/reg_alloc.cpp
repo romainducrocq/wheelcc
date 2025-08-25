@@ -16,31 +16,31 @@
 
 typedef TULong mask_t;
 
-struct ControlFlowGraph;
-struct DataFlowAnalysis;
-struct DataFlowAnalysisO2;
+typedef struct ControlFlowGraph ControlFlowGraph;
+typedef struct DataFlowAnalysis DataFlowAnalysis;
+typedef struct DataFlowAnalysisO2 DataFlowAnalysisO2;
 
-struct InferenceRegister {
+typedef struct InferenceRegister {
     REGISTER_KIND color;
     REGISTER_KIND reg_kind;
     size_t degree;
     size_t spill_cost;
     mask_t linked_hard_mask;
     vector_t(TIdentifier) linked_pseudo_names;
-};
+} InferenceRegister;
 
 PairKeyValue(TIdentifier, InferenceRegister);
 
-struct InferenceGraph {
+typedef struct InferenceGraph {
     size_t k;
     size_t offset;
     mask_t hard_reg_mask;
     vector_t(size_t) unpruned_hard_mask_bits;
     vector_t(TIdentifier) unpruned_pseudo_names;
     hashmap_t(TIdentifier, InferenceRegister) pseudo_reg_map;
-};
+} InferenceGraph;
 
-struct RegAllocContext {
+typedef struct RegAllocContext {
     BackEndContext* backend;
     FrontEndContext* frontend;
     // Register allocation
@@ -57,7 +57,7 @@ struct RegAllocContext {
     vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;
     // Register coalescing
     bool is_with_coal;
-};
+} RegAllocContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

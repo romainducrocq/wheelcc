@@ -16,15 +16,15 @@ typedef AsmInstruction AstInstruction;
 typedef RegAllocContext* Ctx;
 #endif
 
-struct ControlFlowBlock {
+typedef struct ControlFlowBlock {
     size_t size;
     size_t instrs_front_idx;
     size_t instrs_back_idx;
     vector_t(size_t) pred_ids;
     vector_t(size_t) succ_ids;
-};
+} ControlFlowBlock;
 
-struct ControlFlowGraph {
+typedef struct ControlFlowGraph {
     size_t entry_id;
     size_t exit_id;
     vector_t(size_t) entry_succ_ids;
@@ -32,9 +32,9 @@ struct ControlFlowGraph {
     vector_t(bool) reaching_code;
     vector_t(ControlFlowBlock) blocks;
     hashmap_t(TIdentifier, size_t) identifier_id_map;
-};
+} ControlFlowGraph;
 
-struct DataFlowAnalysis {
+typedef struct DataFlowAnalysis {
     size_t set_size;
     size_t mask_size;
     size_t incoming_idx;
@@ -43,21 +43,21 @@ struct DataFlowAnalysis {
     vector_t(size_t) instr_idx_map;
     vector_t(mask_t) blocks_mask_sets;
     vector_t(mask_t) instrs_mask_sets;
-};
+} DataFlowAnalysis;
 
 #if __OPTIM_LEVEL__ == 1
-struct DataFlowAnalysisO1 {
+typedef struct DataFlowAnalysisO1 {
     // Copy propagation
     vector_t(size_t) data_idx_map;
     vector_t(std::unique_ptr<TacInstruction>) bak_instrs;
     // Dead store elimination
     size_t addressed_idx;
-};
+} DataFlowAnalysisO1;
 #elif __OPTIM_LEVEL__ == 2
-struct DataFlowAnalysisO2 {
+typedef struct DataFlowAnalysisO2 {
     // Register allocation
     vector_t(TIdentifier) data_name_map;
-};
+} DataFlowAnalysisO2;
 #endif
 
 static void set_instr(Ctx ctx, std::unique_ptr<AstInstruction>&& instr, size_t instr_idx) {

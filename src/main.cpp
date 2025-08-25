@@ -32,7 +32,7 @@
 #include "optimization/optim_tac.hpp"
 #include "optimization/reg_alloc.hpp"
 
-struct MainContext {
+typedef struct MainContext {
     ErrorsContext* errors;
 #ifndef __NDEBUG__
     BackEndContext* backend;
@@ -46,7 +46,7 @@ struct MainContext {
     uint8_t optim_2_code;
     string_t filename;
     vector_t(const char*) includedirs;
-};
+} MainContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

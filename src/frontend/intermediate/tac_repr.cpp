@@ -14,14 +14,14 @@
 #include "frontend/intermediate/idents.hpp"
 #include "frontend/intermediate/tac_repr.hpp"
 
-struct TacReprContext {
+typedef struct TacReprContext {
     FrontEndContext* frontend;
     IdentifierContext* identifiers;
     // Three address code representation
     vector_t(std::unique_ptr<TacInstruction>) * p_instrs;
     vector_t(std::unique_ptr<TacTopLevel>) * p_toplvls;
     vector_t(std::unique_ptr<TacTopLevel>) * p_static_consts;
-};
+} TacReprContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

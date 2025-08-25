@@ -33,7 +33,7 @@ enum ASM_LABEL_KIND {
 typedef vector_t(STRUCT_8B_CLS) VecSTRUCT_8B_CLS;
 PairKeyValue(TIdentifier, VecSTRUCT_8B_CLS);
 
-struct AsmGenContext {
+typedef struct AsmGenContext {
     FrontEndContext* frontend;
     IdentifierContext* identifiers;
     // Assembly generation
@@ -44,7 +44,7 @@ struct AsmGenContext {
     hashmap_t(TIdentifier, VecSTRUCT_8B_CLS) struct_8b_cls_map;
     vector_t(std::unique_ptr<AsmInstruction>) * p_instrs;
     vector_t(std::unique_ptr<AsmTopLevel>) * p_static_consts;
-};
+} AsmGenContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
