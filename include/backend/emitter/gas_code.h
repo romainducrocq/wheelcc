@@ -12,13 +12,13 @@ typedef struct IdentifierContext IdentifierContext;
 
 // Gnu assembler code emission
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 void emit_gas_code(std::unique_ptr<AsmProgram>* asm_ast, BackEndContext* backend, FileIoContext* fileio,
     IdentifierContext* identifiers);
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 
 #endif

@@ -18,13 +18,13 @@ typedef struct BackEndContext BackEndContext;
 // Pseudo register replacement
 // Instruction fix up
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node, BackEndContext* backend);
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 
 #endif

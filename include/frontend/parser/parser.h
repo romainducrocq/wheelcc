@@ -15,13 +15,13 @@ typedef struct IdentifierContext IdentifierContext;
 
 // Parser
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 error_t parse_tokens(
     vector_t(Token) * tokens, ErrorsContext* errors, IdentifierContext* identifiers, std::unique_ptr<CProgram>* c_ast);
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 
 #endif
