@@ -294,43 +294,43 @@ static void set_p_infer_graph(Ctx ctx, bool is_dbl) {
 
 static void infer_add_pseudo_edges(Ctx ctx, TIdentifier name_1, TIdentifier name_2) {
     {
-        InferenceRegister& infer = map_get(ctx->p_infer_graph->pseudo_reg_map, name_1);
-        if (!find_identifier(infer.linked_pseudo_names, name_2)) {
-            vec_push_back(infer.linked_pseudo_names, name_2);
-            infer.degree++;
+        InferenceRegister* infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, name_1);
+        if (!find_identifier(infer->linked_pseudo_names, name_2)) {
+            vec_push_back(infer->linked_pseudo_names, name_2);
+            infer->degree++;
         }
     }
     {
-        InferenceRegister& infer = map_get(ctx->p_infer_graph->pseudo_reg_map, name_2);
-        if (!find_identifier(infer.linked_pseudo_names, name_1)) {
-            vec_push_back(infer.linked_pseudo_names, name_1);
-            infer.degree++;
+        InferenceRegister* infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, name_2);
+        if (!find_identifier(infer->linked_pseudo_names, name_1)) {
+            vec_push_back(infer->linked_pseudo_names, name_1);
+            infer->degree++;
         }
     }
 }
 
 static void infer_add_reg_edge(Ctx ctx, REGISTER_KIND reg_kind, TIdentifier name) {
     {
-        InferenceRegister& infer = map_get(ctx->p_infer_graph->pseudo_reg_map, name);
-        if (!register_mask_get(infer.linked_hard_mask, reg_kind)) {
-            register_mask_set(&infer.linked_hard_mask, reg_kind, true);
-            infer.degree++;
+        InferenceRegister* infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, name);
+        if (!register_mask_get(infer->linked_hard_mask, reg_kind)) {
+            register_mask_set(&infer->linked_hard_mask, reg_kind, true);
+            infer->degree++;
         }
     }
     {
-        InferenceRegister& infer = ctx->hard_regs[register_mask_bit(reg_kind)];
-        if (!find_identifier(infer.linked_pseudo_names, name)) {
-            vec_push_back(infer.linked_pseudo_names, name);
-            infer.degree++;
+        InferenceRegister* infer = &ctx->hard_regs[register_mask_bit(reg_kind)];
+        if (!find_identifier(infer->linked_pseudo_names, name)) {
+            vec_push_back(infer->linked_pseudo_names, name);
+            infer->degree++;
         }
     }
 }
 
-static void infer_rm_pseudo_edge(InferenceRegister& infer, TIdentifier name) {
-    for (size_t i = vec_size(infer.linked_pseudo_names); i-- > 0;) {
-        if (infer.linked_pseudo_names[i] == name) {
-            vec_remove_swap(infer.linked_pseudo_names, i);
-            infer.degree--;
+static void infer_rm_pseudo_edge(InferenceRegister* infer, TIdentifier name) {
+    for (size_t i = vec_size(infer->linked_pseudo_names); i-- > 0;) {
+        if (infer->linked_pseudo_names[i] == name) {
+            vec_remove_swap(infer->linked_pseudo_names, i);
+            infer->degree--;
             return;
         }
     }
@@ -728,9 +728,9 @@ static void alloc_prune_infer_reg(Ctx ctx, InferenceRegister* infer, size_t prun
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
-                linked_infer.degree--;
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer->reg_kind)) {
+                linked_infer->degree--;
             }
         }
     }
@@ -751,9 +751,9 @@ static void alloc_unprune_infer_reg(Ctx ctx, InferenceRegister* infer, TIdentifi
     }
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
-                linked_infer.degree++;
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer->reg_kind)) {
+                linked_infer->degree++;
             }
         }
     }
@@ -771,12 +771,12 @@ static void alloc_next_color_infer_graph(Ctx ctx) {
     }
 }
 
-static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_name) {
+static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier* pruned_name) {
     size_t pruned_idx;
     InferenceRegister* infer = NULL;
     for (size_t i = 0; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
-        pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
-        infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, pruned_name);
+        *pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
+        infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, *pruned_name);
         if (infer->degree < ctx->p_infer_graph->k) {
             pruned_idx = i;
             break;
@@ -797,8 +797,8 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
     if (!infer) {
         size_t i = 0;
         for (; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
-            pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
-            infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, pruned_name);
+            *pruned_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
+            infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, *pruned_name);
             if (infer->degree > 0) {
                 pruned_idx = i;
                 break;
@@ -809,13 +809,13 @@ static InferenceRegister* alloc_prune_infer_graph(Ctx ctx, TIdentifier& pruned_n
         double min_spill_metric = ((double)infer->spill_cost) / infer->degree;
         for (; i < vec_size(ctx->p_infer_graph->unpruned_pseudo_names); ++i) {
             TIdentifier spill_name = ctx->p_infer_graph->unpruned_pseudo_names[i];
-            InferenceRegister& spill_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, spill_name);
-            if (spill_infer.degree > 0) {
-                double spill_metric = ((double)spill_infer.spill_cost) / spill_infer.degree;
+            InferenceRegister* spill_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, spill_name);
+            if (spill_infer->degree > 0) {
+                double spill_metric = ((double)spill_infer->spill_cost) / spill_infer->degree;
                 if (spill_metric < min_spill_metric) {
                     pruned_idx = i;
-                    pruned_name = spill_name;
-                    infer = &spill_infer;
+                    *pruned_name = spill_name;
+                    infer = spill_infer;
                     min_spill_metric = spill_metric;
                 }
             }
@@ -829,18 +829,18 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
     mask_t color_reg_mask = ctx->p_infer_graph->hard_reg_mask;
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
-                if (linked_infer.color != REG_Sp) {
-                    register_mask_set(&color_reg_mask, linked_infer.color, false);
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer->reg_kind)) {
+                if (linked_infer->color != REG_Sp) {
+                    register_mask_set(&color_reg_mask, linked_infer->color, false);
                 }
             }
         }
     }
     for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
-        InferenceRegister& linked_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
-        if (linked_infer.color != REG_Sp) {
-            register_mask_set(&color_reg_mask, linked_infer.color, false);
+        InferenceRegister* linked_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
+        if (linked_infer->color != REG_Sp) {
+            register_mask_set(&color_reg_mask, linked_infer->color, false);
         }
     }
     if (color_reg_mask != REGISTER_MASK_FALSE) {
@@ -868,16 +868,16 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
 
 static void alloc_color_infer_graph(Ctx ctx) {
     TIdentifier pruned_name;
-    InferenceRegister* infer = alloc_prune_infer_graph(ctx, pruned_name);
+    InferenceRegister* infer = alloc_prune_infer_graph(ctx, &pruned_name);
     alloc_next_color_infer_graph(ctx);
     alloc_unprune_infer_graph(ctx, infer, pruned_name);
 }
 
 static void alloc_color_reg_map(Ctx ctx) {
     for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-        InferenceRegister& infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-        if (infer.color != REG_Sp) {
-            ctx->reg_color_map[register_mask_bit(infer.color)] = infer.reg_kind;
+        InferenceRegister* infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+        if (infer->color != REG_Sp) {
+            ctx->reg_color_map[register_mask_bit(infer->color)] = infer->reg_kind;
         }
     }
 }
@@ -1226,7 +1226,7 @@ static size_t get_coalesced_idx(Ctx ctx, AsmOperand* node) {
 }
 
 static bool get_coalescable_infer_regs(
-    Ctx ctx, InferenceRegister*& src_infer, InferenceRegister*& dst_infer, size_t src_idx, size_t dst_idx) {
+    Ctx ctx, InferenceRegister** src_infer, InferenceRegister** dst_infer, size_t src_idx, size_t dst_idx) {
     if (src_idx != dst_idx && (src_idx >= REGISTER_MASK_SIZE || dst_idx >= REGISTER_MASK_SIZE)
         && src_idx < ctx->dfa->set_size && dst_idx < ctx->dfa->set_size) {
         if (src_idx < REGISTER_MASK_SIZE) {
@@ -1234,9 +1234,9 @@ static bool get_coalescable_infer_regs(
             bool is_dbl = map_get(ctx->frontend->symbol_table, dst_name)->type_t->type() == AST_Double_t;
             if (is_dbl == (src_idx > 11)) {
                 set_p_infer_graph(ctx, is_dbl);
-                src_infer = &ctx->hard_regs[src_idx];
-                dst_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_name);
-                return !register_mask_get(dst_infer->linked_hard_mask, src_infer->reg_kind);
+                *src_infer = &ctx->hard_regs[src_idx];
+                *dst_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_name);
+                return !register_mask_get((*dst_infer)->linked_hard_mask, (*src_infer)->reg_kind);
             }
         }
         else if (dst_idx < REGISTER_MASK_SIZE) {
@@ -1244,9 +1244,9 @@ static bool get_coalescable_infer_regs(
             bool is_dbl = map_get(ctx->frontend->symbol_table, src_name)->type_t->type() == AST_Double_t;
             if (is_dbl == (dst_idx > 11)) {
                 set_p_infer_graph(ctx, is_dbl);
-                src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
-                dst_infer = &ctx->hard_regs[dst_idx];
-                return !register_mask_get(src_infer->linked_hard_mask, dst_infer->reg_kind);
+                *src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
+                *dst_infer = &ctx->hard_regs[dst_idx];
+                return !register_mask_get((*src_infer)->linked_hard_mask, (*dst_infer)->reg_kind);
             }
         }
         else {
@@ -1257,9 +1257,9 @@ static bool get_coalescable_infer_regs(
             bool is_dbl = src_type->type() == AST_Double_t;
             if (is_dbl == (dst_type->type() == AST_Double_t) && get_type_size(src_type) == get_type_size(dst_type)) {
                 set_p_infer_graph(ctx, is_dbl);
-                src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
-                dst_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_name);
-                return !find_identifier(dst_infer->linked_pseudo_names, src_name);
+                *src_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, src_name);
+                *dst_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_name);
+                return !find_identifier((*dst_infer)->linked_pseudo_names, src_name);
             }
         }
     }
@@ -1271,19 +1271,19 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
 
     if (src_infer->linked_hard_mask != REGISTER_MASK_FALSE || dst_infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(src_infer->linked_hard_mask, linked_infer.reg_kind)) {
-                if (register_mask_get(dst_infer->linked_hard_mask, linked_infer.reg_kind)) {
-                    if (linked_infer.degree > ctx->p_infer_graph->k) {
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(src_infer->linked_hard_mask, linked_infer->reg_kind)) {
+                if (register_mask_get(dst_infer->linked_hard_mask, linked_infer->reg_kind)) {
+                    if (linked_infer->degree > ctx->p_infer_graph->k) {
                         degree++;
                     }
                 }
-                else if (linked_infer.degree >= ctx->p_infer_graph->k) {
+                else if (linked_infer->degree >= ctx->p_infer_graph->k) {
                     degree++;
                 }
             }
-            else if (register_mask_get(dst_infer->linked_hard_mask, linked_infer.reg_kind)
-                     && linked_infer.degree >= ctx->p_infer_graph->k) {
+            else if (register_mask_get(dst_infer->linked_hard_mask, linked_infer->reg_kind)
+                     && linked_infer->degree >= ctx->p_infer_graph->k) {
                 degree++;
             }
         }
@@ -1298,24 +1298,24 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
     }
     for (size_t i = 0; i < vec_size(src_infer->linked_pseudo_names); ++i) {
         size_t j = map_get(ctx->cfg->identifier_id_map, src_infer->linked_pseudo_names[i]);
-        InferenceRegister& linked_infer =
-            map_get(ctx->p_infer_graph->pseudo_reg_map, src_infer->linked_pseudo_names[i]);
+        InferenceRegister* linked_infer =
+            &map_get(ctx->p_infer_graph->pseudo_reg_map, src_infer->linked_pseudo_names[i]);
         if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
-            if (linked_infer.degree > ctx->p_infer_graph->k) {
+            if (linked_infer->degree > ctx->p_infer_graph->k) {
                 degree++;
             }
             SET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j, false);
         }
-        else if (linked_infer.degree >= ctx->p_infer_graph->k) {
+        else if (linked_infer->degree >= ctx->p_infer_graph->k) {
             degree++;
         }
     }
     for (size_t i = 0; i < vec_size(dst_infer->linked_pseudo_names); ++i) {
         size_t j = map_get(ctx->cfg->identifier_id_map, dst_infer->linked_pseudo_names[i]);
         if (GET_DFA_INSTR_SET_AT(ctx->dfa->incoming_idx, j)) {
-            InferenceRegister& linked_infer =
-                map_get(ctx->p_infer_graph->pseudo_reg_map, dst_infer->linked_pseudo_names[i]);
-            if (linked_infer.degree >= ctx->p_infer_graph->k) {
+            InferenceRegister* linked_infer =
+                &map_get(ctx->p_infer_graph->pseudo_reg_map, dst_infer->linked_pseudo_names[i]);
+            if (linked_infer->degree >= ctx->p_infer_graph->k) {
                 degree++;
             }
         }
@@ -1326,9 +1326,9 @@ static bool coal_briggs_test(Ctx ctx, InferenceRegister* src_infer, InferenceReg
 
 static bool coal_george_test(Ctx ctx, REGISTER_KIND reg_kind, InferenceRegister* infer) {
     for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
-        InferenceRegister& linked_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
-        if (!register_mask_get(linked_infer.linked_hard_mask, reg_kind)
-            && linked_infer.degree >= ctx->p_infer_graph->k) {
+        InferenceRegister* linked_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
+        if (!register_mask_get(linked_infer->linked_hard_mask, reg_kind)
+            && linked_infer->degree >= ctx->p_infer_graph->k) {
             return false;
         }
     }
@@ -1355,15 +1355,15 @@ static void coal_pseudo_infer_reg(Ctx ctx, InferenceRegister* infer, size_t merg
     TIdentifier keep_name = ctx->dfa_o2->data_name_map[keep_idx - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer->reg_kind)) {
                 infer_rm_pseudo_edge(linked_infer, merge_name);
-                infer_add_reg_edge(ctx, linked_infer.reg_kind, keep_name);
+                infer_add_reg_edge(ctx, linked_infer->reg_kind, keep_name);
             }
         }
     }
     for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
-        InferenceRegister& linked_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
+        InferenceRegister* linked_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
         infer_rm_pseudo_edge(linked_infer, merge_name);
         infer_add_pseudo_edges(ctx, keep_name, infer->linked_pseudo_names[i]);
     }
@@ -1374,14 +1374,14 @@ static void coal_hard_infer_reg(Ctx ctx, REGISTER_KIND reg_kind, InferenceRegist
     TIdentifier merge_name = ctx->dfa_o2->data_name_map[merge_idx - REGISTER_MASK_SIZE];
     if (infer->linked_hard_mask != REGISTER_MASK_FALSE) {
         for (size_t i = 0; i < ctx->p_infer_graph->k; ++i) {
-            InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
-            if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
+            InferenceRegister* linked_infer = &ctx->hard_regs[i + ctx->p_infer_graph->offset];
+            if (register_mask_get(infer->linked_hard_mask, linked_infer->reg_kind)) {
                 infer_rm_pseudo_edge(linked_infer, merge_name);
             }
         }
     }
     for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
-        InferenceRegister& linked_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
+        InferenceRegister* linked_infer = &map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
         infer_rm_pseudo_edge(linked_infer, merge_name);
         infer_add_reg_edge(ctx, reg_kind, infer->linked_pseudo_names[i]);
     }
@@ -1393,7 +1393,7 @@ static bool coal_infer_regs(Ctx ctx, AsmMov* node) {
     InferenceRegister* dst_infer = NULL;
     size_t src_idx = get_coalesced_idx(ctx, node->src.get());
     size_t dst_idx = get_coalesced_idx(ctx, node->dst.get());
-    if (get_coalescable_infer_regs(ctx, src_infer, dst_infer, src_idx, dst_idx)
+    if (get_coalescable_infer_regs(ctx, &src_infer, &dst_infer, src_idx, dst_idx)
         && coal_conservative_tests(ctx, src_infer, dst_infer)) {
         if (src_idx < REGISTER_MASK_SIZE) {
             coal_hard_infer_reg(ctx, src_infer->reg_kind, dst_infer, dst_idx);
