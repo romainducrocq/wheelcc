@@ -236,11 +236,11 @@ bool register_mask_get(TULong reg_mask, REGISTER_KIND reg_kind) {
     return (reg_mask & (((TULong)1ul) << register_mask_bit(reg_kind))) > 0;
 }
 
-void register_mask_set(TULong& reg_mask, REGISTER_KIND reg_kind, bool value) {
+void register_mask_set(TULong* reg_mask, REGISTER_KIND reg_kind, bool value) {
     if (value) {
-        reg_mask |= ((TULong)1ul) << register_mask_bit(reg_kind);
+        *reg_mask |= ((TULong)1ul) << register_mask_bit(reg_kind);
     }
     else {
-        reg_mask &= ~(((TULong)1ul) << register_mask_bit(reg_kind));
+        *reg_mask &= ~(((TULong)1ul) << register_mask_bit(reg_kind));
     }
 }

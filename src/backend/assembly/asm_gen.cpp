@@ -611,10 +611,10 @@ static void fun_param_reg_mask(Ctx ctx, FunType* fun_type, size_t reg_size, size
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
         for (size_t i = 0; i < reg_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, ctx->arg_regs[i], true);
+            register_mask_set(&fun_type->param_reg_mask, ctx->arg_regs[i], true);
         }
         for (size_t i = 0; i < sse_size; ++i) {
-            register_mask_set(fun_type->param_reg_mask, ctx->sse_arg_regs[i], true);
+            register_mask_set(&fun_type->param_reg_mask, ctx->sse_arg_regs[i], true);
         }
     }
 }
@@ -622,7 +622,7 @@ static void fun_param_reg_mask(Ctx ctx, FunType* fun_type, size_t reg_size, size
 static void ret_1_reg_mask(FunType* fun_type, bool reg_size) {
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
-        register_mask_set(fun_type->ret_reg_mask, reg_size ? REG_Ax : REG_Xmm0, true);
+        register_mask_set(&fun_type->ret_reg_mask, reg_size ? REG_Ax : REG_Xmm0, true);
     }
 }
 
@@ -630,12 +630,12 @@ static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
         if (reg_size) {
-            register_mask_set(fun_type->ret_reg_mask, REG_Ax, true);
-            register_mask_set(fun_type->ret_reg_mask, sse_size ? REG_Xmm0 : REG_Dx, true);
+            register_mask_set(&fun_type->ret_reg_mask, REG_Ax, true);
+            register_mask_set(&fun_type->ret_reg_mask, sse_size ? REG_Xmm0 : REG_Dx, true);
         }
         else if (sse_size) {
-            register_mask_set(fun_type->ret_reg_mask, REG_Xmm0, true);
-            register_mask_set(fun_type->ret_reg_mask, REG_Xmm1, true);
+            register_mask_set(&fun_type->ret_reg_mask, REG_Xmm0, true);
+            register_mask_set(&fun_type->ret_reg_mask, REG_Xmm1, true);
         }
     }
 }

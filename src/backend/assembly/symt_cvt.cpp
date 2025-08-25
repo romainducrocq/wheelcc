@@ -43,23 +43,23 @@ static TInt get_scalar_alignment(Type* type) {
     }
 }
 
-static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong& size) {
-    size = arr_type->size;
+static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong* size) {
+    *size = arr_type->size;
     while (arr_type->elem_type->type() == AST_Array_t) {
         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-        size *= arr_type->size;
+        *size *= arr_type->size;
     }
     TInt alignment;
     {
         alignment = gen_type_alignment(ctx, arr_type->elem_type.get());
         if (arr_type->elem_type->type() == AST_Structure_t) {
             Structure* struct_type = static_cast<Structure*>(arr_type->elem_type.get());
-            size *= map_get(ctx->struct_typedef_table, struct_type->tag)->size;
+            *size *= map_get(ctx->struct_typedef_table, struct_type->tag)->size;
         }
         else {
-            size *= alignment;
+            *size *= alignment;
         }
-        if (size >= 16l) {
+        if (*size >= 16l) {
             alignment = 16;
         }
     }
@@ -74,7 +74,7 @@ TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
     switch (type->type()) {
         case AST_Array_t: {
             TLong size;
-            return get_arr_alignment(ctx, static_cast<Array*>(type), size);
+            return get_arr_alignment(ctx, static_cast<Array*>(type), &size);
         }
         case AST_Structure_t:
             return get_struct_alignment(ctx, static_cast<Structure*>(type));
@@ -85,7 +85,7 @@ TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
 
 static std::shared_ptr<ByteArray> arr_asm_type(FrontEndContext* ctx, Array* arr_type) {
     TLong size;
-    TInt alignment = get_arr_alignment(ctx, arr_type, size);
+    TInt alignment = get_arr_alignment(ctx, arr_type, &size);
     return std::make_shared<ByteArray>(size, alignment);
 }
 

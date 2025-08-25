@@ -689,7 +689,7 @@ static error_t tokenize_file(Ctx ctx) {
     string_t match = str_new(NULL);
     CATCH_ENTER;
     bool is_comment = false;
-    for (size_t linenum = 1; read_line(ctx->fileio, ctx->line, ctx->line_size); ++linenum) {
+    for (size_t linenum = 1; read_line(ctx->fileio, &ctx->line, &ctx->line_size); ++linenum) {
         ctx->total_linenum++;
 
         for (ctx->match_at = 0; ctx->match_at < ctx->line_size; ctx->match_at += ctx->match_size) {

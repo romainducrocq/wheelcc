@@ -313,7 +313,7 @@ static void infer_add_reg_edge(Ctx ctx, REGISTER_KIND reg_kind, TIdentifier name
     {
         InferenceRegister& infer = map_get(ctx->p_infer_graph->pseudo_reg_map, name);
         if (!register_mask_get(infer.linked_hard_mask, reg_kind)) {
-            register_mask_set(infer.linked_hard_mask, reg_kind, true);
+            register_mask_set(&infer.linked_hard_mask, reg_kind, true);
             infer.degree++;
         }
     }
@@ -832,7 +832,7 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
             InferenceRegister& linked_infer = ctx->hard_regs[i + ctx->p_infer_graph->offset];
             if (register_mask_get(infer->linked_hard_mask, linked_infer.reg_kind)) {
                 if (linked_infer.color != REG_Sp) {
-                    register_mask_set(color_reg_mask, linked_infer.color, false);
+                    register_mask_set(&color_reg_mask, linked_infer.color, false);
                 }
             }
         }
@@ -840,7 +840,7 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
     for (size_t i = 0; i < vec_size(infer->linked_pseudo_names); ++i) {
         InferenceRegister& linked_infer = map_get(ctx->p_infer_graph->pseudo_reg_map, infer->linked_pseudo_names[i]);
         if (linked_infer.color != REG_Sp) {
-            register_mask_set(color_reg_mask, linked_infer.color, false);
+            register_mask_set(&color_reg_mask, linked_infer.color, false);
         }
     }
     if (color_reg_mask != REGISTER_MASK_FALSE) {
@@ -892,7 +892,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(Ctx ctx, TIdentifier name) {
         REGISTER_KIND reg_kind = ctx->reg_color_map[register_mask_bit(color)];
         std::shared_ptr<AsmRegister> hard_reg = gen_register(reg_kind);
         if (is_reg_callee_saved(reg_kind) && !register_mask_get(ctx->callee_saved_reg_mask, reg_kind)) {
-            register_mask_set(ctx->callee_saved_reg_mask, reg_kind, true);
+            register_mask_set(&ctx->callee_saved_reg_mask, reg_kind, true);
             std::shared_ptr<AsmOperand> callee_saved_reg = hard_reg;
             vec_move_back(ctx->p_backend_fun->callee_saved_regs, callee_saved_reg);
         }
@@ -1820,18 +1820,18 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             ctx.infer_graph->offset = 0;
 
             ctx.infer_graph->hard_reg_mask = REGISTER_MASK_FALSE;
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Ax, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Bx, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Cx, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Dx, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Di, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_Si, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R8, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R9, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R12, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R13, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R14, true);
-            register_mask_set(ctx.infer_graph->hard_reg_mask, REG_R15, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Ax, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Bx, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Cx, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Dx, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Di, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Si, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R8, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R9, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R12, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R13, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R14, true);
+            register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R15, true);
 
             ctx.infer_graph->unpruned_hard_mask_bits = vec_new();
             ctx.infer_graph->unpruned_pseudo_names = vec_new();
@@ -1843,20 +1843,20 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
             ctx.sse_infer_graph->offset = 12;
 
             ctx.sse_infer_graph->hard_reg_mask = REGISTER_MASK_FALSE;
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm0, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm1, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm2, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm3, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm4, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm5, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm6, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm7, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm8, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm9, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm10, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm11, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm12, true);
-            register_mask_set(ctx.sse_infer_graph->hard_reg_mask, REG_Xmm13, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm0, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm1, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm2, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm3, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm4, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm5, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm6, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm7, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm8, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm9, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm10, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm11, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm12, true);
+            register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm13, true);
 
             ctx.sse_infer_graph->unpruned_hard_mask_bits = vec_new();
             ctx.sse_infer_graph->unpruned_pseudo_names = vec_new();

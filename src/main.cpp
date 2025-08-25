@@ -301,9 +301,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     CATCH_EXIT;
 }
 
-static bool arg_parse_uint8(const char* arg, uint8_t& value) {
+static bool arg_parse_uint8(const char* arg, uint8_t* value) {
     char* end_ptr = NULL;
-    value = (uint8_t)strtol(arg, &end_ptr, 10);
+    *value = (uint8_t)strtol(arg, &end_ptr, 10);
     return end_ptr == arg;
 }
 
@@ -314,21 +314,21 @@ static error_t arg_parse(Ctx ctx, char** argv) {
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
     }
-    else if (arg_parse_uint8(argv[i], ctx->debug_code)) {
+    else if (arg_parse_uint8(argv[i], &ctx->debug_code)) {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_debug_arg, argv[i]));
     }
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_1_arg));
     }
-    else if (arg_parse_uint8(argv[i], ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
+    else if (arg_parse_uint8(argv[i], &ctx->optim_1_mask) || ctx->optim_1_mask > 15) {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_1_arg, argv[i]));
     }
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_optim_2_arg));
     }
-    else if (arg_parse_uint8(argv[i], ctx->optim_2_code) || ctx->optim_2_code > 2) {
+    else if (arg_parse_uint8(argv[i], &ctx->optim_2_code) || ctx->optim_2_code > 2) {
         THROW_INIT(GET_ARG_MSG(MSG_invalid_optim_2_arg, argv[i]));
     }
 

@@ -76,20 +76,20 @@ error_t open_fwrite(Ctx ctx, const string_t filename) {
     CATCH_EXIT;
 }
 
-bool read_line(Ctx ctx, char*& line, size_t& line_size) {
+bool read_line(Ctx ctx, char** line, size_t* line_size) {
     ssize_t line_ssize =
         getline(&vec_back(ctx->file_reads).buf, &vec_back(ctx->file_reads).len, vec_back(ctx->file_reads).fd);
     if (line_ssize == -1) {
         line = NULL;
-        line_size = 0;
+        *line_size = 0;
         vec_back(ctx->file_reads).len = 0;
         free(vec_back(ctx->file_reads).buf);
         vec_back(ctx->file_reads).buf = NULL;
         return false;
     }
     else {
-        line = vec_back(ctx->file_reads).buf;
-        line_size = (size_t)line_ssize;
+        *line = vec_back(ctx->file_reads).buf;
+        *line_size = (size_t)line_ssize;
         return true;
     }
 }
