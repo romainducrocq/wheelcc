@@ -410,27 +410,27 @@ static error_t parse_binop(Ctx ctx, return_t(std::unique_ptr<CBinaryOp>) binop) 
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor);
+    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator* abstract_decltor);
 
 static void proc_ptr_abstract_decltor(
-    CAbstractPointer* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractPointer* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator* abstract_decltor) {
     std::shared_ptr<Type> derived_type = std::make_shared<Pointer>(std::move(base_type));
     proc_abstract_decltor(node->abstract_decltor.get(), std::move(derived_type), abstract_decltor);
 }
 
 static void proc_arr_abstract_decltor(
-    CAbstractArray* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractArray* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator* abstract_decltor) {
     TLong size = node->size;
     std::shared_ptr<Type> derived_type = std::make_shared<Array>(size, std::move(base_type));
     proc_abstract_decltor(node->abstract_decltor.get(), std::move(derived_type), abstract_decltor);
 }
 
-static void proc_base_abstract_decltor(std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
-    abstract_decltor.derived_type = std::move(base_type);
+static void proc_base_abstract_decltor(std::shared_ptr<Type>&& base_type, AbstractDeclarator* abstract_decltor) {
+    abstract_decltor->derived_type = std::move(base_type);
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator& abstract_decltor) {
+    CAbstractDeclarator* node, std::shared_ptr<Type>&& base_type, AbstractDeclarator* abstract_decltor) {
     switch (node->type()) {
         case AST_CAbstractPointer_t:
             proc_ptr_abstract_decltor(static_cast<CAbstractPointer*>(node), std::move(base_type), abstract_decltor);
@@ -529,7 +529,7 @@ static error_t parse_decltor_cast_factor(Ctx ctx, return_t(std::shared_ptr<Type>
     std::unique_ptr<CAbstractDeclarator> abstract_decltor_1;
     CATCH_ENTER;
     TRY(parse_abstract_decltor(ctx, &abstract_decltor_1));
-    proc_abstract_decltor(abstract_decltor_1.get(), std::move(*target_type), abstract_decltor);
+    proc_abstract_decltor(abstract_decltor_1.get(), std::move(*target_type), &abstract_decltor);
     *target_type = std::move(abstract_decltor.derived_type);
     FINALLY;
     CATCH_EXIT;
@@ -1463,7 +1463,7 @@ static error_t parse_statement(Ctx ctx, return_t(std::unique_ptr<CStatement>) st
     CATCH_EXIT;
 }
 
-static error_t parse_decltor_decl(Ctx ctx, Declarator& decltor, return_t(std::unique_ptr<CStorageClass>) storage_class);
+static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, return_t(std::unique_ptr<CStorageClass>) storage_class);
 static error_t parse_var_declaration(Ctx ctx, std::unique_ptr<CStorageClass>&& storage_class, Declarator&& decltor,
     return_t(std::unique_ptr<CVariableDeclaration>) var_decl);
 
@@ -1473,7 +1473,7 @@ static error_t parse_for_init_decl(Ctx ctx, return_t(std::unique_ptr<CForInit>) 
     std::unique_ptr<CStorageClass> storage_class;
     std::unique_ptr<CVariableDeclaration> var_decl;
     CATCH_ENTER;
-    TRY(parse_decltor_decl(ctx, decltor, &storage_class));
+    TRY(parse_decltor_decl(ctx, &decltor, &storage_class));
     if (decltor.derived_type->type() == AST_FunType_t) {
         THROW_AT_LINE(ctx->next_tok->line,
             GET_PARSER_MSG(MSG_for_init_decl_as_fun, map_get(ctx->identifiers->hash_table, decltor.name)));
@@ -1862,15 +1862,15 @@ static error_t parse_initializer(Ctx ctx, return_t(std::unique_ptr<CInitializer>
 }
 
 static error_t parse_decltor(Ctx ctx, return_t(std::unique_ptr<CDeclarator>) decltor);
-static error_t proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor);
+static error_t proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator* decltor);
 
-static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
-    decltor.name = node->name;
-    decltor.derived_type = std::move(base_type);
+static void proc_ident_decltor(CIdent* node, std::shared_ptr<Type>&& base_type, Declarator* decltor) {
+    decltor->name = node->name;
+    decltor->derived_type = std::move(base_type);
 }
 
 static error_t proc_ptr_decltor(
-    Ctx ctx, CPointerDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
+    Ctx ctx, CPointerDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator* decltor) {
     std::shared_ptr<Type> derived_type;
     CATCH_ENTER;
     derived_type = std::make_shared<Pointer>(std::move(base_type));
@@ -1880,7 +1880,7 @@ static error_t proc_ptr_decltor(
 }
 
 static error_t proc_arr_decltor(
-    Ctx ctx, CArrayDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
+    Ctx ctx, CArrayDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator* decltor) {
     std::shared_ptr<Type> derived_type;
     CATCH_ENTER;
     TLong size = node->size;
@@ -1897,7 +1897,7 @@ static error_t proc_param_decltor(
     std::shared_ptr<Type> param_type;
     CATCH_ENTER;
     param_type = node->param_type;
-    TRY(proc_decltor(ctx, node->decltor.get(), std::move(param_type), decltor));
+    TRY(proc_decltor(ctx, node->decltor.get(), std::move(param_type), &decltor));
     THROW_ABORT_IF(decltor.derived_type->type() == AST_FunType_t);
     vec_push_back(*params, decltor.name);
     vec_move_back(*param_types, decltor.derived_type);
@@ -1906,7 +1906,7 @@ static error_t proc_param_decltor(
     CATCH_EXIT;
 }
 
-static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
+static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator* decltor) {
     std::shared_ptr<Type> derived_type;
     vector_t(TIdentifier) params = vec_new();
     vector_t(std::shared_ptr<Type>) param_types = vec_new();
@@ -1923,9 +1923,9 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     }
     name = static_cast<CIdent*>(node->decltor.get())->name;
     derived_type = std::make_shared<FunType>(&param_types, std::move(base_type));
-    decltor.name = name;
-    decltor.derived_type = std::move(derived_type);
-    vec_move(&params, &decltor.params);
+    decltor->name = name;
+    decltor->derived_type = std::move(derived_type);
+    vec_move(&params, &decltor->params);
     FINALLY;
     vec_delete(params);
     for (size_t i = 0; i < vec_size(param_types); ++i) {
@@ -1935,7 +1935,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     CATCH_EXIT;
 }
 
-static error_t proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator& decltor) {
+static error_t proc_decltor(Ctx ctx, CDeclarator* node, std::shared_ptr<Type>&& base_type, Declarator* decltor) {
     CATCH_ENTER;
     switch (node->type()) {
         case AST_CIdent_t:
@@ -2186,7 +2186,7 @@ static error_t parse_member_declaration(Ctx ctx, return_t(std::unique_ptr<CMembe
     std::unique_ptr<CStorageClass> storage_class;
     CATCH_ENTER;
     size_t line;
-    TRY(parse_decltor_decl(ctx, decltor, &storage_class));
+    TRY(parse_decltor_decl(ctx, &decltor, &storage_class));
     if (storage_class) {
         THROW_AT_LINE(ctx->next_tok->line,
             GET_PARSER_MSG(MSG_member_decl_not_auto, map_get(ctx->identifiers->hash_table, decltor.name),
@@ -2270,7 +2270,7 @@ static error_t parse_struct_decl(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
 }
 
 static error_t parse_decltor_decl(
-    Ctx ctx, Declarator& decltor, return_t(std::unique_ptr<CStorageClass>) storage_class) {
+    Ctx ctx, Declarator* decltor, return_t(std::unique_ptr<CStorageClass>) storage_class) {
     std::unique_ptr<CDeclarator> decltor_1;
     std::shared_ptr<Type> type_specifier;
     CATCH_ENTER;
@@ -2315,7 +2315,7 @@ static error_t parse_declaration(Ctx ctx, return_t(std::unique_ptr<CDeclaration>
         default:
             break;
     }
-    TRY(parse_decltor_decl(ctx, decltor, &storage_class));
+    TRY(parse_decltor_decl(ctx, &decltor, &storage_class));
     if (decltor.derived_type->type() == AST_FunType_t) {
         TRY(parse_fun_decl(ctx, std::move(storage_class), std::move(decltor), declaration));
     }
