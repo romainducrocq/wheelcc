@@ -1709,7 +1709,7 @@ static TacCopy* get_dfa_bak_copy_instr(Ctx ctx, size_t i) {
 
 static void set_dfa_bak_copy_instr(Ctx ctx, TacCopy* node, size_t instr_idx) {
     size_t i;
-    if (set_dfa_bak_instr(ctx, instr_idx, i)) {
+    if (set_dfa_bak_instr(ctx, instr_idx, &i)) {
         std::shared_ptr<TacValue> src = node->src;
         std::shared_ptr<TacValue> dst = node->dst;
         ctx->dfa_o1->bak_instrs[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));

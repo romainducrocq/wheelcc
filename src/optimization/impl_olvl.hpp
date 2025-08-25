@@ -224,7 +224,7 @@ static void cfg_init_label_block(Ctx ctx, AsmLabel* node) {
 }
 #endif
 
-static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
+static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t* instrs_back_idx) {
     AstInstruction* node = GET_INSTR(instr_idx).get();
     switch (node->type()) {
 #if __OPTIM_LEVEL__ == 1
@@ -233,8 +233,8 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
         case AST_AsmLabel_t:
 #endif
         {
-            if (instrs_back_idx != vec_size(*ctx->p_instrs)) {
-                vec_back(ctx->cfg->blocks).instrs_back_idx = instrs_back_idx;
+            if (*instrs_back_idx != vec_size(*ctx->p_instrs)) {
+                vec_back(ctx->cfg->blocks).instrs_back_idx = *instrs_back_idx;
                 ControlFlowBlock block = {0, instr_idx, 0, vec_new(), vec_new()};
                 vec_push_back(ctx->cfg->blocks, block);
             }
@@ -243,7 +243,7 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
 #elif __OPTIM_LEVEL__ == 2
             cfg_init_label_block(ctx, static_cast<AsmLabel*>(node));
 #endif
-            instrs_back_idx = instr_idx;
+            *instrs_back_idx = instr_idx;
             break;
         }
 #if __OPTIM_LEVEL__ == 1
@@ -258,11 +258,11 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t& instrs_back_idx) {
 #endif
         {
             vec_back(ctx->cfg->blocks).instrs_back_idx = instr_idx;
-            instrs_back_idx = vec_size(*ctx->p_instrs);
+            *instrs_back_idx = vec_size(*ctx->p_instrs);
             break;
         }
         default: {
-            instrs_back_idx = instr_idx;
+            *instrs_back_idx = instr_idx;
             break;
         }
     }
@@ -342,7 +342,7 @@ static void init_control_flow_graph(Ctx ctx) {
                     ControlFlowBlock block = {0, instr_idx, 0, vec_new(), vec_new()};
                     vec_push_back(ctx->cfg->blocks, block);
                 }
-                cfg_init_block(ctx, instr_idx, instrs_back_idx);
+                cfg_init_block(ctx, instr_idx, &instrs_back_idx);
                 vec_back(ctx->cfg->blocks).size++;
             }
         }
@@ -374,15 +374,15 @@ static bool mask_get(TULong mask, size_t bit) {
     return (mask & (((TULong)1ul) << bit)) > 0;
 }
 
-static void mask_set(TULong& mask, size_t bit, bool value) {
+static void mask_set(TULong* mask, size_t bit, bool value) {
     if (bit > 63) {
         bit %= 64;
     }
     if (value) {
-        mask |= ((TULong)1ul) << bit;
+        *mask |= ((TULong)1ul) << bit;
     }
     else {
-        mask &= ~(((TULong)1ul) << bit);
+        *mask &= ~(((TULong)1ul) << bit);
     }
 }
 
@@ -401,7 +401,7 @@ static void mask_set(TULong& mask, size_t bit, bool value) {
 #define GET_DFA_BLOCK_SET_AT(X, Y) mask_get(GET_DFA_BLOCK_SET_MASK(X, MASK_OFFSET(Y)), Y)
 #define GET_DFA_INSTR_SET_AT(X, Y) mask_get(GET_DFA_INSTR_SET_MASK(X, MASK_OFFSET(Y)), Y)
 
-#define SET_DFA_INSTR_SET_AT(X, Y, Z) mask_set(GET_DFA_INSTR_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
+#define SET_DFA_INSTR_SET_AT(X, Y, Z) mask_set(&GET_DFA_INSTR_SET_MASK(X, MASK_OFFSET(Y)), Y, Z)
 
 #if __OPTIM_LEVEL__ == 1
 #define GET_DFA_INSTR(X) GET_INSTR(ctx->dfa_o1->data_idx_map[X])
@@ -487,10 +487,10 @@ static TacInstruction* get_dfa_bak_instr(Ctx ctx, size_t i) {
     }
 }
 
-static bool set_dfa_bak_instr(Ctx ctx, size_t instr_idx, size_t& i) {
-    i = get_dfa_data_idx(ctx, instr_idx);
-    if (!ctx->cfg->reaching_code[i]) {
-        ctx->cfg->reaching_code[i] = true;
+static bool set_dfa_bak_instr(Ctx ctx, size_t instr_idx, size_t* i) {
+    *i = get_dfa_data_idx(ctx, instr_idx);
+    if (!ctx->cfg->reaching_code[*i]) {
+        ctx->cfg->reaching_code[*i] = true;
         return true;
     }
     else {
@@ -749,41 +749,41 @@ static void dfa_iter_alg(Ctx ctx) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void dfa_forward_open_block(Ctx ctx, size_t block_id, size_t& i);
+static void dfa_forward_open_block(Ctx ctx, size_t block_id, size_t* i);
 #endif
-static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t& i);
+static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t* i);
 
 #if __OPTIM_LEVEL__ == 1
-static void dfa_forward_succ_open_block(Ctx ctx, size_t block_id, size_t& i) {
+static void dfa_forward_succ_open_block(Ctx ctx, size_t block_id, size_t* i) {
     for (size_t j = 0; j < vec_size(GET_CFG_BLOCK(block_id).succ_ids); ++j) {
         dfa_forward_open_block(ctx, GET_CFG_BLOCK(block_id).succ_ids[j], i);
     }
 }
 #endif
 
-static void dfa_backward_succ_open_block(Ctx ctx, size_t block_id, size_t& i) {
+static void dfa_backward_succ_open_block(Ctx ctx, size_t block_id, size_t* i) {
     for (size_t j = 0; j < vec_size(GET_CFG_BLOCK(block_id).succ_ids); ++j) {
         dfa_backward_open_block(ctx, GET_CFG_BLOCK(block_id).succ_ids[j], i);
     }
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void dfa_forward_open_block(Ctx ctx, size_t block_id, size_t& i) {
+static void dfa_forward_open_block(Ctx ctx, size_t block_id, size_t* i) {
     if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
         ctx->cfg->reaching_code[block_id] = true;
         dfa_forward_succ_open_block(ctx, block_id, i);
-        i--;
-        ctx->dfa->open_data_map[i] = block_id;
+        (*i)--;
+        ctx->dfa->open_data_map[*i] = block_id;
     }
 }
 #endif
 
-static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t& i) {
+static void dfa_backward_open_block(Ctx ctx, size_t block_id, size_t* i) {
     if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
         ctx->cfg->reaching_code[block_id] = true;
         dfa_backward_succ_open_block(ctx, block_id, i);
-        ctx->dfa->open_data_map[i] = block_id;
-        i++;
+        ctx->dfa->open_data_map[*i] = block_id;
+        (*i)++;
     }
 }
 
@@ -1195,7 +1195,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         for (size_t j = 0; j < vec_size(ctx->cfg->entry_succ_ids); ++j) {
             size_t succ_id = ctx->cfg->entry_succ_ids[j];
             if (!ctx->cfg->reaching_code[succ_id]) {
-                dfa_forward_open_block(ctx, succ_id, i);
+                dfa_forward_open_block(ctx, succ_id, &i);
             }
         }
         while (i-- > 0) {
@@ -1206,7 +1206,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         i = ctx->dfa->set_size - (ctx->dfa->mask_size - 1) * 64;
         if (i > 0) {
             for (; i < 64; ++i) {
-                mask_set(mask_true_back, i, false);
+                mask_set(&mask_true_back, i, false);
             }
         }
 
@@ -1246,7 +1246,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         for (size_t j = 0; j < vec_size(ctx->cfg->entry_succ_ids); ++j) {
             size_t succ_id = ctx->cfg->entry_succ_ids[j];
             if (!ctx->cfg->reaching_code[succ_id]) {
-                dfa_backward_open_block(ctx, succ_id, i);
+                dfa_backward_open_block(ctx, succ_id, &i);
             }
         }
         for (; i < vec_size(ctx->cfg->blocks); ++i) {
