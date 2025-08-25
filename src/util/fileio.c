@@ -1,3 +1,11 @@
+// #if !defined(__cplusplus) && defined(__GNUC__) TODO
+#ifndef __cplusplus
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)
+#define _POSIX_C_SOURCE 200809L
+#else
+#define _GNU_SOURCE
+#endif
+#endif
 #include "tinydir/tinydir.h"
 #include <limits.h>
 #include <stdio.h>
@@ -17,7 +25,11 @@ typedef FileIoContext* Ctx;
 #define WRITE_BUF_SIZE 4096
 
 bool find_file(const char* filename) {
-    tinydir_file file = {};
+    tinydir_file file = {
+#ifndef __cplusplus
+        0
+#endif
+    };
     return tinydir_file_open(&file, filename) != -1 && !file.is_dir;
 }
 

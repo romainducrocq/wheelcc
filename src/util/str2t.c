@@ -1,10 +1,3 @@
-#if !defined(__cplusplus) && defined(__GNUC__)
-#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)
-#define _POSIX_C_SOURCE 200809L
-#else
-#define _GNU_SOURCE
-#endif
-#endif
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>

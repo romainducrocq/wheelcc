@@ -1,4 +1,5 @@
-#if !defined(__cplusplus) && defined(__GNUC__)
+// #if !defined(__cplusplus) && defined(__GNUC__) TODO
+#ifndef __cplusplus
 #if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 10)
 #define _POSIX_C_SOURCE 200809L
 #else
