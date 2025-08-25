@@ -5,7 +5,7 @@
 
 // Errors
 
-enum MESSAGE_SEMANTIC {
+typedef enum MESSAGE_SEMANTIC {
     MSG_unhandled_semantic_error = 500,
     MSG_incomplete_arr,
     MSG_joint_ptr_mismatch,
@@ -78,6 +78,6 @@ enum MESSAGE_SEMANTIC {
     MSG_def_nested_fun,
     MSG_decl_nested_static_fun,
     MSG_redecl_fun_in_scope
-};
+} MESSAGE_SEMANTIC;
 
 #endif

@@ -5,7 +5,7 @@
 
 // Registers
 
-enum REGISTER_KIND {
+typedef enum REGISTER_KIND {
     REG_Ax,
     REG_Bx,
     REG_Cx,
@@ -38,7 +38,7 @@ enum REGISTER_KIND {
     REG_Xmm13,
     REG_Xmm14,
     REG_Xmm15
-};
+} REGISTER_KIND;
 
 #define REGISTER_MASK_SIZE 26
 #define REGISTER_MASK_FALSE 0ul

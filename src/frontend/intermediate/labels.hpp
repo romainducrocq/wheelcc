@@ -5,7 +5,7 @@
 
 // Identifiers
 
-enum LABEL_KIND {
+typedef enum LABEL_KIND {
     LBL_Land_false,
     LBL_Land_true,
     LBL_Lbreak,
@@ -25,6 +25,6 @@ enum LABEL_KIND {
     LBL_Lternary_else,
     LBL_Lternary_false,
     LBL_Lwhile
-};
+} LABEL_KIND;
 
 #endif

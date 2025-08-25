@@ -15,20 +15,20 @@
 #include "backend/assembly/stack_fix.hpp"
 #include "backend/assembly/symt_cvt.hpp"
 
-enum STRUCT_8B_CLS {
+typedef enum STRUCT_8B_CLS {
     CLS_integer,
     CLS_sse,
     CLS_memory
-};
+} STRUCT_8B_CLS;
 
-enum ASM_LABEL_KIND {
+typedef enum ASM_LABEL_KIND {
     LBL_Lcomisd_nan,
     LBL_Ldouble,
     LBL_Lsd2si_after,
     LBL_Lsd2si_out_of_range,
     LBL_Lsi2sd_after,
     LBL_Lsi2sd_out_of_range
-};
+} ASM_LABEL_KIND;
 
 typedef vector_t(STRUCT_8B_CLS) VecSTRUCT_8B_CLS;
 PairKeyValue(TIdentifier, VecSTRUCT_8B_CLS);

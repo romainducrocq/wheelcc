@@ -24,15 +24,15 @@ typedef struct IdentifierContext IdentifierContext;
 
 // Errors
 
-enum MESSAGE_FATAL {
+typedef enum MESSAGE_FATAL {
     MSG_unhandled_fatal_error = 0,
     MSG_unsupported_os,
     MSG_unsupported_arch,
     MSG_unsupported_compiler,
     MSG_unsupported_cc_ver
-};
+} MESSAGE_FATAL;
 
-enum MESSAGE_ARG {
+typedef enum MESSAGE_ARG {
     MSG_unhandled_arg_error = 100,
     MSG_no_debug_arg,
     MSG_invalid_debug_arg,
@@ -42,16 +42,16 @@ enum MESSAGE_ARG {
     MSG_invalid_optim_2_arg,
     MSG_no_input_files_arg,
     MSG_no_include_dir_arg
-};
+} MESSAGE_ARG;
 
-enum MESSAGE_UTIL {
+typedef enum MESSAGE_UTIL {
     MSG_unhandled_util_error = 200,
     MSG_failed_fread,
     MSG_failed_fwrite,
     MSG_failed_strtoi,
     MSG_failed_strtou,
     MSG_failed_strtod
-};
+} MESSAGE_UTIL;
 
 const char* get_tok_kind_fmt(TOKEN_KIND tok_kind);
 const char* get_tok_fmt(IdentifierContext* ctx, Token* token);

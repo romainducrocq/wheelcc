@@ -5,7 +5,7 @@
 
 // Lexer
 
-enum TOKEN_KIND {
+typedef enum TOKEN_KIND {
     TOK_skip,
 
     TOK_assign_shiftleft,
@@ -98,6 +98,6 @@ enum TOKEN_KIND {
     TOK_strip_preproc,
 
     TOK_error
-};
+} TOKEN_KIND;
 
 #endif

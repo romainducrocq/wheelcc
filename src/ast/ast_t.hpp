@@ -17,7 +17,7 @@ typedef uint32_t TUInt;
 typedef uint64_t TULong;
 typedef double TDouble;
 
-enum AST_T {
+typedef enum AST_T {
     // Frontend symbol table
     AST_Type_t,
     AST_Char_t,
@@ -325,6 +325,6 @@ enum AST_T {
     AST_AsmStaticVariable_t,
     AST_AsmStaticConstant_t,
     AST_AsmProgram_t
-};
+} AST_T;
 
 #endif

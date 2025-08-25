@@ -5,13 +5,13 @@
 
 // Errors
 
-enum MESSAGE_LEXER {
+typedef enum MESSAGE_LEXER {
     MSG_unhandled_lexer_error = 300,
     MSG_invalid_tok,
     MSG_failed_include
-};
+} MESSAGE_LEXER;
 
-enum MESSAGE_PARSER {
+typedef enum MESSAGE_PARSER {
     MSG_unhandled_parser_error = 400,
     MSG_unexpected_next_tok,
     MSG_reached_eof,
@@ -35,6 +35,6 @@ enum MESSAGE_PARSER {
     MSG_expect_param_list,
     MSG_member_decl_not_auto,
     MSG_member_decl_as_fun
-};
+} MESSAGE_PARSER;
 
 #endif
