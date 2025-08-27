@@ -4,12 +4,11 @@
 #include "sds/sds.h"
 #include "stb_ds/stb_ds.h"
 #include <inttypes.h>
-// TODO
+#include <stdbool.h>
+#include <stddef.h>
 #ifdef __cplusplus
 #include <new>
 #endif
-#include <stdbool.h>
-#include <stddef.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,12 +87,11 @@ typedef sds string_t;
         X = str_new(NULL); \
     }
 #define str_move(X, Y)      \
-    do {                    \
+    if (*X != *Y) {         \
         str_delete(*Y);     \
         *Y = *X;            \
         *X = str_new(NULL); \
-    }                       \
-    while (0)
+    }
 #define str_size(X) sdslen(X)
 #define str_back(X) (X)[str_size(X) - 1]
 #define str_append(X, Y)  \
@@ -141,7 +139,7 @@ typedef sds string_t;
         X = vec_new(); \
     }
 #define vec_move(X, Y)  \
-    do {                \
+    if (*X != *Y) {     \
         vec_delete(*Y); \
         *Y = *X;        \
         *X = vec_new(); \
