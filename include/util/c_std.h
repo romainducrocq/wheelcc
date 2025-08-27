@@ -86,11 +86,11 @@ typedef sds string_t;
         sdsfree(X);        \
         X = str_new(NULL); \
     }
-#define str_move(X, Y)      \
-    if (*X != *Y) {         \
-        str_delete(*Y);     \
-        *Y = *X;            \
-        *X = str_new(NULL); \
+#define str_move(X, Y)     \
+    if (X != Y) {          \
+        str_delete(Y);     \
+        Y = X;             \
+        X = str_new(NULL); \
     }
 #define str_size(X) sdslen(X)
 #define str_back(X) (X)[str_size(X) - 1]

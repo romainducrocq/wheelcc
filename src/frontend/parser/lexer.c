@@ -752,7 +752,7 @@ static bool find_include(vector_t(const char*) dirnames, string_t* filename) {
         string_t dirname = str_new(dirnames[i]);
         str_append(dirname, *filename);
         if (find_file(dirname)) {
-            str_move(&dirname, filename);
+            str_move(dirname, *filename);
             return true;
         }
         str_delete(dirname);
@@ -803,14 +803,14 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     TRY(open_fread(ctx->fileio, filename));
     {
         FileOpenLine fopen_line = {1, ctx->total_linenum + 1, str_new(NULL)};
-        str_move(&filename, &fopen_line.filename);
+        str_move(filename, fopen_line.filename);
         vec_push_back(ctx->errors->fopen_lines, fopen_line);
     }
     TRY(tokenize_file(ctx));
     TRY(close_fread(ctx->fileio, linenum));
     {
         FileOpenLine fopen_line = {linenum + 1, ctx->total_linenum + 1, str_new(NULL)};
-        str_move(&fopen_name, &fopen_line.filename);
+        str_move(fopen_name, fopen_line.filename);
         vec_push_back(ctx->errors->fopen_lines, fopen_line);
     }
 
