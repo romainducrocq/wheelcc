@@ -195,7 +195,7 @@ AsmFunction::AsmFunction(
     TIdentifier name, bool is_glob, bool is_ret_memory, vector_t(std::unique_ptr<AsmInstruction>) * instructions) :
     name(name),
     is_glob(is_glob), is_ret_memory(is_ret_memory), instructions(vec_new()) {
-    vec_move(instructions, &this->instructions);
+    vec_move(*instructions, this->instructions);
 }
 AsmFunction::~AsmFunction() {
     for (size_t i = 0; i < vec_size(this->instructions); ++i) {
@@ -209,7 +209,7 @@ AsmStaticVariable::AsmStaticVariable(
     TIdentifier name, TInt alignment, bool is_glob, vector_t(std::shared_ptr<StaticInit>) * static_inits) :
     name(name),
     alignment(alignment), is_glob(is_glob), static_inits(vec_new()) {
-    vec_move(static_inits, &this->static_inits);
+    vec_move(*static_inits, this->static_inits);
 }
 AsmStaticVariable::~AsmStaticVariable() {
     for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
@@ -226,8 +226,8 @@ AsmProgram::AsmProgram(vector_t(std::unique_ptr<AsmTopLevel>) * static_const_top
     vector_t(std::unique_ptr<AsmTopLevel>) * top_levels) :
     static_const_toplvls(vec_new()),
     top_levels(vec_new()) {
-    vec_move(static_const_toplvls, &this->static_const_toplvls);
-    vec_move(top_levels, &this->top_levels);
+    vec_move(*static_const_toplvls, this->static_const_toplvls);
+    vec_move(*top_levels, this->top_levels);
 }
 AsmProgram::~AsmProgram() {
     for (size_t i = 0; i < vec_size(this->static_const_toplvls); ++i) {

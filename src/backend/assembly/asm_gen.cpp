@@ -602,8 +602,7 @@ static void struct_8b_class(Ctx ctx, Structure* struct_type) {
         else {
             struct_8b_cls = struct_1_reg_8b_class(ctx, struct_type);
         }
-        map_add(ctx->struct_8b_cls_map, struct_type->tag, vec_new());
-        vec_move(&struct_8b_cls, &map_get(ctx->struct_8b_cls_map, struct_type->tag));
+        map_add(ctx->struct_8b_cls_map, struct_type->tag, struct_8b_cls);
     }
 }
 

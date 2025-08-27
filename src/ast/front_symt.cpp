@@ -53,7 +53,7 @@ FunType::FunType() : param_types(vec_new()) {}
 FunType::FunType(vector_t(std::shared_ptr<Type>) * param_types, std::shared_ptr<Type>&& ret_type) :
     param_reg_mask(NULL_REGISTER_MASK), ret_reg_mask(NULL_REGISTER_MASK), param_types(vec_new()),
     ret_type(std::move(ret_type)) {
-    vec_move(param_types, &this->param_types);
+    vec_move(*param_types, this->param_types);
 }
 FunType::~FunType() {
     for (size_t i = 0; i < vec_size(this->param_types); ++i) {
@@ -91,7 +91,7 @@ PointerInit::PointerInit(TIdentifier name) : name(name) {}
 
 Initial::Initial() : static_inits(vec_new()) {}
 Initial::Initial(vector_t(std::shared_ptr<StaticInit>) * static_inits) : static_inits(vec_new()) {
-    vec_move(static_inits, &this->static_inits);
+    vec_move(*static_inits, this->static_inits);
 }
 Initial::~Initial() {
     for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
@@ -117,7 +117,7 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) *
     hashmap_t(TIdentifier, UPtrStructMember) * members) :
     alignment(alignment),
     size(size), member_names(vec_new()), members(map_new()) {
-    vec_move(member_names, &this->member_names);
+    vec_move(*member_names, this->member_names);
     map_move(*members, this->members);
 }
 StructTypedef::~StructTypedef() {

@@ -138,13 +138,12 @@ typedef sds string_t;
         arrfree(X);    \
         X = vec_new(); \
     }
-#define vec_move(X, Y)  \
-    if (*X != *Y) {     \
-        vec_delete(*Y); \
-        *Y = *X;        \
-        *X = vec_new(); \
-    }                   \
-    while (0)
+#define vec_move(X, Y) \
+    if (X != Y) {      \
+        vec_delete(Y); \
+        Y = X;         \
+        X = vec_new(); \
+    }
 #define vec_size(X) arrlenu(X)
 #define vec_back(X) (X)[vec_size(X) - 1]
 #define vec_clear(X)                 \

@@ -1002,7 +1002,7 @@ static void fix_instr(Ctx ctx, AsmInstruction* node) {
 
 static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     vector_t(std::unique_ptr<AsmInstruction>) instructions = vec_new();
-    vec_move(&node->instructions, &instructions);
+    vec_move(node->instructions, instructions);
     BackendFun* backend_fun = static_cast<BackendFun*>(map_get(ctx->backend->symbol_table, node->name).get());
 
     vec_clear(node->instructions);

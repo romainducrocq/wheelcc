@@ -1925,7 +1925,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, std::shared_ptr<T
     derived_type = std::make_shared<FunType>(&param_types, std::move(*base_type));
     decltor->name = name;
     decltor->derived_type = std::move(derived_type);
-    vec_move(&params, &decltor->params);
+    vec_move(params, decltor->params);
     FINALLY;
     vec_delete(params);
     for (size_t i = 0; i < vec_size(param_types); ++i) {

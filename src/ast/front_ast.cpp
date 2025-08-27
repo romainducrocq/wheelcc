@@ -122,7 +122,7 @@ CArrayDeclarator::CArrayDeclarator(TLong size, std::unique_ptr<CDeclarator>&& de
 CFunDeclarator::CFunDeclarator() : param_list(vec_new()) {}
 CFunDeclarator::CFunDeclarator(vector_t(std::unique_ptr<CParam>) * param_list, std::unique_ptr<CDeclarator>&& decltor) :
     param_list(vec_new()), decltor(std::move(decltor)) {
-    vec_move(param_list, &this->param_list);
+    vec_move(*param_list, this->param_list);
 }
 CFunDeclarator::~CFunDeclarator() {
     for (size_t i = 0; i < vec_size(this->param_list); ++i) {
@@ -163,7 +163,7 @@ CConditional::CConditional(std::unique_ptr<CExp>&& condition, std::unique_ptr<CE
 CFunctionCall::CFunctionCall() : args(vec_new()) {}
 CFunctionCall::CFunctionCall(TIdentifier name, vector_t(std::unique_ptr<CExp>) * args, size_t line) :
     CExp(line), name(name), args(vec_new()) {
-    vec_move(args, &this->args);
+    vec_move(*args, this->args);
 }
 CFunctionCall::~CFunctionCall() {
     for (size_t i = 0; i < vec_size(this->args); ++i) {
@@ -240,7 +240,7 @@ CInitExp::CInitExp(std::unique_ptr<CExp>&& init) : init(std::move(init)) {}
 
 CB::CB() : block_items(vec_new()) {}
 CB::CB(vector_t(std::unique_ptr<CBlockItem>) * block_items) : block_items(vec_new()) {
-    vec_move(block_items, &this->block_items);
+    vec_move(*block_items, this->block_items);
 }
 CB::~CB() {
     for (size_t i = 0; i < vec_size(this->block_items); ++i) {
@@ -257,7 +257,7 @@ CSingleInit::CSingleInit(std::unique_ptr<CExp>&& exp) : exp(std::move(exp)) {}
 
 CCompoundInit::CCompoundInit() : initializers(vec_new()) {}
 CCompoundInit::CCompoundInit(vector_t(std::unique_ptr<CInitializer>) * initializers) : initializers(vec_new()) {
-    vec_move(initializers, &this->initializers);
+    vec_move(*initializers, this->initializers);
 }
 CCompoundInit::~CCompoundInit() {
     for (size_t i = 0; i < vec_size(this->initializers); ++i) {
@@ -274,7 +274,7 @@ CStructDeclaration::CStructDeclaration(
     TIdentifier tag, bool is_union, vector_t(std::unique_ptr<CMemberDeclaration>) * members, size_t line) :
     tag(tag),
     is_union(is_union), members(vec_new()), line(line) {
-    vec_move(members, &this->members);
+    vec_move(*members, this->members);
 }
 CStructDeclaration::~CStructDeclaration() {
     for (size_t i = 0; i < vec_size(this->members); ++i) {
@@ -290,7 +290,7 @@ CFunctionDeclaration::CFunctionDeclaration(TIdentifier name, vector_t(TIdentifie
     name(name),
     params(vec_new()), body(std::move(body)), fun_type(std::move(fun_type)), storage_class(std::move(storage_class)),
     line(line) {
-    vec_move(params, &this->params);
+    vec_move(*params, this->params);
 }
 CFunctionDeclaration::~CFunctionDeclaration() { vec_delete(this->params); }
 
@@ -307,7 +307,7 @@ CStructDecl::CStructDecl(std::unique_ptr<CStructDeclaration>&& struct_decl) : st
 
 CProgram::CProgram() : declarations(vec_new()) {}
 CProgram::CProgram(vector_t(std::unique_ptr<CDeclaration>) * declarations) : declarations(vec_new()) {
-    vec_move(declarations, &this->declarations);
+    vec_move(*declarations, this->declarations);
 }
 CProgram::~CProgram() {
     for (size_t i = 0; i < vec_size(this->declarations); ++i) {

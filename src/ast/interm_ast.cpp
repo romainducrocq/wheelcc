@@ -104,7 +104,7 @@ TacUIntToDouble::TacUIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_pt
 TacFunCall::TacFunCall() : args(vec_new()) {}
 TacFunCall::TacFunCall(TIdentifier name, vector_t(std::shared_ptr<TacValue>) * args, std::shared_ptr<TacValue>&& dst) :
     name(name), args(vec_new()), dst(std::move(dst)) {
-    vec_move(args, &this->args);
+    vec_move(*args, this->args);
 }
 TacFunCall::~TacFunCall() {
     for (size_t i = 0; i < vec_size(this->args); ++i) {
@@ -161,8 +161,8 @@ TacFunction::TacFunction(
     TIdentifier name, bool is_glob, vector_t(TIdentifier) * params, vector_t(std::unique_ptr<TacInstruction>) * body) :
     name(name),
     is_glob(is_glob), params(vec_new()), body(vec_new()) {
-    vec_move(params, &this->params);
-    vec_move(body, &this->body);
+    vec_move(*params, this->params);
+    vec_move(*body, this->body);
 }
 TacFunction::~TacFunction() {
     vec_delete(this->params);
@@ -177,7 +177,7 @@ TacStaticVariable::TacStaticVariable(TIdentifier name, bool is_glob, std::shared
     vector_t(std::shared_ptr<StaticInit>) * static_inits) :
     name(name),
     is_glob(is_glob), static_init_type(std::move(static_init_type)), static_inits(vec_new()) {
-    vec_move(static_inits, &this->static_inits);
+    vec_move(*static_inits, this->static_inits);
 }
 TacStaticVariable::~TacStaticVariable() {
     for (size_t i = 0; i < vec_size(this->static_inits); ++i) {
@@ -196,9 +196,9 @@ TacProgram::TacProgram(vector_t(std::unique_ptr<TacTopLevel>) * static_const_top
     vector_t(std::unique_ptr<TacTopLevel>) * static_var_toplvls, vector_t(std::unique_ptr<TacTopLevel>) * fun_toplvls) :
     static_const_toplvls(vec_new()),
     static_var_toplvls(vec_new()), fun_toplvls(vec_new()) {
-    vec_move(static_const_toplvls, &this->static_const_toplvls);
-    vec_move(static_var_toplvls, &this->static_var_toplvls);
-    vec_move(fun_toplvls, &this->fun_toplvls);
+    vec_move(*static_const_toplvls, this->static_const_toplvls);
+    vec_move(*static_var_toplvls, this->static_var_toplvls);
+    vec_move(*fun_toplvls, this->fun_toplvls);
 }
 TacProgram::~TacProgram() {
     for (size_t i = 0; i < vec_size(this->static_const_toplvls); ++i) {
