@@ -26,9 +26,9 @@ typedef ErrorsContext* Ctx;
 #else
 _Noreturn
 #endif
-void raise_sigabrt(const char* func, const char* file, int line) {
+void raise_sigabrt(const char* func, const char* file, int line, const char* msg) {
     fflush(stdout);
-    fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s\n", file, line, func);
+    fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s (%s)\n", file, line, func, msg);
     abort();
 }
 

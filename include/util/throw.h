@@ -54,11 +54,12 @@ extern "C" {
 #else
 _Noreturn
 #endif
-void raise_sigabrt(const char* func, const char* file, int line);
+void raise_sigabrt(const char* func, const char* file, int line, const char* msg);
 #ifdef __cplusplus
 }
 #endif
-#define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__)
+#define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__, "abort")
+#define THROW_ALLOC(T) raise_sigabrt(__func__, __FILE__, __LINE__, "alloc " #T)
 #ifdef __NDEBUG__
 #define THROW_ABORT_IF(X)
 #else
