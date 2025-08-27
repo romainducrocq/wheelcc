@@ -54,12 +54,6 @@ static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size
 static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab);
 static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab);
 
-#define assert_print(X, Y)        \
-    if (!X) {                     \
-        print_field(Y, "None: "); \
-        return;                   \
-    }
-
 #define TAB_SIZE 2
 #define print_field(X, ...)                             \
     do {                                                \
@@ -68,8 +62,14 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab);
     }                                                   \
     while (0)
 
+#define print_null(X, Y)          \
+    if (!X) {                     \
+        print_field(Y, "None: "); \
+        return;                   \
+    }
+
 static void print_CConst(CConst* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CConst_t:
             print_field(++tab, "CConst: ");
@@ -108,7 +108,7 @@ static void print_CConst(CConst* node, size_t tab) {
 }
 
 static void print_CStringLiteral(CStringLiteral* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CStringLiteral_t:
             print_field(++tab, "CStringLiteral: ");
@@ -123,7 +123,7 @@ static void print_CStringLiteral(CStringLiteral* node, size_t tab) {
 }
 
 static void print_Type(Ctx ctx, Type* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_Type_t:
             print_field(++tab, "Type: ");
@@ -185,7 +185,7 @@ static void print_Type(Ctx ctx, Type* node, size_t tab) {
 }
 
 static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_StaticInit_t:
             print_field(++tab, "StaticInit: ");
@@ -240,7 +240,7 @@ static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
 }
 
 static void print_InitialValue(Ctx ctx, InitialValue* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_InitialValue_t:
             print_field(++tab, "InitialValue: ");
@@ -265,7 +265,7 @@ static void print_InitialValue(Ctx ctx, InitialValue* node, size_t tab) {
 }
 
 static void print_IdentifierAttr(Ctx ctx, IdentifierAttr* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_IdentifierAttr_t:
             print_field(++tab, "IdentifierAttr: ");
@@ -293,7 +293,7 @@ static void print_IdentifierAttr(Ctx ctx, IdentifierAttr* node, size_t tab) {
 }
 
 static void print_Symbol(Ctx ctx, Symbol* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_Symbol_t:
             print_field(++tab, "Symbol: ");
@@ -306,7 +306,7 @@ static void print_Symbol(Ctx ctx, Symbol* node, size_t tab) {
 }
 
 static void print_StructMember(Ctx ctx, StructMember* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_StructMember_t:
             print_field(++tab, "StructMember: ");
@@ -319,7 +319,7 @@ static void print_StructMember(Ctx ctx, StructMember* node, size_t tab) {
 }
 
 static void print_StructTypedef(Ctx ctx, StructTypedef* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_StructTypedef_t:
             print_field(++tab, "StructTypedef: ");
@@ -341,7 +341,7 @@ static void print_StructTypedef(Ctx ctx, StructTypedef* node, size_t tab) {
 }
 
 static void print_CUnaryOp(CUnaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CUnaryOp_t:
             print_field(++tab, "CUnaryOp: ");
@@ -367,7 +367,7 @@ static void print_CUnaryOp(CUnaryOp* node, size_t tab) {
 }
 
 static void print_CBinaryOp(CBinaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CBinaryOp_t:
             print_field(++tab, "CBinaryOp: ");
@@ -435,7 +435,7 @@ static void print_CBinaryOp(CBinaryOp* node, size_t tab) {
 }
 
 static void print_CParam(Ctx ctx, CParam* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CParam_t:
             print_field(++tab, "CParam: ");
@@ -448,7 +448,7 @@ static void print_CParam(Ctx ctx, CParam* node, size_t tab) {
 }
 
 static void print_CDeclarator(Ctx ctx, CDeclarator* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CDeclarator_t:
             print_field(++tab, "CDeclarator: ");
@@ -482,7 +482,7 @@ static void print_CDeclarator(Ctx ctx, CDeclarator* node, size_t tab) {
 }
 
 static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CExp_t:
             print_field(++tab, "CExp: ");
@@ -573,7 +573,7 @@ static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
 }
 
 static void print_CStatement(Ctx ctx, CStatement* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CStatement_t:
             print_field(++tab, "CStatement: ");
@@ -664,7 +664,7 @@ static void print_CStatement(Ctx ctx, CStatement* node, size_t tab) {
 }
 
 static void print_CForInit(Ctx ctx, CForInit* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CForInit_t:
             print_field(++tab, "CForInit: ");
@@ -684,7 +684,7 @@ static void print_CForInit(Ctx ctx, CForInit* node, size_t tab) {
 }
 
 static void print_CBlock(Ctx ctx, CBlock* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CBlock_t:
             print_field(++tab, "CBlock: ");
@@ -702,7 +702,7 @@ static void print_CBlock(Ctx ctx, CBlock* node, size_t tab) {
 }
 
 static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CBlockItem_t:
             print_field(++tab, "CBlockItem: ");
@@ -721,7 +721,7 @@ static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab) {
 }
 
 static void print_CStorageClass(CStorageClass* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CStorageClass_t:
             print_field(++tab, "CStorageClass: ");
@@ -738,7 +738,7 @@ static void print_CStorageClass(CStorageClass* node, size_t tab) {
 }
 
 static void print_CInitializer(Ctx ctx, CInitializer* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CInitializer_t:
             print_field(++tab, "CInitializer: ");
@@ -762,7 +762,7 @@ static void print_CInitializer(Ctx ctx, CInitializer* node, size_t tab) {
 }
 
 static void print_CMemberDeclaration(Ctx ctx, CMemberDeclaration* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CMemberDeclaration_t:
             print_field(++tab, "CMemberDeclaration: ");
@@ -775,7 +775,7 @@ static void print_CMemberDeclaration(Ctx ctx, CMemberDeclaration* node, size_t t
 }
 
 static void print_CStructDeclaration(Ctx ctx, CStructDeclaration* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CStructDeclaration_t:
             print_field(++tab, "CStructDeclaration: ");
@@ -792,7 +792,7 @@ static void print_CStructDeclaration(Ctx ctx, CStructDeclaration* node, size_t t
 }
 
 static void print_CFunctionDeclaration(Ctx ctx, CFunctionDeclaration* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CFunctionDeclaration_t:
             print_field(++tab, "CFunctionDeclaration: ");
@@ -811,7 +811,7 @@ static void print_CFunctionDeclaration(Ctx ctx, CFunctionDeclaration* node, size
 }
 
 static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CVariableDeclaration_t:
             print_field(++tab, "CVariableDeclaration: ");
@@ -826,7 +826,7 @@ static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size
 }
 
 static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CDeclaration_t:
             print_field(++tab, "CDeclaration: ");
@@ -852,7 +852,7 @@ static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab) {
 }
 
 static void print_CProgram(Ctx ctx, CProgram* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_CProgram_t:
             print_field(++tab, "CProgram: ");
@@ -867,7 +867,7 @@ static void print_CProgram(Ctx ctx, CProgram* node, size_t tab) {
 }
 
 static void print_TacUnaryOp(TacUnaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacUnaryOp_t:
             print_field(++tab, "TacUnaryOp: ");
@@ -887,7 +887,7 @@ static void print_TacUnaryOp(TacUnaryOp* node, size_t tab) {
 }
 
 static void print_TacBinaryOp(TacBinaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacBinaryOp_t:
             print_field(++tab, "TacBinaryOp: ");
@@ -949,7 +949,7 @@ static void print_TacBinaryOp(TacBinaryOp* node, size_t tab) {
 }
 
 static void print_TacValue(Ctx ctx, TacValue* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacValue_t:
             print_field(++tab, "TacValue: ");
@@ -968,7 +968,7 @@ static void print_TacValue(Ctx ctx, TacValue* node, size_t tab) {
 }
 
 static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacInstruction_t:
             print_field(++tab, "TacInstruction: ");
@@ -1101,7 +1101,7 @@ static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
 }
 
 static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacTopLevel_t:
             print_field(++tab, "TacTopLevel: ");
@@ -1147,7 +1147,7 @@ static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
 }
 
 static void print_TacProgram(Ctx ctx, TacProgram* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_TacProgram_t:
             print_field(++tab, "TacProgram: ");
@@ -1170,7 +1170,7 @@ static void print_TacProgram(Ctx ctx, TacProgram* node, size_t tab) {
 }
 
 static void print_AssemblyType(AssemblyType* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AssemblyType_t:
             print_field(++tab, "AssemblyType: ");
@@ -1198,7 +1198,7 @@ static void print_AssemblyType(AssemblyType* node, size_t tab) {
 }
 
 static void print_BackendSymbol(Ctx ctx, BackendSymbol* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_BackendSymbol_t:
             print_field(++tab, "BackendSymbol: ");
@@ -1224,7 +1224,7 @@ static void print_BackendSymbol(Ctx ctx, BackendSymbol* node, size_t tab) {
 }
 
 static void print_AsmReg(AsmReg* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmReg_t:
             print_field(++tab, "AsmReg: ");
@@ -1331,7 +1331,7 @@ static void print_AsmReg(AsmReg* node, size_t tab) {
 }
 
 static void print_AsmCondCode(AsmCondCode* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmCondCode_t:
             print_field(++tab, "AsmCondCode: ");
@@ -1375,7 +1375,7 @@ static void print_AsmCondCode(AsmCondCode* node, size_t tab) {
 }
 
 static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmOperand_t:
             print_field(++tab, "AsmOperand: ");
@@ -1422,7 +1422,7 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
 }
 
 static void print_AsmBinaryOp(AsmBinaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmBinaryOp_t:
             print_field(++tab, "AsmBinaryOp: ");
@@ -1463,7 +1463,7 @@ static void print_AsmBinaryOp(AsmBinaryOp* node, size_t tab) {
 }
 
 static void print_AsmUnaryOp(AsmUnaryOp* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmUnaryOp_t:
             print_field(++tab, "AsmUnaryOp: ");
@@ -1483,7 +1483,7 @@ static void print_AsmUnaryOp(AsmUnaryOp* node, size_t tab) {
 }
 
 static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmInstruction_t:
             print_field(++tab, "AsmInstruction: ");
@@ -1599,7 +1599,7 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
 }
 
 static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmTopLevel_t:
             print_field(++tab, "AsmTopLevel: ");
@@ -1641,7 +1641,7 @@ static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
 }
 
 static void print_AsmProgram(Ctx ctx, AsmProgram* node, size_t tab) {
-    assert_print(node, ++tab);
+    print_null(node, ++tab);
     switch (node->type()) {
         case AST_AsmProgram_t:
             print_field(++tab, "AsmProgram: ");
