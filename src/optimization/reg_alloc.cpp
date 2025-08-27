@@ -894,7 +894,7 @@ static std::shared_ptr<AsmRegister> alloc_hard_reg(Ctx ctx, TIdentifier name) {
         if (is_reg_callee_saved(reg_kind) && !register_mask_get(ctx->callee_saved_reg_mask, reg_kind)) {
             register_mask_set(&ctx->callee_saved_reg_mask, reg_kind, true);
             std::shared_ptr<AsmOperand> callee_saved_reg = hard_reg;
-            vec_move_back(AsmOperand, ctx->p_backend_fun->callee_saved_regs, callee_saved_reg);
+            vec_move_back(ctx->p_backend_fun->callee_saved_regs, callee_saved_reg);
         }
         return hard_reg;
     }

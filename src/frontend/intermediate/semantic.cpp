@@ -1664,7 +1664,7 @@ static std::unique_ptr<CCompoundInit> check_arr_zero_init(Ctx ctx, Array* arr_ty
     vec_reserve(zero_inits, arr_type_size);
     for (size_t i = 0; i < arr_type_size; ++i) {
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, arr_type->elem_type.get());
-        vec_move_back(CInitializer, zero_inits, initializer);
+        vec_move_back(zero_inits, initializer);
     }
     return std::make_unique<CCompoundInit>(&zero_inits);
 }
@@ -1676,7 +1676,7 @@ static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure*
     for (size_t i = 0; i < vec_size(struct_typedef->member_names); ++i) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
-        vec_move_back(CInitializer, zero_inits, initializer);
+        vec_move_back(zero_inits, initializer);
     }
     return std::make_unique<CCompoundInit>(&zero_inits);
 }
@@ -1733,7 +1733,7 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
 static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>* init_type) {
     while (vec_size(node->initializers) < (size_t)arr_type->size) {
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, arr_type->elem_type.get());
-        vec_move_back(CInitializer, node->initializers, zero_init);
+        vec_move_back(node->initializers, zero_init);
     }
     node->init_type = *init_type;
 }
@@ -1743,7 +1743,7 @@ static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_ty
     for (size_t i = vec_size(node->initializers); i < map_size(struct_typedef->members); ++i) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
-        vec_move_back(CInitializer, node->initializers, zero_init);
+        vec_move_back(node->initializers, zero_init);
     }
     node->init_type = *init_type;
 }
@@ -1814,7 +1814,7 @@ static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
             param_attrs = std::make_unique<LocalAttr>();
             THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->params[i]) != map_end());
             symbol = std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
-            map_move_add(Symbol, ctx->frontend->symbol_table, node->params[i], symbol);
+            map_move_add(ctx->frontend->symbol_table, node->params[i], symbol);
         }
     }
     FINALLY;
@@ -1869,7 +1869,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     glob_fun_type = node->fun_type;
     glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
     symbol = std::make_unique<Symbol>(std::move(glob_fun_type), std::move(glob_fun_attrs));
-    map_move_add(Symbol, ctx->frontend->symbol_table, node->name, symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -1878,7 +1878,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 }
 
 static void push_static_init(Ctx ctx, std::shared_ptr<StaticInit>&& static_init) {
-    vec_move_back(StaticInit, *ctx->p_static_inits, static_init);
+    vec_move_back(*ctx->p_static_inits, static_init);
 }
 
 static void push_zero_static_init(Ctx ctx, TLong byte) {
@@ -2064,7 +2064,7 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
             }
             std::unique_ptr<Symbol> symbol =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-            map_move_add(Symbol, ctx->frontend->symbol_table, string_const_label, symbol);
+            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
         }
     }
     push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
@@ -2287,7 +2287,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     glob_var_type = node->var_type;
     glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
     symbol = std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
-    map_move_add(Symbol, ctx->frontend->symbol_table, node->name, symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -2321,7 +2321,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     init_value = std::make_shared<NoInitializer>();
     local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    map_move_add(Symbol, ctx->frontend->symbol_table, node->name, symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt_1);
@@ -2349,7 +2349,7 @@ static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
     THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    map_move_add(Symbol, ctx->frontend->symbol_table, node->name, symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     CATCH_EXIT;
 }
@@ -2371,7 +2371,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     local_var_attrs = std::make_unique<LocalAttr>();
     THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-    map_move_add(Symbol, ctx->frontend->symbol_table, node->name, symbol);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -2483,7 +2483,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
 
             THROW_ABORT_IF(map_find(members, vec_back(member_names)) != map_end());
             struct_member = std::make_unique<StructMember>(offset, std::move(member_type));
-            map_move_add(StructMember, members, vec_back(member_names), struct_member);
+            map_move_add(members, vec_back(member_names), struct_member);
         }
         if (alignment < member_alignment) {
             alignment = member_alignment;
@@ -2496,7 +2496,7 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
         }
     }
     struct_typedef = std::make_unique<StructTypedef>(alignment, size, &member_names, &members);
-    map_move_add(StructTypedef, ctx->frontend->struct_typedef_table, node->tag, struct_typedef);
+    map_move_add(ctx->frontend->struct_typedef_table, node->tag, struct_typedef);
     FINALLY;
     str_delete(struct_fmt);
     vec_delete(member_names);
@@ -3096,7 +3096,7 @@ static error_t reslv_case_statement(Ctx ctx, CCase* node) {
     CATCH_ENTER;
     TRY(annotate_case_jump(ctx, node));
     TRY(reslv_typed_exp(ctx, &node->value));
-    vec_move_back(CExp, ctx->p_switch_statement->cases, node->value);
+    vec_move_back(ctx->p_switch_statement->cases, node->value);
     TRY(reslv_statement(ctx, node->jump_to.get()));
     FINALLY;
     CATCH_EXIT;

@@ -1216,7 +1216,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         for (size_t j = vec_size(ctx->dfa_o1->bak_instrs); j <= ctx->dfa->set_size; ++j) {
             // TODO
             std::unique_ptr<TacInstruction> temp(nullptr);
-            vec_move_back(TacInstruction, ctx->dfa_o1->bak_instrs, temp);
+            vec_move_back(ctx->dfa_o1->bak_instrs, temp);
             // vec_push_back(ctx->dfa_o1->bak_instrs, NULL);
         }
 

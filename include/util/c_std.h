@@ -153,14 +153,19 @@ typedef sds string_t;
 #define vec_empty(X) (vec_size(X) == 0)
 #ifdef __cplusplus
 // TODO remove
-#define vec_move_back(T, X, Y)                                    \
+#define vec_move_back(X, Y)                                       \
     do {                                                          \
         stbds_arrmaybegrow(X, 1);                                 \
         new (&(X)[stbds_header(X)->length++]) auto(std::move(Y)); \
     }                                                             \
     while (0)
 #else
-#define vec_move_back(T, X, Y)
+#define vec_move_back(X, Y)  \
+    do {                     \
+        vec_push_back(X, Y); \
+        Y = NULL;            \
+    }                        \
+    while (0)
 #endif
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
@@ -205,7 +210,7 @@ typedef sds string_t;
 #define map_get(X, Y) hmget(X, Y)
 #ifdef __cplusplus
 // TODO remove
-#define map_move_add(T, X, Y, Z)                                                                                   \
+#define map_move_add(X, Y, Z)                                                                                      \
     do {                                                                                                           \
         (X) = stbds_hmput_key_wrapper((X), sizeof *(X), (void*)STBDS_ADDRESSOF((X)->key, (Y)), sizeof(X)->key, 0); \
         (X)[stbds_temp((X)-1)].key = (Y);                                                                          \
@@ -213,7 +218,12 @@ typedef sds string_t;
     }                                                                                                              \
     while (0)
 #else
-#define map_move_add(T, X, Y, Z)
+#define map_move_add(X, Y, Z) \
+    do {                      \
+        map_add(X, Y, Z);     \
+        Z = NULL;             \
+    }                         \
+    while (0)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
