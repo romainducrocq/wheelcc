@@ -118,7 +118,7 @@ StructTypedef::StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) *
     alignment(alignment),
     size(size), member_names(vec_new()), members(map_new()) {
     vec_move(member_names, &this->member_names);
-    map_move(members, &this->members);
+    map_move(*members, this->members);
 }
 StructTypedef::~StructTypedef() {
     vec_delete(this->member_names);

@@ -186,11 +186,11 @@ typedef sds string_t;
         hmfree(X);     \
         X = map_new(); \
     }
-#define map_move(X, Y)  \
-    if (*X != *Y) {     \
-        map_delete(*Y); \
-        *Y = *X;        \
-        *X = map_new(); \
+#define map_move(X, Y) \
+    if (X != Y) {      \
+        map_delete(Y); \
+        Y = X;         \
+        X = map_new(); \
     }
 #define map_size(X) hmlenu(X)
 #define map_add(X, Y, Z) hmput(X, Y, Z)
