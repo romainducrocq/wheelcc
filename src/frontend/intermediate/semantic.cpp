@@ -1664,7 +1664,7 @@ static std::unique_ptr<CCompoundInit> check_arr_zero_init(Ctx ctx, Array* arr_ty
     vec_reserve(zero_inits, arr_type_size);
     for (size_t i = 0; i < arr_type_size; ++i) {
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, arr_type->elem_type.get());
-        vec_move_back(zero_inits, initializer);
+        vec_move_back(CInitializer, zero_inits, initializer);
     }
     return std::make_unique<CCompoundInit>(&zero_inits);
 }
@@ -1676,7 +1676,7 @@ static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure*
     for (size_t i = 0; i < vec_size(struct_typedef->member_names); ++i) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
-        vec_move_back(zero_inits, initializer);
+        vec_move_back(CInitializer, zero_inits, initializer);
     }
     return std::make_unique<CCompoundInit>(&zero_inits);
 }
@@ -1733,7 +1733,7 @@ static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* 
 static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>* init_type) {
     while (vec_size(node->initializers) < (size_t)arr_type->size) {
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, arr_type->elem_type.get());
-        vec_move_back(node->initializers, zero_init);
+        vec_move_back(CInitializer, node->initializers, zero_init);
     }
     node->init_type = *init_type;
 }
@@ -1743,7 +1743,7 @@ static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_ty
     for (size_t i = vec_size(node->initializers); i < map_size(struct_typedef->members); ++i) {
         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
-        vec_move_back(node->initializers, zero_init);
+        vec_move_back(CInitializer, node->initializers, zero_init);
     }
     node->init_type = *init_type;
 }
@@ -1878,7 +1878,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 }
 
 static void push_static_init(Ctx ctx, std::shared_ptr<StaticInit>&& static_init) {
-    vec_move_back(*ctx->p_static_inits, static_init);
+    vec_move_back(StaticInit, *ctx->p_static_inits, static_init);
 }
 
 static void push_zero_static_init(Ctx ctx, TLong byte) {
@@ -3096,7 +3096,7 @@ static error_t reslv_case_statement(Ctx ctx, CCase* node) {
     CATCH_ENTER;
     TRY(annotate_case_jump(ctx, node));
     TRY(reslv_typed_exp(ctx, &node->value));
-    vec_move_back(ctx->p_switch_statement->cases, node->value);
+    vec_move_back(CExp, ctx->p_switch_statement->cases, node->value);
     TRY(reslv_statement(ctx, node->jump_to.get()));
     FINALLY;
     CATCH_EXIT;

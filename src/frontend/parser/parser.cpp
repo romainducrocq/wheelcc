@@ -558,12 +558,12 @@ static error_t parse_arg_list(Ctx ctx, vector_t(std::unique_ptr<CExp>) * args) {
     std::unique_ptr<CExp> arg;
     CATCH_ENTER;
     TRY(parse_exp(ctx, 0, &arg));
-    vec_move_back(*args, arg);
+    vec_move_back(CExp, *args, arg);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_comma_separator) {
         TRY(pop_next(ctx));
         TRY(parse_exp(ctx, 0, &arg));
-        vec_move_back(*args, arg);
+        vec_move_back(CExp, *args, arg);
         TRY(peek_next(ctx));
     }
     FINALLY;
@@ -1579,7 +1579,7 @@ static error_t parse_b_block(Ctx ctx, std::unique_ptr<CBlock>* block) {
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind != TOK_close_brace) {
         TRY(parse_block_item(ctx, &block_item));
-        vec_move_back(block_items, block_item);
+        vec_move_back(CBlockItem, block_items, block_item);
         TRY(peek_next(ctx));
     }
     *block = std::make_unique<CB>(&block_items);
@@ -1825,7 +1825,7 @@ static error_t parse_compound_init(Ctx ctx, std::unique_ptr<CInitializer>* initi
             break;
         }
         TRY(parse_initializer(ctx, initializer));
-        vec_move_back(initializers, *initializer);
+        vec_move_back(CInitializer, initializers, *initializer);
         TRY(peek_next(ctx));
         if (ctx->peek_tok->tok_kind == TOK_close_brace) {
             break;
@@ -1900,7 +1900,7 @@ static error_t proc_param_decltor(
     TRY(proc_decltor(ctx, node->decltor.get(), &param_type, &decltor));
     THROW_ABORT_IF(decltor.derived_type->type() == AST_FunType_t);
     vec_push_back(*params, decltor.name);
-    vec_move_back(*param_types, decltor.derived_type);
+    vec_move_back(Type, *param_types, decltor.derived_type);
     FINALLY;
     vec_delete(decltor.params);
     CATCH_EXIT;
@@ -2018,12 +2018,12 @@ static error_t parse_non_empty_param_list(Ctx ctx, vector_t(std::unique_ptr<CPar
     std::unique_ptr<CParam> param;
     CATCH_ENTER;
     TRY(parse_param(ctx, &param));
-    vec_move_back(*param_list, param);
+    vec_move_back(CParam, *param_list, param);
     TRY(peek_next(ctx));
     while (ctx->peek_tok->tok_kind == TOK_comma_separator) {
         TRY(pop_next(ctx));
         TRY(parse_param(ctx, &param));
-        vec_move_back(*param_list, param);
+        vec_move_back(CParam, *param_list, param);
         TRY(peek_next(ctx));
     }
     FINALLY;
@@ -2223,7 +2223,7 @@ static error_t parse_struct_declaration(Ctx ctx, std::unique_ptr<CStructDeclarat
     if (ctx->next_tok->tok_kind == TOK_open_brace) {
         do {
             TRY(parse_member_declaration(ctx, &member));
-            vec_move_back(members, member);
+            vec_move_back(CMemberDeclaration, members, member);
             TRY(peek_next(ctx));
         }
         while (ctx->peek_tok->tok_kind != TOK_close_brace);
@@ -2334,7 +2334,7 @@ static error_t parse_program(Ctx ctx, std::unique_ptr<CProgram>* c_ast) {
     CATCH_ENTER;
     while (ctx->pop_idx < vec_size(*ctx->p_toks)) {
         TRY(parse_declaration(ctx, &declaration));
-        vec_move_back(declarations, declaration);
+        vec_move_back(CDeclaration, declarations, declaration);
     }
     *c_ast = std::make_unique<CProgram>(&declarations);
     FINALLY;

@@ -129,7 +129,9 @@ static std::shared_ptr<TacValue> repr_value(CExp* node) {
     }
 }
 
-static void push_instr(Ctx ctx, std::unique_ptr<TacInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
+static void push_instr(Ctx ctx, std::unique_ptr<TacInstruction>&& instr) {
+    vec_move_back(TacInstruction, *ctx->p_instrs, instr);
+}
 
 static std::unique_ptr<TacExpResult> repr_res_instr(Ctx ctx, CExp* node);
 static std::shared_ptr<TacValue> repr_exp_instr(Ctx ctx, CExp* node);
@@ -670,7 +672,7 @@ static std::unique_ptr<TacPlainOperand> call_res_instr(Ctx ctx, CFunctionCall* n
     vec_reserve(args, vec_size(node->args));
     for (size_t i = 0; i < vec_size(node->args); ++i) {
         std::shared_ptr<TacValue> arg = repr_exp_instr(ctx, node->args[i].get());
-        vec_move_back(args, arg);
+        vec_move_back(TacValue, args, arg);
     }
     std::shared_ptr<TacValue> dst;
     if (node->exp_type->type() != AST_Void_t) {
@@ -1392,7 +1394,7 @@ static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaratio
 }
 
 static void push_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& top_level) {
-    vec_move_back(*ctx->p_toplvls, top_level);
+    vec_move_back(TacTopLevel, *ctx->p_toplvls, top_level);
 }
 
 static void fun_decl_toplvl(Ctx ctx, CFunDecl* node) {
@@ -1420,7 +1422,7 @@ static vector_t(std::shared_ptr<StaticInit>) tentative_static_toplvl(Ctx ctx, Ty
     {
         TLong byte = get_type_scale(ctx, static_init_type);
         std::shared_ptr<StaticInit> static_init = std::make_shared<ZeroInit>(byte);
-        vec_move_back(static_inits, static_init);
+        vec_move_back(StaticInit, static_inits, static_init);
     }
     return static_inits;
 }
@@ -1430,7 +1432,7 @@ static vector_t(std::shared_ptr<StaticInit>) initial_static_toplvl(Initial* node
     vec_reserve(static_inits, vec_size(node->static_inits));
     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
         std::shared_ptr<StaticInit> static_init = node->static_inits[i];
-        vec_move_back(static_inits, static_init);
+        vec_move_back(StaticInit, static_inits, static_init);
     }
     return static_inits;
 }
@@ -1460,7 +1462,7 @@ static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
 }
 
 static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& static_const_toplvls) {
-    vec_move_back(*ctx->p_static_consts, static_const_toplvls);
+    vec_move_back(TacTopLevel, *ctx->p_static_consts, static_const_toplvls);
 }
 
 static void repr_static_const_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {

@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
+// TODO remove
 #ifdef __cplusplus
 #include <new>
 #endif
@@ -151,12 +152,16 @@ typedef sds string_t;
     }
 #define vec_empty(X) (vec_size(X) == 0)
 // TODO
-#define vec_move_back(X, Y)                                       \
+#ifdef __cplusplus
+#define vec_move_back(T, X, Y)                                    \
     do {                                                          \
         stbds_arrmaybegrow(X, 1);                                 \
         new (&(X)[stbds_header(X)->length++]) auto(std::move(Y)); \
     }                                                             \
     while (0)
+#else
+#define vec_move_back(T, X, Y)
+#endif
 #define vec_pop_back(X) arrpop(X)
 #define vec_push_back(X, Y) arrput(X, Y)
 #define vec_remove_swap(X, Y) arrdelswap(X, Y)

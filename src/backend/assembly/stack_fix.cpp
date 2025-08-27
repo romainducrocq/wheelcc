@@ -480,7 +480,7 @@ std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
 }
 
 static void push_fix_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) {
-    vec_move_back(*ctx->p_fix_instrs, instr);
+    vec_move_back(AsmInstruction, *ctx->p_fix_instrs, instr);
 }
 
 static void swap_fix_instr_back(Ctx ctx) {
@@ -1013,7 +1013,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     ctx->p_fix_instrs = &node->instructions;
     // TODO
     std::unique_ptr<AsmInstruction> temp(nullptr);
-    vec_move_back(*ctx->p_fix_instrs, temp);
+    vec_move_back(AsmInstruction, *ctx->p_fix_instrs, temp);
     // vec_push_back(*ctx->p_fix_instrs, NULL);
 
     bool is_ret = false;
