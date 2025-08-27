@@ -536,12 +536,9 @@ static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
                         struct_8b.clss[1] = CLS_integer;
                     }
                 }
-                // TODO
-                else {
-                    if (member_struct_8b->clss[0] == CLS_integer) {
-                        struct_8b.clss[0] = CLS_integer;
-                        struct_8b.clss[1] = CLS_integer;
-                    }
+                else if (member_struct_8b->clss[0] == CLS_integer) {
+                    struct_8b.clss[0] = CLS_integer;
+                    struct_8b.clss[1] = CLS_integer;
                 }
             }
             else if (member_type->type() != AST_Double_t) {
@@ -1462,62 +1459,56 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
         }
     }
 
-    if (node->dst) {
-        if (is_ret_memory) {
-            ret_1_reg_mask(fun_type, true);
-        }
-        // TODO
-        else {
-            if (is_value_dbl(ctx, node->dst.get())) {
-                ret_call_instr(ctx, node->dst.get(), REG_Xmm0);
-                ret_1_reg_mask(fun_type, false);
-            }
-            else if (!is_value_struct(ctx, node->dst.get())) {
-                ret_call_instr(ctx, node->dst.get(), REG_Ax);
-                ret_1_reg_mask(fun_type, true);
-            }
-            else {
-                bool reg_size = false;
-                TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
-                Structure* struct_type =
-                    static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
-                Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
-                switch (struct_8b->clss[0]) {
-                    case CLS_integer: {
-                        ret_8b_call_instr(ctx, name, 0l, struct_type, REG_Ax);
-                        reg_size = true;
-                        break;
-                    }
-                    case CLS_sse:
-                        ret_8b_call_instr(ctx, name, 0l, NULL, REG_Xmm0);
-                        break;
-                    default:
-                        THROW_ABORT;
-                }
-                if (struct_8b->size == 2) {
-                    bool sse_size = !reg_size;
-                    switch (struct_8b->clss[1]) {
-                        case CLS_integer:
-                            ret_8b_call_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
-                            break;
-                        case CLS_sse: {
-                            ret_8b_call_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
-                            sse_size = true;
-                            break;
-                        }
-                        default:
-                            THROW_ABORT;
-                    }
-                    ret_2_reg_mask(fun_type, reg_size, sse_size);
-                }
-                else {
-                    ret_1_reg_mask(fun_type, reg_size);
-                }
-            }
-        }
+    if (!node->dst) {
+        ret_2_reg_mask(fun_type, false, false);
+    }
+    else if (is_ret_memory) {
+        ret_1_reg_mask(fun_type, true);
+    }
+    else if (is_value_dbl(ctx, node->dst.get())) {
+        ret_call_instr(ctx, node->dst.get(), REG_Xmm0);
+        ret_1_reg_mask(fun_type, false);
+    }
+    else if (!is_value_struct(ctx, node->dst.get())) {
+        ret_call_instr(ctx, node->dst.get(), REG_Ax);
+        ret_1_reg_mask(fun_type, true);
     }
     else {
-        ret_2_reg_mask(fun_type, false, false);
+        bool reg_size = false;
+        TIdentifier name = static_cast<TacVariable*>(node->dst.get())->name;
+        Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
+        Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+        switch (struct_8b->clss[0]) {
+            case CLS_integer: {
+                ret_8b_call_instr(ctx, name, 0l, struct_type, REG_Ax);
+                reg_size = true;
+                break;
+            }
+            case CLS_sse:
+                ret_8b_call_instr(ctx, name, 0l, NULL, REG_Xmm0);
+                break;
+            default:
+                THROW_ABORT;
+        }
+        if (struct_8b->size == 2) {
+            bool sse_size = !reg_size;
+            switch (struct_8b->clss[1]) {
+                case CLS_integer:
+                    ret_8b_call_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
+                    break;
+                case CLS_sse: {
+                    ret_8b_call_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
+                    sse_size = true;
+                    break;
+                }
+                default:
+                    THROW_ABORT;
+            }
+            ret_2_reg_mask(fun_type, reg_size, sse_size);
+        }
+        else {
+            ret_1_reg_mask(fun_type, reg_size);
+        }
     }
 }
 
