@@ -17,6 +17,67 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Memory
+
+#define unique_ptr_t(T) T*
+#define unique_ptr_impl(T) T type
+#define uptr_new() NULL
+#define uptr_delete(X) \
+    if (!X) {          \
+        return;        \
+    }
+#define uptr_alloc(T, X)              \
+    do {                              \
+        free_##T(&X);                 \
+        X = (T*)calloc(1, sizeof(T)); \
+        if (!X) {                     \
+            THROW_ALLOC(T);           \
+        }                             \
+    }                                 \
+    while (0)
+#define uptr_free(X)    \
+    if (X) {            \
+        free(X);        \
+        X = uptr_new(); \
+    }
+#define uptr_move(T, X, Y) \
+    if (*X != *Y) {        \
+        free_##T(Y);       \
+        *Y = *X;           \
+        *X = uptr_new();   \
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Shared pointer
+
+#define shared_ptr_t(T) unique_ptr_t(T)
+#define shared_ptr_impl(T) \
+    size_t _ref_count;     \
+    unique_ptr_impl(T)
+#define sptr_new() uptr_new()
+#define sptr_delete(X)                             \
+    uptr_delete(X) else if ((X)->_ref_count > 1) { \
+        (X)->_ref_count--;                         \
+        X = sptr_new();                            \
+        return;                                    \
+    }
+#define sptr_alloc(T, X)     \
+    do {                     \
+        uptr_alloc(T, X);    \
+        (X)->_ref_count = 1; \
+    }                        \
+    while (0)
+#define sptr_free(X) uptr_free(X)
+#define sptr_move(T, X, Y) uptr_move(T, X, Y)
+#define sptr_copy(X, Y)     \
+    if (*X != *Y) {         \
+        *Y = *X;            \
+        (*Y)->_ref_count++; \
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // String
 
 typedef sds string_t;
