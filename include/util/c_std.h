@@ -101,11 +101,10 @@ typedef sds string_t;
     while (0)
 #define str_clear(X) sdsclear(X)
 #define str_copy(X, Y) \
-    do {               \
+    if (X != Y) {      \
         str_delete(Y); \
         Y = sdsdup(X); \
-    }                  \
-    while (0)
+    }
 #define str_hash(X) stbds_hash_string(X, 42)
 #define str_pop_back(X) sdsrange(X, 0, -2)
 #define str_push_back(X, Y)             \
