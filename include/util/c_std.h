@@ -187,12 +187,11 @@ typedef sds string_t;
         X = map_new(); \
     }
 #define map_move(X, Y)  \
-    do {                \
+    if (*X != *Y) {     \
         map_delete(*Y); \
         *Y = *X;        \
         *X = map_new(); \
-    }                   \
-    while (0)
+    }
 #define map_size(X) hmlenu(X)
 #define map_add(X, Y, Z) hmput(X, Y, Z)
 #define map_clear(X) map_delete(X)
