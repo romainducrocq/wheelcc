@@ -151,8 +151,8 @@ typedef sds string_t;
         stbds_header(X)->length = 0; \
     }
 #define vec_empty(X) (vec_size(X) == 0)
-// TODO
 #ifdef __cplusplus
+// TODO remove
 #define vec_move_back(T, X, Y)                                    \
     do {                                                          \
         stbds_arrmaybegrow(X, 1);                                 \
@@ -203,14 +203,18 @@ typedef sds string_t;
 #define map_erase(X, Y) hmdel(X, Y)
 #define map_find(X, Y) hmgeti(X, Y)
 #define map_get(X, Y) hmget(X, Y)
-// TODO
-#define map_move_add(X, Y, Z)                                                                                      \
+#ifdef __cplusplus
+// TODO remove
+#define map_move_add(T, X, Y, Z)                                                                                   \
     do {                                                                                                           \
         (X) = stbds_hmput_key_wrapper((X), sizeof *(X), (void*)STBDS_ADDRESSOF((X)->key, (Y)), sizeof(X)->key, 0); \
         (X)[stbds_temp((X)-1)].key = (Y);                                                                          \
         new (&(X)[stbds_temp((X)-1)].value) auto(std::move(Z));                                                    \
     }                                                                                                              \
     while (0)
+#else
+#define map_move_add(T, X, Y, Z)
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

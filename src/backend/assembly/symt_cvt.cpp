@@ -128,7 +128,7 @@ std::shared_ptr<AssemblyType> cvt_backend_asm_type(FrontEndContext* ctx, TIdenti
 }
 
 static void cvt_backend_symbol(Ctx ctx, std::unique_ptr<BackendSymbol>&& node) {
-    map_move_add(ctx->backend->symbol_table, ctx->symbol, node);
+    map_move_add(BackendSymbol, ctx->backend->symbol_table, ctx->symbol, node);
 }
 
 static void dbl_static_const(Ctx ctx) {

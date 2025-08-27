@@ -102,7 +102,7 @@ static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::sh
     if (map_find(ctx->frontend->symbol_table, inner_name) == map_end()) {
         std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
         std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(*inner_type), std::move(inner_attrs));
-        map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
+        map_move_add(Symbol, ctx->frontend->symbol_table, inner_name, symbol);
     }
     return std::make_shared<TacVariable>(inner_name);
 }
@@ -173,7 +173,7 @@ static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node)
             }
             std::unique_ptr<Symbol> symbol =
                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
+            map_move_add(Symbol, ctx->frontend->symbol_table, string_const_label, symbol);
         }
     }
     std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(string_const_label);
