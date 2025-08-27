@@ -1014,7 +1014,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     // TODO
     std::unique_ptr<AsmInstruction> temp(nullptr);
     vec_move_back(*ctx->p_fix_instrs, temp);
-    // vec_push_back(*ctx->p_fix_instrs, NULL);
+    // vec_push_back(*ctx->p_fix_instrs, uptr_new());
 
     bool is_ret = false;
     push_callee_saved_regs(ctx, backend_fun->callee_saved_regs);

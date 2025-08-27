@@ -602,7 +602,10 @@ static void struct_8b_class(Ctx ctx, Structure* struct_type) {
         else {
             struct_8b_cls = struct_1_reg_8b_class(ctx, struct_type);
         }
+        // TODO
         map_add(ctx->struct_8b_cls_map, struct_type->tag, struct_8b_cls);
+        struct_8b_cls = vec_new();
+        // map_move_add(ctx->struct_8b_cls_map, struct_type->tag, struct_8b_cls)
     }
 }
 

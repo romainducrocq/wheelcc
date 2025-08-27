@@ -1217,7 +1217,7 @@ static bool init_data_flow_analysis(Ctx ctx,
             // TODO
             std::unique_ptr<TacInstruction> temp(nullptr);
             vec_move_back(ctx->dfa_o1->bak_instrs, temp);
-            // vec_push_back(ctx->dfa_o1->bak_instrs, NULL);
+            // vec_push_back(ctx->dfa_o1->bak_instrs, uptr_new());
         }
 
         memset(ctx->cfg->reaching_code, false, sizeof(bool) * ctx->dfa->set_size);

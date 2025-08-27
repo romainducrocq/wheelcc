@@ -45,8 +45,10 @@ typedef IdentifierContext* Ctx;
 TIdentifier make_string_identifier(Ctx ctx, string_t* value) {
     TIdentifier identifier = str_hash(*value);
     if (map_find(ctx->hash_table, identifier) == map_end()) {
+        // TODO
         map_add(ctx->hash_table, identifier, *value);
         *value = str_new(NULL);
+        // map_move_add(ctx->hash_table, identifier, *value)
     }
     else {
         str_delete(*value);
