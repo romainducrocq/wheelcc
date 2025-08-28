@@ -211,4 +211,7 @@ rm -rv ${TEST_DIR}/${TEST_SRCS[12]}/helper_libs/
 rm -rv ${TEST_DIR}/${TEST_SRCS[18]}/helper_libs/
 rm -rv ${TEST_DIR}/${TEST_SRCS[19]}/helper_libs/
 
+# Restore deleted macos files
+git restore $(git ls-files -d ${TEST_DIR} | grep -P "_osx\.s$")
+
 exit 0
