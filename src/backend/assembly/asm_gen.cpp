@@ -15,12 +15,6 @@
 #include "backend/assembly/stack_fix.h"
 #include "backend/assembly/symt_cvt.h"
 
-typedef enum STRUCT8B_CLASS {
-    CLS_integer,
-    CLS_sse,
-    CLS_memory
-} STRUCT8B_CLASS;
-
 typedef enum ASM_LABEL_KIND {
     LBL_Lcomisd_nan,
     LBL_Ldouble,
@@ -29,6 +23,12 @@ typedef enum ASM_LABEL_KIND {
     LBL_Lsi2sd_after,
     LBL_Lsi2sd_out_of_range
 } ASM_LABEL_KIND;
+
+typedef enum STRUCT8B_CLASS {
+    CLS_integer,
+    CLS_sse,
+    CLS_memory
+} STRUCT8B_CLASS;
 
 typedef struct Struct8Bytes {
     size_t size;
