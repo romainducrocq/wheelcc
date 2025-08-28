@@ -506,6 +506,14 @@ wheelcc: [0;31merror:[0m compilation failed
 [0;31merror:[0m (no. 411) found token [1m‘)’[0m, but expected [1m‘const int’[0m, [1m‘const long’[0m, [1m‘const char’[0m, [1m‘const double’[0m, [1m‘const unsigned int’[0m, [1m‘const unsigned long’[0m, [1m‘identifier’[0m, [1m‘identifier(’[0m, [1m‘string literal’[0m or [1m‘(’[0m next
 at line 2: [1m    for (int i = 0;)[0m
 wheelcc: [0;31merror:[0m compilation failed
+[1m@PACKAGE_PATH@/test/tests/compiler/8_loops/invalid_parse/missing_for_header_clauses.c:2:[0m
+[0;31merror:[0m (no. 401) found token [1m‘)’[0m, but expected [1m‘;’[0m next
+at line 2: [1m    for (2 + 2 == 4)[0m
+wheelcc: [0;31merror:[0m compilation failed
+[1m@PACKAGE_PATH@/test/tests/compiler/8_loops/invalid_parse/missing_for_header_semicolon.c:2:[0m
+[0;31merror:[0m (no. 401) found token [1m‘)’[0m, but expected [1m‘;’[0m next
+at line 2: [1m    for (int i = 0; i < 10)[0m
+wheelcc: [0;31merror:[0m compilation failed
 [1m@PACKAGE_PATH@/test/tests/compiler/8_loops/invalid_parse/paren_mismatch.c:2:[0m
 [0;31merror:[0m (no. 411) found token [1m‘)’[0m, but expected [1m‘const int’[0m, [1m‘const long’[0m, [1m‘const char’[0m, [1m‘const double’[0m, [1m‘const unsigned int’[0m, [1m‘const unsigned long’[0m, [1m‘identifier’[0m, [1m‘identifier(’[0m, [1m‘string literal’[0m or [1m‘(’[0m next
 at line 2: [1m    for (int i = 2; ))[0m
