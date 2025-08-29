@@ -65,74 +65,74 @@ static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
     }
 }
 
-// static void debug_c_ast(Ctx ctx, CProgram* node) {
-//     if (ctx->is_verbose) {
-//         pprint_c_ast(ctx->identifiers, node);
-//     }
-// }
+static void debug_c_ast(Ctx ctx, CProgram* node) {
+    if (ctx->is_verbose) {
+        pprint_c_ast(ctx->identifiers, node);
+    }
+}
 
-// static void debug_tac_ast(Ctx ctx, TacProgram* node) {
-//     if (ctx->is_verbose) {
-//         pprint_tac_ast(ctx->identifiers, node);
-//     }
-// }
+static void debug_tac_ast(Ctx ctx, TacProgram* node) {
+    if (ctx->is_verbose) {
+        pprint_tac_ast(ctx->identifiers, node);
+    }
+}
 
-// static void debug_asm_ast(Ctx ctx, AsmProgram* node) {
-//     if (ctx->is_verbose) {
-//         pprint_asm_ast(ctx->identifiers, node);
-//     }
-// }
+static void debug_asm_ast(Ctx ctx, AsmProgram* node) {
+    if (ctx->is_verbose) {
+        pprint_asm_ast(ctx->identifiers, node);
+    }
+}
 
-// static void debug_addressed_set(Ctx ctx) {
-//     if (ctx->is_verbose) {
-//         pprint_addressed_set(ctx->identifiers, ctx->frontend);
-//     }
-// }
+static void debug_addressed_set(Ctx ctx) {
+    if (ctx->is_verbose) {
+        pprint_addressed_set(ctx->identifiers, ctx->frontend);
+    }
+}
 
-// static void debug_string_const_table(Ctx ctx) {
-//     if (ctx->is_verbose) {
-//         pprint_string_const_table(ctx->identifiers, ctx->frontend);
-//     }
-// }
+static void debug_string_const_table(Ctx ctx) {
+    if (ctx->is_verbose) {
+        pprint_string_const_table(ctx->identifiers, ctx->frontend);
+    }
+}
 
-// static void debug_struct_typedef_table(Ctx ctx) {
-//     if (ctx->is_verbose) {
-//         pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
-//     }
-// }
+static void debug_struct_typedef_table(Ctx ctx) {
+    if (ctx->is_verbose) {
+        pprint_struct_typedef_table(ctx->identifiers, ctx->frontend);
+    }
+}
 
-// static void debug_symbol_table(Ctx ctx) {
-//     if (ctx->is_verbose) {
-//         pprint_symbol_table(ctx->identifiers, ctx->frontend);
-//     }
-// }
+static void debug_symbol_table(Ctx ctx) {
+    if (ctx->is_verbose) {
+        pprint_symbol_table(ctx->identifiers, ctx->frontend);
+    }
+}
 
-// static void debug_backend_symbol_table(Ctx ctx) {
-//     if (ctx->is_verbose) {
-//         pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
-//     }
-// }
+static void debug_backend_symbol_table(Ctx ctx) {
+    if (ctx->is_verbose) {
+        pprint_backend_symbol_table(ctx->identifiers, ctx->backend);
+    }
+}
 #endif
 
-// static void set_filename_ext(Ctx ctx, const char* ext) {
-//     for (size_t i = str_size(ctx->filename); i-- > 0;) {
-//         if (ctx->filename[i] == '.') {
-//             str_substr(ctx->filename, 0, i);
-//             str_append(ctx->filename, ext);
-//             return;
-//         }
-//     }
-//     THROW_ABORT;
-// }
+static void set_filename_ext(Ctx ctx, const char* ext) {
+    for (size_t i = str_size(ctx->filename); i-- > 0;) {
+        if (ctx->filename[i] == '.') {
+            str_substr(ctx->filename, 0, i);
+            str_append(ctx->filename, ext);
+            return;
+        }
+    }
+    THROW_ABORT;
+}
 
 static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     IdentifierContext identifiers;
     FrontEndContext frontend;
     BackEndContext backend;
     vector_t(Token) tokens = vec_new();
-    // std::unique_ptr<CProgram> c_ast;
-    // std::unique_ptr<TacProgram> tac_ast;
-    // std::unique_ptr<AsmProgram> asm_ast;
+    unique_ptr_t(CProgram) c_ast = uptr_new();
+    unique_ptr_t(TacProgram) tac_ast = uptr_new();
+    unique_ptr_t(AsmProgram) asm_ast = uptr_new();
     {
 #ifndef __NDEBUG__
         ctx->identifiers = &identifiers;
@@ -205,73 +205,73 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     }
 #endif
 
-    //     verbose(ctx, "-- Parsing ... ");
-    //     TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 254) {
-    //         debug_c_ast(ctx, c_ast.get());
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Parsing ... ");
+    // TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 254) {
+        debug_c_ast(ctx, c_ast);
+        EARLY_EXIT;
+    }
+#endif
 
-    //     verbose(ctx, "-- Semantic analysis ... ");
-    //     TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 253) {
-    //         debug_c_ast(ctx, c_ast.get());
-    //         debug_string_const_table(ctx);
-    //         debug_struct_typedef_table(ctx);
-    //         debug_symbol_table(ctx);
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Semantic analysis ... ");
+    // TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 253) {
+        debug_c_ast(ctx, c_ast);
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
+        EARLY_EXIT;
+    }
+#endif
 
-    //     verbose(ctx, "-- TAC representation ... ");
-    //     tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
-    //     if (ctx->optim_1_mask > 0) {
-    //         verbose(ctx, "OK\n-- Level 1 optimization ... ");
-    //         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
-    //     }
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 252) {
-    //         debug_tac_ast(ctx, tac_ast.get());
-    //         debug_string_const_table(ctx);
-    //         debug_struct_typedef_table(ctx);
-    //         debug_symbol_table(ctx);
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- TAC representation ... ");
+    // tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
+    if (ctx->optim_1_mask > 0) {
+        verbose(ctx, "OK\n-- Level 1 optimization ... ");
+        // optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
+    }
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 252) {
+        debug_tac_ast(ctx, tac_ast);
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
+        EARLY_EXIT;
+    }
+#endif
 
-    //     verbose(ctx, "-- Assembly generation ... ");
-    //     asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
-    //     convert_symbol_table(asm_ast.get(), &backend, &frontend);
-    //     if (ctx->optim_2_code > 0) {
-    //         verbose(ctx, "OK\n-- Level 2 optimization ... ");
-    //         allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
-    //     }
-    //     fix_stack(asm_ast.get(), &backend);
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 251) {
-    //         debug_asm_ast(ctx, asm_ast.get());
-    //         debug_addressed_set(ctx);
-    //         debug_string_const_table(ctx);
-    //         debug_struct_typedef_table(ctx);
-    //         debug_symbol_table(ctx);
-    //         debug_backend_symbol_table(ctx);
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Assembly generation ... ");
+    // asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
+    // convert_symbol_table(asm_ast.get(), &backend, &frontend);
+    if (ctx->optim_2_code > 0) {
+        verbose(ctx, "OK\n-- Level 2 optimization ... ");
+        // allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
+    }
+    // fix_stack(asm_ast.get(), &backend);
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 251) {
+        debug_asm_ast(ctx, asm_ast);
+        debug_addressed_set(ctx);
+        debug_string_const_table(ctx);
+        debug_struct_typedef_table(ctx);
+        debug_symbol_table(ctx);
+        debug_backend_symbol_table(ctx);
+        EARLY_EXIT;
+    }
+#endif
 
-    //     verbose(ctx, "-- Code emission ... ");
-    //     set_filename_ext(ctx, "s");
-    //     TRY(open_fwrite(fileio, ctx->filename));
-    //     emit_gas_code(&asm_ast, &backend, fileio, &identifiers);
-    //     close_fwrite(fileio);
-    //     verbose(ctx, "OK\n");
+    verbose(ctx, "-- Code emission ... ");
+    set_filename_ext(ctx, "s");
+    TRY(open_fwrite(fileio, ctx->filename));
+    // emit_gas_code(&asm_ast, &backend, fileio, &identifiers);
+    close_fwrite(fileio);
+    verbose(ctx, "OK\n");
 
     FINALLY;
     for (size_t i = 0; i < map_size(identifiers.hash_table); ++i) {
