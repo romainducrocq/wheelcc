@@ -46,6 +46,18 @@
         Y = X;             \
         X = uptr_new();    \
     }
+#define uptr_make(T, X, ...)       \
+    do {                           \
+        free_##T(&X);              \
+        X = make_##T(__VA_ARGS__); \
+    }                              \
+    while (0)
+#define uptr_make_0(T, X) \
+    do {                  \
+        free_##T(&X);     \
+        X = make_##T();   \
+    }                     \
+    while (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -70,11 +82,14 @@
     while (0)
 #define sptr_free(X) uptr_free(X)
 #define sptr_move(T, X, Y) uptr_move(T, X, Y)
-#define sptr_copy(X, Y)    \
+#define sptr_copy(T, X, Y) \
     if (X != Y) {          \
+        free_##T(&Y);      \
         Y = X;             \
         (Y)->_ref_count++; \
     }
+#define sptr_make(T, X, ...) uptr_make(T, X, __VA_ARGS__)
+#define sptr_make_0(T, X) uptr_make_0(T, X)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
