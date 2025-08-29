@@ -1659,99 +1659,99 @@ void pprint_addressed_set(IdentifierContext* ctx, FrontEndContext* frontend) {
     printf("\n");
 }
 
-// void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend) {
-//     print_title("String Constant Table");
-//     printf("\nDict(%zu):", map_size(frontend->string_const_table));
-//     for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
-//         const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
-//         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*static_const)));
-//         if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end()
-//             && map_get(frontend->symbol_table, pair_second(*static_const))->attrs->type() == AST_ConstantAttr_t) {
-//             ConstantAttr* constant_attr =
-//                 static_cast<ConstantAttr*>(map_get(frontend->symbol_table, pair_second(*static_const))->attrs.get());
-//             if (constant_attr->static_init->type() == AST_StringInit_t) {
-//                 printf("\n    String: \"");
-//                 StringInit* string_init = static_cast<StringInit*>(constant_attr->static_init.get());
-//                 for (size_t i = 0; i < vec_size(string_init->literal.get()->value); ++i) {
-//                     TChar byte = string_init->literal.get()->value[i];
-//                     switch (byte) {
-//                         case 39:
-//                             printf("\\'");
-//                             break;
-//                         case 34:
-//                             printf("\\\"");
-//                             break;
-//                         case 63:
-//                             printf("\\?");
-//                             break;
-//                         case 92:
-//                             printf("\\\\");
-//                             break;
-//                         case 7:
-//                             printf("\\a");
-//                             break;
-//                         case 8:
-//                             printf("\\b");
-//                             break;
-//                         case 12:
-//                             printf("\\f");
-//                             break;
-//                         case 10:
-//                             printf("\\n");
-//                             break;
-//                         case 13:
-//                             printf("\\r");
-//                             break;
-//                         case 9:
-//                             printf("\\t");
-//                             break;
-//                         case 11:
-//                             printf("\\v");
-//                             break;
-//                         default:
-//                             printf("%c", (char)byte);
-//                             break;
-//                     }
-//                 }
-//                 printf("\"");
-//                 continue;
-//             }
-//         }
-//         THROW_ABORT;
-//     }
-//     printf("\n");
-// }
+void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend) {
+    print_title("String Constant Table");
+    printf("\nDict(%zu):", map_size(frontend->string_const_table));
+    for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
+        const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
+        print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*static_const)));
+        if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end()
+            && map_get(frontend->symbol_table, pair_second(*static_const))->attrs->type == AST_ConstantAttr_t) {
+            ConstantAttr* constant_attr =
+                &map_get(frontend->symbol_table, pair_second(*static_const))->attrs->get._ConstantAttr;
+            if (constant_attr->static_init->type == AST_StringInit_t) {
+                printf("\n    String: \"");
+                StringInit* string_init = &constant_attr->static_init->get._StringInit;
+                for (size_t i = 0; i < vec_size(string_init->literal->value); ++i) {
+                    TChar byte = string_init->literal->value[i];
+                    switch (byte) {
+                        case 39:
+                            printf("\\'");
+                            break;
+                        case 34:
+                            printf("\\\"");
+                            break;
+                        case 63:
+                            printf("\\?");
+                            break;
+                        case 92:
+                            printf("\\\\");
+                            break;
+                        case 7:
+                            printf("\\a");
+                            break;
+                        case 8:
+                            printf("\\b");
+                            break;
+                        case 12:
+                            printf("\\f");
+                            break;
+                        case 10:
+                            printf("\\n");
+                            break;
+                        case 13:
+                            printf("\\r");
+                            break;
+                        case 9:
+                            printf("\\t");
+                            break;
+                        case 11:
+                            printf("\\v");
+                            break;
+                        default:
+                            printf("%c", (char)byte);
+                            break;
+                    }
+                }
+                printf("\"");
+                continue;
+            }
+        }
+        THROW_ABORT;
+    }
+    printf("\n");
+}
 
-// void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend) {
-//     print_title("Structure Typedef Table");
-//     printf("\nDict(%zu):", map_size(frontend->struct_typedef_table));
-//     for (size_t i = 0; i < map_size(frontend->struct_typedef_table); ++i) {
-//         const pair_t(TIdentifier, UPtrStructTypedef)* struct_typedef = &frontend->struct_typedef_table[i];
-//         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*struct_typedef)));
-//         print_StructTypedef(ctx, pair_second(*struct_typedef).get(), 2);
-//     }
-//     printf("\n");
-// }
+void pprint_struct_typedef_table(IdentifierContext* ctx, FrontEndContext* frontend) {
+    print_title("Structure Typedef Table");
+    printf("\nDict(%zu):", map_size(frontend->struct_typedef_table));
+    for (size_t i = 0; i < map_size(frontend->struct_typedef_table); ++i) {
+        const pair_t(TIdentifier, UPtrStructTypedef)* struct_typedef = &frontend->struct_typedef_table[i];
+        print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*struct_typedef)));
+        print_StructTypedef(ctx, pair_second(*struct_typedef), 2);
+    }
+    printf("\n");
+}
 
-// void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
-//     print_title("Symbol Table");
-//     printf("\nDict(%zu):", map_size(frontend->symbol_table));
-//     for (size_t i = 0; i < map_size(frontend->symbol_table); ++i) {
-//         const pair_t(TIdentifier, UPtrSymbol)* symbol = &frontend->symbol_table[i];
-//         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*symbol)));
-//         print_Symbol(ctx, pair_second(*symbol).get(), 2);
-//     }
-//     printf("\n");
-// }
+void pprint_symbol_table(IdentifierContext* ctx, FrontEndContext* frontend) {
+    print_title("Symbol Table");
+    printf("\nDict(%zu):", map_size(frontend->symbol_table));
+    for (size_t i = 0; i < map_size(frontend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrSymbol)* symbol = &frontend->symbol_table[i];
+        print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*symbol)));
+        print_Symbol(ctx, pair_second(*symbol), 2);
+    }
+    printf("\n");
+}
 
-// void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend) {
-//     print_title("Backend Symbol Table");
-//     printf("\nDict(%zu):", map_size(backend->symbol_table));
-//     for (size_t i = 0; i < map_size(backend->symbol_table); ++i) {
-//         const pair_t(TIdentifier, UPtrBackendSymbol)* bakend_symbol = &backend->symbol_table[i];
-//         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*bakend_symbol)));
-//         print_BackendSymbol(ctx, pair_second(*bakend_symbol).get(), 2);
-//     }
-//     printf("\n");
-// }
+void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend) {
+    print_title("Backend Symbol Table");
+    printf("\nDict(%zu):", map_size(backend->symbol_table));
+    for (size_t i = 0; i < map_size(backend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrBackendSymbol)* bakend_symbol = &backend->symbol_table[i];
+        print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*bakend_symbol)));
+        print_BackendSymbol(ctx, pair_second(*bakend_symbol), 2);
+    }
+    printf("\n");
+}
 #endif
