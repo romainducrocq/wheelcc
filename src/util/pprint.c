@@ -1,5 +1,7 @@
 #include "util/pprint.h"
-#ifndef __NDEBUG__
+#ifdef __NDEBUG__
+typedef int empty_translation_unit;
+#else
 #include "util/c_std.h"
 #include "util/str2t.h"
 #include "util/throw.h"
@@ -1754,6 +1756,4 @@ void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend
     }
     printf("\n");
 }
-#else
-typedef int empty_translation_unit;
 #endif
