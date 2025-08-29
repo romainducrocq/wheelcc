@@ -1,13 +1,11 @@
-#ifndef __NDEBUG__
-#include "util/pprint.h"
-#endif
-#include <inttypes.h>
-#include <memory>
 #include <stdio.h>
 
 #include "util/c_std.h"
 #include "util/fileio.h"
 #include "util/throw.h"
+#ifndef __NDEBUG__
+#include "util/pprint.h"
+#endif
 
 #include "ast/ast.h"
 #include "ast/back_ast.h"
@@ -132,9 +130,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     FrontEndContext frontend;
     BackEndContext backend;
     vector_t(Token) tokens = vec_new();
-    std::unique_ptr<CProgram> c_ast;
-    std::unique_ptr<TacProgram> tac_ast;
-    std::unique_ptr<AsmProgram> asm_ast;
+    // std::unique_ptr<CProgram> c_ast;
+    // std::unique_ptr<TacProgram> tac_ast;
+    // std::unique_ptr<AsmProgram> asm_ast;
     {
 #ifndef __NDEBUG__
         ctx->identifiers = &identifiers;
@@ -197,83 +195,83 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #endif
 
-    verbose(ctx, "-- Lexing ... ");
-    TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 255) {
-        debug_toks(ctx, tokens);
-        EARLY_EXIT;
-    }
-#endif
+//     verbose(ctx, "-- Lexing ... ");
+//     TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
+//     verbose(ctx, "OK\n");
+// #ifndef __NDEBUG__
+//     if (ctx->debug_code == 255) {
+//         debug_toks(ctx, tokens);
+//         EARLY_EXIT;
+//     }
+// #endif
 
-    verbose(ctx, "-- Parsing ... ");
-    TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 254) {
-        debug_c_ast(ctx, c_ast.get());
-        EARLY_EXIT;
-    }
-#endif
+//     verbose(ctx, "-- Parsing ... ");
+//     TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
+//     verbose(ctx, "OK\n");
+// #ifndef __NDEBUG__
+//     if (ctx->debug_code == 254) {
+//         debug_c_ast(ctx, c_ast.get());
+//         EARLY_EXIT;
+//     }
+// #endif
 
-    verbose(ctx, "-- Semantic analysis ... ");
-    TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 253) {
-        debug_c_ast(ctx, c_ast.get());
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+//     verbose(ctx, "-- Semantic analysis ... ");
+//     TRY(analyze_semantic(c_ast.get(), errors, &frontend, &identifiers));
+//     verbose(ctx, "OK\n");
+// #ifndef __NDEBUG__
+//     if (ctx->debug_code == 253) {
+//         debug_c_ast(ctx, c_ast.get());
+//         debug_string_const_table(ctx);
+//         debug_struct_typedef_table(ctx);
+//         debug_symbol_table(ctx);
+//         EARLY_EXIT;
+//     }
+// #endif
 
-    verbose(ctx, "-- TAC representation ... ");
-    tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
-    if (ctx->optim_1_mask > 0) {
-        verbose(ctx, "OK\n-- Level 1 optimization ... ");
-        optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
-    }
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 252) {
-        debug_tac_ast(ctx, tac_ast.get());
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+//     verbose(ctx, "-- TAC representation ... ");
+//     tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
+//     if (ctx->optim_1_mask > 0) {
+//         verbose(ctx, "OK\n-- Level 1 optimization ... ");
+//         optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
+//     }
+//     verbose(ctx, "OK\n");
+// #ifndef __NDEBUG__
+//     if (ctx->debug_code == 252) {
+//         debug_tac_ast(ctx, tac_ast.get());
+//         debug_string_const_table(ctx);
+//         debug_struct_typedef_table(ctx);
+//         debug_symbol_table(ctx);
+//         EARLY_EXIT;
+//     }
+// #endif
 
-    verbose(ctx, "-- Assembly generation ... ");
-    asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
-    convert_symbol_table(asm_ast.get(), &backend, &frontend);
-    if (ctx->optim_2_code > 0) {
-        verbose(ctx, "OK\n-- Level 2 optimization ... ");
-        allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
-    }
-    fix_stack(asm_ast.get(), &backend);
-    verbose(ctx, "OK\n");
-#ifndef __NDEBUG__
-    if (ctx->debug_code == 251) {
-        debug_asm_ast(ctx, asm_ast.get());
-        debug_addressed_set(ctx);
-        debug_string_const_table(ctx);
-        debug_struct_typedef_table(ctx);
-        debug_symbol_table(ctx);
-        debug_backend_symbol_table(ctx);
-        EARLY_EXIT;
-    }
-#endif
+//     verbose(ctx, "-- Assembly generation ... ");
+//     asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
+//     convert_symbol_table(asm_ast.get(), &backend, &frontend);
+//     if (ctx->optim_2_code > 0) {
+//         verbose(ctx, "OK\n-- Level 2 optimization ... ");
+//         allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
+//     }
+//     fix_stack(asm_ast.get(), &backend);
+//     verbose(ctx, "OK\n");
+// #ifndef __NDEBUG__
+//     if (ctx->debug_code == 251) {
+//         debug_asm_ast(ctx, asm_ast.get());
+//         debug_addressed_set(ctx);
+//         debug_string_const_table(ctx);
+//         debug_struct_typedef_table(ctx);
+//         debug_symbol_table(ctx);
+//         debug_backend_symbol_table(ctx);
+//         EARLY_EXIT;
+//     }
+// #endif
 
-    verbose(ctx, "-- Code emission ... ");
-    set_filename_ext(ctx, "s");
-    TRY(open_fwrite(fileio, ctx->filename));
-    emit_gas_code(&asm_ast, &backend, fileio, &identifiers);
-    close_fwrite(fileio);
-    verbose(ctx, "OK\n");
+//     verbose(ctx, "-- Code emission ... ");
+//     set_filename_ext(ctx, "s");
+//     TRY(open_fwrite(fileio, ctx->filename));
+//     emit_gas_code(&asm_ast, &backend, fileio, &identifiers);
+//     close_fwrite(fileio);
+//     verbose(ctx, "OK\n");
 
     FINALLY;
     for (size_t i = 0; i < map_size(identifiers.hash_table); ++i) {
