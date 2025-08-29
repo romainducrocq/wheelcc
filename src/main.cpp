@@ -296,6 +296,9 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     map_delete(backend.symbol_table);
 
     vec_delete(tokens);
+    free_CProgram(&c_ast);
+    free_TacProgram(&tac_ast);
+    free_AsmProgram(&asm_ast);
     CATCH_EXIT;
 }
 
