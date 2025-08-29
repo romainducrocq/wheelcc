@@ -190,7 +190,7 @@ const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
 }
 
 const char* get_const_fmt(CConst* node) {
-    switch (node->type()) {
+    switch (node->type) {
         case AST_CConstInt_t:
             return "int";
         case AST_CConstLong_t:
@@ -211,7 +211,7 @@ const char* get_const_fmt(CConst* node) {
 }
 
 const char* get_storage_class_fmt(CStorageClass* node) {
-    switch (node->type()) {
+    switch (node->type) {
         case AST_CStatic_t:
             return "static";
         case AST_CExtern_t:
@@ -222,7 +222,7 @@ const char* get_storage_class_fmt(CStorageClass* node) {
 }
 
 const char* get_unop_fmt(CUnaryOp* node) {
-    switch (node->type()) {
+    switch (node->type) {
         case AST_CComplement_t:
             return "~";
         case AST_CNegate_t:
@@ -235,7 +235,7 @@ const char* get_unop_fmt(CUnaryOp* node) {
 }
 
 const char* get_binop_fmt(CBinaryOp* node) {
-    switch (node->type()) {
+    switch (node->type) {
         case AST_CAdd_t:
             return "+";
         case AST_CSubtract_t:
@@ -284,9 +284,9 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
         return "=";
     }
     else if (unop) {
-        switch (unop->type()) {
+        switch (unop->type) {
             case AST_CPrefix_t: {
-                switch (node->type()) {
+                switch (node->type) {
                     case AST_CAdd_t:
                         return "prefix ++";
                     case AST_CSubtract_t:
@@ -296,7 +296,7 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
                 }
             }
             case AST_CPostfix_t: {
-                switch (node->type()) {
+                switch (node->type) {
                     case AST_CAdd_t:
                         return "postfix ++";
                     case AST_CSubtract_t:
@@ -310,7 +310,7 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
         }
     }
     else {
-        switch (node->type()) {
+        switch (node->type) {
             case AST_CAdd_t:
                 return "+=";
             case AST_CSubtract_t:
@@ -365,14 +365,14 @@ static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string
     *fun_fmt = str_new("(");
     {
         string_t type_fmt = str_new(NULL);
-        str_append(*fun_fmt, get_type_fmt(ctx, fun_type->ret_type.get(), &type_fmt));
+        str_append(*fun_fmt, get_type_fmt(ctx, fun_type->ret_type, &type_fmt));
         str_delete(type_fmt);
     }
     str_append(*fun_fmt, ")(");
     for (size_t i = 0; i < vec_size(fun_type->param_types); ++i) {
         {
             string_t type_fmt = str_new(NULL);
-            str_append(*fun_fmt, get_type_fmt(ctx, fun_type->param_types[i].get(), &type_fmt));
+            str_append(*fun_fmt, get_type_fmt(ctx, fun_type->param_types[i], &type_fmt));
             str_delete(type_fmt);
         }
         str_append(*fun_fmt, ", ");
@@ -388,13 +388,13 @@ static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string
 static const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr_fmt) {
     *ptr_fmt = str_new("");
     string_t decltor_fmt = str_new("*");
-    while (ptr_type->ref_type->type() == AST_Pointer_t) {
-        ptr_type = static_cast<Pointer*>(ptr_type->ref_type.get());
+    while (ptr_type->ref_type->type == AST_Pointer_t) {
+        ptr_type = &ptr_type->ref_type->get._Pointer;
         str_append(decltor_fmt, "*");
     }
     {
         string_t type_fmt = str_new(NULL);
-        str_append(*ptr_fmt, get_type_fmt(ctx, ptr_type->ref_type.get(), &type_fmt));
+        str_append(*ptr_fmt, get_type_fmt(ctx, ptr_type->ref_type, &type_fmt));
         str_delete(type_fmt);
     }
     str_append(*ptr_fmt, decltor_fmt);
@@ -411,8 +411,8 @@ static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t
         str_delete(strto_size);
     }
     str_append(decltor_fmt, "]");
-    while (arr_type->elem_type->type() == AST_Array_t) {
-        arr_type = static_cast<Array*>(arr_type->elem_type.get());
+    while (arr_type->elem_type->type == AST_Array_t) {
+        arr_type = &arr_type->elem_type->get._Array;
         str_append(decltor_fmt, "[");
         {
             string_t strto_size = str_to_string(arr_type->size);
@@ -423,7 +423,7 @@ static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t
     }
     {
         string_t type_fmt = str_new(NULL);
-        str_append(*arr_fmt, get_type_fmt(ctx, arr_type->elem_type.get(), &type_fmt));
+        str_append(*arr_fmt, get_type_fmt(ctx, arr_type->elem_type, &type_fmt));
         str_delete(type_fmt);
     }
     str_append(*arr_fmt, decltor_fmt);
@@ -436,7 +436,7 @@ static const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type
 }
 
 const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt) {
-    switch (type->type()) {
+    switch (type->type) {
         case AST_Char_t:
             return "char";
         case AST_SChar_t:
@@ -456,13 +456,13 @@ const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt)
         case AST_Void_t:
             return "void";
         case AST_FunType_t:
-            return get_fun_fmt(ctx, static_cast<FunType*>(type), type_fmt);
+            return get_fun_fmt(ctx, &type->get._FunType, type_fmt);
         case AST_Pointer_t:
-            return get_ptr_fmt(ctx, static_cast<Pointer*>(type), type_fmt);
+            return get_ptr_fmt(ctx, &type->get._Pointer, type_fmt);
         case AST_Array_t:
-            return get_arr_fmt(ctx, static_cast<Array*>(type), type_fmt);
+            return get_arr_fmt(ctx, &type->get._Array, type_fmt);
         case AST_Structure_t:
-            return get_struct_fmt(ctx, static_cast<Structure*>(type), type_fmt);
+            return get_struct_fmt(ctx, &type->get._Structure, type_fmt);
         default:
             THROW_ABORT;
     }

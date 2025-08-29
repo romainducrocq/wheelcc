@@ -1,22 +1,18 @@
 #ifndef _AST_AST_H
 #define _AST_AST_H
 
-#include <inttypes.h>
-
 #include "util/c_std.h"
 
 #include "ast_t.h" // ast
 
-// TODO remove
-#ifndef _LEXER_IMPL
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Abstract syntax tree
 
-struct Ast {
-    virtual ~Ast() = 0;
-    virtual AST_T type() = 0;
-};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef struct CConst CConst;
+typedef struct CStringLiteral CStringLiteral;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,84 +23,77 @@ struct Ast {
 //       | ConstDouble(double)
 //       | ConstChar(int)
 //       | ConstUChar(int)
-struct CConst : Ast {
-    AST_T type() override;
-};
 
-struct CConstInt : CConst {
-    AST_T type() override;
-    CConstInt() = default;
-    CConstInt(TInt value);
-
+typedef struct CConstInt {
     TInt value;
-};
+} CConstInt;
 
-struct CConstLong : CConst {
-    AST_T type() override;
-    CConstLong() = default;
-    CConstLong(TLong value);
-
+typedef struct CConstLong {
     TLong value;
-};
+} CConstLong;
 
-struct CConstUInt : CConst {
-    AST_T type() override;
-    CConstUInt() = default;
-    CConstUInt(TUInt value);
-
+typedef struct CConstUInt {
     TUInt value;
-};
+} CConstUInt;
 
-struct CConstULong : CConst {
-    AST_T type() override;
-    CConstULong() = default;
-    CConstULong(TULong value);
-
+typedef struct CConstULong {
     TULong value;
-};
+} CConstULong;
 
-struct CConstDouble : CConst {
-    AST_T type() override;
-    CConstDouble() = default;
-    CConstDouble(TDouble value);
-
+typedef struct CConstDouble {
     TDouble value;
-};
+} CConstDouble;
 
-struct CConstChar : CConst {
-    AST_T type() override;
-    CConstChar() = default;
-    CConstChar(TChar value);
-
+typedef struct CConstChar {
     TChar value;
-};
+} CConstChar;
 
-struct CConstUChar : CConst {
-    AST_T type() override;
-    CConstUChar() = default;
-    CConstUChar(TUChar value);
-
+typedef struct CConstUChar {
     TUChar value;
-};
+} CConstUChar;
 
-// string = StringLiteral(int*)
-struct CStringLiteral : Ast {
-    AST_T type() override;
-    CStringLiteral();
-    CStringLiteral(vector_t(TChar) * value);
-    ~CStringLiteral();
+typedef struct CConst {
+    shared_ptr_impl(AST_T);
 
-    vector_t(TChar) value;
-};
+    union {
+        CConstInt _CConstInt;
+        CConstLong _CConstLong;
+        CConstUInt _CConstUInt;
+        CConstULong _CConstULong;
+        CConstDouble _CConstDouble;
+        CConstChar _CConstChar;
+        CConstUChar _CConstUChar;
+    } get;
+} CConst;
 
-/*
-struct Dummy : Ast {
-};
-*/
+shared_ptr_t(CConst) make_CConst(void);
+shared_ptr_t(CConst) make_CConstInt(TInt value);
+shared_ptr_t(CConst) make_CConstLong(TLong value);
+shared_ptr_t(CConst) make_CConstUInt(TUInt value);
+shared_ptr_t(CConst) make_CConstULong(TULong value);
+shared_ptr_t(CConst) make_CConstDouble(TDouble value);
+shared_ptr_t(CConst) make_CConstChar(TChar value);
+shared_ptr_t(CConst) make_CConstUChar(TUChar value);
+void free_CConst(shared_ptr_t(CConst) * self);
+void move_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
+void copy_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TODO remove
-#endif
+
+// string = StringLiteral(int*)
+
+typedef struct CStringLiteral {
+    shared_ptr_impl(AST_T);
+    vector_t(TChar) value;
+
+} CStringLiteral;
+
+shared_ptr_t(CStringLiteral) make_CStringLiteral(vector_t(TChar) * value);
+void free_CStringLiteral(shared_ptr_t(CStringLiteral) * self);
+void move_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
+void copy_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 PairKeyValue(TIdentifier, string_t);
 

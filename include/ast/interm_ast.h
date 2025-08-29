@@ -1,8 +1,6 @@
 #ifndef _AST_INTERM_AST_H
 #define _AST_INTERM_AST_H
 
-#include <memory>
-
 #include "util/c_std.h"
 
 #include "ast/ast.h"
@@ -14,24 +12,48 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+typedef struct TacUnaryOp TacUnaryOp;
+typedef struct TacBinaryOp TacBinaryOp;
+typedef struct TacValue TacValue;
+typedef struct TacExpResult TacExpResult;
+typedef struct TacInstruction TacInstruction;
+typedef struct TacTopLevel TacTopLevel;
+typedef struct TacProgram TacProgram;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // unary_operator = Complement
 //                | Negate
 //                | Not
-struct TacUnaryOp : Ast {
-    AST_T type() override;
-};
 
-struct TacComplement : TacUnaryOp {
-    AST_T type() override;
-};
+typedef struct TacComplement {
+    int8_t _empty;
+} TacComplement;
 
-struct TacNegate : TacUnaryOp {
-    AST_T type() override;
-};
+typedef struct TacNegate {
+    int8_t _empty;
+} TacNegate;
 
-struct TacNot : TacUnaryOp {
-    AST_T type() override;
-};
+typedef struct TacNot {
+    int8_t _empty;
+} TacNot;
+
+typedef struct TacUnaryOp {
+    unique_ptr_impl(AST_T);
+
+    union {
+        TacComplement _TacComplement;
+        TacNegate _TacNegate;
+        TacNot _TacNot;
+    } get;
+} TacUnaryOp;
+
+unique_ptr_t(TacUnaryOp) make_TacUnaryOp(void);
+unique_ptr_t(TacUnaryOp) make_TacComplement(void);
+unique_ptr_t(TacUnaryOp) make_TacNegate(void);
+unique_ptr_t(TacUnaryOp) make_TacNot(void);
+void free_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self);
+void move_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self, unique_ptr_t(TacUnaryOp) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,135 +74,184 @@ struct TacNot : TacUnaryOp {
 //                 | LessOrEqual
 //                 | GreaterThan
 //                 | GreaterOrEqual
-struct TacBinaryOp : Ast {
-    AST_T type() override;
-};
 
-struct TacAdd : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacAdd {
+    int8_t _empty;
+} TacAdd;
 
-struct TacSubtract : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacSubtract {
+    int8_t _empty;
+} TacSubtract;
 
-struct TacMultiply : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacMultiply {
+    int8_t _empty;
+} TacMultiply;
 
-struct TacDivide : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacDivide {
+    int8_t _empty;
+} TacDivide;
 
-struct TacRemainder : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacRemainder {
+    int8_t _empty;
+} TacRemainder;
 
-struct TacBitAnd : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitAnd {
+    int8_t _empty;
+} TacBitAnd;
 
-struct TacBitOr : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitOr {
+    int8_t _empty;
+} TacBitOr;
 
-struct TacBitXor : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitXor {
+    int8_t _empty;
+} TacBitXor;
 
-struct TacBitShiftLeft : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitShiftLeft {
+    int8_t _empty;
+} TacBitShiftLeft;
 
-struct TacBitShiftRight : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitShiftRight {
+    int8_t _empty;
+} TacBitShiftRight;
 
-struct TacBitShrArithmetic : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacBitShrArithmetic {
+    int8_t _empty;
+} TacBitShrArithmetic;
 
-struct TacEqual : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacEqual {
+    int8_t _empty;
+} TacEqual;
 
-struct TacNotEqual : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacNotEqual {
+    int8_t _empty;
+} TacNotEqual;
 
-struct TacLessThan : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacLessThan {
+    int8_t _empty;
+} TacLessThan;
 
-struct TacLessOrEqual : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacLessOrEqual {
+    int8_t _empty;
+} TacLessOrEqual;
 
-struct TacGreaterThan : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacGreaterThan {
+    int8_t _empty;
+} TacGreaterThan;
 
-struct TacGreaterOrEqual : TacBinaryOp {
-    AST_T type() override;
-};
+typedef struct TacGreaterOrEqual {
+    int8_t _empty;
+} TacGreaterOrEqual;
+
+typedef struct TacBinaryOp {
+    unique_ptr_impl(AST_T);
+
+    union {
+        TacAdd _TacAdd;
+        TacSubtract _TacSubtract;
+        TacMultiply _TacMultiply;
+        TacDivide _TacDivide;
+        TacRemainder _TacRemainder;
+        TacBitAnd _TacBitAnd;
+        TacBitOr _TacBitOr;
+        TacBitXor _TacBitXor;
+        TacBitShiftLeft _TacBitShiftLeft;
+        TacBitShiftRight _TacBitShiftRight;
+        TacBitShrArithmetic _TacBitShrArithmetic;
+        TacEqual _TacEqual;
+        TacNotEqual _TacNotEqual;
+        TacLessThan _TacLessThan;
+        TacLessOrEqual _TacLessOrEqual;
+        TacGreaterThan _TacGreaterThan;
+        TacGreaterOrEqual _TacGreaterOrEqual;
+    } get;
+} TacBinaryOp;
+
+unique_ptr_t(TacBinaryOp) make_TacBinaryOp(void);
+unique_ptr_t(TacBinaryOp) make_TacAdd(void);
+unique_ptr_t(TacBinaryOp) make_TacSubtract(void);
+unique_ptr_t(TacBinaryOp) make_TacMultiply(void);
+unique_ptr_t(TacBinaryOp) make_TacDivide(void);
+unique_ptr_t(TacBinaryOp) make_TacRemainder(void);
+unique_ptr_t(TacBinaryOp) make_TacBitAnd(void);
+unique_ptr_t(TacBinaryOp) make_TacBitOr(void);
+unique_ptr_t(TacBinaryOp) make_TacBitXor(void);
+unique_ptr_t(TacBinaryOp) make_TacBitShiftLeft(void);
+unique_ptr_t(TacBinaryOp) make_TacBitShiftRight(void);
+unique_ptr_t(TacBinaryOp) make_TacBitShrArithmetic(void);
+unique_ptr_t(TacBinaryOp) make_TacEqual(void);
+unique_ptr_t(TacBinaryOp) make_TacNotEqual(void);
+unique_ptr_t(TacBinaryOp) make_TacLessThan(void);
+unique_ptr_t(TacBinaryOp) make_TacLessOrEqual(void);
+unique_ptr_t(TacBinaryOp) make_TacGreaterThan(void);
+unique_ptr_t(TacBinaryOp) make_TacGreaterOrEqual(void);
+void free_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self);
+void move_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self, unique_ptr_t(TacBinaryOp) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // val = Constant(int)
 //     | Var(identifier)
-struct TacValue : Ast {
-    AST_T type() override;
-};
 
-struct TacConstant : TacValue {
-    AST_T type() override;
-    TacConstant() = default;
-    TacConstant(std::shared_ptr<CConst>&& constant);
+typedef struct TacConstant {
+    shared_ptr_t(CConst) constant;
+} TacConstant;
 
-    std::shared_ptr<CConst> constant;
-};
-
-struct TacVariable : TacValue {
-    AST_T type() override;
-    TacVariable() = default;
-    TacVariable(TIdentifier name);
-
+typedef struct TacVariable {
     TIdentifier name;
-};
+} TacVariable;
+
+typedef struct TacValue {
+    shared_ptr_impl(AST_T);
+
+    union {
+        TacConstant _TacConstant;
+        TacVariable _TacVariable;
+    } get;
+} TacValue;
+
+shared_ptr_t(TacValue) make_TacValue(void);
+shared_ptr_t(TacValue) make_TacConstant(shared_ptr_t(CConst) * constant);
+shared_ptr_t(TacValue) make_TacVariable(TIdentifier name);
+void free_TacValue(shared_ptr_t(TacValue) * self);
+void move_TacValue(shared_ptr_t(TacValue) * self, shared_ptr_t(TacValue) * other);
+void copy_TacValue(shared_ptr_t(TacValue) * self, shared_ptr_t(TacValue) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // exp_result = PlainOperand(val)
 //            | DereferencedPointer(val)
 //            | SubObject(identifier, int)
-struct TacExpResult : Ast {
-    AST_T type() override;
-};
 
-struct TacPlainOperand : TacExpResult {
-    AST_T type() override;
-    TacPlainOperand() = default;
-    TacPlainOperand(std::shared_ptr<TacValue>&& val);
+typedef struct TacPlainOperand {
+    shared_ptr_t(TacValue) val;
+} TacPlainOperand;
 
-    std::shared_ptr<TacValue> val;
-};
+typedef struct TacDereferencedPointer {
+    shared_ptr_t(TacValue) val;
+} TacDereferencedPointer;
 
-struct TacDereferencedPointer : TacExpResult {
-    AST_T type() override;
-    TacDereferencedPointer() = default;
-    TacDereferencedPointer(std::shared_ptr<TacValue>&& val);
-
-    std::shared_ptr<TacValue> val;
-};
-
-struct TacSubObject : TacExpResult {
-    AST_T type() override;
-    TacSubObject() = default;
-    TacSubObject(TIdentifier base_name, TLong offset);
-
+typedef struct TacSubObject {
     TIdentifier base_name;
     TLong offset;
-};
+} TacSubObject;
+
+typedef struct TacExpResult {
+    unique_ptr_impl(AST_T);
+
+    union {
+        TacPlainOperand _TacPlainOperand;
+        TacDereferencedPointer _TacDereferencedPointer;
+        TacSubObject _TacSubObject;
+    } get;
+} TacExpResult;
+
+unique_ptr_t(TacExpResult) make_TacExpResult(void);
+unique_ptr_t(TacExpResult) make_TacPlainOperand(shared_ptr_t(TacValue) * val);
+unique_ptr_t(TacExpResult) make_TacDereferencedPointer(shared_ptr_t(TacValue) * val);
+unique_ptr_t(TacExpResult) make_TacSubObject(TIdentifier base_name, TLong offset);
+void free_TacExpResult(unique_ptr_t(TacExpResult) * self);
+void move_TacExpResult(unique_ptr_t(TacExpResult) * self, unique_ptr_t(TacExpResult) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,283 +277,242 @@ struct TacSubObject : TacExpResult {
 //             | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier)
 //             | Label(identifier)
-struct TacInstruction : Ast {
-    AST_T type() override;
-};
 
-struct TacReturn : TacInstruction {
-    AST_T type() override;
-    TacReturn() = default;
-    TacReturn(std::shared_ptr<TacValue>&& val);
+typedef struct TacReturn {
+    shared_ptr_t(TacValue) val;
+} TacReturn;
 
-    // Optional
-    std::shared_ptr<TacValue> val;
-};
+typedef struct TacSignExtend {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacSignExtend;
 
-struct TacSignExtend : TacInstruction {
-    AST_T type() override;
-    TacSignExtend() = default;
-    TacSignExtend(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
+typedef struct TacTruncate {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacTruncate;
 
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacZeroExtend {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacZeroExtend;
 
-struct TacTruncate : TacInstruction {
-    AST_T type() override;
-    TacTruncate() = default;
-    TacTruncate(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
+typedef struct TacDoubleToInt {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacDoubleToInt;
 
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacDoubleToUInt {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacDoubleToUInt;
 
-struct TacZeroExtend : TacInstruction {
-    AST_T type() override;
-    TacZeroExtend() = default;
-    TacZeroExtend(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
+typedef struct TacIntToDouble {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacIntToDouble;
 
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacUIntToDouble {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacUIntToDouble;
 
-struct TacDoubleToInt : TacInstruction {
-    AST_T type() override;
-    TacDoubleToInt() = default;
-    TacDoubleToInt(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacDoubleToUInt : TacInstruction {
-    AST_T type() override;
-    TacDoubleToUInt() = default;
-    TacDoubleToUInt(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacIntToDouble : TacInstruction {
-    AST_T type() override;
-    TacIntToDouble() = default;
-    TacIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacUIntToDouble : TacInstruction {
-    AST_T type() override;
-    TacUIntToDouble() = default;
-    TacUIntToDouble(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacFunCall : TacInstruction {
-    AST_T type() override;
-    TacFunCall();
-    TacFunCall(TIdentifier name, vector_t(std::shared_ptr<TacValue>) * args, std::shared_ptr<TacValue>&& dst);
-    ~TacFunCall();
-
+typedef struct TacFunCall {
     TIdentifier name;
-    vector_t(std::shared_ptr<TacValue>) args;
-    // Optional
-    std::shared_ptr<TacValue> dst;
-};
+    vector_t(shared_ptr_t(TacValue)) args;
+    shared_ptr_t(TacValue) dst;
+} TacFunCall;
 
-struct TacUnary : TacInstruction {
-    AST_T type() override;
-    TacUnary() = default;
-    TacUnary(std::unique_ptr<TacUnaryOp>&& unop, std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
+typedef struct TacUnary {
+    unique_ptr_t(TacUnaryOp) unop;
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacUnary;
 
-    std::unique_ptr<TacUnaryOp> unop;
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacBinary {
+    unique_ptr_t(TacBinaryOp) binop;
+    shared_ptr_t(TacValue) src1;
+    shared_ptr_t(TacValue) src2;
+    shared_ptr_t(TacValue) dst;
+} TacBinary;
 
-struct TacBinary : TacInstruction {
-    AST_T type() override;
-    TacBinary() = default;
-    TacBinary(std::unique_ptr<TacBinaryOp>&& binop, std::shared_ptr<TacValue>&& src1, std::shared_ptr<TacValue>&& src2,
-        std::shared_ptr<TacValue>&& dst);
+typedef struct TacCopy {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacCopy;
 
-    std::unique_ptr<TacBinaryOp> binop;
-    std::shared_ptr<TacValue> src1;
-    std::shared_ptr<TacValue> src2;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacGetAddress {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst;
+} TacGetAddress;
 
-struct TacCopy : TacInstruction {
-    AST_T type() override;
-    TacCopy() = default;
-    TacCopy(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
+typedef struct TacLoad {
+    shared_ptr_t(TacValue) src_ptr;
+    shared_ptr_t(TacValue) dst;
+} TacLoad;
 
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
+typedef struct TacStore {
+    shared_ptr_t(TacValue) src;
+    shared_ptr_t(TacValue) dst_ptr;
+} TacStore;
 
-struct TacGetAddress : TacInstruction {
-    AST_T type() override;
-    TacGetAddress() = default;
-    TacGetAddress(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacLoad : TacInstruction {
-    AST_T type() override;
-    TacLoad() = default;
-    TacLoad(std::shared_ptr<TacValue>&& src_ptr, std::shared_ptr<TacValue>&& dst);
-
-    std::shared_ptr<TacValue> src_ptr;
-    std::shared_ptr<TacValue> dst;
-};
-
-struct TacStore : TacInstruction {
-    AST_T type() override;
-    TacStore() = default;
-    TacStore(std::shared_ptr<TacValue>&& src, std::shared_ptr<TacValue>&& dst_ptr);
-
-    std::shared_ptr<TacValue> src;
-    std::shared_ptr<TacValue> dst_ptr;
-};
-
-struct TacAddPtr : TacInstruction {
-    AST_T type() override;
-    TacAddPtr() = default;
-    TacAddPtr(TLong scale, std::shared_ptr<TacValue>&& src_ptr, std::shared_ptr<TacValue>&& idx,
-        std::shared_ptr<TacValue>&& dst);
-
+typedef struct TacAddPtr {
     TLong scale;
-    std::shared_ptr<TacValue> src_ptr;
-    std::shared_ptr<TacValue> idx;
-    std::shared_ptr<TacValue> dst;
-};
+    shared_ptr_t(TacValue) src_ptr;
+    shared_ptr_t(TacValue) idx;
+    shared_ptr_t(TacValue) dst;
+} TacAddPtr;
 
-struct TacCopyToOffset : TacInstruction {
-    AST_T type() override;
-    TacCopyToOffset() = default;
-    TacCopyToOffset(TIdentifier dst_name, TLong offset, std::shared_ptr<TacValue>&& src);
-
+typedef struct TacCopyToOffset {
     TIdentifier dst_name;
     TLong offset;
-    std::shared_ptr<TacValue> src;
-};
+    shared_ptr_t(TacValue) src;
+} TacCopyToOffset;
 
-struct TacCopyFromOffset : TacInstruction {
-    AST_T type() override;
-    TacCopyFromOffset() = default;
-    TacCopyFromOffset(TIdentifier src_name, TLong offset, std::shared_ptr<TacValue>&& dst);
-
+typedef struct TacCopyFromOffset {
     TIdentifier src_name;
     TLong offset;
-    std::shared_ptr<TacValue> dst;
-};
+    shared_ptr_t(TacValue) dst;
+} TacCopyFromOffset;
 
-struct TacJump : TacInstruction {
-    AST_T type() override;
-    TacJump() = default;
-    TacJump(TIdentifier target);
-
+typedef struct TacJump {
     TIdentifier target;
-};
+} TacJump;
 
-struct TacJumpIfZero : TacInstruction {
-    AST_T type() override;
-    TacJumpIfZero() = default;
-    TacJumpIfZero(TIdentifier target, std::shared_ptr<TacValue>&& condition);
-
+typedef struct TacJumpIfZero {
     TIdentifier target;
-    std::shared_ptr<TacValue> condition;
-};
+    shared_ptr_t(TacValue) condition;
+} TacJumpIfZero;
 
-struct TacJumpIfNotZero : TacInstruction {
-    AST_T type() override;
-    TacJumpIfNotZero() = default;
-    TacJumpIfNotZero(TIdentifier target, std::shared_ptr<TacValue>&& condition);
-
+typedef struct TacJumpIfNotZero {
     TIdentifier target;
-    std::shared_ptr<TacValue> condition;
-};
+    shared_ptr_t(TacValue) condition;
+} TacJumpIfNotZero;
 
-struct TacLabel : TacInstruction {
-    AST_T type() override;
-    TacLabel() = default;
-    TacLabel(TIdentifier name);
-
+typedef struct TacLabel {
     TIdentifier name;
-};
+} TacLabel;
+
+typedef struct TacInstruction {
+    unique_ptr_impl(AST_T);
+
+    union {
+        TacReturn _TacReturn;
+        TacSignExtend _TacSignExtend;
+        TacTruncate _TacTruncate;
+        TacZeroExtend _TacZeroExtend;
+        TacDoubleToInt _TacDoubleToInt;
+        TacDoubleToUInt _TacDoubleToUInt;
+        TacIntToDouble _TacIntToDouble;
+        TacUIntToDouble _TacUIntToDouble;
+        TacFunCall _TacFunCall;
+        TacUnary _TacUnary;
+        TacBinary _TacBinary;
+        TacCopy _TacCopy;
+        TacGetAddress _TacGetAddress;
+        TacLoad _TacLoad;
+        TacStore _TacStore;
+        TacAddPtr _TacAddPtr;
+        TacCopyToOffset _TacCopyToOffset;
+        TacCopyFromOffset _TacCopyFromOffset;
+        TacJump _TacJump;
+        TacJumpIfZero _TacJumpIfZero;
+        TacJumpIfNotZero _TacJumpIfNotZero;
+        TacLabel _TacLabel;
+    } get;
+} TacInstruction;
+
+unique_ptr_t(TacInstruction) make_TacInstruction(void);
+unique_ptr_t(TacInstruction) make_TacReturn(shared_ptr_t(TacValue) * val);
+unique_ptr_t(TacInstruction) make_TacSignExtend(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacTruncate(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacZeroExtend(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacDoubleToInt(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacDoubleToUInt(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacIntToDouble(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacUIntToDouble(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction)
+    make_TacFunCall(TIdentifier name, vector_t(shared_ptr_t(TacValue)) * args, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction)
+    make_TacUnary(unique_ptr_t(TacUnaryOp) * unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacBinary(unique_ptr_t(TacBinaryOp) * binop, shared_ptr_t(TacValue) * src1,
+    shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacCopy(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacGetAddress(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacLoad(shared_ptr_t(TacValue) * src_ptr, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacStore(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst_ptr);
+unique_ptr_t(TacInstruction) make_TacAddPtr(
+    TLong scale, shared_ptr_t(TacValue) * src_ptr, shared_ptr_t(TacValue) * idx, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacCopyToOffset(TIdentifier dst_name, TLong offset, shared_ptr_t(TacValue) * src);
+unique_ptr_t(TacInstruction) make_TacCopyFromOffset(TIdentifier src_name, TLong offset, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacJump(TIdentifier target);
+unique_ptr_t(TacInstruction) make_TacJumpIfZero(TIdentifier target, shared_ptr_t(TacValue) * condition);
+unique_ptr_t(TacInstruction) make_TacJumpIfNotZero(TIdentifier target, shared_ptr_t(TacValue) * condition);
+unique_ptr_t(TacInstruction) make_TacLabel(TIdentifier name);
+void free_TacInstruction(unique_ptr_t(TacInstruction) * self);
+void move_TacInstruction(unique_ptr_t(TacInstruction) * self, unique_ptr_t(TacInstruction) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // top_level = Function(identifier, bool, identifier*, instruction*)
 //           | StaticVariable(identifier, bool, type, static_init*)
 //           | StaticConstant(identifier, type, static_init)
-struct TacTopLevel : Ast {
-    AST_T type() override;
-};
 
-struct TacFunction : TacTopLevel {
-    AST_T type() override;
-    TacFunction();
-    TacFunction(TIdentifier name, bool is_glob, vector_t(TIdentifier) * params,
-        vector_t(std::unique_ptr<TacInstruction>) * body);
-    ~TacFunction();
-
+typedef struct TacFunction {
     TIdentifier name;
     bool is_glob;
     vector_t(TIdentifier) params;
-    vector_t(std::unique_ptr<TacInstruction>) body;
-};
+    vector_t(unique_ptr_t(TacInstruction)) body;
+} TacFunction;
 
-struct TacStaticVariable : TacTopLevel {
-    AST_T type() override;
-    TacStaticVariable();
-    TacStaticVariable(TIdentifier name, bool is_glob, std::shared_ptr<Type>&& static_init_type,
-        vector_t(std::shared_ptr<StaticInit>) * static_inits);
-    ~TacStaticVariable();
-
+typedef struct TacStaticVariable {
     TIdentifier name;
     bool is_glob;
-    std::shared_ptr<Type> static_init_type;
-    vector_t(std::shared_ptr<StaticInit>) static_inits;
-};
+    shared_ptr_t(Type) static_init_type;
+    vector_t(shared_ptr_t(StaticInit)) static_inits;
+} TacStaticVariable;
 
-struct TacStaticConstant : TacTopLevel {
-    AST_T type() override;
-    TacStaticConstant() = default;
-    TacStaticConstant(
-        TIdentifier name, std::shared_ptr<Type>&& static_init_type, std::shared_ptr<StaticInit>&& static_init);
-
+typedef struct TacStaticConstant {
     TIdentifier name;
-    std::shared_ptr<Type> static_init_type;
-    std::shared_ptr<StaticInit> static_init;
-};
+    shared_ptr_t(Type) static_init_type;
+    shared_ptr_t(StaticInit) static_init;
+} TacStaticConstant;
+
+typedef struct TacTopLevel {
+    unique_ptr_impl(AST_T);
+
+    union {
+        TacFunction _TacFunction;
+        TacStaticVariable _TacStaticVariable;
+        TacStaticConstant _TacStaticConstant;
+    } get;
+} TacTopLevel;
+
+unique_ptr_t(TacTopLevel) make_TacTopLevel(void);
+unique_ptr_t(TacTopLevel) make_TacFunction(
+    TIdentifier name, bool is_glob, vector_t(TIdentifier) * params, vector_t(unique_ptr_t(TacInstruction)) * body);
+unique_ptr_t(TacTopLevel) make_TacStaticVariable(TIdentifier name, bool is_glob, shared_ptr_t(Type) * static_init_type,
+    vector_t(shared_ptr_t(StaticInit)) * static_inits);
+unique_ptr_t(TacTopLevel) make_TacStaticConstant(
+    TIdentifier name, shared_ptr_t(Type) * static_init_type, shared_ptr_t(StaticInit) * static_init);
+void free_TacTopLevel(unique_ptr_t(TacTopLevel) * self);
+void move_TacTopLevel(unique_ptr_t(TacTopLevel) * self, unique_ptr_t(TacTopLevel) * other);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // AST = Program(top_level*, top_level*, top_level*)
-struct TacProgram : Ast {
-    AST_T type() override;
-    TacProgram();
-    TacProgram(vector_t(std::unique_ptr<TacTopLevel>) * static_const_toplvls,
-        vector_t(std::unique_ptr<TacTopLevel>) * static_var_toplvls,
-        vector_t(std::unique_ptr<TacTopLevel>) * fun_toplvls);
-    ~TacProgram();
 
-    vector_t(std::unique_ptr<TacTopLevel>) static_const_toplvls;
-    vector_t(std::unique_ptr<TacTopLevel>) static_var_toplvls;
-    vector_t(std::unique_ptr<TacTopLevel>) fun_toplvls;
-};
+typedef struct TacProgram {
+    unique_ptr_impl(AST_T);
+    vector_t(unique_ptr_t(TacTopLevel)) static_const_toplvls;
+    vector_t(unique_ptr_t(TacTopLevel)) static_var_toplvls;
+    vector_t(unique_ptr_t(TacTopLevel)) fun_toplvls;
 
-/*
-struct Dummy : Ast {
-};
-*/
+} TacProgram;
+
+unique_ptr_t(TacProgram) make_TacProgram(vector_t(unique_ptr_t(TacTopLevel)) * static_const_toplvls,
+    vector_t(unique_ptr_t(TacTopLevel)) * static_var_toplvls, vector_t(unique_ptr_t(TacTopLevel)) * fun_toplvls);
+void free_TacProgram(unique_ptr_t(TacProgram) * self);
+void move_TacProgram(unique_ptr_t(TacProgram) * self, unique_ptr_t(TacProgram) * other);
 
 #endif
