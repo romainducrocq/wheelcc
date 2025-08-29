@@ -141,7 +141,7 @@ TIdentifier repr_case_identifier(Ctx ctx, TIdentifier target, bool is_label, siz
 
 TIdentifier repr_var_identifier(Ctx ctx, CExp* node) {
     string_t name = str_new(NULL);
-    switch (node->type()) {
+    switch (node->type) {
         case AST_CConstant_t: {
             name = str_new("const");
             break;
