@@ -1754,4 +1754,6 @@ void pprint_backend_symbol_table(IdentifierContext* ctx, BackEndContext* backend
     }
     printf("\n");
 }
+#else
+typedef int empty_translation_unit;
 #endif
