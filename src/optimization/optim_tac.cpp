@@ -1153,7 +1153,7 @@ static bool is_const_zero(CConst* constant) {
         case AST_CConstDouble_t:
             return static_cast<CConstDouble*>(constant)->value == 0.0;
         case AST_CConstUChar_t:
-            return static_cast<CConstUChar*>(constant)->value == 0;
+            return static_cast<CConstUChar*>(constant)->value == 0u;
         case AST_CConstUInt_t:
             return static_cast<CConstUInt*>(constant)->value == 0u;
         case AST_CConstULong_t:
