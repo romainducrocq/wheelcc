@@ -114,16 +114,16 @@ static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
 // }
 #endif
 
-static void set_filename_ext(Ctx ctx, const char* ext) {
-    for (size_t i = str_size(ctx->filename); i-- > 0;) {
-        if (ctx->filename[i] == '.') {
-            str_substr(ctx->filename, 0, i);
-            str_append(ctx->filename, ext);
-            return;
-        }
-    }
-    THROW_ABORT;
-}
+// static void set_filename_ext(Ctx ctx, const char* ext) {
+//     for (size_t i = str_size(ctx->filename); i-- > 0;) {
+//         if (ctx->filename[i] == '.') {
+//             str_substr(ctx->filename, 0, i);
+//             str_append(ctx->filename, ext);
+//             return;
+//         }
+//     }
+//     THROW_ABORT;
+// }
 
 static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     IdentifierContext identifiers;
