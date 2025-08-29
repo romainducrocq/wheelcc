@@ -59,11 +59,11 @@ static void verbose(Ctx ctx, const char* msg) {
 }
 
 #ifndef __NDEBUG__
-// static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
-//     if (ctx->is_verbose) {
-//         pprint_toks(ctx->identifiers, tokens);
-//     }
-// }
+static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
+    if (ctx->is_verbose) {
+        pprint_toks(ctx->identifiers, tokens);
+    }
+}
 
 // static void debug_c_ast(Ctx ctx, CProgram* node) {
 //     if (ctx->is_verbose) {
@@ -195,15 +195,15 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     THROW_INIT(GET_FATAL_MSG(MSG_unsupported_os, "unknown"));
 #endif
 
-    //     verbose(ctx, "-- Lexing ... ");
-    //     TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
-    //     verbose(ctx, "OK\n");
-    // #ifndef __NDEBUG__
-    //     if (ctx->debug_code == 255) {
-    //         debug_toks(ctx, tokens);
-    //         EARLY_EXIT;
-    //     }
-    // #endif
+    verbose(ctx, "-- Lexing ... ");
+    TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
+    verbose(ctx, "OK\n");
+#ifndef __NDEBUG__
+    if (ctx->debug_code == 255) {
+        debug_toks(ctx, tokens);
+        EARLY_EXIT;
+    }
+#endif
 
     //     verbose(ctx, "-- Parsing ... ");
     //     TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));

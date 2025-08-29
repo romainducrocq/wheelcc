@@ -2,8 +2,6 @@
 #include "util/fileio.h"
 #include "util/throw.h"
 
-// TODO rm
-#define _LEXER_IMPL
 #include "ast/ast.h"
 
 #include "frontend/parser/errors.h"
