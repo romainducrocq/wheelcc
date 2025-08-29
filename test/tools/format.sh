@@ -30,7 +30,7 @@ else
     for FILE in $(find ${ROOT}/include/ -name "*.h" -type f | sort --uniq); do
         format ${FILE}
     done
-    for FILE in $(find ${ROOT}/src/ -name "*.cpp" -type f | sort --uniq); do
+    for FILE in $(find ${ROOT}/src/ -name "*.c*" -type f | sort --uniq); do
         format ${FILE}
     done
     for FILE in $(find ${ROOT}/src/ -name "*.h" -type f | sort --uniq); do
