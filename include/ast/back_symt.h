@@ -56,6 +56,9 @@ typedef struct AssemblyType {
     } get;
 } AssemblyType;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(AssemblyType) make_AssemblyType(void);
 shared_ptr_t(AssemblyType) make_Byte(void);
 shared_ptr_t(AssemblyType) make_LongWord(void);
@@ -65,6 +68,9 @@ shared_ptr_t(AssemblyType) make_ByteArray(TLong size, TInt alignment);
 void free_AssemblyType(shared_ptr_t(AssemblyType) * self);
 void move_AssemblyType(shared_ptr_t(AssemblyType) * self, shared_ptr_t(AssemblyType) * other);
 void copy_AssemblyType(shared_ptr_t(AssemblyType) * self, shared_ptr_t(AssemblyType) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -91,11 +97,17 @@ typedef struct BackendSymbol {
     } get;
 } BackendSymbol;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 unique_ptr_t(BackendSymbol) make_BackendSymbol(void);
 unique_ptr_t(BackendSymbol) make_BackendObj(bool is_static, bool is_const, shared_ptr_t(AssemblyType) * asm_type);
 unique_ptr_t(BackendSymbol) make_BackendFun(bool is_def);
 void free_BackendSymbol(unique_ptr_t(BackendSymbol) * self);
 void move_BackendSymbol(unique_ptr_t(BackendSymbol) * self, unique_ptr_t(BackendSymbol) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -281,17 +281,17 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 
     map_delete(frontend.string_const_table);
     for (size_t i = 0; i < map_size(frontend.struct_typedef_table); ++i) {
-        // pair_second(frontend.struct_typedef_table[i]).reset();
+        free_StructTypedef(&pair_second(frontend.struct_typedef_table[i]));
     }
     map_delete(frontend.struct_typedef_table);
     for (size_t i = 0; i < map_size(frontend.symbol_table); ++i) {
-        // pair_second(frontend.symbol_table[i]).reset();
+        free_Symbol(&pair_second(frontend.symbol_table[i]));
     }
     map_delete(frontend.symbol_table);
     set_delete(frontend.addressed_set);
 
     for (size_t i = 0; i < map_size(backend.symbol_table); ++i) {
-        // pair_second(backend.symbol_table[i]).reset();
+        free_BackendSymbol(&pair_second(backend.symbol_table[i]));
     }
     map_delete(backend.symbol_table);
 

@@ -66,6 +66,9 @@ typedef struct CConst {
     } get;
 } CConst;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(CConst) make_CConst(void);
 shared_ptr_t(CConst) make_CConstInt(TInt value);
 shared_ptr_t(CConst) make_CConstLong(TLong value);
@@ -77,6 +80,9 @@ shared_ptr_t(CConst) make_CConstUChar(TUChar value);
 void free_CConst(shared_ptr_t(CConst) * self);
 void move_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
 void copy_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,10 +94,16 @@ typedef struct CStringLiteral {
 
 } CStringLiteral;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(CStringLiteral) make_CStringLiteral(vector_t(TChar) * value);
 void free_CStringLiteral(shared_ptr_t(CStringLiteral) * self);
 void move_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
 void copy_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

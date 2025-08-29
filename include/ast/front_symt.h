@@ -112,6 +112,9 @@ typedef struct Type {
     } get;
 } Type;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(Type) make_Type(void);
 shared_ptr_t(Type) make_Char(void);
 shared_ptr_t(Type) make_SChar(void);
@@ -129,6 +132,9 @@ shared_ptr_t(Type) make_Structure(TIdentifier tag, bool is_union);
 void free_Type(shared_ptr_t(Type) * self);
 void move_Type(shared_ptr_t(Type) * self, shared_ptr_t(Type) * other);
 void copy_Type(shared_ptr_t(Type) * self, shared_ptr_t(Type) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -202,6 +208,9 @@ typedef struct StaticInit {
     } get;
 } StaticInit;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(StaticInit) make_StaticInit(void);
 shared_ptr_t(StaticInit) make_IntInit(TInt value);
 shared_ptr_t(StaticInit) make_LongInit(TLong value);
@@ -217,6 +226,9 @@ shared_ptr_t(StaticInit) make_PointerInit(TIdentifier name);
 void free_StaticInit(shared_ptr_t(StaticInit) * self);
 void move_StaticInit(shared_ptr_t(StaticInit) * self, shared_ptr_t(StaticInit) * other);
 void copy_StaticInit(shared_ptr_t(StaticInit) * self, shared_ptr_t(StaticInit) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -246,6 +258,9 @@ typedef struct InitialValue {
     } get;
 } InitialValue;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 shared_ptr_t(InitialValue) make_InitialValue(void);
 shared_ptr_t(InitialValue) make_Tentative(void);
 shared_ptr_t(InitialValue) make_Initial(vector_t(shared_ptr_t(StaticInit)) * static_inits);
@@ -253,6 +268,9 @@ shared_ptr_t(InitialValue) make_NoInitializer(void);
 void free_InitialValue(shared_ptr_t(InitialValue) * self);
 void move_InitialValue(shared_ptr_t(InitialValue) * self, shared_ptr_t(InitialValue) * other);
 void copy_InitialValue(shared_ptr_t(InitialValue) * self, shared_ptr_t(InitialValue) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -290,6 +308,9 @@ typedef struct IdentifierAttr {
     } get;
 } IdentifierAttr;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 unique_ptr_t(IdentifierAttr) make_IdentifierAttr(void);
 unique_ptr_t(IdentifierAttr) make_FunAttr(bool is_def, bool is_glob);
 unique_ptr_t(IdentifierAttr) make_StaticAttr(bool is_glob, shared_ptr_t(InitialValue) * init);
@@ -297,6 +318,9 @@ unique_ptr_t(IdentifierAttr) make_ConstantAttr(shared_ptr_t(StaticInit) * static
 unique_ptr_t(IdentifierAttr) make_LocalAttr(void);
 void free_IdentifierAttr(unique_ptr_t(IdentifierAttr) * self);
 void move_IdentifierAttr(unique_ptr_t(IdentifierAttr) * self, unique_ptr_t(IdentifierAttr) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -309,9 +333,15 @@ typedef struct Symbol {
 
 } Symbol;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 unique_ptr_t(Symbol) make_Symbol(shared_ptr_t(Type) * type_t, unique_ptr_t(IdentifierAttr) * attrs);
 void free_Symbol(unique_ptr_t(Symbol) * self);
 void move_Symbol(unique_ptr_t(Symbol) * self, unique_ptr_t(Symbol) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -324,9 +354,15 @@ typedef struct StructMember {
 
 } StructMember;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 unique_ptr_t(StructMember) make_StructMember(TLong offset, shared_ptr_t(Type) * member_type);
 void free_StructMember(unique_ptr_t(StructMember) * self);
 void move_StructMember(unique_ptr_t(StructMember) * self, unique_ptr_t(StructMember) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -344,10 +380,16 @@ typedef struct StructTypedef {
 
 } StructTypedef;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 unique_ptr_t(StructTypedef) make_StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
     hashmap_t(TIdentifier, UPtrStructMember) * members);
 void free_StructTypedef(unique_ptr_t(StructTypedef) * self);
 void move_StructTypedef(unique_ptr_t(StructTypedef) * self, unique_ptr_t(StructTypedef) * other);
+#ifdef __cplusplus
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
