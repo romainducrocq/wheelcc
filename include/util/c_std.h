@@ -26,14 +26,14 @@
     if (!X) {          \
         return;        \
     }
-#define uptr_alloc(T, X)              \
-    do {                              \
-        free_##T(&X);                 \
-        X = (T*)calloc(1, sizeof(T)); \
-        if (!X) {                     \
-            THROW_ALLOC(T);           \
-        }                             \
-    }                                 \
+#define uptr_alloc(T, X)           \
+    do {                           \
+        free_##T(&X);              \
+        X = (T*)malloc(sizeof(T)); \
+        if (!X) {                  \
+            THROW_ALLOC(T);        \
+        }                          \
+    }                              \
     while (0)
 #define uptr_free(X)    \
     if (X) {            \
