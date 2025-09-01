@@ -424,7 +424,7 @@ static void proc_arr_abstract_decltor(
 }
 
 static void proc_base_abstract_decltor(shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
-    uptr_move(Type, *base_type, abstract_decltor->derived_type);
+    sptr_move(Type, *base_type, abstract_decltor->derived_type);
 }
 
 static void proc_abstract_decltor(
