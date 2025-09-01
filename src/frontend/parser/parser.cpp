@@ -1,5 +1,3 @@
-#include <inttypes.h>
-
 #include "util/c_std.h"
 #include "util/str2t.h"
 #include "util/throw.h"
