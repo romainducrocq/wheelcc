@@ -40,5 +40,6 @@ src/util/fileio.cpp
 src/util/pprint.cpp
 src/util/throw.cpp
 src/frontend/intermediate/idents.cpp
+src/frontend/parser/parser.cpp
 src/frontend/parser/errors.cpp
 src/frontend/parser/lexer.cpp
