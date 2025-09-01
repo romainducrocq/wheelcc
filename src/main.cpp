@@ -206,7 +206,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Parsing ... ");
-    // TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
+    TRY(parse_tokens(&tokens, errors, &identifiers, &c_ast));
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 254) {
