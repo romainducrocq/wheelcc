@@ -43,216 +43,216 @@ typedef SemanticContext* Ctx;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Type checking
+// Type checking
 
-// static bool is_same_type(Type* type_1, Type* type_2);
+static bool is_same_type(Type* type_1, Type* type_2);
 
-// static bool is_same_ptr(Pointer* ptr_type_1, Pointer* ptr_type_2) {
-//     return is_same_type(ptr_type_1->ref_type.get(), ptr_type_2->ref_type.get());
-// }
+static bool is_same_ptr(Pointer* ptr_type_1, Pointer* ptr_type_2) {
+    return is_same_type(ptr_type_1->ref_type, ptr_type_2->ref_type);
+}
 
-// static bool is_same_arr(Array* arr_type_1, Array* arr_type_2) {
-//     return arr_type_1->size == arr_type_2->size
-//            && is_same_type(arr_type_1->elem_type.get(), arr_type_2->elem_type.get());
-// }
+static bool is_same_arr(Array* arr_type_1, Array* arr_type_2) {
+    return arr_type_1->size == arr_type_2->size
+           && is_same_type(arr_type_1->elem_type, arr_type_2->elem_type);
+}
 
-// static bool is_same_struct(Structure* struct_type_1, Structure* struct_type_2) {
-//     return struct_type_1->tag == struct_type_2->tag;
-// }
+static bool is_same_struct(Structure* struct_type_1, Structure* struct_type_2) {
+    return struct_type_1->tag == struct_type_2->tag;
+}
 
-// static bool is_same_type(Type* type_1, Type* type_2) {
-//     if (type_1->type() == type_2->type()) {
-//         switch (type_1->type()) {
-//             case AST_Pointer_t:
-//                 return is_same_ptr(static_cast<Pointer*>(type_1), static_cast<Pointer*>(type_2));
-//             case AST_Array_t:
-//                 return is_same_arr(static_cast<Array*>(type_1), static_cast<Array*>(type_2));
-//             case AST_Structure_t:
-//                 return is_same_struct(static_cast<Structure*>(type_1), static_cast<Structure*>(type_2));
-//             case AST_FunType_t:
-//                 THROW_ABORT;
-//             default:
-//                 return true;
-//         }
-//     }
-//     return false;
-// }
+static bool is_same_type(Type* type_1, Type* type_2) {
+    if (type_1->type == type_2->type) {
+        switch (type_1->type) {
+            case AST_Pointer_t:
+                return is_same_ptr(&type_1->get._Pointer, &type_2->get._Pointer);
+            case AST_Array_t:
+                return is_same_arr(&type_1->get._Array, &type_2->get._Array);
+            case AST_Structure_t:
+                return is_same_struct(&type_1->get._Structure, &type_2->get._Structure);
+            case AST_FunType_t:
+                THROW_ABORT;
+            default:
+                return true;
+        }
+    }
+    return false;
+}
 
-// static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
-//     if (vec_size(fun_type_1->param_types) != vec_size(fun_type_2->param_types)
-//         || !is_same_type(fun_type_1->ret_type.get(), fun_type_2->ret_type.get())) {
-//         return false;
-//     }
-//     for (size_t i = 0; i < vec_size(fun_type_1->param_types); ++i) {
-//         if (!is_same_type(fun_type_1->param_types[i].get(), fun_type_2->param_types[i].get())) {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
+static bool is_same_fun_type(FunType* fun_type_1, FunType* fun_type_2) {
+    if (vec_size(fun_type_1->param_types) != vec_size(fun_type_2->param_types)
+        || !is_same_type(fun_type_1->ret_type, fun_type_2->ret_type)) {
+        return false;
+    }
+    for (size_t i = 0; i < vec_size(fun_type_1->param_types); ++i) {
+        if (!is_same_type(fun_type_1->param_types[i], fun_type_2->param_types[i])) {
+            return false;
+        }
+    }
+    return true;
+}
 
-// static bool is_type_signed(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_Double_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_signed(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_type_char(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_UChar_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_char(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_type_int(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_UChar_t:
-//         case AST_UInt_t:
-//         case AST_ULong_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_int(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_UChar_t:
+        case AST_UInt_t:
+        case AST_ULong_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_type_arithmetic(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_Double_t:
-//         case AST_UChar_t:
-//         case AST_UInt_t:
-//         case AST_ULong_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_arithmetic(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_UChar_t:
+        case AST_UInt_t:
+        case AST_ULong_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_type_scalar(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_Double_t:
-//         case AST_UChar_t:
-//         case AST_UInt_t:
-//         case AST_ULong_t:
-//         case AST_Pointer_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_scalar(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_UChar_t:
+        case AST_UInt_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_struct_complete(Ctx ctx, Structure* struct_type) {
-//     return map_find(ctx->frontend->struct_typedef_table, struct_type->tag) != map_end();
-// }
+static bool is_struct_complete(Ctx ctx, Structure* struct_type) {
+    return map_find(ctx->frontend->struct_typedef_table, struct_type->tag) != map_end();
+}
 
-// static bool is_type_complete(Ctx ctx, Type* type) {
-//     switch (type->type()) {
-//         case AST_Void_t:
-//             return false;
-//         case AST_Structure_t:
-//             return is_struct_complete(ctx, static_cast<Structure*>(type));
-//         default:
-//             return true;
-//     }
-// }
+static bool is_type_complete(Ctx ctx, Type* type) {
+    switch (type->type) {
+        case AST_Void_t:
+            return false;
+        case AST_Structure_t:
+            return is_struct_complete(ctx, &type->get._Structure);
+        default:
+            return true;
+    }
+}
 
-// static error_t is_valid_type(Ctx ctx, Type* type);
+static error_t is_valid_type(Ctx ctx, Type* type);
 
-// static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) {
-//     CATCH_ENTER;
-//     TRY(is_valid_type(ctx, ptr_type->ref_type.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) {
+    CATCH_ENTER;
+    TRY(is_valid_type(ctx, ptr_type->ref_type));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t is_valid_arr(Ctx ctx, Array* arr_type) {
-//     string_t type_fmt_1 = str_new(NULL);
-//     string_t type_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     if (!is_type_complete(ctx, arr_type->elem_type.get())) {
-//         THROW_AT_LINE(ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_incomplete_arr, str_fmt_type(arr_type, &type_fmt_1),
-//                                                 str_fmt_type(arr_type->elem_type.get(), &type_fmt_2)));
-//     }
-//     TRY(is_valid_type(ctx, arr_type->elem_type.get()));
-//     FINALLY;
-//     str_delete(type_fmt_1);
-//     str_delete(type_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t is_valid_arr(Ctx ctx, Array* arr_type, Type* type) {
+    string_t type_fmt_1 = str_new(NULL);
+    string_t type_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    if (!is_type_complete(ctx, arr_type->elem_type)) {
+        THROW_AT_LINE(ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_incomplete_arr, str_fmt_type(type, &type_fmt_1),
+                                                str_fmt_type(arr_type->elem_type, &type_fmt_2)));
+    }
+    TRY(is_valid_type(ctx, arr_type->elem_type));
+    FINALLY;
+    str_delete(type_fmt_1);
+    str_delete(type_fmt_2);
+    CATCH_EXIT;
+}
 
-// static error_t is_valid_type(Ctx ctx, Type* type) {
-//     CATCH_ENTER;
-//     switch (type->type()) {
-//         case AST_Pointer_t:
-//             TRY(is_valid_ptr(ctx, static_cast<Pointer*>(type)));
-//             break;
-//         case AST_Array_t:
-//             TRY(is_valid_arr(ctx, static_cast<Array*>(type)));
-//             break;
-//         case AST_FunType_t:
-//             THROW_ABORT;
-//         default:
-//             break;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t is_valid_type(Ctx ctx, Type* type) {
+    CATCH_ENTER;
+    switch (type->type) {
+        case AST_Pointer_t:
+            TRY(is_valid_ptr(ctx, &type->get._Pointer));
+            break;
+        case AST_Array_t:
+            TRY(is_valid_arr(ctx, &type->get._Array, type));
+            break;
+        case AST_FunType_t:
+            THROW_ABORT;
+        default:
+            break;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static bool is_exp_lvalue(CExp* node);
+static bool is_exp_lvalue(CExp* node);
 
-// static bool is_dot_exp_lvalue(CDot* node) { return is_exp_lvalue(node->structure.get()); }
+static bool is_dot_exp_lvalue(CDot* node) { return is_exp_lvalue(node->structure); }
 
-// static bool is_exp_lvalue(CExp* node) {
-//     switch (node->type()) {
-//         case AST_CString_t:
-//         case AST_CVar_t:
-//         case AST_CDereference_t:
-//         case AST_CSubscript_t:
-//         case AST_CArrow_t:
-//             return true;
-//         case AST_CDot_t:
-//             return is_dot_exp_lvalue(static_cast<CDot*>(node));
-//         default:
-//             return false;
-//     }
-// }
+static bool is_exp_lvalue(CExp* node) {
+    switch (node->type) {
+        case AST_CString_t:
+        case AST_CVar_t:
+        case AST_CDereference_t:
+        case AST_CSubscript_t:
+        case AST_CArrow_t:
+            return true;
+        case AST_CDot_t:
+            return is_dot_exp_lvalue(&node->get._CDot);
+        default:
+            return false;
+    }
+}
 
-// static bool is_const_null_ptr(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstInt_t:
-//             return static_cast<CConstInt*>(node->constant.get())->value == 0;
-//         case AST_CConstLong_t:
-//             return static_cast<CConstLong*>(node->constant.get())->value == 0l;
-//         case AST_CConstUInt_t:
-//             return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
-//         case AST_CConstULong_t:
-//             return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_null_ptr(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstInt_t: 
+            return node->constant->get._CConstInt.value == 0;
+        case AST_CConstLong_t: 
+            return node->constant->get._CConstLong.value == 0l;
+        case AST_CConstUInt_t: 
+            return node->constant->get._CConstUInt.value == 0u;
+        case AST_CConstULong_t: 
+            return node->constant->get._CConstULong.value == 0ul;
+        default:
+            return false;
+    }
+}
 
 // static TInt get_scalar_size(Type* type) {
 //     switch (type->type()) {
