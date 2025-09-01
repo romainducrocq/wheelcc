@@ -713,7 +713,7 @@ unique_ptr_t(CStatement) make_CSwitch(unique_ptr_t(CExp) * match, unique_ptr_t(C
     unique_ptr_t(CStatement) self = make_CStatement();
     self->type = AST_CSwitch_t;
     self->get._CSwitch.target = 0;
-    self->get._CSwitch.is_default = 0;
+    self->get._CSwitch.is_default = false;
     self->get._CSwitch.match = uptr_new();
     move_CExp(match, &self->get._CSwitch.match);
     self->get._CSwitch.body = uptr_new();
