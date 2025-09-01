@@ -15,7 +15,7 @@ CProgram:
             CS: 
               CSwitch: 
                 TIdentifier: (null)
-                Bool: 1
+                Bool: 0
                 CVar: 
                   TIdentifier: i
                   None: 
