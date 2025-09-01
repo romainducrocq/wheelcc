@@ -1960,7 +1960,7 @@ static error_t proc_param_decltor(
     Declarator decltor = {0, sptr_new(), vec_new()};
     shared_ptr_t(Type) param_type = sptr_new();
     CATCH_ENTER;
-    param_type = node->param_type;
+    sptr_copy(Type, node->param_type, param_type);
     TRY(proc_decltor(ctx, node->decltor, &param_type, &decltor));
     THROW_ABORT_IF(decltor.derived_type->type == AST_FunType_t);
     vec_push_back(*params, decltor.name);
