@@ -1400,213 +1400,213 @@ static error_t check_typed_exp(Ctx ctx, unique_ptr_t(CExp)* exp) {
     CATCH_EXIT;
 }
 
-// static error_t check_ret_statement(Ctx ctx, CReturn* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, ctx->fun_def_name)->type_t.get());
-//     if (fun_type->ret_type->type() == AST_Void_t) {
-//         if (node->exp) {
-//             THROW_AT_LINE(
-//                 node->line, GET_SEMANTIC_MSG(MSG_ret_value_in_void_fun, str_fmt_name(ctx->fun_def_name, &name_fmt)));
-//         }
-//         EARLY_EXIT;
-//     }
-//     else if (!node->exp) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_no_ret_value_in_fun, str_fmt_name(ctx->fun_def_name, &name_fmt),
-//                                       str_fmt_type(fun_type->ret_type.get(), &type_fmt)));
-//     }
+static error_t check_ret_statement(Ctx ctx, CReturn* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    FunType* fun_type = &map_get(ctx->frontend->symbol_table, ctx->fun_def_name)->type_t->get._FunType;
+    if (fun_type->ret_type->type == AST_Void_t) {
+        if (node->exp) {
+            THROW_AT_LINE(
+                node->line, GET_SEMANTIC_MSG(MSG_ret_value_in_void_fun, str_fmt_name(ctx->fun_def_name, &name_fmt)));
+        }
+        EARLY_EXIT;
+    }
+    else if (!node->exp) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_no_ret_value_in_fun, str_fmt_name(ctx->fun_def_name, &name_fmt),
+                                      str_fmt_type(fun_type->ret_type, &type_fmt)));
+    }
 
-//     else if (!is_same_type(node->exp->exp_type.get(), fun_type->ret_type.get())) {
-//         TRY(cast_assign(ctx, &fun_type->ret_type, &node->exp));
-//     }
-//     TRY(check_typed_exp(ctx, &node->exp));
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+    else if (!is_same_type(node->exp->exp_type, fun_type->ret_type)) {
+        TRY(cast_assign(ctx, &fun_type->ret_type, &node->exp));
+    }
+    TRY(check_typed_exp(ctx, &node->exp));
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_if_statement(Ctx ctx, CIf* node) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-//         THROW_AT_LINE(node->condition->line,
-//             GET_SEMANTIC_MSG(MSG_invalid_if, str_fmt_type(node->condition->exp_type.get(), &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_if_statement(Ctx ctx, CIf* node) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (node->condition && !is_type_scalar(node->condition->exp_type)) {
+        THROW_AT_LINE(node->condition->line,
+            GET_SEMANTIC_MSG(MSG_invalid_if, str_fmt_type(node->condition->exp_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_while_statement(Ctx ctx, CWhile* node) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-//         THROW_AT_LINE(node->condition->line,
-//             GET_SEMANTIC_MSG(MSG_invalid_while, str_fmt_type(node->condition->exp_type.get(), &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_while_statement(Ctx ctx, CWhile* node) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (node->condition && !is_type_scalar(node->condition->exp_type)) {
+        THROW_AT_LINE(node->condition->line,
+            GET_SEMANTIC_MSG(MSG_invalid_while, str_fmt_type(node->condition->exp_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_do_while_statement(Ctx ctx, CDoWhile* node) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-//         THROW_AT_LINE(node->condition->line,
-//             GET_SEMANTIC_MSG(MSG_invalid_do_while, str_fmt_type(node->condition->exp_type.get(), &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_do_while_statement(Ctx ctx, CDoWhile* node) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (node->condition && !is_type_scalar(node->condition->exp_type)) {
+        THROW_AT_LINE(node->condition->line,
+            GET_SEMANTIC_MSG(MSG_invalid_do_while, str_fmt_type(node->condition->exp_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_for_statement(Ctx ctx, CFor* node) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (node->condition && !is_type_scalar(node->condition->exp_type.get())) {
-//         THROW_AT_LINE(node->condition->line,
-//             GET_SEMANTIC_MSG(MSG_invalid_for, str_fmt_type(node->condition->exp_type.get(), &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_for_statement(Ctx ctx, CFor* node) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (node->condition && !is_type_scalar(node->condition->exp_type)) {
+        THROW_AT_LINE(node->condition->line,
+            GET_SEMANTIC_MSG(MSG_invalid_for, str_fmt_type(node->condition->exp_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
-//     string_t strto_fmt = str_new(NULL);
-//     vector_t(TInt) values = vec_new();
-//     CATCH_ENTER;
-//     vec_resize(values, vec_size(node->cases));
-//     for (size_t i = 0; i < vec_size(values); ++i) {
-//         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-//         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-//         values[i] = get_const_int_value(esac);
-//         for (size_t j = 0; j < i; ++j) {
-//             if (values[i] == values[j]) {
-//                 strto_fmt = str_to_string(values[i]);
-//                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
-//             }
-//         }
-//         esac->constant = std::make_shared<CConstInt>(values[i]);
-//         esac->exp_type = node->match->exp_type;
-//     }
-//     FINALLY;
-//     str_delete(strto_fmt);
-//     vec_delete(values);
-//     CATCH_EXIT;
-// }
+static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
+    string_t strto_fmt = str_new(NULL);
+    vector_t(TInt) values = vec_new();
+    CATCH_ENTER;
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type != AST_CConstant_t);
+        CConstant* esac = &node->cases[i]->get._CConstant;
+        values[i] = get_const_int_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                strto_fmt = str_to_string(values[i]);
+                THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
+            }
+        }
+        esac->constant = make_CConstInt(values[i]);
+        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+    }
+    FINALLY;
+    str_delete(strto_fmt);
+    vec_delete(values);
+    CATCH_EXIT;
+}
 
-// static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
-//     string_t strto_fmt = str_new(NULL);
-//     vector_t(TLong) values = vec_new();
-//     CATCH_ENTER;
-//     vec_resize(values, vec_size(node->cases));
-//     for (size_t i = 0; i < vec_size(values); ++i) {
-//         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-//         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-//         values[i] = get_const_long_value(esac);
-//         for (size_t j = 0; j < i; ++j) {
-//             if (values[i] == values[j]) {
-//                 strto_fmt = str_to_string(values[i]);
-//                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
-//             }
-//         }
-//         esac->constant = std::make_shared<CConstLong>(values[i]);
-//         esac->exp_type = node->match->exp_type;
-//     }
-//     FINALLY;
-//     str_delete(strto_fmt);
-//     vec_delete(values);
-//     CATCH_EXIT;
-// }
+static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
+    string_t strto_fmt = str_new(NULL);
+    vector_t(TLong) values = vec_new();
+    CATCH_ENTER;
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type != AST_CConstant_t);
+        CConstant* esac = &node->cases[i]->get._CConstant;
+        values[i] = get_const_long_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                strto_fmt = str_to_string(values[i]);
+                THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
+            }
+        }
+        esac->constant = make_CConstLong(values[i]);
+        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+    }
+    FINALLY;
+    str_delete(strto_fmt);
+    vec_delete(values);
+    CATCH_EXIT;
+}
 
-// static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
-//     string_t strto_fmt = str_new(NULL);
-//     vector_t(TUInt) values = vec_new();
-//     CATCH_ENTER;
-//     vec_resize(values, vec_size(node->cases));
-//     for (size_t i = 0; i < vec_size(values); ++i) {
-//         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-//         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-//         values[i] = get_const_uint_value(esac);
-//         for (size_t j = 0; j < i; ++j) {
-//             if (values[i] == values[j]) {
-//                 strto_fmt = str_to_string(values[i]);
-//                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
-//             }
-//         }
-//         esac->constant = std::make_shared<CConstUInt>(values[i]);
-//         esac->exp_type = node->match->exp_type;
-//     }
-//     FINALLY;
-//     str_delete(strto_fmt);
-//     vec_delete(values);
-//     CATCH_EXIT;
-// }
+static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
+    string_t strto_fmt = str_new(NULL);
+    vector_t(TUInt) values = vec_new();
+    CATCH_ENTER;
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type != AST_CConstant_t);
+        CConstant* esac = &node->cases[i]->get._CConstant;
+        values[i] = get_const_uint_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                strto_fmt = str_to_string(values[i]);
+                THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
+            }
+        }
+        esac->constant = make_CConstUInt(values[i]);
+        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+    }
+    FINALLY;
+    str_delete(strto_fmt);
+    vec_delete(values);
+    CATCH_EXIT;
+}
 
-// static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
-//     string_t strto_fmt = str_new(NULL);
-//     vector_t(TULong) values = vec_new();
-//     CATCH_ENTER;
-//     vec_resize(values, vec_size(node->cases));
-//     for (size_t i = 0; i < vec_size(values); ++i) {
-//         THROW_ABORT_IF(node->cases[i]->type() != AST_CConstant_t);
-//         CConstant* esac = static_cast<CConstant*>(node->cases[i].get());
-//         values[i] = get_const_ulong_value(esac);
-//         for (size_t j = 0; j < i; ++j) {
-//             if (values[i] == values[j]) {
-//                 strto_fmt = str_to_string(values[i]);
-//                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
-//             }
-//         }
-//         esac->constant = std::make_shared<CConstULong>(values[i]);
-//         esac->exp_type = node->match->exp_type;
-//     }
-//     FINALLY;
-//     str_delete(strto_fmt);
-//     vec_delete(values);
-//     CATCH_EXIT;
-// }
+static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
+    string_t strto_fmt = str_new(NULL);
+    vector_t(TULong) values = vec_new();
+    CATCH_ENTER;
+    vec_resize(values, vec_size(node->cases));
+    for (size_t i = 0; i < vec_size(values); ++i) {
+        THROW_ABORT_IF(node->cases[i]->type != AST_CConstant_t);
+        CConstant* esac = &node->cases[i]->get._CConstant;
+        values[i] = get_const_ulong_value(esac);
+        for (size_t j = 0; j < i; ++j) {
+            if (values[i] == values[j]) {
+                strto_fmt = str_to_string(values[i]);
+                THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
+            }
+        }
+        esac->constant = make_CConstULong(values[i]);
+        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+    }
+    FINALLY;
+    str_delete(strto_fmt);
+    vec_delete(values);
+    CATCH_EXIT;
+}
 
-// static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (!is_type_int(node->match->exp_type.get())) {
-//         THROW_AT_LINE(node->match->line,
-//             GET_SEMANTIC_MSG(MSG_invalid_switch, str_fmt_type(node->match->exp_type.get(), &type_fmt)));
-//     }
-//     switch (node->match->exp_type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_UChar_t:
-//             TRY(promote_char_to_int(ctx, &node->match));
-//             break;
-//         default:
-//             break;
-//     }
-//     switch (node->match->exp_type->type()) {
-//         case AST_Int_t:
-//             TRY(check_switch_int_cases(ctx, node));
-//             break;
-//         case AST_Long_t:
-//             TRY(check_switch_long_cases(ctx, node));
-//             break;
-//         case AST_UInt_t:
-//             TRY(check_switch_uint_cases(ctx, node));
-//             break;
-//         case AST_ULong_t:
-//             TRY(check_switch_ulong_cases(ctx, node));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (!is_type_int(node->match->exp_type)) {
+        THROW_AT_LINE(node->match->line,
+            GET_SEMANTIC_MSG(MSG_invalid_switch, str_fmt_type(node->match->exp_type, &type_fmt)));
+    }
+    switch (node->match->exp_type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
+            TRY(promote_char_to_int(ctx, &node->match));
+            break;
+        default:
+            break;
+    }
+    switch (node->match->exp_type->type) {
+        case AST_Int_t:
+            TRY(check_switch_int_cases(ctx, node));
+            break;
+        case AST_Long_t:
+            TRY(check_switch_long_cases(ctx, node));
+            break;
+        case AST_UInt_t:
+            TRY(check_switch_uint_cases(ctx, node));
+            break;
+        case AST_ULong_t:
+            TRY(check_switch_ulong_cases(ctx, node));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
 // static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
 //     string_t type_fmt = str_new(NULL);
