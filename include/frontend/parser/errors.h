@@ -13,6 +13,8 @@
 #include "intermediate/messages.h" // frontend
 
 typedef struct Token Token;
+typedef struct Array Array;
+typedef struct Structure Structure;
 typedef struct Type Type;
 typedef struct CConst CConst;
 typedef struct CUnaryOp CUnaryOp;
@@ -65,6 +67,8 @@ const char* get_binop_fmt(CBinaryOp* node);
 const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop);
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt);
 const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool is_union, string_t* struct_fmt);
+const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_fmt);
+const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type, string_t* struct_fmt);
 const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt);
 #ifdef __cplusplus
 }
@@ -72,6 +76,8 @@ const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt)
 #define str_fmt_tok(X) get_tok_fmt(ctx->identifiers, X)
 #define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
 #define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
+#define str_fmt_arr(X, Y) get_arr_fmt(ctx->identifiers, X, Y)
+#define str_fmt_struct(X, Y) get_struct_fmt(ctx->identifiers, X, Y)
 #define str_fmt_type(X, Y) get_type_fmt(ctx->identifiers, X, Y)
 
 #ifdef __cplusplus

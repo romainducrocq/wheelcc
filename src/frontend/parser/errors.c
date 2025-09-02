@@ -402,7 +402,7 @@ static const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string
     return *ptr_fmt;
 }
 
-static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_fmt) {
+const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_fmt) {
     *arr_fmt = str_new("");
     string_t decltor_fmt = str_new("[");
     {
@@ -431,7 +431,7 @@ static const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t
     return *arr_fmt;
 }
 
-static const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type, string_t* struct_fmt) {
+const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type, string_t* struct_fmt) {
     return get_struct_name_fmt(ctx, struct_type->tag, struct_type->is_union, struct_fmt);
 }
 
