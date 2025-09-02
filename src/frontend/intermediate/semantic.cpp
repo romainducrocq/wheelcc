@@ -187,6 +187,8 @@ static error_t is_valid_ptr(Ctx ctx, Pointer* ptr_type) {
     CATCH_EXIT;
 }
 
+// TODO is_valid_arr(Ctx ctx, Array* arr_type) {
+// expose str_fmt_arr_type in errors.h
 static error_t is_valid_arr(Ctx ctx, Array* arr_type, Type* type) {
     string_t type_fmt_1 = str_new(NULL);
     string_t type_fmt_2 = str_new(NULL);
@@ -254,315 +256,319 @@ static bool is_const_null_ptr(CConstant* node) {
     }
 }
 
-// static TInt get_scalar_size(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_UChar_t:
-//             return 1;
-//         case AST_Int_t:
-//         case AST_UInt_t:
-//             return 4;
-//         case AST_Long_t:
-//         case AST_Double_t:
-//         case AST_ULong_t:
-//         case AST_Pointer_t:
-//             return 8;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TInt get_scalar_size(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
+            return 1;
+        case AST_Int_t:
+        case AST_UInt_t:
+            return 4;
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
+            return 8;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TLong get_type_scale(Ctx ctx, Type* type);
+static TLong get_type_scale(Ctx ctx, Type* type);
 
-// static TLong get_arr_scale(Ctx ctx, Array* arr_type) {
-//     TLong size = arr_type->size;
-//     while (arr_type->elem_type->type() == AST_Array_t) {
-//         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-//         size *= arr_type->size;
-//     }
-//     return get_type_scale(ctx, arr_type->elem_type.get()) * size;
-// }
+static TLong get_arr_scale(Ctx ctx, Array* arr_type) {
+    TLong size = arr_type->size;
+    while (arr_type->elem_type->type == AST_Array_t) {
+        arr_type = &arr_type->elem_type->get._Array;
+        size *= arr_type->size;
+    }
+    return get_type_scale(ctx, arr_type->elem_type) * size;
+}
 
-// static TLong get_struct_scale(Ctx ctx, Structure* struct_type) {
-//     THROW_ABORT_IF(map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end());
-//     return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
-// }
+static TLong get_struct_scale(Ctx ctx, Structure* struct_type) {
+    THROW_ABORT_IF(map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end());
+    return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+}
 
-// static TLong get_type_scale(Ctx ctx, Type* type) {
-//     switch (type->type()) {
-//         case AST_Array_t:
-//             return get_arr_scale(ctx, static_cast<Array*>(type));
-//         case AST_Structure_t:
-//             return get_struct_scale(ctx, static_cast<Structure*>(type));
-//         default:
-//             return get_scalar_size(type);
-//     }
-// }
+static TLong get_type_scale(Ctx ctx, Type* type) {
+    switch (type->type) {
+        case AST_Array_t:
+            return get_arr_scale(ctx, &type->get._Array);
+        case AST_Structure_t:
+            return get_struct_scale(ctx, &type->get._Structure);
+        default:
+            return get_scalar_size(type);
+    }
+}
 
-// static TInt get_type_alignment(Ctx ctx, Type* type);
+static TInt get_type_alignment(Ctx ctx, Type* type);
 
-// static TInt get_arr_alignment(Ctx ctx, Array* arr_type) { return get_type_alignment(ctx, arr_type->elem_type.get()); }
+static TInt get_arr_alignment(Ctx ctx, Array* arr_type) { return get_type_alignment(ctx, arr_type->elem_type); }
 
-// static TInt get_struct_alignment(Ctx ctx, Structure* struct_type) {
-//     THROW_ABORT_IF(map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end());
-//     return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->alignment;
-// }
+static TInt get_struct_alignment(Ctx ctx, Structure* struct_type) {
+    THROW_ABORT_IF(map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end());
+    return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->alignment;
+}
 
-// static TInt get_type_alignment(Ctx ctx, Type* type) {
-//     switch (type->type()) {
-//         case AST_Array_t:
-//             return get_arr_alignment(ctx, static_cast<Array*>(type));
-//         case AST_Structure_t:
-//             return get_struct_alignment(ctx, static_cast<Structure*>(type));
-//         default:
-//             return get_scalar_size(type);
-//     }
-// }
+static TInt get_type_alignment(Ctx ctx, Type* type) {
+    switch (type->type) {
+        case AST_Array_t:
+            return get_arr_alignment(ctx, &type->get._Array);
+        case AST_Structure_t:
+            return get_struct_alignment(ctx, &type->get._Structure);
+        default:
+            return get_scalar_size(type);
+    }
+}
 
-// static std::shared_ptr<Type> get_joint_type(CExp* node_1, CExp* node_2) {
-//     if (is_type_char(node_1->exp_type.get())) {
-//         std::shared_ptr<Type> exp_type = std::move(node_1->exp_type);
-//         node_1->exp_type = std::make_shared<Int>();
-//         std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
-//         node_1->exp_type = std::move(exp_type);
-//         return joint_type;
-//     }
-//     else if (is_type_char(node_2->exp_type.get())) {
-//         std::shared_ptr<Type> exp_type = std::move(node_2->exp_type);
-//         node_2->exp_type = std::make_shared<Int>();
-//         std::shared_ptr<Type> joint_type = get_joint_type(node_1, node_2);
-//         node_2->exp_type = std::move(exp_type);
-//         return joint_type;
-//     }
-//     else if (is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
-//         return node_1->exp_type;
-//     }
-//     else if (node_1->exp_type->type() == AST_Double_t || node_2->exp_type->type() == AST_Double_t) {
-//         return std::make_shared<Double>();
-//     }
+static shared_ptr_t(Type) get_joint_type(CExp* node_1, CExp* node_2) {
+    if (is_type_char(node_1->exp_type)) {
+        shared_ptr_t(Type) exp_type = sptr_new();
+        sptr_move(Type, node_1->exp_type, exp_type);
+        node_1->exp_type = make_Int();
+        shared_ptr_t(Type) joint_type = get_joint_type(node_1, node_2);
+        sptr_move(Type, exp_type, node_1->exp_type);
+        // free_Type(&exp_type); TODO
+        return joint_type;
+    }
+    else if (is_type_char(node_2->exp_type)) {
+        shared_ptr_t(Type) exp_type = sptr_new();
+        sptr_move(Type, node_2->exp_type, exp_type);
+        node_2->exp_type = make_Int();
+        shared_ptr_t(Type) joint_type = get_joint_type(node_1, node_2);
+        sptr_move(Type, exp_type, node_2->exp_type);
+        // free_Type(&exp_type); TODO
+        return joint_type;
+    }
+    else if (is_same_type(node_1->exp_type, node_2->exp_type)) {
+        return node_1->exp_type;
+    }
+    else if (node_1->exp_type->type == AST_Double_t || node_2->exp_type->type == AST_Double_t) {
+        return make_Double();
+    }
 
-//     TInt type_size_1 = get_scalar_size(node_1->exp_type.get());
-//     TInt type_size_2 = get_scalar_size(node_2->exp_type.get());
-//     if (type_size_1 == type_size_2) {
-//         if (is_type_signed(node_1->exp_type.get())) {
-//             return node_2->exp_type;
-//         }
-//         else {
-//             return node_1->exp_type;
-//         }
-//     }
-//     else if (type_size_1 > type_size_2) {
-//         return node_1->exp_type;
-//     }
-//     else {
-//         return node_2->exp_type;
-//     }
-// }
+    TInt type_size_1 = get_scalar_size(node_1->exp_type);
+    TInt type_size_2 = get_scalar_size(node_2->exp_type);
+    if (type_size_1 == type_size_2) {
+        if (is_type_signed(node_1->exp_type)) {
+            return node_2->exp_type;
+        }
+        else {
+            return node_1->exp_type;
+        }
+    }
+    else if (type_size_1 > type_size_2) {
+        return node_1->exp_type;
+    }
+    else {
+        return node_2->exp_type;
+    }
+}
 
-// static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, std::shared_ptr<Type>* joint_type) {
-//     string_t type_fmt_1 = str_new(NULL);
-//     string_t type_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     if (is_same_type(node_1->exp_type.get(), node_2->exp_type.get())) {
-//         *joint_type = node_1->exp_type;
-//     }
-//     else if (node_1->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_1))) {
-//         *joint_type = node_2->exp_type;
-//     }
-//     else if ((node_2->type() == AST_CConstant_t && is_const_null_ptr(static_cast<CConstant*>(node_2)))
-//              || (node_1->exp_type->type() == AST_Pointer_t
-//                  && static_cast<Pointer*>(node_1->exp_type.get())->ref_type->type() == AST_Void_t
-//                  && node_2->exp_type->type() == AST_Pointer_t)) {
-//         *joint_type = node_1->exp_type;
-//     }
-//     else if (node_2->exp_type->type() == AST_Pointer_t
-//              && static_cast<Pointer*>(node_2->exp_type.get())->ref_type->type() == AST_Void_t
-//              && node_1->exp_type->type() == AST_Pointer_t) {
-//         *joint_type = node_2->exp_type;
-//     }
-//     else {
-//         THROW_AT_LINE(
-//             node_1->line, GET_SEMANTIC_MSG(MSG_joint_ptr_mismatch, str_fmt_type(node_1->exp_type.get(), &type_fmt_1),
-//                               str_fmt_type(node_2->exp_type.get(), &type_fmt_2)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt_1);
-//     str_delete(type_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, shared_ptr_t(Type)* joint_type) {
+    string_t type_fmt_1 = str_new(NULL);
+    string_t type_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    if (is_same_type(node_1->exp_type, node_2->exp_type)) {
+        sptr_copy(Type, node_1->exp_type, *joint_type);
+    }
+    else if (node_1->type == AST_CConstant_t && is_const_null_ptr(&node_1->get._CConstant)) {
+        sptr_copy(Type, node_2->exp_type, *joint_type);
+    }
+    else if ((node_2->type == AST_CConstant_t && is_const_null_ptr(&node_2->get._CConstant))
+             || (node_1->exp_type->type == AST_Pointer_t
+                 && node_1->exp_type->get._Pointer.ref_type->type == AST_Void_t
+                 && node_2->exp_type->type == AST_Pointer_t)) {
+        sptr_copy(Type, node_1->exp_type, *joint_type);
+    }
+    else if (node_2->exp_type->type == AST_Pointer_t
+             && node_2->exp_type->get._Pointer.ref_type->type == AST_Void_t
+             && node_1->exp_type->type == AST_Pointer_t) {
+        sptr_copy(Type, node_2->exp_type, *joint_type);
+    }
+    else {
+        THROW_AT_LINE(
+            node_1->line, GET_SEMANTIC_MSG(MSG_joint_ptr_mismatch, str_fmt_type(node_1->exp_type, &type_fmt_1),
+                              str_fmt_type(node_2->exp_type, &type_fmt_2)));
+    }
+    FINALLY;
+    str_delete(type_fmt_1);
+    str_delete(type_fmt_2);
+    CATCH_EXIT;
+}
 
-// static TChar get_const_char_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return static_cast<CConstChar*>(node->constant.get())->value;
-//         case AST_CConstInt_t:
-//             return (TChar)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TChar)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return (TChar)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return (TChar)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TChar)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return (TChar)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TChar get_const_char_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TChar)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TChar)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TChar)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TChar)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TChar)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TChar)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TInt get_const_int_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TInt)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return static_cast<CConstInt*>(node->constant.get())->value;
-//         case AST_CConstLong_t:
-//             return (TInt)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return (TInt)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return (TInt)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TInt)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return (TInt)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TInt get_const_int_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TInt)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TInt)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TInt)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TInt)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TInt)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TInt)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TLong get_const_long_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TLong)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return (TLong)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return static_cast<CConstLong*>(node->constant.get())->value;
-//         case AST_CConstDouble_t:
-//             return (TLong)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return (TLong)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TLong)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return (TLong)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TLong get_const_long_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TLong)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TLong)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TLong)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TLong)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TLong)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TLong)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TDouble get_const_dbl_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TDouble)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return (TDouble)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TDouble)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return static_cast<CConstDouble*>(node->constant.get())->value;
-//         case AST_CConstUChar_t:
-//             return (TDouble)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TDouble)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return (TDouble)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TDouble get_const_dbl_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TDouble)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TDouble)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TDouble)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TDouble)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TDouble)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TDouble)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TUChar get_const_uchar_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TUChar)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return (TUChar)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TUChar)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return (TUChar)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return static_cast<CConstUChar*>(node->constant.get())->value;
-//         case AST_CConstUInt_t:
-//             return (TUChar)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return (TUChar)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TUChar get_const_uchar_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TUChar)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TUChar)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TUChar)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TUChar)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TUChar)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TUChar)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TUInt get_const_uint_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TUInt)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return (TUInt)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TUInt)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return (TUInt)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return (TUInt)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return static_cast<CConstUInt*>(node->constant.get())->value;
-//         case AST_CConstULong_t:
-//             return (TUInt)(static_cast<CConstULong*>(node->constant.get())->value);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TUInt get_const_uint_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TUInt)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TUInt)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TUInt)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TUInt)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TUInt)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return (TUInt)node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TULong get_const_ulong_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return (TULong)(static_cast<CConstChar*>(node->constant.get())->value);
-//         case AST_CConstInt_t:
-//             return (TULong)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TULong)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstDouble_t:
-//             return (TULong)(static_cast<CConstDouble*>(node->constant.get())->value);
-//         case AST_CConstUChar_t:
-//             return (TULong)(static_cast<CConstUChar*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TULong)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return static_cast<CConstULong*>(node->constant.get())->value;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TULong get_const_ulong_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return (TULong)node->constant->get._CConstChar.value;
+        case AST_CConstInt_t:
+            return (TULong)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TULong)node->constant->get._CConstLong.value;
+        case AST_CConstDouble_t:
+            return (TULong)node->constant->get._CConstDouble.value;
+        case AST_CConstUChar_t:
+            return (TULong)node->constant->get._CConstUChar.value;
+        case AST_CConstUInt_t:
+            return (TULong)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TULong get_const_ptr_value(CConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstInt_t:
-//             return (TULong)(static_cast<CConstInt*>(node->constant.get())->value);
-//         case AST_CConstLong_t:
-//             return (TULong)(static_cast<CConstLong*>(node->constant.get())->value);
-//         case AST_CConstUInt_t:
-//             return (TULong)(static_cast<CConstUInt*>(node->constant.get())->value);
-//         case AST_CConstULong_t:
-//             return static_cast<CConstULong*>(node->constant.get())->value;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TULong get_const_ptr_value(CConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstInt_t:
+            return (TULong)node->constant->get._CConstInt.value;
+        case AST_CConstLong_t:
+            return (TULong)node->constant->get._CConstLong.value;
+        case AST_CConstUInt_t:
+            return (TULong)node->constant->get._CConstUInt.value;
+        case AST_CConstULong_t:
+            return node->constant->get._CConstULong.value;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static size_t get_compound_line(CInitializer* node) {
-//     THROW_ABORT_IF(node->type() != AST_CCompoundInit_t);
-//     do {
-//         node = static_cast<CCompoundInit*>(node)->initializers[0].get();
-//     }
-//     while (node->type() == AST_CCompoundInit_t);
-//     THROW_ABORT_IF(node->type() != AST_CSingleInit_t);
-//     return static_cast<CSingleInit*>(node)->exp->line;
-// }
+static size_t get_compound_line(CInitializer* node) {
+    THROW_ABORT_IF(node->type != AST_CCompoundInit_t);
+    do {
+        node = node->get._CCompoundInit.initializers[0];
+    }
+    while (node->type == AST_CCompoundInit_t);
+    THROW_ABORT_IF(node->type != AST_CSingleInit_t);
+    return node->get._CSingleInit.exp->line;
+}
 
 // static error_t reslv_struct_type(Ctx ctx, Type* type);
 
