@@ -374,78 +374,94 @@ void move_CDeclarator(unique_ptr_t(CDeclarator) * self, unique_ptr_t(CDeclarator
 
 typedef struct CConstant {
     shared_ptr_t(CConst) constant;
+    unique_ptr_t(CExp) * _base;
 } CConstant;
 
 typedef struct CString {
     shared_ptr_t(CStringLiteral) literal;
+    unique_ptr_t(CExp) * _base;
 } CString;
 
 typedef struct CVar {
     TIdentifier name;
+    unique_ptr_t(CExp) * _base;
 } CVar;
 
 typedef struct CCast {
     unique_ptr_t(CExp) exp;
     shared_ptr_t(Type) target_type;
+    unique_ptr_t(CExp) * _base;
 } CCast;
 
 typedef struct CUnary {
     unique_ptr_t(CUnaryOp) unop;
     unique_ptr_t(CExp) exp;
+    unique_ptr_t(CExp) * _base;
 } CUnary;
 
 typedef struct CBinary {
     unique_ptr_t(CBinaryOp) binop;
     unique_ptr_t(CExp) exp_left;
     unique_ptr_t(CExp) exp_right;
+    unique_ptr_t(CExp) * _base;
 } CBinary;
 
 typedef struct CAssignment {
     unique_ptr_t(CUnaryOp) unop;
     unique_ptr_t(CExp) exp_left;
     unique_ptr_t(CExp) exp_right;
+    unique_ptr_t(CExp) * _base;
 } CAssignment;
 
 typedef struct CConditional {
     unique_ptr_t(CExp) condition;
     unique_ptr_t(CExp) exp_middle;
     unique_ptr_t(CExp) exp_right;
+    unique_ptr_t(CExp) * _base;
 } CConditional;
 
 typedef struct CFunctionCall {
     TIdentifier name;
     vector_t(unique_ptr_t(CExp)) args;
+    unique_ptr_t(CExp) * _base;
 } CFunctionCall;
 
 typedef struct CDereference {
     unique_ptr_t(CExp) exp;
+    unique_ptr_t(CExp) * _base;
 } CDereference;
 
 typedef struct CAddrOf {
     unique_ptr_t(CExp) exp;
+    unique_ptr_t(CExp) * _base;
 } CAddrOf;
 
 typedef struct CSubscript {
     unique_ptr_t(CExp) primary_exp;
     unique_ptr_t(CExp) subscript_exp;
+    unique_ptr_t(CExp) * _base;
 } CSubscript;
 
 typedef struct CSizeOf {
     unique_ptr_t(CExp) exp;
+    unique_ptr_t(CExp) * _base;
 } CSizeOf;
 
 typedef struct CSizeOfT {
     shared_ptr_t(Type) target_type;
+    unique_ptr_t(CExp) * _base;
 } CSizeOfT;
 
 typedef struct CDot {
     TIdentifier member;
     unique_ptr_t(CExp) structure;
+    unique_ptr_t(CExp) * _base;
 } CDot;
 
 typedef struct CArrow {
     TIdentifier member;
     unique_ptr_t(CExp) pointer;
+    unique_ptr_t(CExp) * _base;
 } CArrow;
 
 typedef struct CExp {
@@ -789,10 +805,12 @@ void move_CStorageClass(unique_ptr_t(CStorageClass) * self, unique_ptr_t(CStorag
 
 typedef struct CSingleInit {
     unique_ptr_t(CExp) exp;
+    unique_ptr_t(CInitializer) * _base;
 } CSingleInit;
 
 typedef struct CCompoundInit {
     vector_t(unique_ptr_t(CInitializer)) initializers;
+    unique_ptr_t(CInitializer) * _base;
 } CCompoundInit;
 
 typedef struct CInitializer {
