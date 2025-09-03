@@ -558,9 +558,17 @@ static TULong get_const_ptr_value(CConstant* node) {
     }
 }
 
-// TODO
-static size_t get_compound_line(CCompoundInit* /*node*/) {
-    return 0;
+// TODO verify this
+static size_t get_compound_line(CCompoundInit* node) {
+    THROW_ABORT_IF(vec_empty(node->initializers));
+    CInitializer* initializer = node->initializers[0];
+    while (initializer->type == AST_CCompoundInit_t) {
+        node = &initializer->get._CCompoundInit;
+        THROW_ABORT_IF(vec_empty(node->initializers));
+        initializer = node->initializers[0];
+    }
+    THROW_ABORT_IF(initializer->type != AST_CSingleInit_t);
+    return initializer->get._CSingleInit.exp->line;
 }
 // static size_t get_compound_line(CInitializer* node) {
 //     THROW_ABORT_IF(node->type != AST_CCompoundInit_t);
