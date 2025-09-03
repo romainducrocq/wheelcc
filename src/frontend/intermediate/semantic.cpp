@@ -3247,366 +3247,365 @@ static error_t reslv_statement(Ctx ctx, CStatement* node) {
     CATCH_EXIT;
 }
 
-// static error_t reslv_declaration(Ctx ctx, CDeclaration* node);
+static error_t reslv_declaration(Ctx ctx, CDeclaration* node);
 
-// static error_t reslv_block_items(Ctx ctx, const vector_t(std::unique_ptr<CBlockItem>) node_list) {
-//     CATCH_ENTER;
-//     for (size_t i = 0; i < vec_size(node_list); ++i) {
-//         switch (node_list[i]->type()) {
-//             case AST_CS_t:
-//                 TRY(reslv_statement(ctx, static_cast<CS*>(node_list[i].get())->statement.get()));
-//                 break;
-//             case AST_CD_t:
-//                 TRY(reslv_declaration(ctx, static_cast<CD*>(node_list[i].get())->declaration.get()));
-//                 break;
-//             default:
-//                 THROW_ABORT;
-//         }
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_block_items(Ctx ctx, vector_t(unique_ptr_t(CBlockItem)) node_list) {
+    CATCH_ENTER;
+    for (size_t i = 0; i < vec_size(node_list); ++i) {
+        switch (node_list[i]->type) {
+            case AST_CS_t:
+                TRY(reslv_statement(ctx, node_list[i]->get._CS.statement));
+                break;
+            case AST_CD_t:
+                TRY(reslv_declaration(ctx, node_list[i]->get._CD.declaration));
+                break;
+            default:
+                THROW_ABORT;
+        }
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_block(Ctx ctx, CBlock* node) {
-//     CATCH_ENTER;
-//     THROW_ABORT_IF(node->type() != AST_CB_t);
-//     TRY(reslv_block_items(ctx, static_cast<CB*>(node)->block_items));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_block(Ctx ctx, CBlock* node) {
+    CATCH_ENTER;
+    THROW_ABORT_IF(node->type != AST_CB_t);
+    TRY(reslv_block_items(ctx, node->get._CB.block_items));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_initializer(Ctx ctx, CInitializer* node, std::shared_ptr<Type>* init_type);
+static error_t reslv_initializer(Ctx ctx, CInitializer* node, shared_ptr_t(Type)* init_type);
 
-// static error_t reslv_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>* init_type) {
-//     CATCH_ENTER;
-//     if (node->exp->type() == AST_CString_t && (*init_type)->type() == AST_Array_t) {
-//         TRY(check_bound_string_init(
-//             ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type->get())));
-//         check_string_init(node, init_type);
-//     }
-//     else {
-//         TRY(reslv_typed_exp(ctx, &node->exp));
-//         TRY(check_single_init(ctx, node, init_type));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_single_init(Ctx ctx, CSingleInit* node, shared_ptr_t(Type)* init_type) {
+    CATCH_ENTER;
+    if (node->exp->type == AST_CString_t && (*init_type)->type == AST_Array_t) {
+        TRY(check_bound_string_init(ctx, &node->exp->get._CString, &(*init_type)->get._Array));
+        check_string_init(node, init_type);
+    }
+    else {
+        TRY(reslv_typed_exp(ctx, &node->exp));
+        TRY(check_single_init(ctx, node, init_type));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>* init_type) {
-//     CATCH_ENTER;
-//     TRY(check_bound_arr_init(ctx, node, arr_type));
+static error_t reslv_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, shared_ptr_t(Type)* init_type) {
+    CATCH_ENTER;
+    TRY(check_bound_arr_init(ctx, node, arr_type));
 
-//     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-//         TRY(reslv_initializer(ctx, node->initializers[i].get(), &arr_type->elem_type));
-//     }
-//     check_arr_init(ctx, node, arr_type, init_type);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        TRY(reslv_initializer(ctx, node->initializers[i], &arr_type->elem_type));
+    }
+    check_arr_init(ctx, node, arr_type, init_type);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct_init(
-//     Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>* init_type) {
-//     CATCH_ENTER;
-//     TRY(check_bound_struct_init(ctx, node, struct_type));
+static error_t reslv_struct_init(
+    Ctx ctx, CCompoundInit* node, Structure* struct_type, shared_ptr_t(Type)* init_type) {
+    CATCH_ENTER;
+    TRY(check_bound_struct_init(ctx, node, struct_type));
 
-//     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-//         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-//         TRY(reslv_initializer(ctx, node->initializers[i].get(), &member->member_type));
-//     }
-//     check_struct_init(ctx, node, struct_type, init_type);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
+        TRY(reslv_initializer(ctx, node->initializers[i], &member->member_type));
+    }
+    check_struct_init(ctx, node, struct_type, init_type);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_compound_init(Ctx ctx, CCompoundInit* node, std::shared_ptr<Type>* init_type) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     switch ((*init_type)->type()) {
-//         case AST_Array_t:
-//             TRY(reslv_arr_init(ctx, node, static_cast<Array*>(init_type->get()), init_type));
-//             break;
-//         case AST_Structure_t:
-//             TRY(reslv_struct_init(ctx, node, static_cast<Structure*>(init_type->get()), init_type));
-//             break;
-//         default:
-//             THROW_AT_LINE(get_compound_line(node),
-//                 GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(init_type->get(), &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t reslv_compound_init(Ctx ctx, CCompoundInit* node, shared_ptr_t(Type)* init_type) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    switch ((*init_type)->type) {
+        case AST_Array_t:
+            TRY(reslv_arr_init(ctx, node, &(*init_type)->get._Array, init_type));
+            break;
+        case AST_Structure_t:
+            TRY(reslv_struct_init(ctx, node, &(*init_type)->get._Structure, init_type));
+            break;
+        default:
+            THROW_AT_LINE(get_compound_line(node),
+                GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(*init_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_initializer(Ctx ctx, CInitializer* node, std::shared_ptr<Type>* init_type) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CSingleInit_t:
-//             TRY(reslv_single_init(ctx, static_cast<CSingleInit*>(node), init_type));
-//             break;
-//         case AST_CCompoundInit_t:
-//             TRY(reslv_compound_init(ctx, static_cast<CCompoundInit*>(node), init_type));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_initializer(Ctx ctx, CInitializer* node, shared_ptr_t(Type)* init_type) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CSingleInit_t:
+            TRY(reslv_single_init(ctx, &node->get._CSingleInit, init_type));
+            break;
+        case AST_CCompoundInit_t:
+            TRY(reslv_compound_init(ctx, &node->get._CCompoundInit, init_type));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     for (size_t i = 0; i < vec_size(node->params); ++i) {
-//         TIdentifier param = node->params[i];
-//         if (map_find(vec_back(ctx->scoped_identifier_maps), param) != map_end()) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(param, &name_fmt)));
-//         }
-//         param = rslv_var_identifier(ctx->identifiers, param);
-//         map_add(vec_back(ctx->scoped_identifier_maps), node->params[i], param);
-//         node->params[i] = param;
-//     }
-//     TRY(check_fun_params_decl(ctx, node));
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+static error_t reslv_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
+        TIdentifier param = node->params[i];
+        if (map_find(vec_back(ctx->scoped_identifier_maps), param) != map_end()) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(param, &name_fmt)));
+        }
+        param = rslv_var_identifier(ctx->identifiers, param);
+        map_add(vec_back(ctx->scoped_identifier_maps), node->params[i], param);
+        node->params[i] = param;
+    }
+    TRY(check_fun_params_decl(ctx, node));
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (!is_file_scope(ctx)) {
-//         if (node->body) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_def_nested_fun, str_fmt_name(node->name, &name_fmt)));
-//         }
-//         else if (node->storage_class && node->storage_class->type() == AST_CStatic_t) {
-//             THROW_AT_LINE(
-//                 node->line, GET_SEMANTIC_MSG(MSG_decl_nested_static_fun, str_fmt_name(node->name, &name_fmt)));
-//         }
-//     }
+static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (!is_file_scope(ctx)) {
+        if (node->body) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_def_nested_fun, str_fmt_name(node->name, &name_fmt)));
+        }
+        else if (node->storage_class && node->storage_class->type == AST_CStatic_t) {
+            THROW_AT_LINE(
+                node->line, GET_SEMANTIC_MSG(MSG_decl_nested_static_fun, str_fmt_name(node->name, &name_fmt)));
+        }
+    }
 
-//     if (map_find(ctx->extern_scope_map, node->name) == map_end()) {
-//         if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end()) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
-//         }
-//         map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
-//     }
+    if (map_find(ctx->extern_scope_map, node->name) == map_end()) {
+        if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end()) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
+        }
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
+    }
 
-//     map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
-//     TRY(check_ret_fun_decl(ctx, node));
+    map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
+    TRY(check_ret_fun_decl(ctx, node));
 
-//     enter_scope(ctx);
-//     if (!vec_empty(node->params)) {
-//         TRY(reslv_fun_params_decl(ctx, node));
-//     }
-//     TRY(check_fun_decl(ctx, node));
+    enter_scope(ctx);
+    if (!vec_empty(node->params)) {
+        TRY(reslv_fun_params_decl(ctx, node));
+    }
+    TRY(check_fun_decl(ctx, node));
 
-//     if (node->body) {
-//         TRY(reslv_block(ctx, node->body.get()));
-//     }
-//     exit_scope(ctx);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+    if (node->body) {
+        TRY(reslv_block(ctx, node->body));
+    }
+    exit_scope(ctx);
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     CATCH_ENTER;
-//     if (map_find(ctx->extern_scope_map, node->name) == map_end()) {
-//         map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
-//     }
+static error_t reslv_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    CATCH_ENTER;
+    if (map_find(ctx->extern_scope_map, node->name) == map_end()) {
+        map_add(ctx->extern_scope_map, node->name, vec_size(ctx->scoped_identifier_maps));
+    }
 
-//     map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
-//     if (is_file_scope(ctx)) {
-//         TRY(check_file_var_decl(ctx, node));
-//     }
-//     else {
-//         TRY(check_block_var_decl(ctx, node));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    map_add(vec_back(ctx->scoped_identifier_maps), node->name, node->name);
+    if (is_file_scope(ctx)) {
+        TRY(check_file_var_decl(ctx, node));
+    }
+    else {
+        TRY(check_block_var_decl(ctx, node));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end()
-//         && !(map_find(ctx->extern_scope_map, node->name) != map_end()
-//              && (node->storage_class && node->storage_class->type() == AST_CExtern_t))) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
-//     }
-//     else if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-//         TRY(reslv_file_var_decl(ctx, node));
-//         EARLY_EXIT;
-//     }
+static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end()
+        && !(map_find(ctx->extern_scope_map, node->name) != map_end()
+             && (node->storage_class && node->storage_class->type == AST_CExtern_t))) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
+    }
+    else if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+        TRY(reslv_file_var_decl(ctx, node));
+        EARLY_EXIT;
+    }
 
-//     {
-//         TIdentifier name = rslv_var_identifier(ctx->identifiers, node->name);
-//         map_add(vec_back(ctx->scoped_identifier_maps), node->name, name);
-//         node->name = name;
-//     }
-//     TRY(check_block_var_decl(ctx, node));
+    {
+        TIdentifier name = rslv_var_identifier(ctx->identifiers, node->name);
+        map_add(vec_back(ctx->scoped_identifier_maps), node->name, name);
+        node->name = name;
+    }
+    TRY(check_block_var_decl(ctx, node));
 
-//     if (node->init && !node->storage_class) {
-//         TRY(reslv_initializer(ctx, node->init.get(), &node->var_type));
-//     }
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+    if (node->init && !node->storage_class) {
+        TRY(reslv_initializer(ctx, node->init, &node->var_type));
+    }
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
-//     CATCH_ENTER;
-//     TRY(check_struct_members_decl(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
+    CATCH_ENTER;
+    TRY(check_struct_members_decl(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
-//     string_t struct_fmt_1 = str_new(NULL);
-//     string_t struct_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     if (map_find(vec_back(ctx->scoped_struct_maps), node->tag) != map_end()) {
-//         node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
-//         if (node->is_union) {
-//             if (set_find(ctx->union_def_set, node->tag) == set_end()) {
-//                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
-//                                               str_fmt_struct_name(node->tag, node->is_union, &struct_fmt_1),
-//                                               str_fmt_struct_name(node->tag, !node->is_union, &struct_fmt_2)));
-//             }
-//         }
-//         else if (set_find(ctx->struct_def_set, node->tag) == set_end()) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
-//                                           str_fmt_struct_name(node->tag, node->is_union, &struct_fmt_1),
-//                                           str_fmt_struct_name(node->tag, !node->is_union, &struct_fmt_2)));
-//         }
-//     }
-//     else {
-//         {
-//             Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
-//             map_add(vec_back(ctx->scoped_struct_maps), node->tag, structure);
-//         }
-//         node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
-//         if (node->is_union) {
-//             set_insert(ctx->union_def_set, node->tag);
-//         }
-//         else {
-//             set_insert(ctx->struct_def_set, node->tag);
-//         }
-//     }
-//     if (!vec_empty(node->members)) {
-//         TRY(reslv_struct_members_decl(ctx, node));
-//         TRY(check_struct_decl(ctx, node));
-//     }
-//     FINALLY;
-//     str_delete(struct_fmt_1);
-//     str_delete(struct_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
+    string_t struct_fmt_1 = str_new(NULL);
+    string_t struct_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    if (map_find(vec_back(ctx->scoped_struct_maps), node->tag) != map_end()) {
+        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
+        if (node->is_union) {
+            if (set_find(ctx->union_def_set, node->tag) == set_end()) {
+                THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
+                                              str_fmt_struct_name(node->tag, node->is_union, &struct_fmt_1),
+                                              str_fmt_struct_name(node->tag, !node->is_union, &struct_fmt_2)));
+            }
+        }
+        else if (set_find(ctx->struct_def_set, node->tag) == set_end()) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
+                                          str_fmt_struct_name(node->tag, node->is_union, &struct_fmt_1),
+                                          str_fmt_struct_name(node->tag, !node->is_union, &struct_fmt_2)));
+        }
+    }
+    else {
+        {
+            Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
+            map_add(vec_back(ctx->scoped_struct_maps), node->tag, structure);
+        }
+        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
+        if (node->is_union) {
+            set_insert(ctx->union_def_set, node->tag);
+        }
+        else {
+            set_insert(ctx->struct_def_set, node->tag);
+        }
+    }
+    if (!vec_empty(node->members)) {
+        TRY(reslv_struct_members_decl(ctx, node));
+        TRY(check_struct_decl(ctx, node));
+    }
+    FINALLY;
+    str_delete(struct_fmt_1);
+    str_delete(struct_fmt_2);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
-//     CATCH_ENTER;
-//     if (is_file_scope(ctx)) {
-//         map_clear(ctx->goto_map);
-//         set_clear(ctx->label_set);
-//         vec_clear(ctx->break_loop_labels);
-//         vec_clear(ctx->continue_loop_labels);
-//         ctx->p_switch_statement = NULL;
-//     }
-//     TRY(reslv_fun_declaration(ctx, node->fun_decl.get()));
-//     if (is_file_scope(ctx)) {
-//         TRY(reslv_label(ctx, node->fun_decl.get()));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_fun_decl(Ctx ctx, CFunDecl* node) {
+    CATCH_ENTER;
+    if (is_file_scope(ctx)) {
+        map_clear(ctx->goto_map);
+        set_clear(ctx->label_set);
+        vec_clear(ctx->break_loop_labels);
+        vec_clear(ctx->continue_loop_labels);
+        ctx->p_switch_statement = NULL;
+    }
+    TRY(reslv_fun_declaration(ctx, node->fun_decl));
+    if (is_file_scope(ctx)) {
+        TRY(reslv_label(ctx, node->fun_decl));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_var_decl(Ctx ctx, CVarDecl* node) {
-//     CATCH_ENTER;
-//     if (is_file_scope(ctx)) {
-//         TRY(reslv_file_var_decl(ctx, node->var_decl.get()));
-//     }
-//     else {
-//         TRY(reslv_block_var_decl(ctx, node->var_decl.get()));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_var_decl(Ctx ctx, CVarDecl* node) {
+    CATCH_ENTER;
+    if (is_file_scope(ctx)) {
+        TRY(reslv_file_var_decl(ctx, node->var_decl));
+    }
+    else {
+        TRY(reslv_block_var_decl(ctx, node->var_decl));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct_decl(Ctx ctx, CStructDecl* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_struct_declaration(ctx, node->struct_decl.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_struct_decl(Ctx ctx, CStructDecl* node) {
+    CATCH_ENTER;
+    TRY(reslv_struct_declaration(ctx, node->struct_decl));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_declaration(Ctx ctx, CDeclaration* node) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CFunDecl_t:
-//             TRY(reslv_fun_decl(ctx, static_cast<CFunDecl*>(node)));
-//             break;
-//         case AST_CVarDecl_t:
-//             TRY(reslv_var_decl(ctx, static_cast<CVarDecl*>(node)));
-//             break;
-//         case AST_CStructDecl_t:
-//             TRY(reslv_struct_decl(ctx, static_cast<CStructDecl*>(node)));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_declaration(Ctx ctx, CDeclaration* node) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CFunDecl_t:
+            TRY(reslv_fun_decl(ctx, &node->get._CFunDecl));
+            break;
+        case AST_CVarDecl_t:
+            TRY(reslv_var_decl(ctx, &node->get._CVarDecl));
+            break;
+        case AST_CStructDecl_t:
+            TRY(reslv_struct_decl(ctx, &node->get._CStructDecl));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t resolve_program(Ctx ctx, CProgram* node) {
-//     CATCH_ENTER;
-//     enter_scope(ctx);
-//     for (size_t i = 0; i < vec_size(node->declarations); ++i) {
-//         TRY(reslv_declaration(ctx, node->declarations[i].get()));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t resolve_program(Ctx ctx, CProgram* node) {
+    CATCH_ENTER;
+    enter_scope(ctx);
+    for (size_t i = 0; i < vec_size(node->declarations); ++i) {
+        TRY(reslv_declaration(ctx, node->declarations[i]));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// error_t analyze_semantic(
-//     CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers) {
-//     SemanticContext ctx;
-//     {
-//         ctx.errors = errors;
-//         ctx.frontend = frontend;
-//         ctx.identifiers = identifiers;
-//         ctx.extern_scope_map = map_new();
-//         ctx.goto_map = map_new();
-//         ctx.scoped_identifier_maps = vec_new();
-//         ctx.scoped_struct_maps = vec_new();
-//         ctx.label_set = set_new();
-//         ctx.break_loop_labels = vec_new();
-//         ctx.continue_loop_labels = vec_new();
-//         ctx.fun_def_set = set_new();
-//         ctx.struct_def_set = set_new();
-//         ctx.union_def_set = set_new();
-//     }
-//     CATCH_ENTER;
-//     TRY(resolve_program(&ctx, node));
+error_t analyze_semantic(
+    CProgram* node, ErrorsContext* errors, FrontEndContext* frontend, IdentifierContext* identifiers) {
+    SemanticContext ctx;
+    {
+        ctx.errors = errors;
+        ctx.frontend = frontend;
+        ctx.identifiers = identifiers;
+        ctx.extern_scope_map = map_new();
+        ctx.goto_map = map_new();
+        ctx.scoped_identifier_maps = vec_new();
+        ctx.scoped_struct_maps = vec_new();
+        ctx.label_set = set_new();
+        ctx.break_loop_labels = vec_new();
+        ctx.continue_loop_labels = vec_new();
+        ctx.fun_def_set = set_new();
+        ctx.struct_def_set = set_new();
+        ctx.union_def_set = set_new();
+    }
+    CATCH_ENTER;
+    TRY(resolve_program(&ctx, node));
 
-//     FINALLY;
-//     map_delete(ctx.extern_scope_map);
-//     map_delete(ctx.goto_map);
-//     for (size_t i = 0; i < vec_size(ctx.scoped_identifier_maps); ++i) {
-//         map_delete(ctx.scoped_identifier_maps[i]);
-//     }
-//     vec_delete(ctx.scoped_identifier_maps);
-//     for (size_t i = 0; i < vec_size(ctx.scoped_struct_maps); ++i) {
-//         map_delete(ctx.scoped_struct_maps[i]);
-//     }
-//     vec_delete(ctx.scoped_struct_maps);
-//     set_delete(ctx.label_set);
-//     vec_delete(ctx.break_loop_labels);
-//     vec_delete(ctx.continue_loop_labels);
-//     set_delete(ctx.fun_def_set);
-//     set_delete(ctx.struct_def_set);
-//     set_delete(ctx.union_def_set);
-//     CATCH_EXIT;
-// }
+    FINALLY;
+    map_delete(ctx.extern_scope_map);
+    map_delete(ctx.goto_map);
+    for (size_t i = 0; i < vec_size(ctx.scoped_identifier_maps); ++i) {
+        map_delete(ctx.scoped_identifier_maps[i]);
+    }
+    vec_delete(ctx.scoped_identifier_maps);
+    for (size_t i = 0; i < vec_size(ctx.scoped_struct_maps); ++i) {
+        map_delete(ctx.scoped_struct_maps[i]);
+    }
+    vec_delete(ctx.scoped_struct_maps);
+    set_delete(ctx.label_set);
+    vec_delete(ctx.break_loop_labels);
+    vec_delete(ctx.continue_loop_labels);
+    set_delete(ctx.fun_def_set);
+    set_delete(ctx.struct_def_set);
+    set_delete(ctx.union_def_set);
+    CATCH_EXIT;
+}
