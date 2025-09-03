@@ -2668,584 +2668,584 @@ static void deannotate_loop(Ctx ctx) {
 
 static void deannotate_lookup(Ctx ctx) { vec_pop_back(ctx->break_loop_labels); }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Identifier resolution
+// Identifier resolution
 
-// static bool is_file_scope(Ctx ctx) { return vec_size(ctx->scoped_identifier_maps) == 1; }
+static bool is_file_scope(Ctx ctx) { return vec_size(ctx->scoped_identifier_maps) == 1; }
 
-// static void enter_scope(Ctx ctx) {
-//     vec_push_back(ctx->scoped_identifier_maps, map_new());
-//     vec_push_back(ctx->scoped_struct_maps, map_new());
-// }
+static void enter_scope(Ctx ctx) {
+    vec_push_back(ctx->scoped_identifier_maps, map_new());
+    vec_push_back(ctx->scoped_struct_maps, map_new());
+}
 
-// static void exit_scope(Ctx ctx) {
-//     for (size_t i = 0; i < map_size(vec_back(ctx->scoped_identifier_maps)); ++i) {
-//         TIdentifier identifier = pair_first(vec_back(ctx->scoped_identifier_maps)[i]);
-//         if (map_find(ctx->extern_scope_map, identifier) != map_end()
-//             && map_get(ctx->extern_scope_map, identifier) == vec_size(ctx->scoped_identifier_maps)) {
-//             map_erase(ctx->extern_scope_map, identifier);
-//         }
-//     }
-//     map_delete(vec_back(ctx->scoped_identifier_maps));
-//     vec_pop_back(ctx->scoped_identifier_maps);
-//     map_delete(vec_back(ctx->scoped_struct_maps));
-//     vec_pop_back(ctx->scoped_struct_maps);
-// }
+static void exit_scope(Ctx ctx) {
+    for (size_t i = 0; i < map_size(vec_back(ctx->scoped_identifier_maps)); ++i) {
+        TIdentifier identifier = pair_first(vec_back(ctx->scoped_identifier_maps)[i]);
+        if (map_find(ctx->extern_scope_map, identifier) != map_end()
+            && map_get(ctx->extern_scope_map, identifier) == vec_size(ctx->scoped_identifier_maps)) {
+            map_erase(ctx->extern_scope_map, identifier);
+        }
+    }
+    map_delete(vec_back(ctx->scoped_identifier_maps));
+    vec_pop_back(ctx->scoped_identifier_maps);
+    map_delete(vec_back(ctx->scoped_struct_maps));
+    vec_pop_back(ctx->scoped_struct_maps);
+}
 
-// static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt_1 = str_new(NULL);
-//     string_t name_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     for (size_t i = 0; i < map_size(ctx->goto_map); ++i) {
-//         if (set_find(ctx->label_set, pair_first(ctx->goto_map[i])) == set_end()) {
-//             THROW_AT_LINE(map_get(ctx->errors->linebuf_map, pair_second(ctx->goto_map[i])),
-//                 GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(pair_first(ctx->goto_map[i]), &name_fmt_1),
-//                     str_fmt_name(node->name, &name_fmt_2)));
-//         }
-//     }
-//     FINALLY;
-//     str_delete(name_fmt_1);
-//     str_delete(name_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t reslv_label(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt_1 = str_new(NULL);
+    string_t name_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    for (size_t i = 0; i < map_size(ctx->goto_map); ++i) {
+        if (set_find(ctx->label_set, pair_first(ctx->goto_map[i])) == set_end()) {
+            THROW_AT_LINE(map_get(ctx->errors->linebuf_map, pair_second(ctx->goto_map[i])),
+                GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(pair_first(ctx->goto_map[i]), &name_fmt_1),
+                    str_fmt_name(node->name, &name_fmt_2)));
+        }
+    }
+    FINALLY;
+    str_delete(name_fmt_1);
+    str_delete(name_fmt_2);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_ptr_struct(Ctx ctx, Pointer* ptr_type) {
-//     CATCH_ENTER;
-//     TRY(reslv_struct_type(ctx, ptr_type->ref_type.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_ptr_struct(Ctx ctx, Pointer* ptr_type) {
+    CATCH_ENTER;
+    TRY(reslv_struct_type(ctx, ptr_type->ref_type));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_arr_struct(Ctx ctx, Array* arr_type) {
-//     CATCH_ENTER;
-//     TRY(reslv_struct_type(ctx, arr_type->elem_type.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_arr_struct(Ctx ctx, Array* arr_type) {
+    CATCH_ENTER;
+    TRY(reslv_struct_type(ctx, arr_type->elem_type));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
-//     string_t struct_fmt = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (struct_type->is_union) {
-//         if (set_find(ctx->union_def_set, struct_type->tag) != set_end()) {
-//             EARLY_EXIT;
-//         }
-//     }
-//     else if (set_find(ctx->struct_def_set, struct_type->tag) != set_end()) {
-//         EARLY_EXIT;
-//     }
-//     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-//         if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end()) {
-//             if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
-//                 THROW_AT_LINE(ctx->errors->linebuf,
-//                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_type(struct_type, &type_fmt),
-//                         str_fmt_struct_name(struct_type->tag, !struct_type->is_union, &struct_fmt)));
-//             }
-//             struct_type->tag = map_get(ctx->scoped_struct_maps[i], struct_type->tag).tag;
-//             EARLY_EXIT;
-//         }
-//     }
-//     THROW_AT_LINE(
-//         ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, str_fmt_type(struct_type, &type_fmt)));
-//     FINALLY;
-//     str_delete(struct_fmt);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
+    string_t struct_fmt = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (struct_type->is_union) {
+        if (set_find(ctx->union_def_set, struct_type->tag) != set_end()) {
+            EARLY_EXIT;
+        }
+    }
+    else if (set_find(ctx->struct_def_set, struct_type->tag) != set_end()) {
+        EARLY_EXIT;
+    }
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
+        if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end()) {
+            if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
+                THROW_AT_LINE(ctx->errors->linebuf,
+                    GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_struct(struct_type, &type_fmt),
+                        str_fmt_struct_name(struct_type->tag, !struct_type->is_union, &struct_fmt)));
+            }
+            struct_type->tag = map_get(ctx->scoped_struct_maps[i], struct_type->tag).tag;
+            EARLY_EXIT;
+        }
+    }
+    THROW_AT_LINE(
+        ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, str_fmt_struct(struct_type, &type_fmt)));
+    FINALLY;
+    str_delete(struct_fmt);
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_struct_type(Ctx ctx, Type* type) {
-//     CATCH_ENTER;
-//     switch (type->type()) {
-//         case AST_Pointer_t:
-//             TRY(reslv_ptr_struct(ctx, static_cast<Pointer*>(type)));
-//             break;
-//         case AST_Array_t:
-//             TRY(reslv_arr_struct(ctx, static_cast<Array*>(type)));
-//             break;
-//         case AST_Structure_t:
-//             TRY(reslv_struct(ctx, static_cast<Structure*>(type)));
-//             break;
-//         case AST_FunType_t:
-//             THROW_ABORT;
-//         default:
-//             break;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_struct_type(Ctx ctx, Type* type) {
+    CATCH_ENTER;
+    switch (type->type) {
+        case AST_Pointer_t:
+            TRY(reslv_ptr_struct(ctx, &type->get._Pointer));
+            break;
+        case AST_Array_t:
+            TRY(reslv_arr_struct(ctx, &type->get._Array));
+            break;
+        case AST_Structure_t:
+            TRY(reslv_struct(ctx, &type->get._Structure));
+            break;
+        case AST_FunType_t:
+            THROW_ABORT;
+        default:
+            break;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_exp(Ctx ctx, CExp* node);
-// static error_t reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>* exp);
+static error_t reslv_exp(Ctx ctx, CExp* node);
+static error_t reslv_typed_exp(Ctx ctx, unique_ptr_t(CExp)* exp);
 
-// static void reslv_const_exp(CConstant* node) { check_const_exp(node); }
+static void reslv_const_exp(CConstant* node) { check_const_exp(node); }
 
-// static void reslv_string_exp(CString* node) { check_string_exp(node); }
+static void reslv_string_exp(CString* node) { check_string_exp(node); }
 
-// static error_t reslv_var_exp(Ctx ctx, CVar* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-//         if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
-//             node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
-//             goto Lelse;
-//         }
-//     }
-//     THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_undecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
-// Lelse:
+static error_t reslv_var_exp(Ctx ctx, CVar* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
+        if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
+            node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
+            goto Lelse;
+        }
+    }
+    THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_undecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
+Lelse:
 
-//     TRY(check_var_exp(ctx, node));
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+    TRY(check_var_exp(ctx, node));
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_cast_exp(Ctx ctx, CCast* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->exp));
-//     TRY(check_cast_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_cast_exp(Ctx ctx, CCast* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->exp));
+    TRY(check_cast_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_unary_exp(Ctx ctx, CUnary* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->exp));
-//     TRY(check_unary_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_unary_exp(Ctx ctx, CUnary* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->exp));
+    TRY(check_unary_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_binary_exp(Ctx ctx, CBinary* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->exp_left));
-//     TRY(reslv_typed_exp(ctx, &node->exp_right));
-//     TRY(check_binary_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_binary_exp(Ctx ctx, CBinary* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->exp_left));
+    TRY(reslv_typed_exp(ctx, &node->exp_right));
+    TRY(check_binary_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_assign_exp(Ctx ctx, CAssignment* node) {
-//     CATCH_ENTER;
-//     if (node->exp_left) {
-//         TRY(reslv_typed_exp(ctx, &node->exp_left));
-//     }
-//     TRY(reslv_typed_exp(ctx, &node->exp_right));
-//     TRY(check_assign_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_assign_exp(Ctx ctx, CAssignment* node) {
+    CATCH_ENTER;
+    if (node->exp_left) {
+        TRY(reslv_typed_exp(ctx, &node->exp_left));
+    }
+    TRY(reslv_typed_exp(ctx, &node->exp_right));
+    TRY(check_assign_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_conditional_exp(Ctx ctx, CConditional* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->condition));
-//     TRY(reslv_typed_exp(ctx, &node->exp_middle));
-//     TRY(reslv_typed_exp(ctx, &node->exp_right));
-//     TRY(check_conditional_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_conditional_exp(Ctx ctx, CConditional* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->condition));
+    TRY(reslv_typed_exp(ctx, &node->exp_middle));
+    TRY(reslv_typed_exp(ctx, &node->exp_right));
+    TRY(check_conditional_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-//         if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
-//             node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
-//             goto Lelse;
-//         }
-//     }
-//     THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_undecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
-// Lelse:
+static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
+        if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
+            node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
+            goto Lelse;
+        }
+    }
+    THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_undecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
+Lelse:
 
-//     for (size_t i = 0; i < vec_size(node->args); ++i) {
-//         TRY(reslv_typed_exp(ctx, &node->args[i]));
-//     }
-//     TRY(check_call_exp(ctx, node));
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
+        TRY(reslv_typed_exp(ctx, &node->args[i]));
+    }
+    TRY(check_call_exp(ctx, node));
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_deref_exp(Ctx ctx, CDereference* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->exp));
-//     TRY(check_deref_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_deref_exp(Ctx ctx, CDereference* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->exp));
+    TRY(check_deref_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_addrof_expr(Ctx ctx, CAddrOf* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_exp(ctx, node->exp.get()));
-//     TRY(check_addrof_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_addrof_expr(Ctx ctx, CAddrOf* node) {
+    CATCH_ENTER;
+    TRY(reslv_exp(ctx, node->exp));
+    TRY(check_addrof_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_subscript_exp(Ctx ctx, CSubscript* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->primary_exp));
-//     TRY(reslv_typed_exp(ctx, &node->subscript_exp));
-//     TRY(check_subscript_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_subscript_exp(Ctx ctx, CSubscript* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->primary_exp));
+    TRY(reslv_typed_exp(ctx, &node->subscript_exp));
+    TRY(check_subscript_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_sizeof_exp(Ctx ctx, CSizeOf* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_exp(ctx, node->exp.get()));
-//     TRY(check_sizeof_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_sizeof_exp(Ctx ctx, CSizeOf* node) {
+    CATCH_ENTER;
+    TRY(reslv_exp(ctx, node->exp));
+    TRY(check_sizeof_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
-//     CATCH_ENTER;
-//     TRY(check_sizeoft_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
+    CATCH_ENTER;
+    TRY(check_sizeoft_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_dot_exp(Ctx ctx, CDot* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->structure));
-//     TRY(check_dot_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_dot_exp(Ctx ctx, CDot* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->structure));
+    TRY(check_dot_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_arrow_exp(Ctx ctx, CArrow* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->pointer));
-//     TRY(check_arrow_exp(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_arrow_exp(Ctx ctx, CArrow* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->pointer));
+    TRY(check_arrow_exp(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_exp(Ctx ctx, CExp* node) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CConstant_t:
-//             reslv_const_exp(static_cast<CConstant*>(node));
-//             break;
-//         case AST_CString_t:
-//             reslv_string_exp(static_cast<CString*>(node));
-//             break;
-//         case AST_CVar_t:
-//             TRY(reslv_var_exp(ctx, static_cast<CVar*>(node)));
-//             break;
-//         case AST_CCast_t:
-//             TRY(reslv_cast_exp(ctx, static_cast<CCast*>(node)));
-//             break;
-//         case AST_CUnary_t:
-//             TRY(reslv_unary_exp(ctx, static_cast<CUnary*>(node)));
-//             break;
-//         case AST_CBinary_t:
-//             TRY(reslv_binary_exp(ctx, static_cast<CBinary*>(node)));
-//             break;
-//         case AST_CAssignment_t:
-//             TRY(reslv_assign_exp(ctx, static_cast<CAssignment*>(node)));
-//             break;
-//         case AST_CConditional_t:
-//             TRY(reslv_conditional_exp(ctx, static_cast<CConditional*>(node)));
-//             break;
-//         case AST_CFunctionCall_t:
-//             TRY(reslv_call_exp(ctx, static_cast<CFunctionCall*>(node)));
-//             break;
-//         case AST_CDereference_t:
-//             TRY(reslv_deref_exp(ctx, static_cast<CDereference*>(node)));
-//             break;
-//         case AST_CAddrOf_t:
-//             TRY(reslv_addrof_expr(ctx, static_cast<CAddrOf*>(node)));
-//             break;
-//         case AST_CSubscript_t:
-//             TRY(reslv_subscript_exp(ctx, static_cast<CSubscript*>(node)));
-//             break;
-//         case AST_CSizeOf_t:
-//             TRY(reslv_sizeof_exp(ctx, static_cast<CSizeOf*>(node)));
-//             break;
-//         case AST_CSizeOfT_t:
-//             TRY(reslv_sizeoft_exp(ctx, static_cast<CSizeOfT*>(node)));
-//             break;
-//         case AST_CDot_t:
-//             TRY(reslv_dot_exp(ctx, static_cast<CDot*>(node)));
-//             break;
-//         case AST_CArrow_t:
-//             TRY(reslv_arrow_exp(ctx, static_cast<CArrow*>(node)));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_exp(Ctx ctx, CExp* node) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CConstant_t:
+            reslv_const_exp(&node->get._CConstant);
+            break;
+        case AST_CString_t:
+            reslv_string_exp(&node->get._CString);
+            break;
+        case AST_CVar_t:
+            TRY(reslv_var_exp(ctx, &node->get._CVar));
+            break;
+        case AST_CCast_t:
+            TRY(reslv_cast_exp(ctx, &node->get._CCast));
+            break;
+        case AST_CUnary_t:
+            TRY(reslv_unary_exp(ctx, &node->get._CUnary));
+            break;
+        case AST_CBinary_t:
+            TRY(reslv_binary_exp(ctx, &node->get._CBinary));
+            break;
+        case AST_CAssignment_t:
+            TRY(reslv_assign_exp(ctx, &node->get._CAssignment));
+            break;
+        case AST_CConditional_t:
+            TRY(reslv_conditional_exp(ctx, &node->get._CConditional));
+            break;
+        case AST_CFunctionCall_t:
+            TRY(reslv_call_exp(ctx, &node->get._CFunctionCall));
+            break;
+        case AST_CDereference_t:
+            TRY(reslv_deref_exp(ctx, &node->get._CDereference));
+            break;
+        case AST_CAddrOf_t:
+            TRY(reslv_addrof_expr(ctx, &node->get._CAddrOf));
+            break;
+        case AST_CSubscript_t:
+            TRY(reslv_subscript_exp(ctx, &node->get._CSubscript));
+            break;
+        case AST_CSizeOf_t:
+            TRY(reslv_sizeof_exp(ctx, &node->get._CSizeOf));
+            break;
+        case AST_CSizeOfT_t:
+            TRY(reslv_sizeoft_exp(ctx, &node->get._CSizeOfT));
+            break;
+        case AST_CDot_t:
+            TRY(reslv_dot_exp(ctx, &node->get._CDot));
+            break;
+        case AST_CArrow_t:
+            TRY(reslv_arrow_exp(ctx, &node->get._CArrow));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_typed_exp(Ctx ctx, std::unique_ptr<CExp>* exp) {
-//     CATCH_ENTER;
-//     TRY(reslv_exp(ctx, exp->get()));
-//     TRY(check_typed_exp(ctx, exp));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_typed_exp(Ctx ctx, unique_ptr_t(CExp)* exp) {
+    CATCH_ENTER;
+    TRY(reslv_exp(ctx, *exp));
+    TRY(check_typed_exp(ctx, exp));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_block(Ctx ctx, CBlock* node);
-// static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node);
+static error_t reslv_block(Ctx ctx, CBlock* node);
+static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node);
 
-// static error_t reslv_statement(Ctx ctx, CStatement* node);
+static error_t reslv_statement(Ctx ctx, CStatement* node);
 
-// static error_t reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (node->init->storage_class) {
-//         THROW_AT_LINE(
-//             node->init->line, GET_SEMANTIC_MSG(MSG_for_init_decl_not_auto, str_fmt_name(node->init->name, &name_fmt),
-//                                   get_storage_class_fmt(node->init->storage_class.get())));
-//     }
-//     TRY(reslv_block_var_decl(ctx, node->init.get()));
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+static error_t reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (node->init->storage_class) {
+        THROW_AT_LINE(
+            node->init->line, GET_SEMANTIC_MSG(MSG_for_init_decl_not_auto, str_fmt_name(node->init->name, &name_fmt),
+                                  get_storage_class_fmt(node->init->storage_class)));
+    }
+    TRY(reslv_block_var_decl(ctx, node->init));
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t reslv_for_init_exp(Ctx ctx, CInitExp* node) {
-//     CATCH_ENTER;
-//     if (node->init) {
-//         TRY(reslv_typed_exp(ctx, &node->init));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_for_init_exp(Ctx ctx, CInitExp* node) {
+    CATCH_ENTER;
+    if (node->init) {
+        TRY(reslv_typed_exp(ctx, &node->init));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_for_init(Ctx ctx, CForInit* node) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CInitDecl_t:
-//             TRY(reslv_for_init_decl(ctx, static_cast<CInitDecl*>(node)));
-//             break;
-//         case AST_CInitExp_t: {
-//             TRY(reslv_for_init_exp(ctx, static_cast<CInitExp*>(node)));
-//             break;
-//         }
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_for_init(Ctx ctx, CForInit* node) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CInitDecl_t:
+            TRY(reslv_for_init_decl(ctx, &node->get._CInitDecl));
+            break;
+        case AST_CInitExp_t: {
+            TRY(reslv_for_init_exp(ctx, &node->get._CInitExp));
+            break;
+        }
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_ret_statement(Ctx ctx, CReturn* node) {
-//     CATCH_ENTER;
-//     if (node->exp) {
-//         TRY(reslv_typed_exp(ctx, &node->exp));
-//     }
-//     TRY(check_ret_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_ret_statement(Ctx ctx, CReturn* node) {
+    CATCH_ENTER;
+    if (node->exp) {
+        TRY(reslv_typed_exp(ctx, &node->exp));
+    }
+    TRY(check_ret_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_exp_statement(Ctx ctx, CExpression* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->exp));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_exp_statement(Ctx ctx, CExpression* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->exp));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_if_statement(Ctx ctx, CIf* node) {
-//     CATCH_ENTER;
-//     TRY(reslv_typed_exp(ctx, &node->condition));
-//     TRY(reslv_statement(ctx, node->then.get()));
-//     if (node->else_fi) {
-//         TRY(reslv_statement(ctx, node->else_fi.get()));
-//     }
-//     TRY(check_if_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_if_statement(Ctx ctx, CIf* node) {
+    CATCH_ENTER;
+    TRY(reslv_typed_exp(ctx, &node->condition));
+    TRY(reslv_statement(ctx, node->then));
+    if (node->else_fi) {
+        TRY(reslv_statement(ctx, node->else_fi));
+    }
+    TRY(check_if_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static void reslv_goto_statement(Ctx ctx, CGoto* node) {
-//     if (map_find(ctx->goto_map, node->target) != map_end()) {
-//         node->target = map_get(ctx->goto_map, node->target);
-//         map_add(ctx->errors->linebuf_map, node->target, node->line);
-//     }
-//     else {
-//         TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
-//         map_add(ctx->goto_map, node->target, target);
-//         node->target = target;
-//         map_add(ctx->errors->linebuf_map, node->target, node->line);
-//     }
-// }
+static void reslv_goto_statement(Ctx ctx, CGoto* node) {
+    if (map_find(ctx->goto_map, node->target) != map_end()) {
+        node->target = map_get(ctx->goto_map, node->target);
+        map_add(ctx->errors->linebuf_map, node->target, node->line);
+    }
+    else {
+        TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
+        map_add(ctx->goto_map, node->target, target);
+        node->target = target;
+        map_add(ctx->errors->linebuf_map, node->target, node->line);
+    }
+}
 
-// static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
-//     CATCH_ENTER;
-//     TRY(annotate_goto_label(ctx, node));
-//     if (map_find(ctx->goto_map, node->target) != map_end()) {
-//         node->target = map_get(ctx->goto_map, node->target);
-//     }
-//     else {
-//         TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
-//         map_add(ctx->goto_map, node->target, target);
-//         node->target = target;
-//     }
-//     TRY(reslv_statement(ctx, node->jump_to.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
+    CATCH_ENTER;
+    TRY(annotate_goto_label(ctx, node));
+    if (map_find(ctx->goto_map, node->target) != map_end()) {
+        node->target = map_get(ctx->goto_map, node->target);
+    }
+    else {
+        TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
+        map_add(ctx->goto_map, node->target, target);
+        node->target = target;
+    }
+    TRY(reslv_statement(ctx, node->jump_to));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_compound_statement(Ctx ctx, CCompound* node) {
-//     CATCH_ENTER;
-//     enter_scope(ctx);
-//     TRY(reslv_block(ctx, node->block.get()));
-//     exit_scope(ctx);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_compound_statement(Ctx ctx, CCompound* node) {
+    CATCH_ENTER;
+    enter_scope(ctx);
+    TRY(reslv_block(ctx, node->block));
+    exit_scope(ctx);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_while_statement(Ctx ctx, CWhile* node) {
-//     CATCH_ENTER;
-//     annotate_while_loop(ctx, node);
-//     TRY(reslv_typed_exp(ctx, &node->condition));
-//     TRY(reslv_statement(ctx, node->body.get()));
-//     deannotate_loop(ctx);
-//     TRY(check_while_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_while_statement(Ctx ctx, CWhile* node) {
+    CATCH_ENTER;
+    annotate_while_loop(ctx, node);
+    TRY(reslv_typed_exp(ctx, &node->condition));
+    TRY(reslv_statement(ctx, node->body));
+    deannotate_loop(ctx);
+    TRY(check_while_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
-//     CATCH_ENTER;
-//     annotate_do_while_loop(ctx, node);
-//     TRY(reslv_statement(ctx, node->body.get()));
-//     TRY(reslv_typed_exp(ctx, &node->condition));
-//     deannotate_loop(ctx);
-//     TRY(check_do_while_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_do_while_statement(Ctx ctx, CDoWhile* node) {
+    CATCH_ENTER;
+    annotate_do_while_loop(ctx, node);
+    TRY(reslv_statement(ctx, node->body));
+    TRY(reslv_typed_exp(ctx, &node->condition));
+    deannotate_loop(ctx);
+    TRY(check_do_while_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_for_statement(Ctx ctx, CFor* node) {
-//     CATCH_ENTER;
-//     annotate_for_loop(ctx, node);
-//     enter_scope(ctx);
-//     TRY(reslv_for_init(ctx, node->init.get()));
-//     if (node->condition) {
-//         TRY(reslv_typed_exp(ctx, &node->condition));
-//     }
-//     if (node->post) {
-//         TRY(reslv_typed_exp(ctx, &node->post));
-//     }
-//     TRY(reslv_statement(ctx, node->body.get()));
-//     exit_scope(ctx);
-//     deannotate_loop(ctx);
-//     TRY(check_for_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_for_statement(Ctx ctx, CFor* node) {
+    CATCH_ENTER;
+    annotate_for_loop(ctx, node);
+    enter_scope(ctx);
+    TRY(reslv_for_init(ctx, node->init));
+    if (node->condition) {
+        TRY(reslv_typed_exp(ctx, &node->condition));
+    }
+    if (node->post) {
+        TRY(reslv_typed_exp(ctx, &node->post));
+    }
+    TRY(reslv_statement(ctx, node->body));
+    exit_scope(ctx);
+    deannotate_loop(ctx);
+    TRY(check_for_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_switch_statement(Ctx ctx, CSwitch* node) {
-//     CATCH_ENTER;
-//     annotate_switch_lookup(ctx, node);
-//     enter_scope(ctx);
-//     TRY(reslv_typed_exp(ctx, &node->match));
-//     {
-//         CSwitch* p_switch_statement = ctx->p_switch_statement;
-//         ctx->p_switch_statement = node;
-//         TRY(reslv_statement(ctx, node->body.get()));
-//         ctx->p_switch_statement = p_switch_statement;
-//     }
-//     exit_scope(ctx);
-//     deannotate_lookup(ctx);
-//     TRY(check_switch_statement(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_switch_statement(Ctx ctx, CSwitch* node) {
+    CATCH_ENTER;
+    annotate_switch_lookup(ctx, node);
+    enter_scope(ctx);
+    TRY(reslv_typed_exp(ctx, &node->match));
+    {
+        CSwitch* p_switch_statement = ctx->p_switch_statement;
+        ctx->p_switch_statement = node;
+        TRY(reslv_statement(ctx, node->body));
+        ctx->p_switch_statement = p_switch_statement;
+    }
+    exit_scope(ctx);
+    deannotate_lookup(ctx);
+    TRY(check_switch_statement(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_case_statement(Ctx ctx, CCase* node) {
-//     CATCH_ENTER;
-//     TRY(annotate_case_jump(ctx, node));
-//     TRY(reslv_typed_exp(ctx, &node->value));
-//     vec_move_back(ctx->p_switch_statement->cases, node->value);
-//     TRY(reslv_statement(ctx, node->jump_to.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_case_statement(Ctx ctx, CCase* node) {
+    CATCH_ENTER;
+    TRY(annotate_case_jump(ctx, node));
+    TRY(reslv_typed_exp(ctx, &node->value));
+    vec_move_back(ctx->p_switch_statement->cases, node->value);
+    TRY(reslv_statement(ctx, node->jump_to));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_default_statement(Ctx ctx, CDefault* node) {
-//     CATCH_ENTER;
-//     TRY(annotate_default_jump(ctx, node));
-//     TRY(reslv_statement(ctx, node->jump_to.get()));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_default_statement(Ctx ctx, CDefault* node) {
+    CATCH_ENTER;
+    TRY(annotate_default_jump(ctx, node));
+    TRY(reslv_statement(ctx, node->jump_to));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_break_statement(Ctx ctx, CBreak* node) {
-//     CATCH_ENTER;
-//     TRY(annotate_break_jump(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_break_statement(Ctx ctx, CBreak* node) {
+    CATCH_ENTER;
+    TRY(annotate_break_jump(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_continue_statement(Ctx ctx, CContinue* node) {
-//     CATCH_ENTER;
-//     TRY(annotate_continue_jump(ctx, node));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_continue_statement(Ctx ctx, CContinue* node) {
+    CATCH_ENTER;
+    TRY(annotate_continue_jump(ctx, node));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t reslv_statement(Ctx ctx, CStatement* node) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CReturn_t:
-//             TRY(reslv_ret_statement(ctx, static_cast<CReturn*>(node)));
-//             break;
-//         case AST_CExpression_t:
-//             TRY(reslv_exp_statement(ctx, static_cast<CExpression*>(node)));
-//             break;
-//         case AST_CIf_t:
-//             TRY(reslv_if_statement(ctx, static_cast<CIf*>(node)));
-//             break;
-//         case AST_CGoto_t:
-//             reslv_goto_statement(ctx, static_cast<CGoto*>(node));
-//             break;
-//         case AST_CLabel_t:
-//             TRY(reslv_label_statement(ctx, static_cast<CLabel*>(node)));
-//             break;
-//         case AST_CCompound_t:
-//             TRY(reslv_compound_statement(ctx, static_cast<CCompound*>(node)));
-//             break;
-//         case AST_CWhile_t:
-//             TRY(reslv_while_statement(ctx, static_cast<CWhile*>(node)));
-//             break;
-//         case AST_CDoWhile_t:
-//             TRY(reslv_do_while_statement(ctx, static_cast<CDoWhile*>(node)));
-//             break;
-//         case AST_CFor_t:
-//             TRY(reslv_for_statement(ctx, static_cast<CFor*>(node)));
-//             break;
-//         case AST_CSwitch_t:
-//             TRY(reslv_switch_statement(ctx, static_cast<CSwitch*>(node)));
-//             break;
-//         case AST_CCase_t:
-//             TRY(reslv_case_statement(ctx, static_cast<CCase*>(node)));
-//             break;
-//         case AST_CDefault_t:
-//             TRY(reslv_default_statement(ctx, static_cast<CDefault*>(node)));
-//             break;
-//         case AST_CBreak_t:
-//             TRY(reslv_break_statement(ctx, static_cast<CBreak*>(node)));
-//             break;
-//         case AST_CContinue_t:
-//             TRY(reslv_continue_statement(ctx, static_cast<CContinue*>(node)));
-//             break;
-//         case AST_CNull_t:
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t reslv_statement(Ctx ctx, CStatement* node) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CReturn_t:
+            TRY(reslv_ret_statement(ctx, &node->get._CReturn));
+            break;
+        case AST_CExpression_t:
+            TRY(reslv_exp_statement(ctx, &node->get._CExpression));
+            break;
+        case AST_CIf_t:
+            TRY(reslv_if_statement(ctx, &node->get._CIf));
+            break;
+        case AST_CGoto_t:
+            reslv_goto_statement(ctx, &node->get._CGoto);
+            break;
+        case AST_CLabel_t:
+            TRY(reslv_label_statement(ctx, &node->get._CLabel));
+            break;
+        case AST_CCompound_t:
+            TRY(reslv_compound_statement(ctx, &node->get._CCompound));
+            break;
+        case AST_CWhile_t:
+            TRY(reslv_while_statement(ctx, &node->get._CWhile));
+            break;
+        case AST_CDoWhile_t:
+            TRY(reslv_do_while_statement(ctx, &node->get._CDoWhile));
+            break;
+        case AST_CFor_t:
+            TRY(reslv_for_statement(ctx, &node->get._CFor));
+            break;
+        case AST_CSwitch_t:
+            TRY(reslv_switch_statement(ctx, &node->get._CSwitch));
+            break;
+        case AST_CCase_t:
+            TRY(reslv_case_statement(ctx, &node->get._CCase));
+            break;
+        case AST_CDefault_t:
+            TRY(reslv_default_statement(ctx, &node->get._CDefault));
+            break;
+        case AST_CBreak_t:
+            TRY(reslv_break_statement(ctx, &node->get._CBreak));
+            break;
+        case AST_CContinue_t:
+            TRY(reslv_continue_statement(ctx, &node->get._CContinue));
+            break;
+        case AST_CNull_t:
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
 // static error_t reslv_declaration(Ctx ctx, CDeclaration* node);
 
