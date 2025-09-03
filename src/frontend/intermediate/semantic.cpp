@@ -2576,97 +2576,97 @@ static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
     CATCH_EXIT;
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Loop labeling
+// Loop labeling
 
-// static error_t annotate_goto_label(Ctx ctx, CLabel* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (set_find(ctx->label_set, node->target) != set_end()) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_label_in_scope, str_fmt_name(node->target, &name_fmt)));
-//     }
-//     set_insert(ctx->label_set, node->target);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+static error_t annotate_goto_label(Ctx ctx, CLabel* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (set_find(ctx->label_set, node->target) != set_end()) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_label_in_scope, str_fmt_name(node->target, &name_fmt)));
+    }
+    set_insert(ctx->label_set, node->target);
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static void annotate_while_loop(Ctx ctx, CWhile* node) {
-//     node->target = repr_label_identifier(ctx->identifiers, LBL_Lwhile);
-//     vec_push_back(ctx->break_loop_labels, node->target);
-//     vec_push_back(ctx->continue_loop_labels, node->target);
-// }
+static void annotate_while_loop(Ctx ctx, CWhile* node) {
+    node->target = repr_label_identifier(ctx->identifiers, LBL_Lwhile);
+    vec_push_back(ctx->break_loop_labels, node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
+}
 
-// static void annotate_do_while_loop(Ctx ctx, CDoWhile* node) {
-//     node->target = repr_label_identifier(ctx->identifiers, LBL_Ldo_while);
-//     vec_push_back(ctx->break_loop_labels, node->target);
-//     vec_push_back(ctx->continue_loop_labels, node->target);
-// }
+static void annotate_do_while_loop(Ctx ctx, CDoWhile* node) {
+    node->target = repr_label_identifier(ctx->identifiers, LBL_Ldo_while);
+    vec_push_back(ctx->break_loop_labels, node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
+}
 
-// static void annotate_for_loop(Ctx ctx, CFor* node) {
-//     node->target = repr_label_identifier(ctx->identifiers, LBL_Lfor);
-//     vec_push_back(ctx->break_loop_labels, node->target);
-//     vec_push_back(ctx->continue_loop_labels, node->target);
-// }
+static void annotate_for_loop(Ctx ctx, CFor* node) {
+    node->target = repr_label_identifier(ctx->identifiers, LBL_Lfor);
+    vec_push_back(ctx->break_loop_labels, node->target);
+    vec_push_back(ctx->continue_loop_labels, node->target);
+}
 
-// static void annotate_switch_lookup(Ctx ctx, CSwitch* node) {
-//     node->is_default = false;
-//     node->target = repr_label_identifier(ctx->identifiers, LBL_Lswitch);
-//     vec_push_back(ctx->break_loop_labels, node->target);
-// }
+static void annotate_switch_lookup(Ctx ctx, CSwitch* node) {
+    node->is_default = false;
+    node->target = repr_label_identifier(ctx->identifiers, LBL_Lswitch);
+    vec_push_back(ctx->break_loop_labels, node->target);
+}
 
-// static error_t annotate_case_jump(Ctx ctx, CCase* node) {
-//     CATCH_ENTER;
-//     if (!ctx->p_switch_statement) {
-//         THROW_AT_LINE(node->value->line, GET_SEMANTIC_MSG_0(MSG_case_out_of_switch));
-//     }
-//     node->target = repr_case_identifier(
-//         ctx->identifiers, ctx->p_switch_statement->target, false, vec_size(ctx->p_switch_statement->cases));
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t annotate_case_jump(Ctx ctx, CCase* node) {
+    CATCH_ENTER;
+    if (!ctx->p_switch_statement) {
+        THROW_AT_LINE(node->value->line, GET_SEMANTIC_MSG_0(MSG_case_out_of_switch));
+    }
+    node->target = repr_case_identifier(
+        ctx->identifiers, ctx->p_switch_statement->target, false, vec_size(ctx->p_switch_statement->cases));
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t annotate_default_jump(Ctx ctx, CDefault* node) {
-//     CATCH_ENTER;
-//     if (!ctx->p_switch_statement) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_default_out_of_switch));
-//     }
-//     else if (ctx->p_switch_statement->is_default) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_multiple_default));
-//     }
-//     node->target = ctx->p_switch_statement->target;
-//     ctx->p_switch_statement->is_default = true;
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t annotate_default_jump(Ctx ctx, CDefault* node) {
+    CATCH_ENTER;
+    if (!ctx->p_switch_statement) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_default_out_of_switch));
+    }
+    else if (ctx->p_switch_statement->is_default) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_multiple_default));
+    }
+    node->target = ctx->p_switch_statement->target;
+    ctx->p_switch_statement->is_default = true;
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t annotate_break_jump(Ctx ctx, CBreak* node) {
-//     CATCH_ENTER;
-//     if (vec_empty(ctx->break_loop_labels)) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_break_out_of_loop));
-//     }
-//     node->target = vec_back(ctx->break_loop_labels);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t annotate_break_jump(Ctx ctx, CBreak* node) {
+    CATCH_ENTER;
+    if (vec_empty(ctx->break_loop_labels)) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_break_out_of_loop));
+    }
+    node->target = vec_back(ctx->break_loop_labels);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t annotate_continue_jump(Ctx ctx, CContinue* node) {
-//     CATCH_ENTER;
-//     if (vec_empty(ctx->continue_loop_labels)) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_continue_out_of_loop));
-//     }
-//     node->target = vec_back(ctx->continue_loop_labels);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t annotate_continue_jump(Ctx ctx, CContinue* node) {
+    CATCH_ENTER;
+    if (vec_empty(ctx->continue_loop_labels)) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG_0(MSG_continue_out_of_loop));
+    }
+    node->target = vec_back(ctx->continue_loop_labels);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static void deannotate_loop(Ctx ctx) {
-//     vec_pop_back(ctx->break_loop_labels);
-//     vec_pop_back(ctx->continue_loop_labels);
-// }
+static void deannotate_loop(Ctx ctx) {
+    vec_pop_back(ctx->break_loop_labels);
+    vec_pop_back(ctx->continue_loop_labels);
+}
 
-// static void deannotate_lookup(Ctx ctx) { vec_pop_back(ctx->break_loop_labels); }
+static void deannotate_lookup(Ctx ctx) { vec_pop_back(ctx->break_loop_labels); }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
