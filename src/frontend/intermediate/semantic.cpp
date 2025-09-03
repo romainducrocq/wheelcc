@@ -582,31 +582,31 @@ static error_t reslv_struct_type(Ctx ctx, Type* type);
 static void check_const_exp(CConstant* node) {
     switch (node->constant->type) {
         case AST_CConstChar_t: {
-            (*node->_base)->exp_type = make_Char();
+            node->_base->exp_type = make_Char();
             break;
         }
         case AST_CConstInt_t: {
-            (*node->_base)->exp_type = make_Int();
+            node->_base->exp_type = make_Int();
             break;
         }
         case AST_CConstLong_t: {
-            (*node->_base)->exp_type = make_Long();
+            node->_base->exp_type = make_Long();
             break;
         }
         case AST_CConstDouble_t: {
-            (*node->_base)->exp_type = make_Double();
+            node->_base->exp_type = make_Double();
             break;
         }
         case AST_CConstUChar_t: {
-            (*node->_base)->exp_type = make_UChar();
+            node->_base->exp_type = make_UChar();
             break;
         }
         case AST_CConstUInt_t: {
-            (*node->_base)->exp_type = make_UInt();
+            node->_base->exp_type = make_UInt();
             break;
         }
         case AST_CConstULong_t: {
-            (*node->_base)->exp_type = make_ULong();
+            node->_base->exp_type = make_ULong();
             break;
         }
         default:
@@ -617,7 +617,7 @@ static void check_const_exp(CConstant* node) {
 static void check_string_exp(CString* node) {
     TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
     shared_ptr_t(Type) elem_type = make_Char();
-    (*node->_base)->exp_type = make_Array(size, &elem_type);
+    node->_base->exp_type = make_Array(size, &elem_type);
 }
 
 static error_t check_var_exp(Ctx ctx, CVar* node) {
@@ -625,10 +625,10 @@ static error_t check_var_exp(Ctx ctx, CVar* node) {
     CATCH_ENTER;
     Type* exp_type;
     if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_FunType_t) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_fun_used_as_var, str_fmt_name(node->name, &name_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_fun_used_as_var, str_fmt_name(node->name, &name_fmt)));
     }
     exp_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
-    sptr_copy(Type, exp_type, (*node->_base)->exp_type);
+    sptr_copy(Type, exp_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     CATCH_EXIT;
@@ -638,18 +638,18 @@ static error_t check_cast_exp(Ctx ctx, CCast* node) {
     string_t type_fmt_1 = str_new(NULL);
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    ctx->errors->linebuf = (*node->_base)->line;
+    ctx->errors->linebuf = node->_base->line;
     TRY(reslv_struct_type(ctx, node->target_type));
     if (node->target_type->type != AST_Void_t
         && ((node->exp->exp_type->type == AST_Double_t && node->target_type->type == AST_Pointer_t)
             || (node->exp->exp_type->type == AST_Pointer_t && node->target_type->type == AST_Double_t)
             || !is_type_scalar(node->exp->exp_type) || !is_type_scalar(node->target_type))) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_illegal_cast, str_fmt_type(node->exp->exp_type, &type_fmt_1),
-                                      str_fmt_type(node->target_type, &type_fmt_2)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_illegal_cast, str_fmt_type(node->exp->exp_type, &type_fmt_1),
+                                   str_fmt_type(node->target_type, &type_fmt_2)));
     }
     TRY(is_valid_type(ctx, node->target_type));
-    sptr_copy(Type, node->target_type, (*node->_base)->exp_type);
+    sptr_copy(Type, node->target_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -705,14 +705,14 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
-                                                str_fmt_type(node->exp->exp_type, &type_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+                                             str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
     switch (node->exp->exp_type->type) {
         case AST_Double_t:
-            THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
-                                                    str_fmt_type(node->exp->exp_type, &type_fmt)));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+                                                 str_fmt_type(node->exp->exp_type, &type_fmt)));
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -721,7 +721,7 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
         default:
             break;
     }
-    sptr_copy(Type, node->exp->exp_type, (*node->_base)->exp_type);
+    sptr_copy(Type, node->exp->exp_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -731,8 +731,8 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
-                                                str_fmt_type(node->exp->exp_type, &type_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+                                             str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
     switch (node->exp->exp_type->type) {
@@ -744,7 +744,7 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
         default:
             break;
     }
-    sptr_copy(Type, node->exp->exp_type, (*node->_base)->exp_type);
+    sptr_copy(Type, node->exp->exp_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -754,11 +754,11 @@ static error_t check_unary_not_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_scalar(node->exp->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
-                                                str_fmt_type(node->exp->exp_type, &type_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+                                             str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
-    (*node->_base)->exp_type = make_Int();
+    node->_base->exp_type = make_Int();
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -798,7 +798,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
         if (!is_same_type(node->exp_right->exp_type, common_type)) {
             TRY(cast_exp(ctx, &common_type, &node->exp_right));
         }
-        sptr_copy(Type, node->exp_left->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, node->exp_left->exp_type, node->_base->exp_type);
         EARLY_EXIT;
     }
     else if (is_type_int(node->exp_left->exp_type) && node->exp_right->exp_type->type == AST_Pointer_t
@@ -807,13 +807,13 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
         if (!is_same_type(node->exp_left->exp_type, common_type)) {
             TRY(cast_exp(ctx, &common_type, &node->exp_left));
         }
-        sptr_copy(Type, node->exp_right->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, node->exp_right->exp_type, node->_base->exp_type);
         EARLY_EXIT;
     }
     else {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     if (!is_same_type(node->exp_left->exp_type, common_type)) {
@@ -822,7 +822,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    sptr_move(Type, common_type, (*node->_base)->exp_type);
+    sptr_move(Type, common_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -845,25 +845,25 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
             if (!is_same_type(node->exp_right->exp_type, common_type)) {
                 TRY(cast_exp(ctx, &common_type, &node->exp_right));
             }
-            sptr_copy(Type, node->exp_left->exp_type, (*node->_base)->exp_type);
+            sptr_copy(Type, node->exp_left->exp_type, node->_base->exp_type);
             EARLY_EXIT;
         }
         else if (is_same_type(node->exp_left->exp_type, node->exp_right->exp_type)
                  && !(node->exp_left->type == AST_CConstant_t && is_const_null_ptr(&node->exp_left->get._CConstant))) {
             common_type = make_Long();
-            sptr_move(Type, common_type, (*node->_base)->exp_type);
+            sptr_move(Type, common_type, node->_base->exp_type);
             EARLY_EXIT;
         }
         else {
-            THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                    str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                    str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                                 str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                                 str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
         }
     }
     else {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     if (!is_same_type(node->exp_left->exp_type, common_type)) {
@@ -872,7 +872,7 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    sptr_move(Type, common_type, (*node->_base)->exp_type);
+    sptr_move(Type, common_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -886,9 +886,9 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
     shared_ptr_t(Type) common_type = sptr_new();
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_arithmetic(node->exp_right->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     common_type = get_joint_type(node->exp_left, node->exp_right);
@@ -898,7 +898,7 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    sptr_move(Type, common_type, (*node->_base)->exp_type);
+    sptr_move(Type, common_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -912,9 +912,9 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     shared_ptr_t(Type) common_type = sptr_new();
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_arithmetic(node->exp_right->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     common_type = get_joint_type(node->exp_left, node->exp_right);
@@ -924,10 +924,10 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    sptr_move(Type, common_type, (*node->_base)->exp_type);
-    if ((*node->_base)->exp_type->type == AST_Double_t) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
-                                                str_fmt_type((*node->_base)->exp_type, &type_fmt_1)));
+    sptr_move(Type, common_type, node->_base->exp_type);
+    if (node->_base->exp_type->type == AST_Double_t) {
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->_base->exp_type, &type_fmt_1)));
     }
     FINALLY;
     str_delete(type_fmt_1);
@@ -941,9 +941,9 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_int(node->exp_right->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     else if (is_type_char(node->exp_left->exp_type)) {
@@ -952,10 +952,10 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_left->exp_type, node->exp_right->exp_type)) {
         TRY(cast_exp(ctx, &node->exp_left->exp_type, &node->exp_right));
     }
-    sptr_copy(Type, node->exp_left->exp_type, (*node->_base)->exp_type);
-    if ((*node->_base)->exp_type->type == AST_Double_t) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
-                                                str_fmt_type((*node->_base)->exp_type, &type_fmt_1)));
+    sptr_copy(Type, node->exp_left->exp_type, node->_base->exp_type);
+    if (node->_base->exp_type->type == AST_Double_t) {
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->_base->exp_type, &type_fmt_1)));
     }
     FINALLY;
     str_delete(type_fmt_1);
@@ -979,12 +979,12 @@ static error_t check_binary_logical_exp(Ctx ctx, CBinary* node) {
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_scalar(node->exp_left->exp_type) || !is_type_scalar(node->exp_right->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
-    (*node->_base)->exp_type = make_Int();
+    node->_base->exp_type = make_Int();
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -1003,9 +1003,9 @@ static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
         common_type = get_joint_type(node->exp_left, node->exp_right);
     }
     else {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     if (!is_same_type(node->exp_left->exp_type, common_type)) {
@@ -1014,7 +1014,7 @@ static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    (*node->_base)->exp_type = make_Int();
+    node->_base->exp_type = make_Int();
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -1033,9 +1033,9 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
                 || (node->exp_left->type == AST_CConstant_t && is_const_null_ptr(&node->exp_left->get._CConstant))
                 || (node->exp_right->type == AST_CConstant_t
                     && is_const_null_ptr(&node->exp_right->get._CConstant))))) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
-                                                str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
-                                                str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+                                             str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
+                                             str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
 
     common_type = get_joint_type(node->exp_left, node->exp_right);
@@ -1045,7 +1045,7 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    (*node->_base)->exp_type = make_Int();
+    node->_base->exp_type = make_Int();
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -1103,16 +1103,15 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
     CATCH_ENTER;
     if (node->exp_left) {
         if (node->exp_left->exp_type->type == AST_Void_t) {
-            THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG_0(MSG_assign_to_void));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG_0(MSG_assign_to_void));
         }
         else if (!is_exp_lvalue(node->exp_left)) {
-            THROW_AT_LINE(
-                (*node->_base)->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(NULL, node->unop)));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(NULL, node->unop)));
         }
         else if (!is_same_type(node->exp_right->exp_type, node->exp_left->exp_type)) {
             TRY(cast_assign(ctx, &node->exp_left->exp_type, &node->exp_right));
         }
-        sptr_copy(Type, node->exp_left->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, node->exp_left->exp_type, node->_base->exp_type);
     }
     else {
         THROW_ABORT_IF(node->exp_right->type != AST_CBinary_t);
@@ -1121,13 +1120,13 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
             exp_left = exp_left->get._CCast.exp;
         }
         if (!is_exp_lvalue(exp_left)) {
-            THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue,
-                                                    get_assign_fmt(node->exp_right->get._CBinary.binop, node->unop)));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue,
+                                                 get_assign_fmt(node->exp_right->get._CBinary.binop, node->unop)));
         }
         else if (!is_same_type(node->exp_right->exp_type, exp_left->exp_type)) {
             TRY(cast_assign(ctx, &exp_left->exp_type, &node->exp_right));
         }
-        sptr_copy(Type, exp_left->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, exp_left->exp_type, node->_base->exp_type);
     }
     FINALLY;
     CATCH_EXIT;
@@ -1139,21 +1138,21 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
     shared_ptr_t(Type) common_type = sptr_new();
     CATCH_ENTER;
     if (!is_type_scalar(node->condition->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line,
+        THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_invalid_condition, str_fmt_type(node->condition->exp_type, &type_fmt_1)));
     }
     else if (node->exp_middle->exp_type->type == AST_Void_t && node->exp_right->exp_type->type == AST_Void_t) {
-        sptr_copy(Type, node->exp_middle->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, node->exp_middle->exp_type, node->_base->exp_type);
         EARLY_EXIT;
     }
     else if (node->exp_middle->exp_type->type == AST_Structure_t
              || node->exp_right->exp_type->type == AST_Structure_t) {
         if (!is_same_type(node->exp_middle->exp_type, node->exp_right->exp_type)) {
-            THROW_AT_LINE((*node->_base)->line,
+            THROW_AT_LINE(node->_base->line,
                 GET_SEMANTIC_MSG(MSG_invalid_ternary_op, str_fmt_type(node->exp_middle->exp_type, &type_fmt_1),
                     str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
         }
-        sptr_copy(Type, node->exp_middle->exp_type, (*node->_base)->exp_type);
+        sptr_copy(Type, node->exp_middle->exp_type, node->_base->exp_type);
         EARLY_EXIT;
     }
 
@@ -1164,7 +1163,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
         TRY(get_joint_ptr_type(ctx, node->exp_middle, node->exp_right, &common_type));
     }
     else {
-        THROW_AT_LINE((*node->_base)->line,
+        THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_invalid_ternary_op, str_fmt_type(node->exp_middle->exp_type, &type_fmt_1),
                 str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -1174,7 +1173,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
     if (!is_same_type(node->exp_right->exp_type, common_type)) {
         TRY(cast_exp(ctx, &common_type, &node->exp_right));
     }
-    sptr_move(Type, common_type, (*node->_base)->exp_type);
+    sptr_move(Type, common_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -1189,13 +1188,13 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
     CATCH_ENTER;
     FunType* fun_type;
     if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type != AST_FunType_t) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
     fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
     if (vec_size(fun_type->param_types) != vec_size(node->args)) {
         strto_fmt_1 = str_to_string(vec_size(node->args));
         strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
-        THROW_AT_LINE((*node->_base)->line,
+        THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_call_with_wrong_argc, str_fmt_name(node->name, &name_fmt), strto_fmt_1, strto_fmt_2));
     }
     for (size_t i = 0; i < vec_size(node->args); ++i) {
@@ -1203,7 +1202,7 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
             TRY(cast_assign(ctx, &fun_type->param_types[i], &node->args[i]));
         }
     }
-    sptr_copy(Type, fun_type->ret_type, (*node->_base)->exp_type) FINALLY;
+    sptr_copy(Type, fun_type->ret_type, node->_base->exp_type) FINALLY;
     str_delete(name_fmt);
     str_delete(strto_fmt_1);
     str_delete(strto_fmt_2);
@@ -1215,9 +1214,9 @@ static error_t check_deref_exp(Ctx ctx, CDereference* node) {
     CATCH_ENTER;
     if (node->exp->exp_type->type != AST_Pointer_t) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_deref_not_ptr, str_fmt_type(node->exp->exp_type, &type_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_deref_not_ptr, str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
-    sptr_copy(Type, node->exp->exp_type->get._Pointer.ref_type, (*node->_base)->exp_type);
+    sptr_copy(Type, node->exp->exp_type->get._Pointer.ref_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -1227,10 +1226,10 @@ static error_t check_addrof_exp(Ctx ctx, CAddrOf* node) {
     shared_ptr_t(Type) ref_type = sptr_new();
     CATCH_ENTER;
     if (!is_exp_lvalue(node->exp)) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG_0(MSG_addrof_rvalue));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG_0(MSG_addrof_rvalue));
     }
     sptr_copy(Type, node->exp->exp_type, ref_type);
-    (*node->_base)->exp_type = make_Pointer(&ref_type);
+    node->_base->exp_type = make_Pointer(&ref_type);
     FINALLY;
     free_Type(&ref_type);
     CATCH_EXIT;
@@ -1260,11 +1259,11 @@ static error_t check_subscript_exp(Ctx ctx, CSubscript* node) {
         sptr_copy(Type, node->subscript_exp->exp_type->get._Pointer.ref_type, ref_type);
     }
     else {
-        THROW_AT_LINE((*node->_base)->line,
+        THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_invalid_subscript, str_fmt_type(node->primary_exp->exp_type, &type_fmt_1),
                 str_fmt_type(node->subscript_exp->exp_type, &type_fmt_2)));
     }
-    sptr_move(Type, ref_type, (*node->_base)->exp_type);
+    sptr_move(Type, ref_type, node->_base->exp_type);
     FINALLY;
     str_delete(type_fmt_1);
     str_delete(type_fmt_2);
@@ -1277,10 +1276,10 @@ static error_t check_sizeof_exp(Ctx ctx, CSizeOf* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_complete(ctx, node->exp->exp_type)) {
-        THROW_AT_LINE((*node->_base)->line,
-            GET_SEMANTIC_MSG(MSG_sizeof_incomplete, str_fmt_type(node->exp->exp_type, &type_fmt)));
+        THROW_AT_LINE(
+            node->_base->line, GET_SEMANTIC_MSG(MSG_sizeof_incomplete, str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
-    (*node->_base)->exp_type = make_ULong();
+    node->_base->exp_type = make_ULong();
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -1289,14 +1288,14 @@ static error_t check_sizeof_exp(Ctx ctx, CSizeOf* node) {
 static error_t check_sizeoft_exp(Ctx ctx, CSizeOfT* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
-    ctx->errors->linebuf = (*node->_base)->line;
+    ctx->errors->linebuf = node->_base->line;
     TRY(reslv_struct_type(ctx, node->target_type));
     if (!is_type_complete(ctx, node->target_type)) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_sizeof_incomplete, str_fmt_type(node->target_type, &type_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_sizeof_incomplete, str_fmt_type(node->target_type, &type_fmt)));
     }
     TRY(is_valid_type(ctx, node->target_type));
-    (*node->_base)->exp_type = make_ULong();
+    node->_base->exp_type = make_ULong();
     FINALLY;
     str_delete(type_fmt);
     CATCH_EXIT;
@@ -1310,18 +1309,18 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
     StructTypedef* struct_typedef;
     Type* exp_type;
     if (node->structure->exp_type->type != AST_Structure_t) {
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_dot_not_struct, str_fmt_name(node->member, &name_fmt),
-                                                str_fmt_type(node->structure->exp_type, &type_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_dot_not_struct, str_fmt_name(node->member, &name_fmt),
+                                             str_fmt_type(node->structure->exp_type, &type_fmt)));
     }
     struct_type = &node->structure->exp_type->get._Structure;
     struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
     if (map_find(struct_typedef->members, node->member) == map_end()) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
-                                      str_fmt_name(node->member, &name_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
+                                   str_fmt_name(node->member, &name_fmt)));
     }
     exp_type = map_get(struct_typedef->members, node->member)->member_type;
-    sptr_copy(Type, exp_type, (*node->_base)->exp_type);
+    sptr_copy(Type, exp_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -1338,29 +1337,28 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
     Type* exp_type;
     if (node->pointer->exp_type->type != AST_Pointer_t) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
-                                      str_fmt_type(node->pointer->exp_type, &type_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
+                                   str_fmt_type(node->pointer->exp_type, &type_fmt)));
     }
     ptr_type = &node->pointer->exp_type->get._Pointer;
     if (ptr_type->ref_type->type != AST_Structure_t) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
-                                      str_fmt_type(node->pointer->exp_type, &type_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
+                                   str_fmt_type(node->pointer->exp_type, &type_fmt)));
     }
     struct_type = &ptr_type->ref_type->get._Structure;
     if (map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end()) {
-        THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_arrow_incomplete, str_fmt_name(node->member, &name_fmt),
-                                      str_fmt_struct(struct_type, &type_fmt)));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_incomplete, str_fmt_name(node->member, &name_fmt),
+                                             str_fmt_struct(struct_type, &type_fmt)));
     }
     struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
     if (map_find(struct_typedef->members, node->member) == map_end()) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
-                                      str_fmt_name(node->member, &name_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
+                                   str_fmt_name(node->member, &name_fmt)));
     }
     exp_type = map_get(struct_typedef->members, node->member)->member_type;
-    sptr_copy(Type, exp_type, (*node->_base)->exp_type);
+    sptr_copy(Type, exp_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -1497,7 +1495,7 @@ static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
             }
         }
         esac->constant = make_CConstInt(values[i]);
-        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+        sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
     FINALLY;
     str_delete(strto_fmt);
@@ -1521,7 +1519,7 @@ static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
             }
         }
         esac->constant = make_CConstLong(values[i]);
-        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+        sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
     FINALLY;
     str_delete(strto_fmt);
@@ -1545,7 +1543,7 @@ static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
             }
         }
         esac->constant = make_CConstUInt(values[i]);
-        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+        sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
     FINALLY;
     str_delete(strto_fmt);
@@ -1569,7 +1567,7 @@ static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
             }
         }
         esac->constant = make_CConstULong(values[i]);
-        sptr_copy(Type, node->match->exp_type, (*esac->_base)->exp_type);
+        sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
     FINALLY;
     str_delete(strto_fmt);
@@ -1621,12 +1619,12 @@ static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) 
     CATCH_ENTER;
     if (!is_type_char(arr_type->elem_type)) {
         THROW_AT_LINE(
-            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, str_fmt_arr(arr_type, &type_fmt)));
+            node->_base->line, GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, str_fmt_arr(arr_type, &type_fmt)));
     }
     else if (vec_size(node->literal->value) > (size_t)arr_type->size) {
         strto_fmt_1 = str_to_string(arr_type->size);
         strto_fmt_2 = str_to_string(vec_size(node->literal->value));
-        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_string_init_overflow, strto_fmt_1, strto_fmt_2));
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_string_init_overflow, strto_fmt_1, strto_fmt_2));
     }
     FINALLY;
     str_delete(type_fmt);
@@ -1640,14 +1638,14 @@ static error_t check_single_init(Ctx ctx, CSingleInit* node, shared_ptr_t(Type) 
     if (!is_same_type(node->exp->exp_type, *init_type)) {
         TRY(cast_assign(ctx, init_type, &node->exp));
     }
-    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+    sptr_copy(Type, *init_type, node->_base->init_type);
     FINALLY;
     CATCH_EXIT;
 }
 
 static void check_string_init(CSingleInit* node, shared_ptr_t(Type) * init_type) {
     sptr_copy(Type, *init_type, node->exp->exp_type);
-    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+    sptr_copy(Type, *init_type, node->_base->init_type);
 }
 
 static unique_ptr_t(CInitializer) check_zero_init(Ctx ctx, Type* init_type);
@@ -1772,7 +1770,7 @@ static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, shared
         unique_ptr_t(CInitializer) zero_init = check_zero_init(ctx, arr_type->elem_type);
         vec_move_back(node->initializers, zero_init);
     }
-    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+    sptr_copy(Type, *init_type, node->_base->init_type);
 }
 
 static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, shared_ptr_t(Type) * init_type) {
@@ -1782,7 +1780,7 @@ static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_ty
         unique_ptr_t(CInitializer) zero_init = check_zero_init(ctx, member->member_type);
         vec_move_back(node->initializers, zero_init);
     }
-    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+    sptr_copy(Type, *init_type, node->_base->init_type);
 }
 
 static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
@@ -2040,7 +2038,7 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
                 case AST_CConstChar_t:
                 case AST_CConstDouble_t:
                 case AST_CConstUChar_t:
-                    THROW_AT_LINE((*node->_base)->line,
+                    THROW_AT_LINE(node->_base->line,
                         GET_SEMANTIC_MSG(MSG_static_ptr_init_not_int, str_fmt_type(static_init_type, &type_fmt),
                             get_const_fmt(node->constant)));
                 default:
@@ -2049,14 +2047,14 @@ static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_in
             TULong value = get_const_ptr_value(node);
             if (value != 0ul) {
                 strto_fmt = str_to_string(value);
-                THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_not_null,
-                                                        str_fmt_type(static_init_type, &type_fmt), strto_fmt));
+                THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_not_null,
+                                                     str_fmt_type(static_init_type, &type_fmt), strto_fmt));
             }
             push_zero_static_init(ctx, 8l);
             break;
         }
         default:
-            THROW_AT_LINE((*node->_base)->line,
+            THROW_AT_LINE(node->_base->line,
                 GET_SEMANTIC_MSG(MSG_agg_init_with_single, str_fmt_type(static_init_type, &type_fmt)));
     }
     FINALLY;
@@ -2069,8 +2067,8 @@ static error_t check_literal_string_init(Ctx ctx, CString* node, Pointer* static
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (static_ptr_type->ref_type->type != AST_Char_t) {
-        THROW_AT_LINE((*node->_base)->line,
-            GET_SEMANTIC_MSG(MSG_static_ptr_init_string, str_fmt_ptr(static_ptr_type, &type_fmt)));
+        THROW_AT_LINE(
+            node->_base->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_string, str_fmt_ptr(static_ptr_type, &type_fmt)));
     }
     FINALLY;
     str_delete(type_fmt);
@@ -2783,7 +2781,7 @@ static error_t reslv_var_exp(Ctx ctx, CVar* node) {
             goto Lelse;
         }
     }
-    THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_undecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
+    THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_undecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
 Lelse:
 
     TRY(check_var_exp(ctx, node));
@@ -2847,7 +2845,7 @@ static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
             goto Lelse;
         }
     }
-    THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_undecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
+    THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_undecl_fun_in_scope, str_fmt_name(node->name, &name_fmt)));
 Lelse:
 
     for (size_t i = 0; i < vec_size(node->args); ++i) {

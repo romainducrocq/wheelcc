@@ -389,7 +389,7 @@ unique_ptr_t(CExp) make_CConstant(shared_ptr_t(CConst) * constant, size_t line) 
     self->type = AST_CConstant_t;
     self->get._CConstant.constant = sptr_new();
     copy_CConst(constant, &self->get._CConstant.constant);
-    self->get._CConstant._base = &self;
+    self->get._CConstant._base = self;
     return self;
 }
 
@@ -398,7 +398,7 @@ unique_ptr_t(CExp) make_CString(shared_ptr_t(CStringLiteral) * literal, size_t l
     self->type = AST_CString_t;
     self->get._CString.literal = sptr_new();
     copy_CStringLiteral(literal, &self->get._CString.literal);
-    self->get._CString._base = &self;
+    self->get._CString._base = self;
     return self;
 }
 
@@ -406,7 +406,7 @@ unique_ptr_t(CExp) make_CVar(TIdentifier name, size_t line) {
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CVar_t;
     self->get._CVar.name = name;
-    self->get._CVar._base = &self;
+    self->get._CVar._base = self;
     return self;
 }
 
@@ -417,7 +417,7 @@ unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * tar
     move_CExp(exp, &self->get._CCast.exp);
     self->get._CCast.target_type = sptr_new();
     copy_Type(target_type, &self->get._CCast.target_type);
-    self->get._CCast._base = &self;
+    self->get._CCast._base = self;
     return self;
 }
 
@@ -428,7 +428,7 @@ unique_ptr_t(CExp) make_CUnary(unique_ptr_t(CUnaryOp) * unop, unique_ptr_t(CExp)
     move_CUnaryOp(unop, &self->get._CUnary.unop);
     self->get._CUnary.exp = uptr_new();
     move_CExp(exp, &self->get._CUnary.exp);
-    self->get._CUnary._base = &self;
+    self->get._CUnary._base = self;
     return self;
 }
 
@@ -442,7 +442,7 @@ unique_ptr_t(CExp) make_CBinary(
     move_CExp(exp_left, &self->get._CBinary.exp_left);
     self->get._CBinary.exp_right = uptr_new();
     move_CExp(exp_right, &self->get._CBinary.exp_right);
-    self->get._CBinary._base = &self;
+    self->get._CBinary._base = self;
     return self;
 }
 
@@ -456,7 +456,7 @@ unique_ptr_t(CExp) make_CAssignment(
     move_CExp(exp_left, &self->get._CAssignment.exp_left);
     self->get._CAssignment.exp_right = uptr_new();
     move_CExp(exp_right, &self->get._CAssignment.exp_right);
-    self->get._CAssignment._base = &self;
+    self->get._CAssignment._base = self;
     return self;
 }
 
@@ -470,7 +470,7 @@ unique_ptr_t(CExp) make_CConditional(
     move_CExp(exp_middle, &self->get._CConditional.exp_middle);
     self->get._CConditional.exp_right = uptr_new();
     move_CExp(exp_right, &self->get._CConditional.exp_right);
-    self->get._CConditional._base = &self;
+    self->get._CConditional._base = self;
     return self;
 }
 
@@ -480,7 +480,7 @@ unique_ptr_t(CExp) make_CFunctionCall(TIdentifier name, vector_t(unique_ptr_t(CE
     self->get._CFunctionCall.name = name;
     self->get._CFunctionCall.args = vec_new();
     vec_move(*args, self->get._CFunctionCall.args);
-    self->get._CFunctionCall._base = &self;
+    self->get._CFunctionCall._base = self;
     return self;
 }
 
@@ -489,7 +489,7 @@ unique_ptr_t(CExp) make_CDereference(unique_ptr_t(CExp) * exp, size_t line) {
     self->type = AST_CDereference_t;
     self->get._CDereference.exp = uptr_new();
     move_CExp(exp, &self->get._CDereference.exp);
-    self->get._CDereference._base = &self;
+    self->get._CDereference._base = self;
     return self;
 }
 
@@ -498,7 +498,7 @@ unique_ptr_t(CExp) make_CAddrOf(unique_ptr_t(CExp) * exp, size_t line) {
     self->type = AST_CAddrOf_t;
     self->get._CAddrOf.exp = uptr_new();
     move_CExp(exp, &self->get._CAddrOf.exp);
-    self->get._CAddrOf._base = &self;
+    self->get._CAddrOf._base = self;
     return self;
 }
 
@@ -509,7 +509,7 @@ unique_ptr_t(CExp) make_CSubscript(unique_ptr_t(CExp) * primary_exp, unique_ptr_
     move_CExp(primary_exp, &self->get._CSubscript.primary_exp);
     self->get._CSubscript.subscript_exp = uptr_new();
     move_CExp(subscript_exp, &self->get._CSubscript.subscript_exp);
-    self->get._CSubscript._base = &self;
+    self->get._CSubscript._base = self;
     return self;
 }
 
@@ -518,7 +518,7 @@ unique_ptr_t(CExp) make_CSizeOf(unique_ptr_t(CExp) * exp, size_t line) {
     self->type = AST_CSizeOf_t;
     self->get._CSizeOf.exp = uptr_new();
     move_CExp(exp, &self->get._CSizeOf.exp);
-    self->get._CSizeOf._base = &self;
+    self->get._CSizeOf._base = self;
     return self;
 }
 
@@ -527,7 +527,7 @@ unique_ptr_t(CExp) make_CSizeOfT(shared_ptr_t(Type) * target_type, size_t line) 
     self->type = AST_CSizeOfT_t;
     self->get._CSizeOfT.target_type = sptr_new();
     copy_Type(target_type, &self->get._CSizeOfT.target_type);
-    self->get._CSizeOfT._base = &self;
+    self->get._CSizeOfT._base = self;
     return self;
 }
 
@@ -537,7 +537,7 @@ unique_ptr_t(CExp) make_CDot(TIdentifier member, unique_ptr_t(CExp) * structure,
     self->get._CDot.member = member;
     self->get._CDot.structure = uptr_new();
     move_CExp(structure, &self->get._CDot.structure);
-    self->get._CDot._base = &self;
+    self->get._CDot._base = self;
     return self;
 }
 
@@ -547,7 +547,7 @@ unique_ptr_t(CExp) make_CArrow(TIdentifier member, unique_ptr_t(CExp) * pointer,
     self->get._CArrow.member = member;
     self->get._CArrow.pointer = uptr_new();
     move_CExp(pointer, &self->get._CArrow.pointer);
-    self->get._CArrow._base = &self;
+    self->get._CArrow._base = self;
     return self;
 }
 
@@ -1021,7 +1021,7 @@ unique_ptr_t(CInitializer) make_CSingleInit(unique_ptr_t(CExp) * exp) {
     self->type = AST_CSingleInit_t;
     self->get._CSingleInit.exp = uptr_new();
     move_CExp(exp, &self->get._CSingleInit.exp);
-    self->get._CSingleInit._base = &self;
+    self->get._CSingleInit._base = self;
     return self;
 }
 
@@ -1030,7 +1030,7 @@ unique_ptr_t(CInitializer) make_CCompoundInit(vector_t(unique_ptr_t(CInitializer
     self->type = AST_CCompoundInit_t;
     self->get._CCompoundInit.initializers = vec_new();
     vec_move(*initializers, self->get._CCompoundInit.initializers);
-    self->get._CCompoundInit._base = &self;
+    self->get._CCompoundInit._base = self;
     return self;
 }
 
