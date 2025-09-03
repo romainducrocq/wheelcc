@@ -361,7 +361,7 @@ const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool i
     return *struct_fmt;
 }
 
-static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string_t* fun_fmt) {
+const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string_t* fun_fmt) {
     *fun_fmt = str_new("(");
     {
         string_t type_fmt = str_new(NULL);
@@ -385,7 +385,7 @@ static const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string
     return *fun_fmt;
 }
 
-static const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr_fmt) {
+const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr_fmt) {
     *ptr_fmt = str_new("");
     string_t decltor_fmt = str_new("*");
     while (ptr_type->ref_type->type == AST_Pointer_t) {

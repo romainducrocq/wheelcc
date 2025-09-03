@@ -558,15 +558,19 @@ static TULong get_const_ptr_value(CConstant* node) {
     }
 }
 
-static size_t get_compound_line(CInitializer* node) {
-    THROW_ABORT_IF(node->type != AST_CCompoundInit_t);
-    do {
-        node = node->get._CCompoundInit.initializers[0];
-    }
-    while (node->type == AST_CCompoundInit_t);
-    THROW_ABORT_IF(node->type != AST_CSingleInit_t);
-    return node->get._CSingleInit.exp->line;
+// TODO
+static size_t get_compound_line(CCompoundInit* /*node*/) {
+    return 0;
 }
+// static size_t get_compound_line(CInitializer* node) {
+//     THROW_ABORT_IF(node->type != AST_CCompoundInit_t);
+//     do {
+//         node = node->get._CCompoundInit.initializers[0];
+//     }
+//     while (node->type == AST_CCompoundInit_t);
+//     THROW_ABORT_IF(node->type != AST_CSingleInit_t);
+//     return node->get._CSingleInit.exp->line;
+// }
 
 static error_t reslv_struct_type(Ctx ctx, Type* type);
 
@@ -1608,934 +1612,961 @@ static error_t check_switch_statement(Ctx ctx, CSwitch* node) {
     CATCH_EXIT;
 }
 
-// static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
-//     string_t type_fmt = str_new(NULL);
-//     string_t strto_fmt_1 = str_new(NULL);
-//     string_t strto_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     if (!is_type_char(arr_type->elem_type.get())) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, str_fmt_type(arr_type, &type_fmt)));
-//     }
-//     else if (vec_size(node->literal->value) > (size_t)arr_type->size) {
-//         strto_fmt_1 = str_to_string(arr_type->size);
-//         strto_fmt_2 = str_to_string(vec_size(node->literal->value));
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_string_init_overflow, strto_fmt_1, strto_fmt_2));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     str_delete(strto_fmt_1);
-//     str_delete(strto_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t check_bound_string_init(Ctx ctx, CString* node, Array* arr_type) {
+    string_t type_fmt = str_new(NULL);
+    string_t strto_fmt_1 = str_new(NULL);
+    string_t strto_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    if (!is_type_char(arr_type->elem_type)) {
+        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_string_init_not_char_arr, str_fmt_arr(arr_type, &type_fmt)));
+    }
+    else if (vec_size(node->literal->value) > (size_t)arr_type->size) {
+        strto_fmt_1 = str_to_string(arr_type->size);
+        strto_fmt_2 = str_to_string(vec_size(node->literal->value));
+        THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_string_init_overflow, strto_fmt_1, strto_fmt_2));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    str_delete(strto_fmt_1);
+    str_delete(strto_fmt_2);
+    CATCH_EXIT;
+}
 
-// static error_t check_single_init(Ctx ctx, CSingleInit* node, std::shared_ptr<Type>* init_type) {
-//     CATCH_ENTER;
-//     if (!is_same_type(node->exp->exp_type.get(), init_type->get())) {
-//         TRY(cast_assign(ctx, init_type, &node->exp));
-//     }
-//     node->init_type = *init_type;
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t check_single_init(Ctx ctx, CSingleInit* node, shared_ptr_t(Type)* init_type) {
+    CATCH_ENTER;
+    if (!is_same_type(node->exp->exp_type, *init_type)) {
+        TRY(cast_assign(ctx, init_type, &node->exp));
+    }
+    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static void check_string_init(CSingleInit* node, std::shared_ptr<Type>* init_type) {
-//     node->exp->exp_type = *init_type;
-//     node->init_type = *init_type;
-// }
+static void check_string_init(CSingleInit* node, shared_ptr_t(Type)* init_type) {
+    sptr_copy(Type, *init_type, node->exp->exp_type);
+    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+}
 
-// static std::unique_ptr<CInitializer> check_zero_init(Ctx ctx, Type* init_type);
+static unique_ptr_t(CInitializer) check_zero_init(Ctx ctx, Type* init_type);
 
-// static std::unique_ptr<CSingleInit> check_single_zero_init(Type* elem_type) {
-//     std::unique_ptr<CExp> exp;
-//     {
-//         std::shared_ptr<CConst> constant;
-//         switch (elem_type->type()) {
-//             case AST_Char_t:
-//             case AST_SChar_t: {
-//                 constant = std::make_shared<CConstChar>(0);
-//                 break;
-//             }
-//             case AST_Int_t: {
-//                 constant = std::make_shared<CConstInt>(0);
-//                 break;
-//             }
-//             case AST_Long_t: {
-//                 constant = std::make_shared<CConstLong>(0l);
-//                 break;
-//             }
-//             case AST_Double_t: {
-//                 constant = std::make_shared<CConstDouble>(0.0);
-//                 break;
-//             }
-//             case AST_UChar_t: {
-//                 constant = std::make_shared<CConstUChar>(0u);
-//                 break;
-//             }
-//             case AST_UInt_t: {
-//                 constant = std::make_shared<CConstUInt>(0u);
-//                 break;
-//             }
-//             case AST_ULong_t:
-//             case AST_Pointer_t: {
-//                 constant = std::make_shared<CConstULong>(0ul);
-//                 break;
-//             }
-//             default:
-//                 THROW_ABORT;
-//         }
-//         exp = std::make_unique<CConstant>(std::move(constant), 0);
-//     }
-//     return std::make_unique<CSingleInit>(std::move(exp));
-// }
+static unique_ptr_t(CInitializer) check_single_zero_init(Type* elem_type) {
+    unique_ptr_t(CExp) exp = uptr_new();
+    {
+        shared_ptr_t(CConst) constant = sptr_new();
+        switch (elem_type->type) {
+            case AST_Char_t:
+            case AST_SChar_t: {
+                constant = make_CConstChar(0);
+                break;
+            }
+            case AST_Int_t: {
+                constant = make_CConstInt(0);
+                break;
+            }
+            case AST_Long_t: {
+                constant = make_CConstLong(0l);
+                break;
+            }
+            case AST_Double_t: {
+                constant = make_CConstDouble(0.0);
+                break;
+            }
+            case AST_UChar_t: {
+                constant = make_CConstUChar(0u);
+                break;
+            }
+            case AST_UInt_t: {
+                constant = make_CConstUInt(0u);
+                break;
+            }
+            case AST_ULong_t:
+            case AST_Pointer_t: {
+                constant = make_CConstULong(0ul);
+                break;
+            }
+            default:
+                THROW_ABORT;
+        }
+        exp = make_CConstant(&constant, 0);
+    }
+    return make_CSingleInit(&exp);
+}
 
-// static std::unique_ptr<CCompoundInit> check_arr_zero_init(Ctx ctx, Array* arr_type) {
-//     vector_t(std::unique_ptr<CInitializer>) zero_inits = vec_new();
-//     size_t arr_type_size = (size_t)arr_type->size;
-//     vec_reserve(zero_inits, arr_type_size);
-//     for (size_t i = 0; i < arr_type_size; ++i) {
-//         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, arr_type->elem_type.get());
-//         vec_move_back(zero_inits, initializer);
-//     }
-//     return std::make_unique<CCompoundInit>(&zero_inits);
-// }
+static unique_ptr_t(CInitializer) check_arr_zero_init(Ctx ctx, Array* arr_type) {
+    vector_t(unique_ptr_t(CInitializer)) zero_inits = vec_new();
+    size_t arr_type_size = (size_t)arr_type->size;
+    vec_reserve(zero_inits, arr_type_size);
+    for (size_t i = 0; i < arr_type_size; ++i) {
+        unique_ptr_t(CInitializer) initializer = check_zero_init(ctx, arr_type->elem_type);
+        vec_move_back(zero_inits, initializer);
+    }
+    return make_CCompoundInit(&zero_inits);
+}
 
-// static std::unique_ptr<CCompoundInit> check_struct_zero_init(Ctx ctx, Structure* struct_type) {
-//     vector_t(std::unique_ptr<CInitializer>) zero_inits = vec_new();
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     vec_reserve(zero_inits, vec_size(struct_typedef->member_names));
-//     for (size_t i = 0; i < vec_size(struct_typedef->member_names); ++i) {
-//         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-//         std::unique_ptr<CInitializer> initializer = check_zero_init(ctx, member->member_type.get());
-//         vec_move_back(zero_inits, initializer);
-//     }
-//     return std::make_unique<CCompoundInit>(&zero_inits);
-// }
+static unique_ptr_t(CInitializer) check_struct_zero_init(Ctx ctx, Structure* struct_type) {
+    vector_t(unique_ptr_t(CInitializer)) zero_inits = vec_new();
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    vec_reserve(zero_inits, vec_size(struct_typedef->member_names));
+    for (size_t i = 0; i < vec_size(struct_typedef->member_names); ++i) {
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
+        unique_ptr_t(CInitializer) initializer = check_zero_init(ctx, member->member_type);
+        vec_move_back(zero_inits, initializer);
+    }
+    return make_CCompoundInit(&zero_inits);
+}
 
-// static std::unique_ptr<CInitializer> check_zero_init(Ctx ctx, Type* init_type) {
-//     switch (init_type->type()) {
-//         case AST_Array_t:
-//             return check_arr_zero_init(ctx, static_cast<Array*>(init_type));
-//         case AST_Structure_t:
-//             return check_struct_zero_init(ctx, static_cast<Structure*>(init_type));
-//         default:
-//             return check_single_zero_init(init_type);
-//     }
-// }
+static unique_ptr_t(CInitializer) check_zero_init(Ctx ctx, Type* init_type) {
+    switch (init_type->type) {
+        case AST_Array_t:
+            return check_arr_zero_init(ctx, &init_type->get._Array);
+        case AST_Structure_t:
+            return check_struct_zero_init(ctx, &init_type->get._Structure);
+        default:
+            return check_single_zero_init(init_type);
+    }
+}
 
-// static error_t check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
-//     string_t type_fmt = str_new(NULL);
-//     string_t strto_fmt_1 = str_new(NULL);
-//     string_t strto_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     if (vec_size(node->initializers) > (size_t)arr_type->size) {
-//         strto_fmt_1 = str_to_string(arr_type->size);
-//         strto_fmt_2 = str_to_string(vec_size(node->initializers));
-//         THROW_AT_LINE(get_compound_line(node),
-//             GET_SEMANTIC_MSG(MSG_arr_init_overflow, strto_fmt_1, str_fmt_type(arr_type, &type_fmt), strto_fmt_2));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     str_delete(strto_fmt_1);
-//     str_delete(strto_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t check_bound_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
+    string_t type_fmt = str_new(NULL);
+    string_t strto_fmt_1 = str_new(NULL);
+    string_t strto_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    if (vec_size(node->initializers) > (size_t)arr_type->size) {
+        strto_fmt_1 = str_to_string(arr_type->size);
+        strto_fmt_2 = str_to_string(vec_size(node->initializers));
+        THROW_AT_LINE(get_compound_line(node),
+            GET_SEMANTIC_MSG(MSG_arr_init_overflow, strto_fmt_1, str_fmt_arr(arr_type, &type_fmt), strto_fmt_2));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    str_delete(strto_fmt_1);
+    str_delete(strto_fmt_2);
+    CATCH_EXIT;
+}
 
-// static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
-//     string_t type_fmt = str_new(NULL);
-//     string_t strto_fmt_1 = str_new(NULL);
-//     string_t strto_fmt_2 = str_new(NULL);
-//     CATCH_ENTER;
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     size_t bound = struct_type->is_union ? 1 : map_size(struct_typedef->members);
-//     if (vec_size(node->initializers) > bound) {
-//         strto_fmt_1 = str_to_string(vec_size(node->initializers));
-//         strto_fmt_2 = str_to_string(bound);
-//         THROW_AT_LINE(get_compound_line(node),
-//             GET_SEMANTIC_MSG(MSG_struct_init_overflow, str_fmt_type(struct_type, &type_fmt), strto_fmt_1, strto_fmt_2));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     str_delete(strto_fmt_1);
-//     str_delete(strto_fmt_2);
-//     CATCH_EXIT;
-// }
+static error_t check_bound_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
+    string_t type_fmt = str_new(NULL);
+    string_t strto_fmt_1 = str_new(NULL);
+    string_t strto_fmt_2 = str_new(NULL);
+    CATCH_ENTER;
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    size_t bound = struct_type->is_union ? 1 : map_size(struct_typedef->members);
+    if (vec_size(node->initializers) > bound) {
+        strto_fmt_1 = str_to_string(vec_size(node->initializers));
+        strto_fmt_2 = str_to_string(bound);
+        THROW_AT_LINE(get_compound_line(node),
+            GET_SEMANTIC_MSG(MSG_struct_init_overflow, str_fmt_struct(struct_type, &type_fmt), strto_fmt_1, strto_fmt_2));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    str_delete(strto_fmt_1);
+    str_delete(strto_fmt_2);
+    CATCH_EXIT;
+}
 
-// static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, std::shared_ptr<Type>* init_type) {
-//     while (vec_size(node->initializers) < (size_t)arr_type->size) {
-//         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, arr_type->elem_type.get());
-//         vec_move_back(node->initializers, zero_init);
-//     }
-//     node->init_type = *init_type;
-// }
+static void check_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type, shared_ptr_t(Type)* init_type) {
+    while (vec_size(node->initializers) < (size_t)arr_type->size) {
+        unique_ptr_t(CInitializer) zero_init = check_zero_init(ctx, arr_type->elem_type);
+        vec_move_back(node->initializers, zero_init);
+    }
+    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+}
 
-// static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, std::shared_ptr<Type>* init_type) {
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     for (size_t i = vec_size(node->initializers); i < map_size(struct_typedef->members); ++i) {
-//         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-//         std::unique_ptr<CInitializer> zero_init = check_zero_init(ctx, member->member_type.get());
-//         vec_move_back(node->initializers, zero_init);
-//     }
-//     node->init_type = *init_type;
-// }
+static void check_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type, shared_ptr_t(Type)* init_type) {
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    for (size_t i = vec_size(node->initializers); i < map_size(struct_typedef->members); ++i) {
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
+        unique_ptr_t(CInitializer) zero_init = check_zero_init(ctx, member->member_type);
+        vec_move_back(node->initializers, zero_init);
+    }
+    sptr_copy(Type, *init_type, (*node->_base)->init_type);
+}
 
-// static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-//     ctx->errors->linebuf = node->line;
-//     TRY(reslv_struct_type(ctx, fun_type->ret_type.get()));
-//     TRY(is_valid_type(ctx, fun_type->ret_type.get()));
+static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    FunType* fun_type = &node->fun_type->get._FunType;
+    ctx->errors->linebuf = node->line;
+    TRY(reslv_struct_type(ctx, fun_type->ret_type));
+    TRY(is_valid_type(ctx, fun_type->ret_type));
 
-//     switch (fun_type->ret_type->type()) {
-//         case AST_Array_t:
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_ret_arr, str_fmt_name(node->name, &name_fmt),
-//                                           str_fmt_type(fun_type->ret_type.get(), &type_fmt)));
-//         case AST_Structure_t: {
-//             if (node->body && !is_struct_complete(ctx, static_cast<Structure*>(fun_type->ret_type.get()))) {
-//                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_ret_incomplete, str_fmt_name(node->name, &name_fmt),
-//                                               str_fmt_type(fun_type->ret_type.get(), &type_fmt)));
-//             }
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+    switch (fun_type->ret_type->type) {
+        case AST_Array_t:
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_ret_arr, str_fmt_name(node->name, &name_fmt),
+                                          str_fmt_type(fun_type->ret_type, &type_fmt)));
+        case AST_Structure_t: {
+            if (node->body && !is_struct_complete(ctx, &fun_type->ret_type->get._Structure)) {
+                THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_ret_incomplete, str_fmt_name(node->name, &name_fmt),
+                                              str_fmt_type(fun_type->ret_type, &type_fmt)));
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static void check_arr_param_decl(FunType* fun_type, size_t i) {
-//     std::shared_ptr<Type> ref_type = static_cast<Array*>(fun_type->param_types[i].get())->elem_type;
-//     fun_type->param_types[i] = std::make_shared<Pointer>(std::move(ref_type));
-// }
+// TODO check when sptr are reassigned
+static void check_arr_param_decl(FunType* fun_type, size_t i) {
+    shared_ptr_t(Type) ref_type = sptr_new();
+    sptr_copy(Type, fun_type->param_types[i]->get._Array.elem_type, ref_type);
+    fun_type->param_types[i] = make_Pointer(&ref_type);
+}
 
-// static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt_1 = str_new(NULL);
-//     string_t name_fmt_2 = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     std::unique_ptr<IdentifierAttr> param_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<Type> param_type;
-//     CATCH_ENTER;
-//     FunType* fun_type = static_cast<FunType*>(node->fun_type.get());
-//     for (size_t i = 0; i < vec_size(node->params); ++i) {
-//         ctx->errors->linebuf = node->line;
-//         TRY(reslv_struct_type(ctx, fun_type->param_types[i].get()));
-//         if (fun_type->param_types[i]->type() == AST_Void_t) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_param, str_fmt_name(node->name, &name_fmt_1),
-//                                           str_fmt_name(node->params[i], &name_fmt_2)));
-//         }
-//         TRY(is_valid_type(ctx, fun_type->param_types[i].get()));
-//         if (fun_type->param_types[i]->type() == AST_Array_t) {
-//             check_arr_param_decl(fun_type, i);
-//         }
+static error_t check_fun_params_decl(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt_1 = str_new(NULL);
+    string_t name_fmt_2 = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    unique_ptr_t(IdentifierAttr) param_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(Type) param_type = sptr_new();
+    CATCH_ENTER;
+    FunType* fun_type = &node->fun_type->get._FunType;
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
+        ctx->errors->linebuf = node->line;
+        TRY(reslv_struct_type(ctx, fun_type->param_types[i]));
+        if (fun_type->param_types[i]->type == AST_Void_t) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_param, str_fmt_name(node->name, &name_fmt_1),
+                                          str_fmt_name(node->params[i], &name_fmt_2)));
+        }
+        TRY(is_valid_type(ctx, fun_type->param_types[i]));
+        if (fun_type->param_types[i]->type == AST_Array_t) {
+            check_arr_param_decl(fun_type, i);
+        }
 
-//         if (node->body) {
-//             if (fun_type->param_types[i]->type() == AST_Structure_t
-//                 && !is_struct_complete(ctx, static_cast<Structure*>(fun_type->param_types[i].get()))) {
-//                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_param, str_fmt_name(node->name, &name_fmt_1),
-//                                               str_fmt_name(node->params[i], &name_fmt_2),
-//                                               str_fmt_type(fun_type->param_types[i].get(), &type_fmt)));
-//             }
-//             param_type = fun_type->param_types[i];
-//             param_attrs = std::make_unique<LocalAttr>();
-//             THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->params[i]) != map_end());
-//             symbol = std::make_unique<Symbol>(std::move(param_type), std::move(param_attrs));
-//             map_move_add(ctx->frontend->symbol_table, node->params[i], symbol);
-//         }
-//     }
-//     FINALLY;
-//     str_delete(name_fmt_1);
-//     str_delete(name_fmt_2);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+        if (node->body) {
+            if (fun_type->param_types[i]->type == AST_Structure_t
+                && !is_struct_complete(ctx, &fun_type->param_types[i]->get._Structure)) {
+                THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_param, str_fmt_name(node->name, &name_fmt_1),
+                                              str_fmt_name(node->params[i], &name_fmt_2),
+                                              str_fmt_type(fun_type->param_types[i], &type_fmt)));
+            }
+            sptr_copy(Type, fun_type->param_types[i], param_type);
+            param_attrs = make_LocalAttr();
+            THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->params[i]) != map_end());
+            symbol = make_Symbol(&param_type, &param_attrs);
+            map_move_add(ctx->frontend->symbol_table, node->params[i], symbol);
+        }
+    }
+    FINALLY;
+    str_delete(name_fmt_1);
+    str_delete(name_fmt_2);
+    str_delete(type_fmt);
+    free_IdentifierAttr(&param_attrs);
+    free_Symbol(&symbol);
+    free_Type(&param_type);
+    CATCH_EXIT;
+}
 
-// static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt_1 = str_new(NULL);
-//     string_t type_fmt_2 = str_new(NULL);
-//     std::unique_ptr<IdentifierAttr> glob_fun_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<Type> glob_fun_type;
-//     CATCH_ENTER;
-//     THROW_ABORT_IF(node->fun_type->type() == AST_Void_t);
+static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt_1 = str_new(NULL);
+    string_t type_fmt_2 = str_new(NULL);
+    unique_ptr_t(IdentifierAttr) glob_fun_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(Type) glob_fun_type = sptr_new();
+    CATCH_ENTER;
+    THROW_ABORT_IF(node->fun_type->type == AST_Void_t);
 
-//     bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
-//     bool is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
+    bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
+    bool is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
 
-//     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-//         FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
-//         if (!(map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_FunType_t
-//                 && vec_size(fun_type->param_types) == vec_size(node->params)
-//                 && is_same_fun_type(static_cast<FunType*>(node->fun_type.get()), fun_type))) {
-//             THROW_AT_LINE(
-//                 node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
-//                                 str_fmt_type(node->fun_type.get(), &type_fmt_1), str_fmt_type(fun_type, &type_fmt_2)));
-//         }
-//         else if (is_def && node->body) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_fun, str_fmt_name(node->name, &name_fmt),
-//                                           str_fmt_type(node->fun_type.get(), &type_fmt_1)));
-//         }
+    if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
+        FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
+        if (!(map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_FunType_t
+                && vec_size(fun_type->param_types) == vec_size(node->params)
+                && is_same_fun_type(&node->fun_type->get._FunType, fun_type))) {
+            THROW_AT_LINE(
+                node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
+                                str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_fun(fun_type, &type_fmt_2)));
+        }
+        else if (is_def && node->body) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_fun, str_fmt_name(node->name, &name_fmt),
+                                          str_fmt_type(node->fun_type, &type_fmt_1)));
+        }
 
-//         FunAttr* fun_attrs = static_cast<FunAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get());
-//         if (!is_glob && fun_attrs->is_glob) {
-//             THROW_AT_LINE(
-//                 node->line, GET_SEMANTIC_MSG(MSG_redecl_static_conflict, str_fmt_name(node->name, &name_fmt)));
-//         }
-//         is_glob = fun_attrs->is_glob;
-//         map_get(ctx->frontend->symbol_table, node->name).reset();
-//     }
+        FunAttr* fun_attrs = &map_get(ctx->frontend->symbol_table, node->name)->attrs->get._FunAttr;
+        if (!is_glob && fun_attrs->is_glob) {
+            THROW_AT_LINE(
+                node->line, GET_SEMANTIC_MSG(MSG_redecl_static_conflict, str_fmt_name(node->name, &name_fmt)));
+        }
+        is_glob = fun_attrs->is_glob;
+        free_Symbol(&map_get(ctx->frontend->symbol_table, node->name));
+    }
 
-//     if (node->body) {
-//         set_insert(ctx->fun_def_set, node->name);
-//         is_def = true;
-//         ctx->fun_def_name = node->name;
-//     }
+    if (node->body) {
+        set_insert(ctx->fun_def_set, node->name);
+        is_def = true;
+        ctx->fun_def_name = node->name;
+    }
 
-//     glob_fun_type = node->fun_type;
-//     glob_fun_attrs = std::make_unique<FunAttr>(is_def, is_glob);
-//     symbol = std::make_unique<Symbol>(std::move(glob_fun_type), std::move(glob_fun_attrs));
-//     map_move_add(ctx->frontend->symbol_table, node->name, symbol);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt_1);
-//     str_delete(type_fmt_2);
-//     CATCH_EXIT;
-// }
+    sptr_copy(Type, node->fun_type, glob_fun_type);
+    glob_fun_attrs = make_FunAttr(is_def, is_glob);
+    symbol = make_Symbol(&glob_fun_type, &glob_fun_attrs);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt_1);
+    str_delete(type_fmt_2);
+    free_IdentifierAttr(&glob_fun_attrs);
+    free_Symbol(&symbol);
+    free_Type(&glob_fun_type);
+    CATCH_EXIT;
+}
 
-// static void push_static_init(Ctx ctx, std::shared_ptr<StaticInit>&& static_init) {
-//     vec_move_back(*ctx->p_static_inits, static_init);
-// }
+static void push_static_init(Ctx ctx, shared_ptr_t(StaticInit) static_init) {
+    vec_move_back(*ctx->p_static_inits, static_init);
+}
 
-// static void push_zero_static_init(Ctx ctx, TLong byte) {
-//     if (!vec_empty(*ctx->p_static_inits) && vec_back(*ctx->p_static_inits)->type() == AST_ZeroInit_t) {
-//         static_cast<ZeroInit*>(vec_back(*ctx->p_static_inits).get())->byte += byte;
-//     }
-//     else {
-//         push_static_init(ctx, std::make_shared<ZeroInit>(byte));
-//     }
-// }
+static void push_zero_static_init(Ctx ctx, TLong byte) {
+    if (!vec_empty(*ctx->p_static_inits) && vec_back(*ctx->p_static_inits)->type == AST_ZeroInit_t) {
+        vec_back(*ctx->p_static_inits)->get._ZeroInit.byte += byte;
+    }
+    else {
+        push_static_init(ctx, make_ZeroInit(byte));
+    }
+}
 
-// static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type);
+static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type);
 
-// static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
-//     TLong byte = static_init_type == NULL ? size : get_type_scale(ctx, static_init_type) * size;
-//     push_zero_static_init(ctx, byte);
-// }
+static void check_static_no_init(Ctx ctx, Type* static_init_type, TLong size) {
+    TLong byte = static_init_type == NULL ? size : get_type_scale(ctx, static_init_type) * size;
+    push_zero_static_init(ctx, byte);
+}
 
-// static std::shared_ptr<Initial> check_no_initializer(Ctx ctx, Type* static_init_type) {
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     {
-//         ctx->p_static_inits = &static_inits;
-//         check_static_no_init(ctx, static_init_type, 1l);
-//         ctx->p_static_inits = NULL;
-//     }
-//     return std::make_shared<Initial>(&static_inits);
-// }
+static shared_ptr_t(InitialValue) check_no_initializer(Ctx ctx, Type* static_init_type) {
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    {
+        ctx->p_static_inits = &static_inits;
+        check_static_no_init(ctx, static_init_type, 1l);
+        ctx->p_static_inits = NULL;
+    }
+    return make_Initial(&static_inits);
+}
 
-// static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
-//     string_t strto_binary = str_to_string(binary);
-//     return make_string_identifier(ctx->identifiers, &strto_binary);
-// }
+static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
+    string_t strto_binary = str_to_string(binary);
+    return make_string_identifier(ctx->identifiers, &strto_binary);
+}
 
-// static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
-//     string_t type_fmt = str_new(NULL);
-//     string_t strto_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     switch (static_init_type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t: {
-//             TChar value = get_const_char_value(node);
-//             if (value == 0) {
-//                 push_zero_static_init(ctx, 1l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<CharInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_Int_t: {
-//             TInt value = get_const_int_value(node);
-//             if (value == 0) {
-//                 push_zero_static_init(ctx, 4l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<IntInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_Long_t: {
-//             TLong value = get_const_long_value(node);
-//             if (value == 0l) {
-//                 push_zero_static_init(ctx, 8l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<LongInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_Double_t: {
-//             TDouble value = get_const_dbl_value(node);
-//             TULong binary = dbl_to_binary(value);
-//             if (binary == 0ul) {
-//                 push_zero_static_init(ctx, 8l);
-//             }
-//             else {
-//                 TIdentifier dbl_const = make_binary_identifier(ctx, binary);
-//                 push_static_init(ctx, std::make_shared<DoubleInit>(dbl_const));
-//             }
-//             break;
-//         }
-//         case AST_UChar_t: {
-//             TUChar value = get_const_uchar_value(node);
-//             if (value == 0u) {
-//                 push_zero_static_init(ctx, 1l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<UCharInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_UInt_t: {
-//             TUInt value = get_const_uint_value(node);
-//             if (value == 0u) {
-//                 push_zero_static_init(ctx, 4l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<UIntInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_ULong_t: {
-//             TULong value = get_const_ulong_value(node);
-//             if (value == 0ul) {
-//                 push_zero_static_init(ctx, 8l);
-//             }
-//             else {
-//                 push_static_init(ctx, std::make_shared<ULongInit>(value));
-//             }
-//             break;
-//         }
-//         case AST_Pointer_t: {
-//             switch (node->constant->type()) {
-//                 case AST_CConstChar_t:
-//                 case AST_CConstDouble_t:
-//                 case AST_CConstUChar_t:
-//                     THROW_AT_LINE(node->line,
-//                         GET_SEMANTIC_MSG(MSG_static_ptr_init_not_int, str_fmt_type(static_init_type, &type_fmt),
-//                             get_const_fmt(node->constant.get())));
-//                 default:
-//                     break;
-//             }
-//             TULong value = get_const_ptr_value(node);
-//             if (value != 0ul) {
-//                 strto_fmt = str_to_string(value);
-//                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_not_null,
-//                                               str_fmt_type(static_init_type, &type_fmt), strto_fmt));
-//             }
-//             push_zero_static_init(ctx, 8l);
-//             break;
-//         }
-//         default:
-//             THROW_AT_LINE(
-//                 node->line, GET_SEMANTIC_MSG(MSG_agg_init_with_single, str_fmt_type(static_init_type, &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     str_delete(strto_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_static_const_init(Ctx ctx, CConstant* node, Type* static_init_type) {
+    string_t type_fmt = str_new(NULL);
+    string_t strto_fmt = str_new(NULL);
+    CATCH_ENTER;
+    switch (static_init_type->type) {
+        case AST_Char_t:
+        case AST_SChar_t: {
+            TChar value = get_const_char_value(node);
+            if (value == 0) {
+                push_zero_static_init(ctx, 1l);
+            }
+            else {
+                push_static_init(ctx, make_CharInit(value));
+            }
+            break;
+        }
+        case AST_Int_t: {
+            TInt value = get_const_int_value(node);
+            if (value == 0) {
+                push_zero_static_init(ctx, 4l);
+            }
+            else {
+                push_static_init(ctx, make_IntInit(value));
+            }
+            break;
+        }
+        case AST_Long_t: {
+            TLong value = get_const_long_value(node);
+            if (value == 0l) {
+                push_zero_static_init(ctx, 8l);
+            }
+            else {
+                push_static_init(ctx, make_LongInit(value));
+            }
+            break;
+        }
+        case AST_Double_t: {
+            TDouble value = get_const_dbl_value(node);
+            TULong binary = dbl_to_binary(value);
+            if (binary == 0ul) {
+                push_zero_static_init(ctx, 8l);
+            }
+            else {
+                TIdentifier dbl_const = make_binary_identifier(ctx, binary);
+                push_static_init(ctx, make_DoubleInit(dbl_const));
+            }
+            break;
+        }
+        case AST_UChar_t: {
+            TUChar value = get_const_uchar_value(node);
+            if (value == 0u) {
+                push_zero_static_init(ctx, 1l);
+            }
+            else {
+                push_static_init(ctx, make_UCharInit(value));
+            }
+            break;
+        }
+        case AST_UInt_t: {
+            TUInt value = get_const_uint_value(node);
+            if (value == 0u) {
+                push_zero_static_init(ctx, 4l);
+            }
+            else {
+                push_static_init(ctx, make_UIntInit(value));
+            }
+            break;
+        }
+        case AST_ULong_t: {
+            TULong value = get_const_ulong_value(node);
+            if (value == 0ul) {
+                push_zero_static_init(ctx, 8l);
+            }
+            else {
+                push_static_init(ctx, make_ULongInit(value));
+            }
+            break;
+        }
+        case AST_Pointer_t: {
+            switch (node->constant->type) {
+                case AST_CConstChar_t:
+                case AST_CConstDouble_t:
+                case AST_CConstUChar_t:
+                    THROW_AT_LINE((*node->_base)->line,
+                        GET_SEMANTIC_MSG(MSG_static_ptr_init_not_int, str_fmt_type(static_init_type, &type_fmt),
+                            get_const_fmt(node->constant)));
+                default:
+                    break;
+            }
+            TULong value = get_const_ptr_value(node);
+            if (value != 0ul) {
+                strto_fmt = str_to_string(value);
+                THROW_AT_LINE((*node->_base)->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_not_null,
+                                              str_fmt_type(static_init_type, &type_fmt), strto_fmt));
+            }
+            push_zero_static_init(ctx, 8l);
+            break;
+        }
+        default:
+            THROW_AT_LINE(
+                (*node->_base)->line, GET_SEMANTIC_MSG(MSG_agg_init_with_single, str_fmt_type(static_init_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    str_delete(strto_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_literal_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     if (static_ptr_type->ref_type->type() != AST_Char_t) {
-//         THROW_AT_LINE(
-//             node->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_string, str_fmt_type(static_ptr_type, &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_literal_string_init(Ctx ctx, CString* node, Pointer* static_ptr_type) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    if (static_ptr_type->ref_type->type != AST_Char_t) {
+        THROW_AT_LINE(
+            (*node->_base)->line, GET_SEMANTIC_MSG(MSG_static_ptr_init_string, str_fmt_ptr(static_ptr_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static TIdentifier make_literal_identifier(Ctx ctx, CStringLiteral* node) {
-//     string_t value = string_literal_to_const(node->value);
-//     return make_string_identifier(ctx->identifiers, &value);
-// }
+static TIdentifier make_literal_identifier(Ctx ctx, CStringLiteral* node) {
+    string_t value = string_literal_to_const(node->value);
+    return make_string_identifier(ctx->identifiers, &value);
+}
 
-// static void check_static_ptr_string_init(Ctx ctx, CString* node) {
-//     TIdentifier string_const_label;
-//     {
-//         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
-//         if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
-//             string_const_label = map_get(ctx->frontend->string_const_table, string_const);
-//         }
-//         else {
-//             string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
-//             map_add(ctx->frontend->string_const_table, string_const, string_const_label);
-//             std::shared_ptr<Type> constant_type;
-//             {
-//                 TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
-//                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-//                 constant_type = std::make_shared<Array>(size, std::move(elem_type));
-//             }
-//             std::unique_ptr<IdentifierAttr> constant_attrs;
-//             {
-//                 std::shared_ptr<StaticInit> static_init;
-//                 {
-//                     std::shared_ptr<CStringLiteral> literal = node->literal;
-//                     static_init = std::make_shared<StringInit>(string_const, true, std::move(literal));
-//                 }
-//                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
-//             }
-//             std::unique_ptr<Symbol> symbol =
-//                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-//             map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
-//         }
-//     }
-//     push_static_init(ctx, std::make_shared<PointerInit>(string_const_label));
-// }
+static void check_static_ptr_string_init(Ctx ctx, CString* node) {
+    TIdentifier string_const_label;
+    {
+        TIdentifier string_const = make_literal_identifier(ctx, node->literal);
+        if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
+            string_const_label = map_get(ctx->frontend->string_const_table, string_const);
+        }
+        else {
+            string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
+            map_add(ctx->frontend->string_const_table, string_const, string_const_label);
+            shared_ptr_t(Type) constant_type = sptr_new();
+            {
+                TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
+                shared_ptr_t(Type) elem_type = make_Char();
+                constant_type = make_Array(size, &elem_type);
+            }
+            unique_ptr_t(IdentifierAttr) constant_attrs = uptr_new();
+            {
+                shared_ptr_t(StaticInit) static_init = sptr_new();
+                {
+                    shared_ptr_t(CStringLiteral) literal = sptr_new();
+                    sptr_copy(CStringLiteral, node->literal, literal);
+                    static_init = make_StringInit(string_const, true, &literal);
+                }
+                constant_attrs = make_ConstantAttr(&static_init);
+            }
+            unique_ptr_t(Symbol) symbol = make_Symbol(&constant_type, &constant_attrs);
+            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
+        }
+    }
+    push_static_init(ctx, make_PointerInit(string_const_label));
+}
 
-// static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
-//     std::shared_ptr<CStringLiteral> literal;
-//     CATCH_ENTER;
-//     TLong byte;
-//     TRY(check_bound_string_init(ctx, node, static_arr_type));
-//     byte = static_arr_type->size - ((TLong)vec_size(node->literal->value)) - 1l;
-//     {
-//         bool is_null_term = byte >= 0l;
-//         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
-//         literal = node->literal;
-//         push_static_init(ctx, std::make_shared<StringInit>(string_const, is_null_term, std::move(literal)));
-//     }
-//     if (byte > 0l) {
-//         push_zero_static_init(ctx, byte);
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t check_static_arr_string_init(Ctx ctx, CString* node, Array* static_arr_type) {
+    shared_ptr_t(CStringLiteral) literal = sptr_new();
+    CATCH_ENTER;
+    TLong byte;
+    TRY(check_bound_string_init(ctx, node, static_arr_type));
+    byte = static_arr_type->size - ((TLong)vec_size(node->literal->value)) - 1l;
+    {
+        bool is_null_term = byte >= 0l;
+        TIdentifier string_const = make_literal_identifier(ctx, node->literal);
+        sptr_copy(CStringLiteral, node->literal, literal);
+        push_static_init(ctx, make_StringInit(string_const, is_null_term, &literal));
+    }
+    if (byte > 0l) {
+        push_zero_static_init(ctx, byte);
+    }
+    FINALLY;
+    free_CStringLiteral(&literal);
+    CATCH_EXIT;
+}
 
-// static error_t check_static_string_init(Ctx ctx, CString* node, Type* static_init_type) {
-//     CATCH_ENTER;
-//     switch (static_init_type->type()) {
-//         case AST_Pointer_t:
-//             TRY(check_literal_string_init(ctx, node, static_cast<Pointer*>(static_init_type)));
-//             check_static_ptr_string_init(ctx, node);
-//             break;
-//         case AST_Array_t:
-//             TRY(check_static_arr_string_init(ctx, node, static_cast<Array*>(static_init_type)));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t check_static_string_init(Ctx ctx, CString* node, Type* static_init_type) {
+    CATCH_ENTER;
+    switch (static_init_type->type) {
+        case AST_Pointer_t:
+            TRY(check_literal_string_init(ctx, node, &static_init_type->get._Pointer));
+            check_static_ptr_string_init(ctx, node);
+            break;
+        case AST_Array_t:
+            TRY(check_static_arr_string_init(ctx, node, &static_init_type->get._Array));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t check_single_static_init(Ctx ctx, CSingleInit* node, Type* static_init_type) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     switch (node->exp->type()) {
-//         case AST_CConstant_t:
-//             TRY(check_static_const_init(ctx, static_cast<CConstant*>(node->exp.get()), static_init_type));
-//             break;
-//         case AST_CString_t:
-//             TRY(check_static_string_init(ctx, static_cast<CString*>(node->exp.get()), static_init_type));
-//             break;
-//         default:
-//             THROW_AT_LINE(node->exp->line,
-//                 GET_SEMANTIC_MSG(MSG_static_init_not_const, str_fmt_type(static_init_type, &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_single_static_init(Ctx ctx, CSingleInit* node, Type* static_init_type) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    switch (node->exp->type) {
+        case AST_CConstant_t:
+            TRY(check_static_const_init(ctx, &node->exp->get._CConstant, static_init_type));
+            break;
+        case AST_CString_t:
+            TRY(check_static_string_init(ctx, &node->exp->get._CString, static_init_type));
+            break;
+        default:
+            THROW_AT_LINE(node->exp->line,
+                GET_SEMANTIC_MSG(MSG_static_init_not_const, str_fmt_type(static_init_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
-//     CATCH_ENTER;
-//     TRY(check_bound_arr_init(ctx, node, arr_type));
+static error_t check_static_arr_init(Ctx ctx, CCompoundInit* node, Array* arr_type) {
+    CATCH_ENTER;
+    TRY(check_bound_arr_init(ctx, node, arr_type));
 
-//     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-//         TRY(check_static_init(ctx, node->initializers[i].get(), arr_type->elem_type.get()));
-//     }
-//     if ((size_t)arr_type->size > vec_size(node->initializers)) {
-//         check_static_no_init(ctx, arr_type->elem_type.get(), arr_type->size - vec_size(node->initializers));
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        TRY(check_static_init(ctx, node->initializers[i], arr_type->elem_type));
+    }
+    if ((size_t)arr_type->size > vec_size(node->initializers)) {
+        check_static_no_init(ctx, arr_type->elem_type, arr_type->size - vec_size(node->initializers));
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
-//     CATCH_ENTER;
-//     TLong size;
-//     TRY(check_bound_struct_init(ctx, node, struct_type));
+static error_t check_static_struct_init(Ctx ctx, CCompoundInit* node, Structure* struct_type) {
+    CATCH_ENTER;
+    TLong size;
+    TRY(check_bound_struct_init(ctx, node, struct_type));
 
-//     size = 0l;
-//     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-//         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-//         if (member->offset != size) {
-//             check_static_no_init(ctx, NULL, member->offset - size);
-//             size = member->offset;
-//         }
-//         TRY(check_static_init(ctx, node->initializers[i].get(), member->member_type.get()));
-//         size += get_type_scale(ctx, member->member_type.get());
-//     }
-//     size -= map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
-//     if (size != 0l) {
-//         check_static_no_init(ctx, NULL, -1l * size);
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    size = 0l;
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
+        if (member->offset != size) {
+            check_static_no_init(ctx, NULL, member->offset - size);
+            size = member->offset;
+        }
+        TRY(check_static_init(ctx, node->initializers[i], member->member_type));
+        size += get_type_scale(ctx, member->member_type);
+    }
+    size -= map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+    if (size != 0l) {
+        check_static_no_init(ctx, NULL, -1l * size);
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* static_init_type) {
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     switch (static_init_type->type()) {
-//         case AST_Array_t:
-//             TRY(check_static_arr_init(ctx, node, static_cast<Array*>(static_init_type)));
-//             break;
-//         case AST_Structure_t:
-//             TRY(check_static_struct_init(ctx, node, static_cast<Structure*>(static_init_type)));
-//             break;
-//         default:
-//             THROW_AT_LINE(get_compound_line(node),
-//                 GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(static_init_type, &type_fmt)));
-//     }
-//     FINALLY;
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_static_compound_init(Ctx ctx, CCompoundInit* node, Type* static_init_type) {
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    switch (static_init_type->type) {
+        case AST_Array_t:
+            TRY(check_static_arr_init(ctx, node, &static_init_type->get._Array));
+            break;
+        case AST_Structure_t:
+            TRY(check_static_struct_init(ctx, node, &static_init_type->get._Structure));
+            break;
+        default:
+            THROW_AT_LINE(get_compound_line(node),
+                GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(static_init_type, &type_fmt)));
+    }
+    FINALLY;
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type) {
-//     CATCH_ENTER;
-//     switch (node->type()) {
-//         case AST_CSingleInit_t:
-//             TRY(check_single_static_init(ctx, static_cast<CSingleInit*>(node), static_init_type));
-//             break;
-//         case AST_CCompoundInit_t:
-//             TRY(check_static_compound_init(ctx, static_cast<CCompoundInit*>(node), static_init_type));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+static error_t check_static_init(Ctx ctx, CInitializer* node, Type* static_init_type) {
+    CATCH_ENTER;
+    switch (node->type) {
+        case AST_CSingleInit_t:
+            TRY(check_single_static_init(ctx, &node->get._CSingleInit, static_init_type));
+            break;
+        case AST_CCompoundInit_t:
+            TRY(check_static_compound_init(ctx, &node->get._CCompoundInit, static_init_type));
+            break;
+        default:
+            THROW_ABORT;
+    }
+    FINALLY;
+    CATCH_EXIT;
+}
 
-// static error_t check_initializer(
-//     Ctx ctx, CInitializer* node, Type* static_init_type, std::shared_ptr<InitialValue>* init_value) {
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     CATCH_ENTER;
-//     {
-//         ctx->p_static_inits = &static_inits;
-//         TRY(check_static_init(ctx, node, static_init_type));
-//         ctx->p_static_inits = NULL;
-//     }
-//     *init_value = std::make_shared<Initial>(&static_inits);
-//     FINALLY;
-//     for (size_t i = 0; i < vec_size(static_inits); ++i) {
-//         static_inits[i].reset();
-//     }
-//     vec_delete(static_inits);
-//     CATCH_EXIT;
-// }
+static error_t check_initializer(
+    Ctx ctx, CInitializer* node, Type* static_init_type, shared_ptr_t(InitialValue)* init_value) {
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    CATCH_ENTER;
+    {
+        ctx->p_static_inits = &static_inits;
+        TRY(check_static_init(ctx, node, static_init_type));
+        ctx->p_static_inits = NULL;
+    }
+    *init_value = make_Initial(&static_inits);
+    FINALLY;
+    for (size_t i = 0; i < vec_size(static_inits); ++i) {
+        free_StaticInit(&static_inits[i]);
+    }
+    vec_delete(static_inits);
+    CATCH_EXIT;
+}
 
-// static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt_1 = str_new(NULL);
-//     string_t type_fmt_2 = str_new(NULL);
-//     std::unique_ptr<IdentifierAttr> glob_var_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<InitialValue> init_value;
-//     std::shared_ptr<Type> glob_var_type;
-//     CATCH_ENTER;
-//     bool is_glob;
-//     ctx->errors->linebuf = node->line;
-//     TRY(reslv_struct_type(ctx, node->var_type.get()));
-//     if (node->var_type->type() == AST_Void_t) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
-//     }
-//     TRY(is_valid_type(ctx, node->var_type.get()));
+static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt_1 = str_new(NULL);
+    string_t type_fmt_2 = str_new(NULL);
+    unique_ptr_t(IdentifierAttr) glob_var_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(InitialValue) init_value = sptr_new();
+    shared_ptr_t(Type) glob_var_type = sptr_new();
+    CATCH_ENTER;
+    bool is_glob;
+    ctx->errors->linebuf = node->line;
+    TRY(reslv_struct_type(ctx, node->var_type));
+    if (node->var_type->type == AST_Void_t) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
+    }
+    TRY(is_valid_type(ctx, node->var_type));
 
-//     is_glob = !(node->storage_class && node->storage_class->type() == AST_CStatic_t);
+    is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
 
-//     if (node->init) {
-//         if (node->var_type->type() == AST_Structure_t
-//             && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
-//                                           str_fmt_type(node->var_type.get(), &type_fmt_1)));
-//         }
-//         TRY(check_initializer(ctx, node->init.get(), node->var_type.get(), &init_value));
-//     }
-//     else {
-//         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-//             init_value = std::make_shared<NoInitializer>();
-//         }
-//         else {
-//             if (node->var_type->type() == AST_Structure_t
-//                 && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
-//                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
-//                                               str_fmt_type(node->var_type.get(), &type_fmt_1)));
-//             }
-//             init_value = std::make_shared<Tentative>();
-//         }
-//     }
+    if (node->init) {
+        if (node->var_type->type == AST_Structure_t
+            && !is_struct_complete(ctx, &node->var_type->get._Structure)) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
+                                          str_fmt_type(node->var_type, &type_fmt_1)));
+        }
+        TRY(check_initializer(ctx, node->init, node->var_type, &init_value));
+    }
+    else {
+        if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+            init_value = make_NoInitializer();
+        }
+        else {
+            if (node->var_type->type == AST_Structure_t
+                && !is_struct_complete(ctx, &node->var_type->get._Structure)) {
+                THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
+                                              str_fmt_type(node->var_type, &type_fmt_1)));
+            }
+            init_value = make_Tentative();
+        }
+    }
 
-//     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-//         if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->var_type.get())) {
-//             THROW_AT_LINE(node->line,
-//                 GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-//                     str_fmt_type(node->var_type.get(), &type_fmt_1),
-//                     str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), &type_fmt_2)));
-//         }
+    if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
+        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->var_type, &type_fmt_1),
+                    str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, &type_fmt_2)));
+        }
 
-//         StaticAttr* var_attrs = static_cast<StaticAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get());
-//         if (node->storage_class && node->storage_class->type() == AST_CExtern_t) {
-//             is_glob = var_attrs->is_glob;
-//         }
-//         else if (is_glob != var_attrs->is_glob) {
-//             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_storage, str_fmt_name(node->name, &name_fmt)));
-//         }
+        StaticAttr* var_attrs = &map_get(ctx->frontend->symbol_table, node->name)->attrs->get._StaticAttr;
+        if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+            is_glob = var_attrs->is_glob;
+        }
+        else if (is_glob != var_attrs->is_glob) {
+            THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_storage, str_fmt_name(node->name, &name_fmt)));
+        }
 
-//         if (var_attrs->init->type() == AST_Initial_t) {
-//             if (init_value->type() == AST_Initial_t) {
-//                 THROW_AT_LINE(
-//                     node->line, GET_SEMANTIC_MSG(MSG_redecl_var_storage, str_fmt_name(node->name, &name_fmt)));
-//             }
-//             else {
-//                 init_value = var_attrs->init;
-//             }
-//         }
-//         map_get(ctx->frontend->symbol_table, node->name).reset();
-//     }
+        if (var_attrs->init->type == AST_Initial_t) {
+            if (init_value->type == AST_Initial_t) {
+                THROW_AT_LINE(
+                    node->line, GET_SEMANTIC_MSG(MSG_redecl_var_storage, str_fmt_name(node->name, &name_fmt)));
+            }
+            else {
+                sptr_copy(InitialValue, var_attrs->init, init_value);
+            }
+        }
+        free_Symbol(&map_get(ctx->frontend->symbol_table, node->name));
+    }
 
-//     glob_var_type = node->var_type;
-//     glob_var_attrs = std::make_unique<StaticAttr>(is_glob, std::move(init_value));
-//     symbol = std::make_unique<Symbol>(std::move(glob_var_type), std::move(glob_var_attrs));
-//     map_move_add(ctx->frontend->symbol_table, node->name, symbol);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt_1);
-//     str_delete(type_fmt_2);
-//     CATCH_EXIT;
-// }
+    sptr_copy(Type, node->var_type, glob_var_type);
+    glob_var_attrs = make_StaticAttr(is_glob, &init_value);
+    symbol = make_Symbol(&glob_var_type, &glob_var_attrs);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt_1);
+    str_delete(type_fmt_2);
+    free_IdentifierAttr(&glob_var_attrs);
+    free_Symbol(&symbol);
+    free_InitialValue(&init_value);
+    free_Type(&glob_var_type);
+    CATCH_EXIT;
+}
 
-// static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt_1 = str_new(NULL);
-//     string_t type_fmt_2 = str_new(NULL);
-//     std::unique_ptr<IdentifierAttr> local_var_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<InitialValue> init_value;
-//     std::shared_ptr<Type> local_var_type;
-//     CATCH_ENTER;
-//     if (node->init) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
-//     }
-//     else if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-//         if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->var_type.get())) {
-//             THROW_AT_LINE(node->line,
-//                 GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-//                     str_fmt_type(node->var_type.get(), &type_fmt_1),
-//                     str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), &type_fmt_2)));
-//         }
-//         EARLY_EXIT;
-//     }
+static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt_1 = str_new(NULL);
+    string_t type_fmt_2 = str_new(NULL);
+    unique_ptr_t(IdentifierAttr) local_var_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(InitialValue) init_value = sptr_new();
+    shared_ptr_t(Type) local_var_type = sptr_new();
+    CATCH_ENTER;
+    if (node->init) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
+    }
+    else if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
+        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->var_type, &type_fmt_1),
+                    str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, &type_fmt_2)));
+        }
+        EARLY_EXIT;
+    }
 
-//     local_var_type = node->var_type;
-//     init_value = std::make_shared<NoInitializer>();
-//     local_var_attrs = std::make_unique<StaticAttr>(true, std::move(init_value));
-//     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-//     map_move_add(ctx->frontend->symbol_table, node->name, symbol);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt_1);
-//     str_delete(type_fmt_2);
-//     CATCH_EXIT;
-// }
+    sptr_copy(Type, node->var_type, local_var_type);
+    init_value = make_NoInitializer();
+    local_var_attrs = make_StaticAttr(true, &init_value);
+    symbol = make_Symbol(&local_var_type, &local_var_attrs);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt_1);
+    str_delete(type_fmt_2);
+    free_IdentifierAttr(&local_var_attrs);
+    free_Symbol(&symbol);
+    free_InitialValue(&init_value);
+    free_Type(&local_var_type);
+    CATCH_EXIT;
+}
 
-// static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     std::unique_ptr<IdentifierAttr> local_var_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<InitialValue> init_value;
-//     std::shared_ptr<Type> local_var_type;
-//     CATCH_ENTER;
-//     THROW_ABORT_IF(node->var_type->type() == AST_Structure_t
-//                    && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get())));
+static error_t check_static_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    unique_ptr_t(IdentifierAttr) local_var_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(InitialValue) init_value = sptr_new();
+    shared_ptr_t(Type) local_var_type = sptr_new();
+    CATCH_ENTER;
+    THROW_ABORT_IF(node->var_type->type == AST_Structure_t
+                   && !is_struct_complete(ctx, &node->var_type->get._Structure));
 
-//     if (node->init) {
-//         TRY(check_initializer(ctx, node->init.get(), node->var_type.get(), &init_value));
-//     }
-//     else {
-//         init_value = check_no_initializer(ctx, node->var_type.get());
-//     }
+    if (node->init) {
+        TRY(check_initializer(ctx, node->init, node->var_type, &init_value));
+    }
+    else {
+        init_value = check_no_initializer(ctx, node->var_type);
+    }
 
-//     local_var_type = node->var_type;
-//     local_var_attrs = std::make_unique<StaticAttr>(false, std::move(init_value));
-//     THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
-//     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-//     map_move_add(ctx->frontend->symbol_table, node->name, symbol);
-//     FINALLY;
-//     CATCH_EXIT;
-// }
+    sptr_copy(Type, node->var_type, local_var_type);
+    local_var_attrs = make_StaticAttr(false, &init_value);
+    THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
+    symbol = make_Symbol(&local_var_type, &local_var_attrs);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
+    FINALLY;
+    free_IdentifierAttr(&local_var_attrs);
+    free_Symbol(&symbol);
+    free_InitialValue(&init_value);
+    free_Type(&local_var_type);
+    CATCH_EXIT;
+}
 
-// static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     std::unique_ptr<IdentifierAttr> local_var_attrs;
-//     std::unique_ptr<Symbol> symbol;
-//     std::shared_ptr<Type> local_var_type;
-//     CATCH_ENTER;
-//     if (node->var_type->type() == AST_Structure_t
-//         && !is_struct_complete(ctx, static_cast<Structure*>(node->var_type.get()))) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
-//                                       str_fmt_type(node->var_type.get(), &type_fmt)));
-//     }
+static error_t check_auto_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    unique_ptr_t(IdentifierAttr) local_var_attrs = uptr_new();
+    unique_ptr_t(Symbol) symbol = uptr_new();
+    shared_ptr_t(Type) local_var_type = sptr_new();
+    CATCH_ENTER;
+    if (node->var_type->type == AST_Structure_t
+        && !is_struct_complete(ctx, &node->var_type->get._Structure)) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_incomplete_var_decl, str_fmt_name(node->name, &name_fmt),
+                                      str_fmt_type(node->var_type, &type_fmt)));
+    }
 
-//     local_var_type = node->var_type;
-//     local_var_attrs = std::make_unique<LocalAttr>();
-//     THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
-//     symbol = std::make_unique<Symbol>(std::move(local_var_type), std::move(local_var_attrs));
-//     map_move_add(ctx->frontend->symbol_table, node->name, symbol);
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+    sptr_copy(Type, node->var_type, local_var_type);
+    local_var_attrs = make_LocalAttr();
+    THROW_ABORT_IF(map_find(ctx->frontend->symbol_table, node->name) != map_end());
+    symbol = make_Symbol(&local_var_type, &local_var_attrs);
+    map_move_add(ctx->frontend->symbol_table, node->name, symbol);
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(type_fmt);
+    free_IdentifierAttr(&local_var_attrs);
+    free_Symbol(&symbol);
+    free_Type(&local_var_type);
+    CATCH_EXIT;
+}
 
-// static error_t check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     ctx->errors->linebuf = node->line;
-//     TRY(reslv_struct_type(ctx, node->var_type.get()));
-//     if (node->var_type->type() == AST_Void_t) {
-//         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
-//     }
-//     TRY(is_valid_type(ctx, node->var_type.get()));
+static error_t check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    CATCH_ENTER;
+    ctx->errors->linebuf = node->line;
+    TRY(reslv_struct_type(ctx, node->var_type));
+    if (node->var_type->type == AST_Void_t) {
+        THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
+    }
+    TRY(is_valid_type(ctx, node->var_type));
 
-//     if (node->storage_class) {
-//         switch (node->storage_class->type()) {
-//             case AST_CExtern_t:
-//                 TRY(check_extern_block_var_decl(ctx, node));
-//                 break;
-//             case AST_CStatic_t:
-//                 TRY(check_static_block_var_decl(ctx, node));
-//                 break;
-//             default:
-//                 THROW_ABORT;
-//         }
-//     }
-//     else {
-//         TRY(check_auto_block_var_decl(ctx, node));
-//     }
-//     FINALLY;
-//     str_delete(name_fmt);
-//     CATCH_EXIT;
-// }
+    if (node->storage_class) {
+        switch (node->storage_class->type) {
+            case AST_CExtern_t:
+                TRY(check_extern_block_var_decl(ctx, node));
+                break;
+            case AST_CStatic_t:
+                TRY(check_static_block_var_decl(ctx, node));
+                break;
+            default:
+                THROW_ABORT;
+        }
+    }
+    else {
+        TRY(check_auto_block_var_decl(ctx, node));
+    }
+    FINALLY;
+    str_delete(name_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
-//     string_t name_fmt = str_new(NULL);
-//     string_t struct_fmt = str_new(NULL);
-//     string_t type_fmt = str_new(NULL);
-//     CATCH_ENTER;
-//     for (size_t i = 0; i < vec_size(node->members); ++i) {
-//         for (size_t j = i + 1; j < vec_size(node->members); ++j) {
-//             if (node->members[i]->member_name == node->members[j]->member_name) {
-//                 THROW_AT_LINE(node->members[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_member_decl,
-//                                                           str_fmt_struct_name(node->tag, node->is_union, &struct_fmt),
-//                                                           str_fmt_name(node->members[i]->member_name, &name_fmt)));
-//             }
-//         }
-//         THROW_ABORT_IF(node->members[i].get()->member_type->type() == AST_FunType_t);
-//         ctx->errors->linebuf = node->members[i]->line;
-//         TRY(reslv_struct_type(ctx, node->members[i].get()->member_type.get()));
-//         if (!is_type_complete(ctx, node->members[i].get()->member_type.get())) {
-//             THROW_AT_LINE(
-//                 node->members[i]->line, GET_SEMANTIC_MSG(MSG_incomplete_member_decl,
-//                                             str_fmt_struct_name(node->tag, node->is_union, &struct_fmt),
-//                                             str_fmt_name(node->members[i]->member_name, &name_fmt),
-//                                             str_fmt_type(node->members[i].get()->member_type.get(), &type_fmt)));
-//         }
-//         TRY(is_valid_type(ctx, node->members[i].get()->member_type.get()));
-//     }
-//     FINALLY;
-//     str_delete(name_fmt);
-//     str_delete(struct_fmt);
-//     str_delete(type_fmt);
-//     CATCH_EXIT;
-// }
+static error_t check_struct_members_decl(Ctx ctx, CStructDeclaration* node) {
+    string_t name_fmt = str_new(NULL);
+    string_t struct_fmt = str_new(NULL);
+    string_t type_fmt = str_new(NULL);
+    CATCH_ENTER;
+    for (size_t i = 0; i < vec_size(node->members); ++i) {
+        for (size_t j = i + 1; j < vec_size(node->members); ++j) {
+            if (node->members[i]->member_name == node->members[j]->member_name) {
+                THROW_AT_LINE(node->members[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_member_decl,
+                                                          str_fmt_struct_name(node->tag, node->is_union, &struct_fmt),
+                                                          str_fmt_name(node->members[i]->member_name, &name_fmt)));
+            }
+        }
+        THROW_ABORT_IF(node->members[i]->member_type->type == AST_FunType_t);
+        ctx->errors->linebuf = node->members[i]->line;
+        TRY(reslv_struct_type(ctx, node->members[i]->member_type));
+        if (!is_type_complete(ctx, node->members[i]->member_type)) {
+            THROW_AT_LINE(
+                node->members[i]->line, GET_SEMANTIC_MSG(MSG_incomplete_member_decl,
+                                            str_fmt_struct_name(node->tag, node->is_union, &struct_fmt),
+                                            str_fmt_name(node->members[i]->member_name, &name_fmt),
+                                            str_fmt_type(node->members[i]->member_type, &type_fmt)));
+        }
+        TRY(is_valid_type(ctx, node->members[i]->member_type));
+    }
+    FINALLY;
+    str_delete(name_fmt);
+    str_delete(struct_fmt);
+    str_delete(type_fmt);
+    CATCH_EXIT;
+}
 
-// static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
-//     string_t struct_fmt = str_new(NULL);
-//     std::unique_ptr<StructMember> struct_member;
-//     std::unique_ptr<StructTypedef> struct_typedef;
-//     std::shared_ptr<Type> member_type;
-//     vector_t(TIdentifier) member_names = vec_new();
-//     hashmap_t(TIdentifier, UPtrStructMember) members = map_new();
-//     CATCH_ENTER;
-//     TInt alignment;
-//     TLong size;
-//     if (map_find(ctx->frontend->struct_typedef_table, node->tag) != map_end()) {
-//         THROW_AT_LINE(node->line,
-//             GET_SEMANTIC_MSG(MSG_redecl_struct_in_scope, str_fmt_struct_name(node->tag, node->is_union, &struct_fmt)));
-//     }
-//     alignment = 0;
-//     size = 0l;
-//     vec_reserve(member_names, vec_size(node->members));
-//     for (size_t i = 0; i < vec_size(node->members); ++i) {
-//         {
-//             TIdentifier name = node->members[i]->member_name;
-//             vec_push_back(member_names, name);
-//         }
-//         TInt member_alignment = get_type_alignment(ctx, node->members[i]->member_type.get());
-//         TLong member_size = get_type_scale(ctx, node->members[i]->member_type.get());
-//         {
-//             TLong offset = 0l;
-//             if (node->is_union) {
-//                 if (size < member_size) {
-//                     size = member_size;
-//                 }
-//             }
-//             else {
-//                 offset = size % member_alignment;
-//                 if (offset != 0l) {
-//                     size += member_alignment - offset;
-//                 }
-//                 offset = size;
-//                 size += member_size;
-//             }
-//             member_type = node->members[i]->member_type;
+static error_t check_struct_decl(Ctx ctx, CStructDeclaration* node) {
+    string_t struct_fmt = str_new(NULL);
+    unique_ptr_t(StructMember) struct_member = uptr_new();
+    unique_ptr_t(StructTypedef) struct_typedef = uptr_new();
+    shared_ptr_t(Type) member_type = sptr_new();
+    vector_t(TIdentifier) member_names = vec_new();
+    hashmap_t(TIdentifier, UPtrStructMember) members = map_new();
+    CATCH_ENTER;
+    TInt alignment;
+    TLong size;
+    if (map_find(ctx->frontend->struct_typedef_table, node->tag) != map_end()) {
+        THROW_AT_LINE(node->line,
+            GET_SEMANTIC_MSG(MSG_redecl_struct_in_scope, str_fmt_struct_name(node->tag, node->is_union, &struct_fmt)));
+    }
+    alignment = 0;
+    size = 0l;
+    vec_reserve(member_names, vec_size(node->members));
+    for (size_t i = 0; i < vec_size(node->members); ++i) {
+        {
+            TIdentifier name = node->members[i]->member_name;
+            vec_push_back(member_names, name);
+        }
+        TInt member_alignment = get_type_alignment(ctx, node->members[i]->member_type);
+        TLong member_size = get_type_scale(ctx, node->members[i]->member_type);
+        {
+            TLong offset = 0l;
+            if (node->is_union) {
+                if (size < member_size) {
+                    size = member_size;
+                }
+            }
+            else {
+                offset = size % member_alignment;
+                if (offset != 0l) {
+                    size += member_alignment - offset;
+                }
+                offset = size;
+                size += member_size;
+            }
+            sptr_copy(Type, node->members[i]->member_type, member_type);
 
-//             THROW_ABORT_IF(map_find(members, vec_back(member_names)) != map_end());
-//             struct_member = std::make_unique<StructMember>(offset, std::move(member_type));
-//             map_move_add(members, vec_back(member_names), struct_member);
-//         }
-//         if (alignment < member_alignment) {
-//             alignment = member_alignment;
-//         }
-//     }
-//     {
-//         TLong offset = size % alignment;
-//         if (offset != 0l) {
-//             size += alignment - offset;
-//         }
-//     }
-//     struct_typedef = std::make_unique<StructTypedef>(alignment, size, &member_names, &members);
-//     map_move_add(ctx->frontend->struct_typedef_table, node->tag, struct_typedef);
-//     FINALLY;
-//     str_delete(struct_fmt);
-//     vec_delete(member_names);
-//     for (size_t i = 0; i < map_size(members); ++i) {
-//         pair_second(members[i]).reset();
-//     }
-//     map_delete(members);
-//     CATCH_EXIT;
-// }
+            THROW_ABORT_IF(map_find(members, vec_back(member_names)) != map_end());
+            struct_member = make_StructMember(offset, &member_type);
+            map_move_add(members, vec_back(member_names), struct_member);
+        }
+        if (alignment < member_alignment) {
+            alignment = member_alignment;
+        }
+    }
+    {
+        TLong offset = size % alignment;
+        if (offset != 0l) {
+            size += alignment - offset;
+        }
+    }
+    struct_typedef = make_StructTypedef(alignment, size, &member_names, &members);
+    map_move_add(ctx->frontend->struct_typedef_table, node->tag, struct_typedef);
+    FINALLY;
+    str_delete(struct_fmt);
+    free_StructMember(&struct_member);
+    free_StructTypedef(&struct_typedef);
+    free_Type(&member_type);
+    vec_delete(member_names);
+    for (size_t i = 0; i < map_size(members); ++i) {
+        free_StructMember(&pair_second(members[i]));
+    }
+    map_delete(members);
+    CATCH_EXIT;
+}
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
