@@ -622,6 +622,7 @@ static void check_string_exp(CString* node) {
     node->_base->exp_type = make_Array(size, &elem_type);
 }
 
+// TODO map_get
 static error_t check_var_exp(Ctx ctx, CVar* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
@@ -1183,6 +1184,7 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
     CATCH_EXIT;
 }
 
+// TODO map_get
 static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t name_fmt = str_new(NULL);
     string_t strto_fmt_1 = str_new(NULL);
@@ -1883,6 +1885,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
     bool is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
 
+    // TODO map_get
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
         FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
         if (!(map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_FunType_t
@@ -2305,6 +2308,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
 
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
+        // TODO map_get
         if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
@@ -2360,6 +2364,7 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
     }
     else if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
+        // TODO map_get
         if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
@@ -2733,6 +2738,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
     }
     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
         if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end()) {
+            // TODO map_get
             if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
                 THROW_AT_LINE(ctx->errors->linebuf,
                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_struct(struct_type, &type_fmt),
@@ -3474,6 +3480,7 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
         }
     }
     else {
+        // TODO map_get
         {
             Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
             map_add(vec_back(ctx->scoped_struct_maps), node->tag, structure);
