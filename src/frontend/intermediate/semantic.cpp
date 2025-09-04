@@ -319,48 +319,50 @@ static TInt get_type_alignment(Ctx ctx, Type* type) {
     }
 }
 
+// TODO maybe this is not 100% correct
 static shared_ptr_t(Type) get_joint_type(CExp* node_1, CExp* node_2) {
+    shared_ptr_t(Type) joint_type = sptr_new();
     if (is_type_char(node_1->exp_type)) {
         shared_ptr_t(Type) exp_type = sptr_new();
         sptr_move(Type, node_1->exp_type, exp_type);
         node_1->exp_type = make_Int();
-        shared_ptr_t(Type) joint_type = get_joint_type(node_1, node_2);
+        joint_type = get_joint_type(node_1, node_2);
         sptr_move(Type, exp_type, node_1->exp_type);
         // free_Type(&exp_type); TODO
-        return joint_type;
     }
     else if (is_type_char(node_2->exp_type)) {
         shared_ptr_t(Type) exp_type = sptr_new();
         sptr_move(Type, node_2->exp_type, exp_type);
         node_2->exp_type = make_Int();
-        shared_ptr_t(Type) joint_type = get_joint_type(node_1, node_2);
+        joint_type = get_joint_type(node_1, node_2);
         sptr_move(Type, exp_type, node_2->exp_type);
         // free_Type(&exp_type); TODO
-        return joint_type;
     }
     else if (is_same_type(node_1->exp_type, node_2->exp_type)) {
-        return node_1->exp_type;
+        sptr_copy(Type, node_1->exp_type, joint_type);
     }
     else if (node_1->exp_type->type == AST_Double_t || node_2->exp_type->type == AST_Double_t) {
-        return make_Double();
-    }
-
-    TInt type_size_1 = get_scalar_size(node_1->exp_type);
-    TInt type_size_2 = get_scalar_size(node_2->exp_type);
-    if (type_size_1 == type_size_2) {
-        if (is_type_signed(node_1->exp_type)) {
-            return node_2->exp_type;
-        }
-        else {
-            return node_1->exp_type;
-        }
-    }
-    else if (type_size_1 > type_size_2) {
-        return node_1->exp_type;
+        joint_type = make_Double();
     }
     else {
-        return node_2->exp_type;
+        TInt type_size_1 = get_scalar_size(node_1->exp_type);
+        TInt type_size_2 = get_scalar_size(node_2->exp_type);
+        if (type_size_1 == type_size_2) {
+            if (is_type_signed(node_1->exp_type)) {
+                sptr_copy(Type, node_2->exp_type, joint_type);
+            }
+            else {
+                sptr_copy(Type, node_1->exp_type, joint_type);
+            }
+        }
+        else if (type_size_1 > type_size_2) {
+            sptr_copy(Type, node_1->exp_type, joint_type);
+        }
+        else {
+            sptr_copy(Type, node_2->exp_type, joint_type);
+        }
     }
+    return joint_type;
 }
 
 static error_t get_joint_ptr_type(Ctx ctx, CExp* node_1, CExp* node_2, shared_ptr_t(Type) * joint_type) {
