@@ -1887,13 +1887,12 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 
     // TODO map_get
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
-        if (!(map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_FunType_t
-                && vec_size(fun_type->param_types) == vec_size(node->params)
-                && is_same_fun_type(&node->fun_type->get._FunType, fun_type))) {
+        Type* fun_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
+        if (!(fun_type->type == AST_FunType_t && vec_size(fun_type->get._FunType.param_types) == vec_size(node->params)
+                && is_same_fun_type(&node->fun_type->get._FunType, &fun_type->get._FunType))) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_fun(fun_type, &type_fmt_2)));
+                                str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_type(fun_type, &type_fmt_2)));
         }
         else if (is_def && node->body) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_fun, str_fmt_name(node->name, &name_fmt),
