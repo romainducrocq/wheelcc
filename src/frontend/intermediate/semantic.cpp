@@ -1496,6 +1496,7 @@ static error_t check_switch_int_cases(Ctx ctx, CSwitch* node) {
                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
             }
         }
+        free_CConst(&esac->constant);
         esac->constant = make_CConstInt(values[i]);
         sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
@@ -1520,6 +1521,7 @@ static error_t check_switch_long_cases(Ctx ctx, CSwitch* node) {
                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
             }
         }
+        free_CConst(&esac->constant);
         esac->constant = make_CConstLong(values[i]);
         sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
@@ -1544,6 +1546,7 @@ static error_t check_switch_uint_cases(Ctx ctx, CSwitch* node) {
                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
             }
         }
+        free_CConst(&esac->constant);
         esac->constant = make_CConstUInt(values[i]);
         sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
@@ -1568,6 +1571,7 @@ static error_t check_switch_ulong_cases(Ctx ctx, CSwitch* node) {
                 THROW_AT_LINE(node->cases[i]->line, GET_SEMANTIC_MSG(MSG_duplicate_case_value, strto_fmt));
             }
         }
+        free_CConst(&esac->constant);
         esac->constant = make_CConstULong(values[i]);
         sptr_copy(Type, node->match->exp_type, esac->_base->exp_type);
     }
