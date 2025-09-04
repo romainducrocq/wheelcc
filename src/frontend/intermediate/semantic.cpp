@@ -969,7 +969,7 @@ static error_t check_bitshift_right_exp(Ctx ctx, CBinary* node) {
     CATCH_ENTER;
     TRY(check_binary_bitshift_exp(ctx, node));
     if (is_type_signed(node->exp_left->exp_type)) {
-        // TODO for sure free here
+        free_CBinaryOp(&node->binop);
         node->binop = make_CBitShrArithmetic();
     }
     FINALLY;
