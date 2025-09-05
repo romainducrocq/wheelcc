@@ -1376,7 +1376,6 @@ static void check_arr_typed_exp(unique_ptr_t(CExp) * addrof) {
         sptr_copy(Type, (*addrof)->exp_type->get._Array.elem_type, ref_type);
         free_Type(&(*addrof)->exp_type);
         (*addrof)->exp_type = make_Pointer(&ref_type);
-        free_Type(&ref_type); // TODO
     }
     size_t line = (*addrof)->line;
     *addrof = make_CAddrOf(addrof, line);
