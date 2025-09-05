@@ -198,11 +198,10 @@ static error_t parse_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     }
 
     intmax_t value;
-    TRY(string_to_intmax(
-        ctx->errors, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), ctx->next_tok->line, &value));
+    const string_t strto_value = map_get(ctx->identifiers->hash_table, ctx->next_tok->tok);
+    TRY(string_to_intmax(ctx->errors, strto_value, ctx->next_tok->line, &value));
     if (value > 9223372036854775807ll) {
-        THROW_AT_LINE(ctx->next_tok->line,
-            GET_PARSER_MSG(MSG_overflow_long_const, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok)));
+        THROW_AT_LINE(ctx->next_tok->line, GET_PARSER_MSG(MSG_overflow_long_const, strto_value));
     }
     if (ctx->next_tok->tok_kind == TOK_int_const && value <= 2147483647l) {
         *constant = parse_int_const(value);
@@ -221,11 +220,10 @@ static error_t parse_unsigned_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     TRY(pop_next(ctx));
 
     uintmax_t value;
-    TRY(string_to_uintmax(
-        ctx->errors, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok), ctx->next_tok->line, &value));
+    const string_t strto_value = map_get(ctx->identifiers->hash_table, ctx->next_tok->tok);
+    TRY(string_to_uintmax(ctx->errors, strto_value, ctx->next_tok->line, &value));
     if (value > 18446744073709551615ull) {
-        THROW_AT_LINE(ctx->next_tok->line,
-            GET_PARSER_MSG(MSG_overflow_ulong_const, map_get(ctx->identifiers->hash_table, ctx->next_tok->tok)));
+        THROW_AT_LINE(ctx->next_tok->line, GET_PARSER_MSG(MSG_overflow_ulong_const, strto_value));
     }
     if (ctx->next_tok->tok_kind == TOK_uint_const && value <= 4294967295ul) {
         *constant = parse_uint_const(value);
