@@ -3466,12 +3466,11 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
         }
     }
     else {
-        // TODO map_get
         {
             Structure structure = {rslv_struct_tag(ctx->identifiers, node->tag), node->is_union};
             map_add(vec_back(ctx->scoped_struct_maps), node->tag, structure);
+            node->tag = structure.tag;
         }
-        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
         if (node->is_union) {
             set_insert(ctx->union_def_set, node->tag);
         }
