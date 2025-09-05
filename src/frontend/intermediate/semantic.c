@@ -609,16 +609,14 @@ static void check_string_exp(CString* node) {
     node->_base->exp_type = make_Array(size, &elem_type);
 }
 
-// TODO map_get
 static error_t check_var_exp(Ctx ctx, CVar* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    Type* exp_type;
-    if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_FunType_t) {
+    Type* var_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
+    if (var_type->type == AST_FunType_t) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_fun_used_as_var, str_fmt_name(node->name, &name_fmt)));
     }
-    exp_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
-    sptr_copy(Type, exp_type, node->_base->exp_type);
+    sptr_copy(Type, var_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     CATCH_EXIT;
@@ -1298,7 +1296,7 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
     CATCH_ENTER;
     Structure* struct_type;
     StructTypedef* struct_typedef;
-    Type* exp_type;
+    Type* member_type;
     if (node->structure->exp_type->type != AST_Structure_t) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_dot_not_struct, str_fmt_name(node->member, &name_fmt),
                                              str_fmt_type(node->structure->exp_type, &type_fmt)));
@@ -1310,8 +1308,8 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
             node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
                                    str_fmt_name(node->member, &name_fmt)));
     }
-    exp_type = map_get(struct_typedef->members, node->member)->member_type;
-    sptr_copy(Type, exp_type, node->_base->exp_type);
+    member_type = map_get(struct_typedef->members, node->member)->member_type;
+    sptr_copy(Type, member_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
@@ -1325,7 +1323,7 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
     Pointer* ptr_type;
     Structure* struct_type;
     StructTypedef* struct_typedef;
-    Type* exp_type;
+    Type* member_type;
     if (node->pointer->exp_type->type != AST_Pointer_t) {
         THROW_AT_LINE(
             node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
@@ -1348,8 +1346,8 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
             node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
                                    str_fmt_name(node->member, &name_fmt)));
     }
-    exp_type = map_get(struct_typedef->members, node->member)->member_type;
-    sptr_copy(Type, exp_type, node->_base->exp_type);
+    member_type = map_get(struct_typedef->members, node->member)->member_type;
+    sptr_copy(Type, member_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     str_delete(type_fmt);
