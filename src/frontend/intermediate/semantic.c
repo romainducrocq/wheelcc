@@ -1169,29 +1169,28 @@ static error_t check_conditional_exp(Ctx ctx, CConditional* node) {
     CATCH_EXIT;
 }
 
-// TODO map_get
 static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t name_fmt = str_new(NULL);
     string_t strto_fmt_1 = str_new(NULL);
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    FunType* fun_type;
-    if (map_get(ctx->frontend->symbol_table, node->name)->type_t->type != AST_FunType_t) {
+    Type* fun_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
+    if (fun_type->type != AST_FunType_t) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
-    fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
-    if (vec_size(fun_type->param_types) != vec_size(node->args)) {
+    else if (vec_size(fun_type->get._FunType.param_types) != vec_size(node->args)) {
         strto_fmt_1 = str_to_string(vec_size(node->args));
-        strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
+        strto_fmt_2 = str_to_string(vec_size(fun_type->get._FunType.param_types));
         THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_call_with_wrong_argc, str_fmt_name(node->name, &name_fmt), strto_fmt_1, strto_fmt_2));
     }
     for (size_t i = 0; i < vec_size(node->args); ++i) {
-        if (!is_same_type(node->args[i]->exp_type, fun_type->param_types[i])) {
-            TRY(cast_assign(ctx, &fun_type->param_types[i], &node->args[i]));
+        if (!is_same_type(node->args[i]->exp_type, fun_type->get._FunType.param_types[i])) {
+            TRY(cast_assign(ctx, &fun_type->get._FunType.param_types[i], &node->args[i]));
         }
     }
-    sptr_copy(Type, fun_type->ret_type, node->_base->exp_type) FINALLY;
+    sptr_copy(Type, fun_type->get._FunType.ret_type, node->_base->exp_type);
+    FINALLY;
     str_delete(name_fmt);
     str_delete(strto_fmt_1);
     str_delete(strto_fmt_2);
@@ -1870,27 +1869,27 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
     bool is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
 
-    // TODO map_get
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        Type* fun_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
-        if (!(fun_type->type == AST_FunType_t && vec_size(fun_type->get._FunType.param_types) == vec_size(node->params)
-                && is_same_fun_type(&node->fun_type->get._FunType, &fun_type->get._FunType))) {
-            THROW_AT_LINE(
-                node->line, GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_type(fun_type, &type_fmt_2)));
+        Symbol* fun_symbol = map_get(ctx->frontend->symbol_table, node->name);
+        if (!(fun_symbol->type_t->type == AST_FunType_t
+                && vec_size(fun_symbol->type_t->get._FunType.param_types) == vec_size(node->params)
+                && is_same_fun_type(&node->fun_type->get._FunType, &fun_symbol->type_t->get._FunType))) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_type(fun_symbol->type_t, &type_fmt_2)));
         }
         else if (is_def && node->body) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_fun, str_fmt_name(node->name, &name_fmt),
                                           str_fmt_type(node->fun_type, &type_fmt_1)));
         }
 
-        FunAttr* fun_attrs = &map_get(ctx->frontend->symbol_table, node->name)->attrs->get._FunAttr;
+        FunAttr* fun_attrs = &fun_symbol->attrs->get._FunAttr;
         if (!is_glob && fun_attrs->is_glob) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_static_conflict, str_fmt_name(node->name, &name_fmt)));
         }
         is_glob = fun_attrs->is_glob;
-        free_Symbol(&map_get(ctx->frontend->symbol_table, node->name));
+        free_Symbol(&fun_symbol);
     }
 
     if (node->body) {
@@ -2292,15 +2291,14 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
 
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        // TODO map_get
-        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
-            THROW_AT_LINE(
-                node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->var_type, &type_fmt_1),
-                                str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, &type_fmt_2)));
+        Symbol* var_symbol = map_get(ctx->frontend->symbol_table, node->name);
+        if (!is_same_type(var_symbol->type_t, node->var_type)) {
+            THROW_AT_LINE(node->line,
+                GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
+                    str_fmt_type(node->var_type, &type_fmt_1), str_fmt_type(var_symbol->type_t, &type_fmt_2)));
         }
 
-        StaticAttr* var_attrs = &map_get(ctx->frontend->symbol_table, node->name)->attrs->get._StaticAttr;
+        StaticAttr* var_attrs = &var_symbol->attrs->get._StaticAttr;
         if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
             is_glob = var_attrs->is_glob;
         }
@@ -2317,7 +2315,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
                 sptr_copy(InitialValue, var_attrs->init, init_value);
             }
         }
-        free_Symbol(&map_get(ctx->frontend->symbol_table, node->name));
+        free_Symbol(&var_symbol);
     }
 
     sptr_copy(Type, node->var_type, glob_var_type);
@@ -2348,12 +2346,11 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
     }
     else if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        // TODO map_get
-        if (!is_same_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, node->var_type)) {
+        Type* var_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
+        if (!is_same_type(var_type, node->var_type)) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
-                                str_fmt_type(node->var_type, &type_fmt_1),
-                                str_fmt_type(map_get(ctx->frontend->symbol_table, node->name)->type_t, &type_fmt_2)));
+                                str_fmt_type(node->var_type, &type_fmt_1), str_fmt_type(var_type, &type_fmt_2)));
         }
         EARLY_EXIT;
     }
@@ -2722,13 +2719,13 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
     }
     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
         if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end()) {
-            // TODO map_get
-            if (map_get(ctx->scoped_struct_maps[i], struct_type->tag).is_union != struct_type->is_union) {
+            Structure* structure = &map_get(ctx->scoped_struct_maps[i], struct_type->tag);
+            if (structure->is_union != struct_type->is_union) {
                 THROW_AT_LINE(ctx->errors->linebuf,
                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_struct(struct_type, &type_fmt),
                         str_fmt_struct_name(struct_type->tag, !struct_type->is_union, &struct_fmt)));
             }
-            struct_type->tag = map_get(ctx->scoped_struct_maps[i], struct_type->tag).tag;
+            struct_type->tag = structure->tag;
             EARLY_EXIT;
         }
     }
