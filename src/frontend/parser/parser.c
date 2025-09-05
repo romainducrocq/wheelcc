@@ -414,7 +414,7 @@ static void proc_ptr_abstract_decltor(
     CAbstractPointer* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
     shared_ptr_t(Type) derived_type = make_Pointer(base_type);
     proc_abstract_decltor(node->abstract_decltor, &derived_type, abstract_decltor);
-    free_Type(&derived_type);
+    free_Type(&derived_type); // TODO
 }
 
 static void proc_arr_abstract_decltor(
@@ -422,7 +422,7 @@ static void proc_arr_abstract_decltor(
     TLong size = node->size;
     shared_ptr_t(Type) derived_type = make_Array(size, base_type);
     proc_abstract_decltor(node->abstract_decltor, &derived_type, abstract_decltor);
-    free_Type(&derived_type);
+    free_Type(&derived_type); // TODO
 }
 
 static void proc_base_abstract_decltor(shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {

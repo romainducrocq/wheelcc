@@ -1374,7 +1374,9 @@ static void check_arr_typed_exp(unique_ptr_t(CExp) * addrof) {
     {
         shared_ptr_t(Type) ref_type = sptr_new();
         sptr_copy(Type, (*addrof)->exp_type->get._Array.elem_type, ref_type);
+        free_Type(&(*addrof)->exp_type);
         (*addrof)->exp_type = make_Pointer(&ref_type);
+        free_Type(&ref_type); // TODO
     }
     size_t line = (*addrof)->line;
     *addrof = make_CAddrOf(addrof, line);
@@ -1824,6 +1826,7 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 static void check_arr_param_decl(FunType* fun_type, size_t i) {
     shared_ptr_t(Type) ref_type = sptr_new();
     sptr_copy(Type, fun_type->param_types[i]->get._Array.elem_type, ref_type);
+    free_Type(&fun_type->param_types[i]);
     fun_type->param_types[i] = make_Pointer(&ref_type);
 }
 
