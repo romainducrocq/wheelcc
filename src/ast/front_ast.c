@@ -284,7 +284,7 @@ unique_ptr_t(CParam) make_CParam(unique_ptr_t(CDeclarator) * decltor, shared_ptr
     self->decltor = uptr_new();
     move_CDeclarator(decltor, &self->decltor);
     self->param_type = sptr_new();
-    copy_Type(param_type, &self->param_type);
+    move_Type(param_type, &self->param_type);
     return self;
 }
 
@@ -388,7 +388,7 @@ unique_ptr_t(CExp) make_CConstant(shared_ptr_t(CConst) * constant, size_t line) 
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CConstant_t;
     self->get._CConstant.constant = sptr_new();
-    copy_CConst(constant, &self->get._CConstant.constant);
+    move_CConst(constant, &self->get._CConstant.constant);
     self->get._CConstant._base = self;
     return self;
 }
@@ -397,7 +397,7 @@ unique_ptr_t(CExp) make_CString(shared_ptr_t(CStringLiteral) * literal, size_t l
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CString_t;
     self->get._CString.literal = sptr_new();
-    copy_CStringLiteral(literal, &self->get._CString.literal);
+    move_CStringLiteral(literal, &self->get._CString.literal);
     self->get._CString._base = self;
     return self;
 }
@@ -416,7 +416,7 @@ unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * tar
     self->get._CCast.exp = uptr_new();
     move_CExp(exp, &self->get._CCast.exp);
     self->get._CCast.target_type = sptr_new();
-    copy_Type(target_type, &self->get._CCast.target_type);
+    move_Type(target_type, &self->get._CCast.target_type);
     self->get._CCast._base = self;
     return self;
 }
@@ -526,7 +526,7 @@ unique_ptr_t(CExp) make_CSizeOfT(shared_ptr_t(Type) * target_type, size_t line) 
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CSizeOfT_t;
     self->get._CSizeOfT.target_type = sptr_new();
-    copy_Type(target_type, &self->get._CSizeOfT.target_type);
+    move_Type(target_type, &self->get._CSizeOfT.target_type);
     self->get._CSizeOfT._base = self;
     return self;
 }
@@ -1066,7 +1066,7 @@ unique_ptr_t(CMemberDeclaration)
     self->type = AST_CMemberDeclaration_t;
     self->member_name = member_name;
     self->member_type = sptr_new();
-    copy_Type(member_type, &self->member_type);
+    move_Type(member_type, &self->member_type);
     self->line = line;
     return self;
 }
@@ -1131,7 +1131,7 @@ unique_ptr_t(CFunctionDeclaration)
     self->body = uptr_new();
     move_CBlock(body, &self->body);
     self->fun_type = sptr_new();
-    copy_Type(fun_type, &self->fun_type);
+    move_Type(fun_type, &self->fun_type);
     self->storage_class = uptr_new();
     move_CStorageClass(storage_class, &self->storage_class);
     self->line = line;
@@ -1166,7 +1166,7 @@ unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, u
     self->init = uptr_new();
     move_CInitializer(init, &self->init);
     self->var_type = sptr_new();
-    copy_Type(var_type, &self->var_type);
+    move_Type(var_type, &self->var_type);
     self->storage_class = uptr_new();
     move_CStorageClass(storage_class, &self->storage_class);
     self->line = line;

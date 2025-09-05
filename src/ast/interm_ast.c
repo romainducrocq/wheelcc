@@ -206,7 +206,7 @@ shared_ptr_t(TacValue) make_TacConstant(shared_ptr_t(CConst) * constant) {
     shared_ptr_t(TacValue) self = make_TacValue();
     self->type = AST_TacConstant_t;
     self->get._TacConstant.constant = sptr_new();
-    copy_CConst(constant, &self->get._TacConstant.constant);
+    move_CConst(constant, &self->get._TacConstant.constant);
     return self;
 }
 
@@ -252,7 +252,7 @@ unique_ptr_t(TacExpResult) make_TacPlainOperand(shared_ptr_t(TacValue) * val) {
     unique_ptr_t(TacExpResult) self = make_TacExpResult();
     self->type = AST_TacPlainOperand_t;
     self->get._TacPlainOperand.val = sptr_new();
-    copy_TacValue(val, &self->get._TacPlainOperand.val);
+    move_TacValue(val, &self->get._TacPlainOperand.val);
     return self;
 }
 
@@ -260,7 +260,7 @@ unique_ptr_t(TacExpResult) make_TacDereferencedPointer(shared_ptr_t(TacValue) * 
     unique_ptr_t(TacExpResult) self = make_TacExpResult();
     self->type = AST_TacDereferencedPointer_t;
     self->get._TacDereferencedPointer.val = sptr_new();
-    copy_TacValue(val, &self->get._TacDereferencedPointer.val);
+    move_TacValue(val, &self->get._TacDereferencedPointer.val);
     return self;
 }
 
@@ -306,7 +306,7 @@ unique_ptr_t(TacInstruction) make_TacReturn(shared_ptr_t(TacValue) * val) {
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacReturn_t;
     self->get._TacReturn.val = sptr_new();
-    copy_TacValue(val, &self->get._TacReturn.val);
+    move_TacValue(val, &self->get._TacReturn.val);
     return self;
 }
 
@@ -314,9 +314,9 @@ unique_ptr_t(TacInstruction) make_TacSignExtend(shared_ptr_t(TacValue) * src, sh
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacSignExtend_t;
     self->get._TacSignExtend.src = sptr_new();
-    copy_TacValue(src, &self->get._TacSignExtend.src);
+    move_TacValue(src, &self->get._TacSignExtend.src);
     self->get._TacSignExtend.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacSignExtend.dst);
+    move_TacValue(dst, &self->get._TacSignExtend.dst);
     return self;
 }
 
@@ -324,9 +324,9 @@ unique_ptr_t(TacInstruction) make_TacTruncate(shared_ptr_t(TacValue) * src, shar
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacTruncate_t;
     self->get._TacTruncate.src = sptr_new();
-    copy_TacValue(src, &self->get._TacTruncate.src);
+    move_TacValue(src, &self->get._TacTruncate.src);
     self->get._TacTruncate.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacTruncate.dst);
+    move_TacValue(dst, &self->get._TacTruncate.dst);
     return self;
 }
 
@@ -334,9 +334,9 @@ unique_ptr_t(TacInstruction) make_TacZeroExtend(shared_ptr_t(TacValue) * src, sh
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacZeroExtend_t;
     self->get._TacZeroExtend.src = sptr_new();
-    copy_TacValue(src, &self->get._TacZeroExtend.src);
+    move_TacValue(src, &self->get._TacZeroExtend.src);
     self->get._TacZeroExtend.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacZeroExtend.dst);
+    move_TacValue(dst, &self->get._TacZeroExtend.dst);
     return self;
 }
 
@@ -344,9 +344,9 @@ unique_ptr_t(TacInstruction) make_TacDoubleToInt(shared_ptr_t(TacValue) * src, s
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacDoubleToInt_t;
     self->get._TacDoubleToInt.src = sptr_new();
-    copy_TacValue(src, &self->get._TacDoubleToInt.src);
+    move_TacValue(src, &self->get._TacDoubleToInt.src);
     self->get._TacDoubleToInt.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacDoubleToInt.dst);
+    move_TacValue(dst, &self->get._TacDoubleToInt.dst);
     return self;
 }
 
@@ -354,9 +354,9 @@ unique_ptr_t(TacInstruction) make_TacDoubleToUInt(shared_ptr_t(TacValue) * src, 
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacDoubleToUInt_t;
     self->get._TacDoubleToUInt.src = sptr_new();
-    copy_TacValue(src, &self->get._TacDoubleToUInt.src);
+    move_TacValue(src, &self->get._TacDoubleToUInt.src);
     self->get._TacDoubleToUInt.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacDoubleToUInt.dst);
+    move_TacValue(dst, &self->get._TacDoubleToUInt.dst);
     return self;
 }
 
@@ -364,9 +364,9 @@ unique_ptr_t(TacInstruction) make_TacIntToDouble(shared_ptr_t(TacValue) * src, s
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacIntToDouble_t;
     self->get._TacIntToDouble.src = sptr_new();
-    copy_TacValue(src, &self->get._TacIntToDouble.src);
+    move_TacValue(src, &self->get._TacIntToDouble.src);
     self->get._TacIntToDouble.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacIntToDouble.dst);
+    move_TacValue(dst, &self->get._TacIntToDouble.dst);
     return self;
 }
 
@@ -374,9 +374,9 @@ unique_ptr_t(TacInstruction) make_TacUIntToDouble(shared_ptr_t(TacValue) * src, 
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacUIntToDouble_t;
     self->get._TacUIntToDouble.src = sptr_new();
-    copy_TacValue(src, &self->get._TacUIntToDouble.src);
+    move_TacValue(src, &self->get._TacUIntToDouble.src);
     self->get._TacUIntToDouble.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacUIntToDouble.dst);
+    move_TacValue(dst, &self->get._TacUIntToDouble.dst);
     return self;
 }
 
@@ -388,7 +388,7 @@ unique_ptr_t(TacInstruction)
     self->get._TacFunCall.args = vec_new();
     vec_move(*args, self->get._TacFunCall.args);
     self->get._TacFunCall.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacFunCall.dst);
+    move_TacValue(dst, &self->get._TacFunCall.dst);
     return self;
 }
 
@@ -399,9 +399,9 @@ unique_ptr_t(TacInstruction)
     self->get._TacUnary.unop = uptr_new();
     move_TacUnaryOp(unop, &self->get._TacUnary.unop);
     self->get._TacUnary.src = sptr_new();
-    copy_TacValue(src, &self->get._TacUnary.src);
+    move_TacValue(src, &self->get._TacUnary.src);
     self->get._TacUnary.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacUnary.dst);
+    move_TacValue(dst, &self->get._TacUnary.dst);
     return self;
 }
 
@@ -412,11 +412,11 @@ unique_ptr_t(TacInstruction) make_TacBinary(unique_ptr_t(TacBinaryOp) * binop, s
     self->get._TacBinary.binop = uptr_new();
     move_TacBinaryOp(binop, &self->get._TacBinary.binop);
     self->get._TacBinary.src1 = sptr_new();
-    copy_TacValue(src1, &self->get._TacBinary.src1);
+    move_TacValue(src1, &self->get._TacBinary.src1);
     self->get._TacBinary.src2 = sptr_new();
-    copy_TacValue(src2, &self->get._TacBinary.src2);
+    move_TacValue(src2, &self->get._TacBinary.src2);
     self->get._TacBinary.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacBinary.dst);
+    move_TacValue(dst, &self->get._TacBinary.dst);
     return self;
 }
 
@@ -424,9 +424,9 @@ unique_ptr_t(TacInstruction) make_TacCopy(shared_ptr_t(TacValue) * src, shared_p
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacCopy_t;
     self->get._TacCopy.src = sptr_new();
-    copy_TacValue(src, &self->get._TacCopy.src);
+    move_TacValue(src, &self->get._TacCopy.src);
     self->get._TacCopy.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacCopy.dst);
+    move_TacValue(dst, &self->get._TacCopy.dst);
     return self;
 }
 
@@ -434,9 +434,9 @@ unique_ptr_t(TacInstruction) make_TacGetAddress(shared_ptr_t(TacValue) * src, sh
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacGetAddress_t;
     self->get._TacGetAddress.src = sptr_new();
-    copy_TacValue(src, &self->get._TacGetAddress.src);
+    move_TacValue(src, &self->get._TacGetAddress.src);
     self->get._TacGetAddress.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacGetAddress.dst);
+    move_TacValue(dst, &self->get._TacGetAddress.dst);
     return self;
 }
 
@@ -444,9 +444,9 @@ unique_ptr_t(TacInstruction) make_TacLoad(shared_ptr_t(TacValue) * src_ptr, shar
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacLoad_t;
     self->get._TacLoad.src_ptr = sptr_new();
-    copy_TacValue(src_ptr, &self->get._TacLoad.src_ptr);
+    move_TacValue(src_ptr, &self->get._TacLoad.src_ptr);
     self->get._TacLoad.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacLoad.dst);
+    move_TacValue(dst, &self->get._TacLoad.dst);
     return self;
 }
 
@@ -454,9 +454,9 @@ unique_ptr_t(TacInstruction) make_TacStore(shared_ptr_t(TacValue) * src, shared_
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacStore_t;
     self->get._TacStore.src = sptr_new();
-    copy_TacValue(src, &self->get._TacStore.src);
+    move_TacValue(src, &self->get._TacStore.src);
     self->get._TacStore.dst_ptr = sptr_new();
-    copy_TacValue(dst_ptr, &self->get._TacStore.dst_ptr);
+    move_TacValue(dst_ptr, &self->get._TacStore.dst_ptr);
     return self;
 }
 
@@ -466,11 +466,11 @@ unique_ptr_t(TacInstruction) make_TacAddPtr(
     self->type = AST_TacAddPtr_t;
     self->get._TacAddPtr.scale = scale;
     self->get._TacAddPtr.src_ptr = sptr_new();
-    copy_TacValue(src_ptr, &self->get._TacAddPtr.src_ptr);
+    move_TacValue(src_ptr, &self->get._TacAddPtr.src_ptr);
     self->get._TacAddPtr.idx = sptr_new();
-    copy_TacValue(idx, &self->get._TacAddPtr.idx);
+    move_TacValue(idx, &self->get._TacAddPtr.idx);
     self->get._TacAddPtr.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacAddPtr.dst);
+    move_TacValue(dst, &self->get._TacAddPtr.dst);
     return self;
 }
 
@@ -480,7 +480,7 @@ unique_ptr_t(TacInstruction) make_TacCopyToOffset(TIdentifier dst_name, TLong of
     self->get._TacCopyToOffset.dst_name = dst_name;
     self->get._TacCopyToOffset.offset = offset;
     self->get._TacCopyToOffset.src = sptr_new();
-    copy_TacValue(src, &self->get._TacCopyToOffset.src);
+    move_TacValue(src, &self->get._TacCopyToOffset.src);
     return self;
 }
 
@@ -490,7 +490,7 @@ unique_ptr_t(TacInstruction) make_TacCopyFromOffset(TIdentifier src_name, TLong 
     self->get._TacCopyFromOffset.src_name = src_name;
     self->get._TacCopyFromOffset.offset = offset;
     self->get._TacCopyFromOffset.dst = sptr_new();
-    copy_TacValue(dst, &self->get._TacCopyFromOffset.dst);
+    move_TacValue(dst, &self->get._TacCopyFromOffset.dst);
     return self;
 }
 
@@ -506,7 +506,7 @@ unique_ptr_t(TacInstruction) make_TacJumpIfZero(TIdentifier target, shared_ptr_t
     self->type = AST_TacJumpIfZero_t;
     self->get._TacJumpIfZero.target = target;
     self->get._TacJumpIfZero.condition = sptr_new();
-    copy_TacValue(condition, &self->get._TacJumpIfZero.condition);
+    move_TacValue(condition, &self->get._TacJumpIfZero.condition);
     return self;
 }
 
@@ -515,7 +515,7 @@ unique_ptr_t(TacInstruction) make_TacJumpIfNotZero(TIdentifier target, shared_pt
     self->type = AST_TacJumpIfNotZero_t;
     self->get._TacJumpIfNotZero.target = target;
     self->get._TacJumpIfNotZero.condition = sptr_new();
-    copy_TacValue(condition, &self->get._TacJumpIfNotZero.condition);
+    move_TacValue(condition, &self->get._TacJumpIfNotZero.condition);
     return self;
 }
 
@@ -654,7 +654,7 @@ unique_ptr_t(TacTopLevel) make_TacStaticVariable(TIdentifier name, bool is_glob,
     self->get._TacStaticVariable.name = name;
     self->get._TacStaticVariable.is_glob = is_glob;
     self->get._TacStaticVariable.static_init_type = sptr_new();
-    copy_Type(static_init_type, &self->get._TacStaticVariable.static_init_type);
+    move_Type(static_init_type, &self->get._TacStaticVariable.static_init_type);
     self->get._TacStaticVariable.static_inits = vec_new();
     vec_move(*static_inits, self->get._TacStaticVariable.static_inits);
     return self;
@@ -666,9 +666,9 @@ unique_ptr_t(TacTopLevel) make_TacStaticConstant(
     self->type = AST_TacStaticConstant_t;
     self->get._TacStaticConstant.name = name;
     self->get._TacStaticConstant.static_init_type = sptr_new();
-    copy_Type(static_init_type, &self->get._TacStaticConstant.static_init_type);
+    move_Type(static_init_type, &self->get._TacStaticConstant.static_init_type);
     self->get._TacStaticConstant.static_init = sptr_new();
-    copy_StaticInit(static_init, &self->get._TacStaticConstant.static_init);
+    move_StaticInit(static_init, &self->get._TacStaticConstant.static_init);
     return self;
 }
 

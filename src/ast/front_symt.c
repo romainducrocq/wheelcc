@@ -81,7 +81,7 @@ shared_ptr_t(Type) make_FunType(vector_t(shared_ptr_t(Type)) * param_types, shar
     self->get._FunType.param_types = vec_new();
     vec_move(*param_types, self->get._FunType.param_types);
     self->get._FunType.ret_type = sptr_new();
-    copy_Type(ret_type, &self->get._FunType.ret_type);
+    move_Type(ret_type, &self->get._FunType.ret_type);
     self->get._FunType.param_reg_mask = NULL_REGISTER_MASK;
     self->get._FunType.ret_reg_mask = NULL_REGISTER_MASK;
     return self;
@@ -91,7 +91,7 @@ shared_ptr_t(Type) make_Pointer(shared_ptr_t(Type) * ref_type) {
     shared_ptr_t(Type) self = make_Type();
     self->type = AST_Pointer_t;
     self->get._Pointer.ref_type = sptr_new();
-    copy_Type(ref_type, &self->get._Pointer.ref_type);
+    move_Type(ref_type, &self->get._Pointer.ref_type);
     return self;
 }
 
@@ -100,7 +100,7 @@ shared_ptr_t(Type) make_Array(TLong size, shared_ptr_t(Type) * elem_type) {
     self->type = AST_Array_t;
     self->get._Array.size = size;
     self->get._Array.elem_type = sptr_new();
-    copy_Type(elem_type, &self->get._Array.elem_type);
+    move_Type(elem_type, &self->get._Array.elem_type);
     return self;
 }
 
@@ -221,7 +221,7 @@ shared_ptr_t(StaticInit)
     self->get._StringInit.string_const = string_const;
     self->get._StringInit.is_null_term = is_null_term;
     self->get._StringInit.literal = sptr_new();
-    copy_CStringLiteral(literal, &self->get._StringInit.literal);
+    move_CStringLiteral(literal, &self->get._StringInit.literal);
     return self;
 }
 
@@ -341,7 +341,7 @@ unique_ptr_t(IdentifierAttr) make_StaticAttr(bool is_glob, shared_ptr_t(InitialV
     self->type = AST_StaticAttr_t;
     self->get._StaticAttr.is_glob = is_glob;
     self->get._StaticAttr.init = sptr_new();
-    copy_InitialValue(init, &self->get._StaticAttr.init);
+    move_InitialValue(init, &self->get._StaticAttr.init);
     return self;
 }
 
@@ -349,7 +349,7 @@ unique_ptr_t(IdentifierAttr) make_ConstantAttr(shared_ptr_t(StaticInit) * static
     unique_ptr_t(IdentifierAttr) self = make_IdentifierAttr();
     self->type = AST_ConstantAttr_t;
     self->get._ConstantAttr.static_init = sptr_new();
-    copy_StaticInit(static_init, &self->get._ConstantAttr.static_init);
+    move_StaticInit(static_init, &self->get._ConstantAttr.static_init);
     return self;
 }
 
@@ -388,7 +388,7 @@ unique_ptr_t(Symbol) make_Symbol(shared_ptr_t(Type) * type_t, unique_ptr_t(Ident
     uptr_alloc(Symbol, self);
     self->type = AST_Symbol_t;
     self->type_t = sptr_new();
-    copy_Type(type_t, &self->type_t);
+    move_Type(type_t, &self->type_t);
     self->attrs = uptr_new();
     move_IdentifierAttr(attrs, &self->attrs);
     return self;
@@ -415,7 +415,7 @@ unique_ptr_t(StructMember) make_StructMember(TLong offset, shared_ptr_t(Type) * 
     self->type = AST_StructMember_t;
     self->offset = offset;
     self->member_type = sptr_new();
-    copy_Type(member_type, &self->member_type);
+    move_Type(member_type, &self->member_type);
     return self;
 }
 

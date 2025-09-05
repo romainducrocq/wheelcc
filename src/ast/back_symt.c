@@ -87,7 +87,7 @@ unique_ptr_t(BackendSymbol) make_BackendObj(bool is_static, bool is_const, share
     self->get._BackendObj.is_static = is_static;
     self->get._BackendObj.is_const = is_const;
     self->get._BackendObj.asm_type = sptr_new();
-    copy_AssemblyType(asm_type, &self->get._BackendObj.asm_type);
+    move_AssemblyType(asm_type, &self->get._BackendObj.asm_type);
     return self;
 }
 
