@@ -319,7 +319,6 @@ static TInt get_type_alignment(Ctx ctx, Type* type) {
     }
 }
 
-// TODO maybe this is not 100% correct
 static shared_ptr_t(Type) get_joint_type(CExp* node_1, CExp* node_2) {
     shared_ptr_t(Type) joint_type = sptr_new();
     if (is_type_char(node_1->exp_type)) {
@@ -328,7 +327,6 @@ static shared_ptr_t(Type) get_joint_type(CExp* node_1, CExp* node_2) {
         node_1->exp_type = make_Int();
         joint_type = get_joint_type(node_1, node_2);
         sptr_move(Type, exp_type, node_1->exp_type);
-        // free_Type(&exp_type); TODO
     }
     else if (is_type_char(node_2->exp_type)) {
         shared_ptr_t(Type) exp_type = sptr_new();
@@ -336,7 +334,6 @@ static shared_ptr_t(Type) get_joint_type(CExp* node_1, CExp* node_2) {
         node_2->exp_type = make_Int();
         joint_type = get_joint_type(node_1, node_2);
         sptr_move(Type, exp_type, node_2->exp_type);
-        // free_Type(&exp_type); TODO
     }
     else if (is_same_type(node_1->exp_type, node_2->exp_type)) {
         sptr_copy(Type, node_1->exp_type, joint_type);
@@ -557,7 +554,6 @@ static TULong get_const_ptr_value(CConstant* node) {
     }
 }
 
-// TODO verify this
 static size_t get_compound_line(CCompoundInit* node) {
     THROW_ABORT_IF(vec_empty(node->initializers));
     CInitializer* initializer = node->initializers[0];
@@ -569,15 +565,6 @@ static size_t get_compound_line(CCompoundInit* node) {
     THROW_ABORT_IF(initializer->type != AST_CSingleInit_t);
     return initializer->get._CSingleInit.exp->line;
 }
-// static size_t get_compound_line(CInitializer* node) {
-//     THROW_ABORT_IF(node->type != AST_CCompoundInit_t);
-//     do {
-//         node = node->get._CCompoundInit.initializers[0];
-//     }
-//     while (node->type == AST_CCompoundInit_t);
-//     THROW_ABORT_IF(node->type != AST_CSingleInit_t);
-//     return node->get._CSingleInit.exp->line;
-// }
 
 static error_t reslv_struct_type(Ctx ctx, Type* type);
 
@@ -1369,7 +1356,6 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
     CATCH_EXIT;
 }
 
-// TODO this one is super sus
 static void check_arr_typed_exp(unique_ptr_t(CExp) * addrof) {
     {
         shared_ptr_t(Type) ref_type = sptr_new();
@@ -1821,7 +1807,6 @@ static error_t check_ret_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     CATCH_EXIT;
 }
 
-// TODO check when sptr are reassigned
 static void check_arr_param_decl(FunType* fun_type, size_t i) {
     shared_ptr_t(Type) ref_type = sptr_new();
     sptr_copy(Type, fun_type->param_types[i]->get._Array.elem_type, ref_type);
