@@ -694,27 +694,28 @@ static unique_ptr_t(TacExpResult) conditional_res_instr(Ctx ctx, CConditional* n
     }
 }
 
-// static std::unique_ptr<TacPlainOperand> call_res_instr(Ctx ctx, CFunctionCall* node) {
-//     TIdentifier name = node->name;
-//     vector_t(std::shared_ptr<TacValue>) args = vec_new();
-//     vec_reserve(args, vec_size(node->args));
-//     for (size_t i = 0; i < vec_size(node->args); ++i) {
-//         std::shared_ptr<TacValue> arg = repr_exp_instr(ctx, node->args[i].get());
-//         vec_move_back(args, arg);
-//     }
-//     std::shared_ptr<TacValue> dst;
-//     if (node->exp_type->type() != AST_Void_t) {
-//         dst = plain_inner_value(ctx, node);
-//     }
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacFunCall>(name, &args, std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) call_res_instr(Ctx ctx, CFunctionCall* node) {
+    TIdentifier name = node->name;
+    vector_t(shared_ptr_t(TacValue)) args = vec_new();
+    vec_reserve(args, vec_size(node->args));
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
+        shared_ptr_t(TacValue) arg = repr_exp_instr(ctx, node->args[i]);
+        vec_move_back(args, arg);
+    }
+    shared_ptr_t(TacValue) dst = sptr_new();
+    if (node->_base->exp_type->type != AST_Void_t) {
+        dst = plain_inner_value(ctx, node->_base);
+    }
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacFunCall(name, &args, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacDereferencedPointer> deref_res_instr(Ctx ctx, CDereference* node) {
-//     std::shared_ptr<TacValue> val = repr_exp_instr(ctx, node->exp.get());
-//     return std::make_unique<TacDereferencedPointer>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) deref_res_instr(Ctx ctx, CDereference* node) {
+    shared_ptr_t(TacValue) val = repr_exp_instr(ctx, node->exp);
+    return make_TacDereferencedPointer(&val);
+}
 
 // static void plain_op_addrof_res_instr(Ctx ctx, TacPlainOperand* res, CAddrOf* node) {
 //     std::shared_ptr<TacValue> src = std::move(res->val);
