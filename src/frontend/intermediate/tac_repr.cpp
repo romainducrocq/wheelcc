@@ -27,459 +27,474 @@ typedef struct TacReprContext {
 
 typedef TacReprContext* Ctx;
 
-// // unary_operator = Complement | Negate | Not
-// static std::unique_ptr<TacUnaryOp> repr_unop(CUnaryOp* node) {
-//     switch (node->type()) {
-//         case AST_CComplement_t:
-//             return std::make_unique<TacComplement>();
-//         case AST_CNegate_t:
-//             return std::make_unique<TacNegate>();
-//         case AST_CNot_t:
-//             return std::make_unique<TacNot>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// unary_operator = Complement | Negate | Not
+static unique_ptr_t(TacUnaryOp) repr_unop(CUnaryOp* node) {
+    switch (node->type) {
+        case AST_CComplement_t:
+            return make_TacComplement();
+        case AST_CNegate_t:
+            return make_TacNegate();
+        case AST_CNot_t:
+            return make_TacNot();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
-// //                 | BitShiftRight | BitShrArithmetic | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan |
-// //                 GreaterOrEqual
-// static std::unique_ptr<TacBinaryOp> repr_binop(CBinaryOp* node) {
-//     switch (node->type()) {
-//         case AST_CAdd_t:
-//             return std::make_unique<TacAdd>();
-//         case AST_CSubtract_t:
-//             return std::make_unique<TacSubtract>();
-//         case AST_CMultiply_t:
-//             return std::make_unique<TacMultiply>();
-//         case AST_CDivide_t:
-//             return std::make_unique<TacDivide>();
-//         case AST_CRemainder_t:
-//             return std::make_unique<TacRemainder>();
-//         case AST_CBitAnd_t:
-//             return std::make_unique<TacBitAnd>();
-//         case AST_CBitOr_t:
-//             return std::make_unique<TacBitOr>();
-//         case AST_CBitXor_t:
-//             return std::make_unique<TacBitXor>();
-//         case AST_CBitShiftLeft_t:
-//             return std::make_unique<TacBitShiftLeft>();
-//         case AST_CBitShiftRight_t:
-//             return std::make_unique<TacBitShiftRight>();
-//         case AST_CBitShrArithmetic_t:
-//             return std::make_unique<TacBitShrArithmetic>();
-//         case AST_CEqual_t:
-//             return std::make_unique<TacEqual>();
-//         case AST_CNotEqual_t:
-//             return std::make_unique<TacNotEqual>();
-//         case AST_CLessThan_t:
-//             return std::make_unique<TacLessThan>();
-//         case AST_CLessOrEqual_t:
-//             return std::make_unique<TacLessOrEqual>();
-//         case AST_CGreaterThan_t:
-//             return std::make_unique<TacGreaterThan>();
-//         case AST_CGreaterOrEqual_t:
-//             return std::make_unique<TacGreaterOrEqual>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
+//                 | BitShiftRight | BitShrArithmetic | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan |
+//                 GreaterOrEqual
+static unique_ptr_t(TacBinaryOp) repr_binop(CBinaryOp* node) {
+    switch (node->type) {
+        case AST_CAdd_t:
+            return make_TacAdd();
+        case AST_CSubtract_t:
+            return make_TacSubtract();
+        case AST_CMultiply_t:
+            return make_TacMultiply();
+        case AST_CDivide_t:
+            return make_TacDivide();
+        case AST_CRemainder_t:
+            return make_TacRemainder();
+        case AST_CBitAnd_t:
+            return make_TacBitAnd();
+        case AST_CBitOr_t:
+            return make_TacBitOr();
+        case AST_CBitXor_t:
+            return make_TacBitXor();
+        case AST_CBitShiftLeft_t:
+            return make_TacBitShiftLeft();
+        case AST_CBitShiftRight_t:
+            return make_TacBitShiftRight();
+        case AST_CBitShrArithmetic_t:
+            return make_TacBitShrArithmetic();
+        case AST_CEqual_t:
+            return make_TacEqual();
+        case AST_CNotEqual_t:
+            return make_TacNotEqual();
+        case AST_CLessThan_t:
+            return make_TacLessThan();
+        case AST_CLessOrEqual_t:
+            return make_TacLessOrEqual();
+        case AST_CGreaterThan_t:
+            return make_TacGreaterThan();
+        case AST_CGreaterOrEqual_t:
+            return make_TacGreaterOrEqual();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<TacConstant> const_value(CConstant* node) {
-//     std::shared_ptr<CConst> constant = node->constant;
-//     return std::make_shared<TacConstant>(std::move(constant));
-// }
+static shared_ptr_t(TacValue) const_value(CConstant* node) {
+    shared_ptr_t(CConst) constant = sptr_new();
+    sptr_copy(CConst, node->constant, constant);
+    return make_TacConstant(&constant);
+}
 
-// static std::shared_ptr<TacVariable> var_value(CVar* node) {
-//     TIdentifier name = node->name;
-//     return std::make_shared<TacVariable>(name);
-// }
+static shared_ptr_t(TacValue) var_value(CVar* node) {
+    TIdentifier name = node->name;
+    return make_TacVariable(name);
+}
 
-// static std::shared_ptr<TacVariable> exp_inner_value(Ctx ctx, CExp* node, std::shared_ptr<Type>* inner_type) {
-//     TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
-//     if (map_find(ctx->frontend->symbol_table, inner_name) == map_end()) {
-//         std::unique_ptr<IdentifierAttr> inner_attrs = std::make_unique<LocalAttr>();
-//         std::unique_ptr<Symbol> symbol = std::make_unique<Symbol>(std::move(*inner_type), std::move(inner_attrs));
-//         map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
-//     }
-//     return std::make_shared<TacVariable>(inner_name);
-// }
+static shared_ptr_t(TacValue) exp_inner_value(Ctx ctx, CExp* node, bool is_ptr) {
+    TIdentifier inner_name = repr_var_identifier(ctx->identifiers, node);
+    if (map_find(ctx->frontend->symbol_table, inner_name) == map_end()) {
+        shared_ptr_t(Type) inner_type = sptr_new();
+        if (is_ptr) {
+            inner_type = make_Long();
+        }
+        else {
+            sptr_copy(Type, node->exp_type, inner_type);
+        }
+        unique_ptr_t(IdentifierAttr) inner_attrs = make_LocalAttr();
+        unique_ptr_t(Symbol) symbol = make_Symbol(&inner_type, &inner_attrs);
+        map_move_add(ctx->frontend->symbol_table, inner_name, symbol);
+    }
+    return make_TacVariable(inner_name);
+}
 
-// static std::shared_ptr<TacValue> plain_inner_value(Ctx ctx, CExp* node) {
-//     std::shared_ptr<Type> inner_type = node->exp_type;
-//     return exp_inner_value(ctx, node, &inner_type);
-// }
+static shared_ptr_t(TacValue) plain_inner_value(Ctx ctx, CExp* node) {
+    return exp_inner_value(ctx, node, false);
+}
 
-// static std::shared_ptr<TacValue> ptr_inner_value(Ctx ctx, CExp* node) {
-//     std::shared_ptr<Type> inner_type = std::make_shared<Long>();
-//     return exp_inner_value(ctx, node, &inner_type);
-// }
+static shared_ptr_t(TacValue) ptr_inner_value(Ctx ctx, CExp* node) {
+    return exp_inner_value(ctx, node, true);
+}
 
-// // val = Constant(int) | Var(identifier)
-// static std::shared_ptr<TacValue> repr_value(CExp* node) {
-//     switch (node->type()) {
-//         case AST_CConstant_t:
-//             return const_value(static_cast<CConstant*>(node));
-//         case AST_CVar_t:
-//             return var_value(static_cast<CVar*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// val = Constant(int) | Var(identifier)
+static shared_ptr_t(TacValue) repr_value(CExp* node) {
+    switch (node->type) {
+        case AST_CConstant_t:
+            return const_value(&node->get._CConstant);
+        case AST_CVar_t:
+            return var_value(&node->get._CVar);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void push_instr(Ctx ctx, std::unique_ptr<TacInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
+static void push_instr(Ctx ctx, unique_ptr_t(TacInstruction) instr) { vec_move_back(*ctx->p_instrs, instr); }
 
-// static std::unique_ptr<TacExpResult> repr_res_instr(Ctx ctx, CExp* node);
-// static std::shared_ptr<TacValue> repr_exp_instr(Ctx ctx, CExp* node);
+static unique_ptr_t(TacExpResult) repr_res_instr(Ctx ctx, CExp* node);
+static shared_ptr_t(TacValue) repr_exp_instr(Ctx ctx, CExp* node);
 
-// static std::unique_ptr<TacPlainOperand> const_res_instr(CConstant* node) {
-//     std::shared_ptr<TacValue> val = repr_value(node);
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) const_res_instr(CConstant* node) {
+    shared_ptr_t(TacValue) val = repr_value(node->_base);
+    return make_TacPlainOperand(&val);
+}
 
-// static TIdentifier make_literal_identifier(Ctx ctx, CStringLiteral* node) {
-//     string_t value = string_literal_to_const(node->value);
-//     return make_string_identifier(ctx->identifiers, &value);
-// }
+static TIdentifier make_literal_identifier(Ctx ctx, CStringLiteral* node) {
+    string_t value = string_literal_to_const(node->value);
+    return make_string_identifier(ctx->identifiers, &value);
+}
 
-// static std::unique_ptr<TacPlainOperand> string_res_instr(Ctx ctx, CString* node) {
-//     TIdentifier string_const_label;
-//     {
-//         TIdentifier string_const = make_literal_identifier(ctx, node->literal.get());
-//         if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
-//             string_const_label = map_get(ctx->frontend->string_const_table, string_const);
-//         }
-//         else {
-//             string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
-//             map_add(ctx->frontend->string_const_table, string_const, string_const_label);
-//             std::shared_ptr<Type> constant_type;
-//             {
-//                 TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
-//                 std::shared_ptr<Type> elem_type = std::make_shared<Char>();
-//                 constant_type = std::make_shared<Array>(size, std::move(elem_type));
-//             }
-//             std::unique_ptr<IdentifierAttr> constant_attrs;
-//             {
-//                 std::shared_ptr<StaticInit> static_init;
-//                 {
-//                     std::shared_ptr<CStringLiteral> literal = node->literal;
-//                     static_init = std::make_shared<StringInit>(string_const, true, std::move(literal));
-//                 }
-//                 constant_attrs = std::make_unique<ConstantAttr>(std::move(static_init));
-//             }
-//             std::unique_ptr<Symbol> symbol =
-//                 std::make_unique<Symbol>(std::move(constant_type), std::move(constant_attrs));
-//             map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
-//         }
-//     }
-//     std::shared_ptr<TacValue> val = std::make_shared<TacVariable>(string_const_label);
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) string_res_instr(Ctx ctx, CString* node) {
+    TIdentifier string_const_label;
+    {
+        TIdentifier string_const = make_literal_identifier(ctx, node->literal);
+        if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
+            string_const_label = map_get(ctx->frontend->string_const_table, string_const);
+        }
+        else {
+            string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
+            map_add(ctx->frontend->string_const_table, string_const, string_const_label);
+            shared_ptr_t(Type) constant_type = sptr_new();
+            {
+                TLong size = ((TLong)vec_size(node->literal->value)) + 1l;
+                shared_ptr_t(Type) elem_type = make_Char();
+                constant_type = make_Array(size, &elem_type);
+            }
+            unique_ptr_t(IdentifierAttr) constant_attrs = uptr_new();
+            {
+                shared_ptr_t(StaticInit) static_init = sptr_new();
+                {
+                    shared_ptr_t(CStringLiteral) literal = sptr_new();
+                    sptr_copy(CStringLiteral, node->literal, literal);
+                    static_init = make_StringInit(string_const, true, &literal);
+                }
+                constant_attrs = make_ConstantAttr(&static_init);
+            }
+            unique_ptr_t(Symbol) symbol = make_Symbol(&constant_type, &constant_attrs);
+            map_move_add(ctx->frontend->symbol_table, string_const_label, symbol);
+        }
+    }
+    shared_ptr_t(TacValue) val = make_TacVariable(string_const_label);
+    return make_TacPlainOperand(&val);
+}
 
-// static std::unique_ptr<TacPlainOperand> var_res_instr(CVar* node) {
-//     std::shared_ptr<TacValue> val = repr_value(node);
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) var_res_instr(CVar* node) {
+    shared_ptr_t(TacValue) val = repr_value(node->_base);
+    return make_TacPlainOperand(&val);
+}
 
-// static bool is_type_signed(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_Double_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_type_signed(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static TInt get_scalar_size(Type* type) {
-//     switch (type->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_UChar_t:
-//             return 1;
-//         case AST_Int_t:
-//         case AST_UInt_t:
-//             return 4;
-//         case AST_Long_t:
-//         case AST_Double_t:
-//         case AST_ULong_t:
-//         case AST_Pointer_t:
-//             return 8;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static TInt get_scalar_size(Type* type) {
+    switch (type->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
+            return 1;
+        case AST_Int_t:
+        case AST_UInt_t:
+            return 4;
+        case AST_Long_t:
+        case AST_Double_t:
+        case AST_ULong_t:
+        case AST_Pointer_t:
+            return 8;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static TLong get_type_scale(Ctx ctx, Type* type);
+static TLong get_type_scale(Ctx ctx, Type* type);
 
-// static TLong get_arr_scale(Ctx ctx, Array* arr_type) {
-//     TLong size = arr_type->size;
-//     while (arr_type->elem_type->type() == AST_Array_t) {
-//         arr_type = static_cast<Array*>(arr_type->elem_type.get());
-//         size *= arr_type->size;
-//     }
-//     return get_type_scale(ctx, arr_type->elem_type.get()) * size;
-// }
+static TLong get_arr_scale(Ctx ctx, Array* arr_type) {
+    TLong size = arr_type->size;
+    while (arr_type->elem_type->type == AST_Array_t) {
+        arr_type = &arr_type->elem_type->get._Array;
+        size *= arr_type->size;
+    }
+    return get_type_scale(ctx, arr_type->elem_type) * size;
+}
 
-// static TLong get_struct_scale(Ctx ctx, Structure* struct_type) {
-//     return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
-// }
+static TLong get_struct_scale(Ctx ctx, Structure* struct_type) {
+    return map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+}
 
-// static TLong get_type_scale(Ctx ctx, Type* type) {
-//     switch (type->type()) {
-//         case AST_Array_t:
-//             return get_arr_scale(ctx, static_cast<Array*>(type));
-//         case AST_Structure_t:
-//             return get_struct_scale(ctx, static_cast<Structure*>(type));
-//         default:
-//             return get_scalar_size(type);
-//     }
-// }
+static TLong get_type_scale(Ctx ctx, Type* type) {
+    switch (type->type) {
+        case AST_Array_t:
+            return get_arr_scale(ctx, &type->get._Array);
+        case AST_Structure_t:
+            return get_struct_scale(ctx, &type->get._Structure);
+        default:
+            return get_scalar_size(type);
+    }
+}
 
-// static std::unique_ptr<TacPlainOperand> cast_complete_res_instr(Ctx ctx, CCast* node) {
-//     std::shared_ptr<TacValue> src = repr_exp_instr(ctx, node->exp.get());
-//     if (node->target_type->type() == node->exp->exp_type->type()) {
-//         return std::make_unique<TacPlainOperand>(std::move(src));
-//     }
+static unique_ptr_t(TacExpResult) cast_complete_res_instr(Ctx ctx, CCast* node) {
+    shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
+    if (node->target_type->type == node->exp->exp_type->type) {
+        return make_TacPlainOperand(&src);
+    }
 
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     if (node->exp->exp_type->type() == AST_Double_t) {
-//         if (is_type_signed(node->target_type.get())) {
-//             push_instr(ctx, std::make_unique<TacDoubleToInt>(std::move(src), std::move(dst_cp)));
-//         }
-//         else {
-//             push_instr(ctx, std::make_unique<TacDoubleToUInt>(std::move(src), std::move(dst_cp)));
-//         }
-//         return std::make_unique<TacPlainOperand>(std::move(dst));
-//     }
-//     else if (node->target_type->type() == AST_Double_t) {
-//         if (is_type_signed(node->exp->exp_type.get())) {
-//             push_instr(ctx, std::make_unique<TacIntToDouble>(std::move(src), std::move(dst_cp)));
-//         }
-//         else {
-//             push_instr(ctx, std::make_unique<TacUIntToDouble>(std::move(src), std::move(dst_cp)));
-//         }
-//         return std::make_unique<TacPlainOperand>(std::move(dst));
-//     }
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    if (node->exp->exp_type->type == AST_Double_t) {
+        if (is_type_signed(node->target_type)) {
+            push_instr(ctx, make_TacDoubleToInt(&src, &dst_cp));
+        }
+        else {
+            push_instr(ctx, make_TacDoubleToUInt(&src, &dst_cp));
+        }
+    }
+    else if (node->target_type->type == AST_Double_t) {
+        if (is_type_signed(node->exp->exp_type)) {
+            push_instr(ctx, make_TacIntToDouble(&src, &dst_cp));
+        }
+        else {
+            push_instr(ctx, make_TacUIntToDouble(&src, &dst_cp));
+        }
+    }
+    else {
+        TInt target_type_size = get_scalar_size(node->target_type);
+        TInt inner_type_size = get_scalar_size(node->exp->exp_type);
+        if (target_type_size == inner_type_size) {
+            push_instr(ctx, make_TacCopy(&src, &dst_cp));
+        }
+        else if (target_type_size < inner_type_size) {
+            push_instr(ctx, make_TacTruncate(&src, &dst_cp));
+        }
+        else if (is_type_signed(node->exp->exp_type)) {
+            push_instr(ctx, make_TacSignExtend(&src, &dst_cp));
+        }
+        else {
+            push_instr(ctx, make_TacZeroExtend(&src, &dst_cp));
+        }
+    }
+    return make_TacPlainOperand(&dst);
+}
 
-//     TInt target_type_size = get_scalar_size(node->target_type.get());
-//     TInt inner_type_size = get_scalar_size(node->exp->exp_type.get());
-//     if (target_type_size == inner_type_size) {
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src), std::move(dst_cp)));
-//     }
-//     else if (target_type_size < inner_type_size) {
-//         push_instr(ctx, std::make_unique<TacTruncate>(std::move(src), std::move(dst_cp)));
-//     }
-//     else if (is_type_signed(node->exp->exp_type.get())) {
-//         push_instr(ctx, std::make_unique<TacSignExtend>(std::move(src), std::move(dst_cp)));
-//     }
-//     else {
-//         push_instr(ctx, std::make_unique<TacZeroExtend>(std::move(src), std::move(dst_cp)));
-//     }
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) cast_void_res_instr(Ctx ctx, CCast* node) {
+    shared_ptr_t(TacValue) dst = repr_exp_instr(ctx, node->exp);
+    free_TacValue(&dst);
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> cast_void_res_instr(Ctx ctx, CCast* node) {
-//     repr_exp_instr(ctx, node->exp.get());
-//     std::shared_ptr<TacValue> dst;
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) cast_res_instr(Ctx ctx, CCast* node) {
+    if (node->target_type->type == AST_Void_t) {
+        return cast_void_res_instr(ctx, node);
+    }
+    else {
+        return cast_complete_res_instr(ctx, node);
+    }
+}
 
-// static std::unique_ptr<TacPlainOperand> cast_res_instr(Ctx ctx, CCast* node) {
-//     if (node->target_type->type() == AST_Void_t) {
-//         return cast_void_res_instr(ctx, node);
-//     }
-//     else {
-//         return cast_complete_res_instr(ctx, node);
-//     }
-// }
+static unique_ptr_t(TacExpResult) unary_res_instr(Ctx ctx, CUnary* node) {
+    shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    unique_ptr_t(TacUnaryOp) unop = repr_unop(node->unop);
+    push_instr(ctx, make_TacUnary(&unop, &src, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> unary_res_instr(Ctx ctx, CUnary* node) {
-//     std::shared_ptr<TacValue> src = repr_exp_instr(ctx, node->exp.get());
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     std::unique_ptr<TacUnaryOp> unop = repr_unop(node->unop.get());
-//     push_instr(ctx, std::make_unique<TacUnary>(std::move(unop), std::move(src), std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_any_res_instr(Ctx ctx, CBinary* node);
 
-// static std::unique_ptr<TacPlainOperand> binary_any_res_instr(Ctx ctx, CBinary* node);
+static unique_ptr_t(TacExpResult) binary_add_ptr_res_instr(Ctx ctx, CBinary* node) {
+    TLong scale;
+    shared_ptr_t(TacValue) src_ptr = sptr_new();
+    shared_ptr_t(TacValue) idx = sptr_new();
+    if (node->exp_left->exp_type->type == AST_Pointer_t) {
+        scale = get_type_scale(ctx, node->exp_left->exp_type->get._Pointer.ref_type);
+        src_ptr = repr_exp_instr(ctx, node->exp_left);
+        idx = repr_exp_instr(ctx, node->exp_right);
+    }
+    else {
+        scale = get_type_scale(ctx, node->exp_right->exp_type->get._Pointer.ref_type);
+        src_ptr = repr_exp_instr(ctx, node->exp_right);
+        idx = repr_exp_instr(ctx, node->exp_left);
+    }
+    shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_add_ptr_res_instr(Ctx ctx, CBinary* node) {
-//     TLong scale;
-//     std::shared_ptr<TacValue> src_ptr;
-//     std::shared_ptr<TacValue> idx;
-//     if (node->exp_left->exp_type->type() == AST_Pointer_t) {
-//         scale = get_type_scale(ctx, static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
-//         src_ptr = repr_exp_instr(ctx, node->exp_left.get());
-//         idx = repr_exp_instr(ctx, node->exp_right.get());
-//     }
-//     else {
-//         scale = get_type_scale(ctx, static_cast<Pointer*>(node->exp_right->exp_type.get())->ref_type.get());
-//         src_ptr = repr_exp_instr(ctx, node->exp_right.get());
-//         idx = repr_exp_instr(ctx, node->exp_left.get());
-//     }
-//     std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacAddPtr>(scale, std::move(src_ptr), std::move(idx), std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_add_res_instr(Ctx ctx, CBinary* node) {
+    if (node->exp_left->exp_type->type == AST_Pointer_t || node->exp_right->exp_type->type == AST_Pointer_t) {
+        return binary_add_ptr_res_instr(ctx, node);
+    }
+    else {
+        return binary_any_res_instr(ctx, node);
+    }
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_add_res_instr(Ctx ctx, CBinary* node) {
-//     if (node->exp_left->exp_type->type() == AST_Pointer_t || node->exp_right->exp_type->type() == AST_Pointer_t) {
-//         return binary_add_ptr_res_instr(ctx, node);
-//     }
-//     else {
-//         return binary_any_res_instr(ctx, node);
-//     }
-// }
+static unique_ptr_t(TacExpResult) binary_sub_to_ptr_res_instr(Ctx ctx, CBinary* node) {
+    TLong scale = get_type_scale(ctx, node->exp_left->exp_type->get._Pointer.ref_type);
+    shared_ptr_t(TacValue) src_ptr = repr_exp_instr(ctx, node->exp_left);
+    shared_ptr_t(TacValue) idx = sptr_new();
+    {
+        idx = repr_exp_instr(ctx, node->exp_right);
+        shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        unique_ptr_t(TacUnaryOp) unop = make_TacNegate();
+        push_instr(ctx, make_TacUnary(&unop, &idx, &dst_cp));
+        sptr_move(TacValue, dst, idx);
+    }
+    shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_sub_to_ptr_res_instr(Ctx ctx, CBinary* node) {
-//     TLong scale = get_type_scale(ctx, static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
-//     std::shared_ptr<TacValue> src_ptr = repr_exp_instr(ctx, node->exp_left.get());
-//     std::shared_ptr<TacValue> idx;
-//     {
-//         idx = repr_exp_instr(ctx, node->exp_right.get());
-//         std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         std::unique_ptr<TacUnaryOp> unop = std::make_unique<TacNegate>();
-//         push_instr(ctx, std::make_unique<TacUnary>(std::move(unop), std::move(idx), std::move(dst_cp)));
-//         idx = std::move(dst);
-//     }
-//     std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacAddPtr>(scale, std::move(src_ptr), std::move(idx), std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_subtract_ptr_res_instr(Ctx ctx, CBinary* node) {
+    shared_ptr_t(TacValue) src_1 = sptr_new();
+    {
+        src_1 = repr_exp_instr(ctx, node->exp_left);
+        shared_ptr_t(TacValue) src_2 = repr_exp_instr(ctx, node->exp_right);
+        shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        unique_ptr_t(TacBinaryOp) binop = make_TacSubtract();
+        push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
+        sptr_move(TacValue, dst, src_1);
+    }
+    shared_ptr_t(TacValue) src_2 = sptr_new();
+    {
+        TLong value = get_type_scale(ctx, node->exp_left->exp_type->get._Pointer.ref_type);
+        shared_ptr_t(CConst) constant = make_CConstLong(value);
+        src_2 = make_TacConstant(&constant);
+    }
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    unique_ptr_t(TacBinaryOp) binop = make_TacDivide();
+    push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_subtract_ptr_res_instr(Ctx ctx, CBinary* node) {
-//     std::shared_ptr<TacValue> src_1;
-//     {
-//         src_1 = repr_exp_instr(ctx, node->exp_left.get());
-//         std::shared_ptr<TacValue> src_2 = repr_exp_instr(ctx, node->exp_right.get());
-//         std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         std::unique_ptr<TacBinaryOp> binop = std::make_unique<TacSubtract>();
-//         push_instr(
-//             ctx, std::make_unique<TacBinary>(std::move(binop), std::move(src_1), std::move(src_2), std::move(dst_cp)));
-//         src_1 = std::move(dst);
-//     }
-//     std::shared_ptr<TacValue> src_2;
-//     {
-//         TLong value = get_type_scale(ctx, static_cast<Pointer*>(node->exp_left->exp_type.get())->ref_type.get());
-//         std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(value);
-//         src_2 = std::make_shared<TacConstant>(std::move(constant));
-//     }
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     std::unique_ptr<TacBinaryOp> binop = std::make_unique<TacDivide>();
-//     push_instr(
-//         ctx, std::make_unique<TacBinary>(std::move(binop), std::move(src_1), std::move(src_2), std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_subtract_res_instr(Ctx ctx, CBinary* node) {
+    if (node->exp_left->exp_type->type == AST_Pointer_t) {
+        if (node->exp_right->exp_type->type == AST_Pointer_t) {
+            return binary_subtract_ptr_res_instr(ctx, node);
+        }
+        else {
+            return binary_sub_to_ptr_res_instr(ctx, node);
+        }
+    }
+    else {
+        return binary_any_res_instr(ctx, node);
+    }
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_subtract_res_instr(Ctx ctx, CBinary* node) {
-//     if (node->exp_left->exp_type->type() == AST_Pointer_t) {
-//         if (node->exp_right->exp_type->type() == AST_Pointer_t) {
-//             return binary_subtract_ptr_res_instr(ctx, node);
-//         }
-//         else {
-//             return binary_sub_to_ptr_res_instr(ctx, node);
-//         }
-//     }
-//     else {
-//         return binary_any_res_instr(ctx, node);
-//     }
-// }
+static unique_ptr_t(TacExpResult) binary_and_res_instr(Ctx ctx, CBinary* node) {
+    TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Land_false);
+    TIdentifier target_true = repr_label_identifier(ctx->identifiers, LBL_Land_true);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    {
+        shared_ptr_t(TacValue) condition_left = repr_exp_instr(ctx, node->exp_left);
+        push_instr(ctx, make_TacJumpIfZero(target_false, &condition_left));
+    }
+    {
+        shared_ptr_t(TacValue) condition_right = repr_exp_instr(ctx, node->exp_right);
+        push_instr(ctx, make_TacJumpIfZero(target_false, &condition_right));
+    }
+    {
+        shared_ptr_t(CConst) constant = make_CConstInt(1);
+        shared_ptr_t(TacValue) src_true = make_TacConstant(&constant);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_true, &dst_cp));
+    }
+    push_instr(ctx, make_TacJump(target_true));
+    push_instr(ctx, make_TacLabel(target_false));
+    {
+        shared_ptr_t(CConst) constant = make_CConstInt(0);
+        shared_ptr_t(TacValue) src_false = make_TacConstant(&constant);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_false, &dst_cp));
+    }
+    push_instr(ctx, make_TacLabel(target_true));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_and_res_instr(Ctx ctx, CBinary* node) {
-//     TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Land_false);
-//     TIdentifier target_true = repr_label_identifier(ctx->identifiers, LBL_Land_true);
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     {
-//         std::shared_ptr<TacValue> condition_left = repr_exp_instr(ctx, node->exp_left.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfZero>(target_false, std::move(condition_left)));
-//     }
-//     {
-//         std::shared_ptr<TacValue> condition_right = repr_exp_instr(ctx, node->exp_right.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfZero>(target_false, std::move(condition_right)));
-//     }
-//     {
-//         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
-//         std::shared_ptr<TacValue> src_true = std::make_shared<TacConstant>(std::move(constant));
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_true), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacJump>(target_true));
-//     push_instr(ctx, std::make_unique<TacLabel>(target_false));
-//     {
-//         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
-//         std::shared_ptr<TacValue> src_false = std::make_shared<TacConstant>(std::move(constant));
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_false), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacLabel>(target_true));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_or_res_instr(Ctx ctx, CBinary* node) {
+    TIdentifier target_true = repr_label_identifier(ctx->identifiers, LBL_Lor_true);
+    TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lor_false);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    {
+        shared_ptr_t(TacValue) condition_left = repr_exp_instr(ctx, node->exp_left);
+        push_instr(ctx, make_TacJumpIfNotZero(target_true, &condition_left));
+    }
+    {
+        shared_ptr_t(TacValue) condition_right = repr_exp_instr(ctx, node->exp_right);
+        push_instr(ctx, make_TacJumpIfNotZero(target_true, &condition_right));
+    }
+    {
+        shared_ptr_t(CConst) constant = make_CConstInt(0);
+        shared_ptr_t(TacValue) src_false = make_TacConstant(&constant);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_false, &dst_cp));
+    }
+    push_instr(ctx, make_TacJump(target_false));
+    push_instr(ctx, make_TacLabel(target_true));
+    {
+        shared_ptr_t(CConst) constant = make_CConstInt(1);
+        shared_ptr_t(TacValue) src_true = make_TacConstant(&constant);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_true, &dst_cp));
+    }
+    push_instr(ctx, make_TacLabel(target_false));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_or_res_instr(Ctx ctx, CBinary* node) {
-//     TIdentifier target_true = repr_label_identifier(ctx->identifiers, LBL_Lor_true);
-//     TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lor_false);
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     {
-//         std::shared_ptr<TacValue> condition_left = repr_exp_instr(ctx, node->exp_left.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfNotZero>(target_true, std::move(condition_left)));
-//     }
-//     {
-//         std::shared_ptr<TacValue> condition_right = repr_exp_instr(ctx, node->exp_right.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfNotZero>(target_true, std::move(condition_right)));
-//     }
-//     {
-//         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
-//         std::shared_ptr<TacValue> src_false = std::make_shared<TacConstant>(std::move(constant));
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_false), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacJump>(target_false));
-//     push_instr(ctx, std::make_unique<TacLabel>(target_true));
-//     {
-//         std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(1);
-//         std::shared_ptr<TacValue> src_true = std::make_shared<TacConstant>(std::move(constant));
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_true), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacLabel>(target_false));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) binary_any_res_instr(Ctx ctx, CBinary* node) {
+    shared_ptr_t(TacValue) src1 = repr_exp_instr(ctx, node->exp_left);
+    shared_ptr_t(TacValue) src2 = repr_exp_instr(ctx, node->exp_right);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    unique_ptr_t(TacBinaryOp) binop = repr_binop(node->binop);
+    push_instr(ctx, make_TacBinary(&binop, &src1, &src2, &dst_cp));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> binary_any_res_instr(Ctx ctx, CBinary* node) {
-//     std::shared_ptr<TacValue> src1 = repr_exp_instr(ctx, node->exp_left.get());
-//     std::shared_ptr<TacValue> src2 = repr_exp_instr(ctx, node->exp_right.get());
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     std::unique_ptr<TacBinaryOp> binop = repr_binop(node->binop.get());
-//     push_instr(ctx, std::make_unique<TacBinary>(std::move(binop), std::move(src1), std::move(src2), std::move(dst_cp)));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
-
-// static std::unique_ptr<TacPlainOperand> binary_res_instr(Ctx ctx, CBinary* node) {
-//     switch (node->binop->type()) {
-//         case AST_CAdd_t:
-//             return binary_add_res_instr(ctx, node);
-//         case AST_CSubtract_t:
-//             return binary_subtract_res_instr(ctx, node);
-//         case AST_CAnd_t:
-//             return binary_and_res_instr(ctx, node);
-//         case AST_COr_t:
-//             return binary_or_res_instr(ctx, node);
-//         default:
-//             return binary_any_res_instr(ctx, node);
-//     }
-// }
+static unique_ptr_t(TacExpResult) binary_res_instr(Ctx ctx, CBinary* node) {
+    switch (node->binop->type) {
+        case AST_CAdd_t:
+            return binary_add_res_instr(ctx, node);
+        case AST_CSubtract_t:
+            return binary_subtract_res_instr(ctx, node);
+        case AST_CAnd_t:
+            return binary_and_res_instr(ctx, node);
+        case AST_COr_t:
+            return binary_or_res_instr(ctx, node);
+        default:
+            return binary_any_res_instr(ctx, node);
+    }
+}
 
 // static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, std::shared_ptr<TacValue>* dst) {
 //     std::shared_ptr<TacValue> src = res->val;
@@ -645,10 +660,10 @@ typedef TacReprContext* Ctx;
 //         std::shared_ptr<TacValue> condition = repr_exp_instr(ctx, node->condition.get());
 //         push_instr(ctx, std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
 //     }
-//     repr_exp_instr(ctx, node->exp_middle.get());
+//     repr_exp_instr(ctx, node->exp_middle.get()); // TODO get return value
 //     push_instr(ctx, std::make_unique<TacJump>(target_false));
 //     push_instr(ctx, std::make_unique<TacLabel>(target_else));
-//     repr_exp_instr(ctx, node->exp_right.get());
+//     repr_exp_instr(ctx, node->exp_right.get()); // TODO get return value
 //     push_instr(ctx, std::make_unique<TacLabel>(target_false));
 //     return std::make_unique<TacPlainOperand>(std::move(dst));
 // }
