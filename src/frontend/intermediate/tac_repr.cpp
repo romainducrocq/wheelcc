@@ -620,10 +620,12 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
             plain_op_assign_res_instr(ctx, &res->get._TacPlainOperand, &src);
             break;
         case AST_TacDereferencedPointer_t: {
+            // TODO free res here
             res = deref_ptr_assign_res_instr(ctx, &res->get._TacDereferencedPointer, &src);
             break;
         }
         case AST_TacSubObject_t: {
+            // TODO and here
             res = sub_obj_assign_res_instr(ctx, &res->get._TacSubObject, &src);
             break;
         }
@@ -631,6 +633,7 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
             THROW_ABORT;
     }
     if (node->unop && node->unop->type == AST_CPostfix_t) {
+        // TODO and here ?
         return res_postfix;
     }
     else {
@@ -638,54 +641,58 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
     }
 }
 
-// static std::unique_ptr<TacPlainOperand> conditional_complete_res_instr(Ctx ctx, CConditional* node) {
-//     TIdentifier target_else = repr_label_identifier(ctx->identifiers, LBL_Lternary_else);
-//     TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lternary_false);
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     {
-//         std::shared_ptr<TacValue> condition = repr_exp_instr(ctx, node->condition.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
-//     }
-//     {
-//         std::shared_ptr<TacValue> src_middle = repr_exp_instr(ctx, node->exp_middle.get());
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_middle), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacJump>(target_false));
-//     push_instr(ctx, std::make_unique<TacLabel>(target_else));
-//     {
-//         std::shared_ptr<TacValue> src_right = repr_exp_instr(ctx, node->exp_right.get());
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src_right), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<TacLabel>(target_false));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) conditional_complete_res_instr(Ctx ctx, CConditional* node) {
+    TIdentifier target_else = repr_label_identifier(ctx->identifiers, LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lternary_false);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
+    {
+        shared_ptr_t(TacValue) condition = repr_exp_instr(ctx, node->condition);
+        push_instr(ctx, make_TacJumpIfZero(target_else, &condition));
+    }
+    {
+        shared_ptr_t(TacValue) src_middle = repr_exp_instr(ctx, node->exp_middle);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_middle, &dst_cp));
+    }
+    push_instr(ctx, make_TacJump(target_false));
+    push_instr(ctx, make_TacLabel(target_else));
+    {
+        shared_ptr_t(TacValue) src_right = repr_exp_instr(ctx, node->exp_right);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacCopy(&src_right, &dst_cp));
+    }
+    push_instr(ctx, make_TacLabel(target_false));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> conditional_void_res_instr(Ctx ctx, CConditional* node) {
-//     TIdentifier target_else = repr_label_identifier(ctx->identifiers, LBL_Lternary_else);
-//     TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lternary_false);
-//     std::shared_ptr<TacValue> dst;
-//     {
-//         std::shared_ptr<TacValue> condition = repr_exp_instr(ctx, node->condition.get());
-//         push_instr(ctx, std::make_unique<TacJumpIfZero>(target_else, std::move(condition)));
-//     }
-//     repr_exp_instr(ctx, node->exp_middle.get()); // TODO get return value
-//     push_instr(ctx, std::make_unique<TacJump>(target_false));
-//     push_instr(ctx, std::make_unique<TacLabel>(target_else));
-//     repr_exp_instr(ctx, node->exp_right.get()); // TODO get return value
-//     push_instr(ctx, std::make_unique<TacLabel>(target_false));
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) conditional_void_res_instr(Ctx ctx, CConditional* node) {
+    TIdentifier target_else = repr_label_identifier(ctx->identifiers, LBL_Lternary_else);
+    TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lternary_false);
+    shared_ptr_t(TacValue) dst = sptr_new();
+    {
+        shared_ptr_t(TacValue) condition = repr_exp_instr(ctx, node->condition);
+        push_instr(ctx, make_TacJumpIfZero(target_else, &condition));
+    }
+    dst = repr_exp_instr(ctx, node->exp_middle);
+    free_TacValue(&dst);
+    push_instr(ctx, make_TacJump(target_false));
+    push_instr(ctx, make_TacLabel(target_else));
+    dst = repr_exp_instr(ctx, node->exp_right);
+    free_TacValue(&dst);
+    push_instr(ctx, make_TacLabel(target_false));
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> conditional_res_instr(Ctx ctx, CConditional* node) {
-//     if (node->exp_middle->exp_type->type() == AST_Void_t) {
-//         return conditional_void_res_instr(ctx, node);
-//     }
-//     else {
-//         return conditional_complete_res_instr(ctx, node);
-//     }
-// }
+static unique_ptr_t(TacExpResult) conditional_res_instr(Ctx ctx, CConditional* node) {
+    if (node->exp_middle->exp_type->type == AST_Void_t) {
+        return conditional_void_res_instr(ctx, node);
+    }
+    else {
+        return conditional_complete_res_instr(ctx, node);
+    }
+}
 
 // static std::unique_ptr<TacPlainOperand> call_res_instr(Ctx ctx, CFunctionCall* node) {
 //     TIdentifier name = node->name;
