@@ -1174,22 +1174,23 @@ static error_t check_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t strto_fmt_1 = str_new(NULL);
     string_t strto_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    Type* fun_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
-    if (fun_type->type != AST_FunType_t) {
+    Symbol* fun_symbol = map_get(ctx->frontend->symbol_table, node->name);
+    FunType* fun_type = &fun_symbol->type_t->get._FunType;
+    if (fun_symbol->type_t->type != AST_FunType_t) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_var_used_as_fun, str_fmt_name(node->name, &name_fmt)));
     }
-    else if (vec_size(fun_type->get._FunType.param_types) != vec_size(node->args)) {
+    else if (vec_size(fun_type->param_types) != vec_size(node->args)) {
         strto_fmt_1 = str_to_string(vec_size(node->args));
-        strto_fmt_2 = str_to_string(vec_size(fun_type->get._FunType.param_types));
+        strto_fmt_2 = str_to_string(vec_size(fun_type->param_types));
         THROW_AT_LINE(node->_base->line,
             GET_SEMANTIC_MSG(MSG_call_with_wrong_argc, str_fmt_name(node->name, &name_fmt), strto_fmt_1, strto_fmt_2));
     }
     for (size_t i = 0; i < vec_size(node->args); ++i) {
-        if (!is_same_type(node->args[i]->exp_type, fun_type->get._FunType.param_types[i])) {
-            TRY(cast_assign(ctx, &fun_type->get._FunType.param_types[i], &node->args[i]));
+        if (!is_same_type(node->args[i]->exp_type, fun_type->param_types[i])) {
+            TRY(cast_assign(ctx, &fun_type->param_types[i], &node->args[i]));
         }
     }
-    sptr_copy(Type, fun_type->get._FunType.ret_type, node->_base->exp_type);
+    sptr_copy(Type, fun_type->ret_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
     str_delete(strto_fmt_1);
@@ -1871,9 +1872,9 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
 
     if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
         Symbol* fun_symbol = map_get(ctx->frontend->symbol_table, node->name);
-        if (!(fun_symbol->type_t->type == AST_FunType_t
-                && vec_size(fun_symbol->type_t->get._FunType.param_types) == vec_size(node->params)
-                && is_same_fun_type(&node->fun_type->get._FunType, &fun_symbol->type_t->get._FunType))) {
+        FunType* fun_type = &fun_symbol->type_t->get._FunType;
+        if (!(fun_symbol->type_t->type == AST_FunType_t && vec_size(fun_type->param_types) == vec_size(node->params)
+                && is_same_fun_type(&node->fun_type->get._FunType, fun_type))) {
             THROW_AT_LINE(node->line,
                 GET_SEMANTIC_MSG(MSG_redecl_fun_conflict, str_fmt_name(node->name, &name_fmt),
                     str_fmt_type(node->fun_type, &type_fmt_1), str_fmt_type(fun_symbol->type_t, &type_fmt_2)));
