@@ -45,3 +45,4 @@ format.out.*
 /src/frontend/parser/parser.cpp
 /src/frontend/parser/errors.cpp
 /src/frontend/parser/lexer.cpp
+/src/backend/assembly/registers.cpp
