@@ -988,7 +988,10 @@ static void ret_statement_instr(Ctx ctx, CReturn* node) {
     push_instr(ctx, make_TacReturn(&val));
 }
 
-static void exp_statement_instr(Ctx ctx, CExpression* node) { repr_res_instr(ctx, node->exp); }
+static void exp_statement_instr(Ctx ctx, CExpression* node) {
+    unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->exp);
+    free_TacExpResult(&res);
+}
 
 static void if_only_statement_instr(Ctx ctx, CIf* node) {
     TIdentifier target_false = repr_label_identifier(ctx->identifiers, LBL_Lif_false);
@@ -1067,7 +1070,8 @@ static void for_init_decl_instr(Ctx ctx, CInitDecl* node) { var_decl_instr(ctx, 
 
 static void for_init_exp_instr(Ctx ctx, CInitExp* node) {
     if (node->init) {
-        repr_res_instr(ctx, node->init);
+        unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->init);
+        free_TacExpResult(&res);
     }
 }
 
@@ -1097,7 +1101,8 @@ static void for_statement_instr(Ctx ctx, CFor* node) {
     statement_instr(ctx, node->body);
     push_instr(ctx, make_TacLabel(target_continue));
     if (node->post) {
-        repr_res_instr(ctx, node->post);
+        unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->post);
+        free_TacExpResult(&res);
     }
     push_instr(ctx, make_TacJump(target_for_start));
     push_instr(ctx, make_TacLabel(target_break));
