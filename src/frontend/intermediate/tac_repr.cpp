@@ -522,26 +522,28 @@ static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_
     push_instr(ctx, make_TacCopy(src, &dst));
 }
 
-static unique_ptr_t(TacExpResult)
-    deref_ptr_assign_res_instr(Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * src) {
+static void deref_ptr_assign_res_instr(
+    Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * src, unique_ptr_t(TacExpResult) * exp_res) {
     shared_ptr_t(TacValue) src_cp = sptr_new();
     sptr_copy(TacValue, *src, src_cp);
     shared_ptr_t(TacValue) dst = sptr_new();
     sptr_move(TacValue, res->val, dst);
     push_instr(ctx, make_TacStore(&src_cp, &dst));
-    return make_TacPlainOperand(src);
+    free_TacExpResult(exp_res);
+    *exp_res = make_TacPlainOperand(src);
 }
 
-static unique_ptr_t(TacExpResult) sub_obj_assign_res_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue) * src) {
+static void sub_obj_assign_res_instr(
+    Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue) * src, unique_ptr_t(TacExpResult) * exp_res) {
     TIdentifier dst_name = res->base_name;
     TLong offset = res->offset;
     shared_ptr_t(TacValue) src_cp = sptr_new();
     sptr_copy(TacValue, *src, src_cp);
     push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src_cp));
-    return make_TacPlainOperand(src);
+    free_TacExpResult(exp_res);
+    *exp_res = make_TacPlainOperand(src);
 }
 
-// TODO there is probably something here that is not freed
 static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
     shared_ptr_t(TacValue) src = sptr_new();
     unique_ptr_t(TacExpResult) res = uptr_new();
@@ -614,21 +616,17 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
         case AST_TacPlainOperand_t:
             plain_op_assign_res_instr(ctx, &res->get._TacPlainOperand, &src);
             break;
-        case AST_TacDereferencedPointer_t: {
-            // TODO free res here
-            res = deref_ptr_assign_res_instr(ctx, &res->get._TacDereferencedPointer, &src);
+        case AST_TacDereferencedPointer_t:
+            deref_ptr_assign_res_instr(ctx, &res->get._TacDereferencedPointer, &src, &res);
             break;
-        }
-        case AST_TacSubObject_t: {
-            // TODO and here
-            res = sub_obj_assign_res_instr(ctx, &res->get._TacSubObject, &src);
+        case AST_TacSubObject_t:
+            sub_obj_assign_res_instr(ctx, &res->get._TacSubObject, &src, &res);
             break;
-        }
         default:
             THROW_ABORT;
     }
     if (node->unop && node->unop->type == AST_CPostfix_t) {
-        // TODO and here ?
+        free_TacExpResult(&res);
         return res_postfix;
     }
     else {
@@ -722,13 +720,14 @@ static void plain_op_addrof_res_instr(Ctx ctx, TacPlainOperand* res, CAddrOf* no
     sptr_move(TacValue, dst, res->val);
 }
 
-static unique_ptr_t(TacExpResult) deref_ptr_addrof_res_instr(TacDereferencedPointer* res) {
+static void deref_ptr_addrof_res_instr(TacDereferencedPointer* res, unique_ptr_t(TacExpResult) * exp_res) {
     shared_ptr_t(TacValue) val = sptr_new();
     sptr_move(TacValue, res->val, val);
-    return make_TacPlainOperand(&val);
+    free_TacExpResult(exp_res);
+    *exp_res = make_TacPlainOperand(&val);
 }
 
-static unique_ptr_t(TacExpResult) sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node) {
+static void sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node, unique_ptr_t(TacExpResult) * exp_res) {
     shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
     {
         TIdentifier name = res->base_name;
@@ -750,7 +749,8 @@ static unique_ptr_t(TacExpResult) sub_obj_addrof_res_instr(Ctx ctx, TacSubObject
         sptr_copy(TacValue, dst, dst_cp);
         push_instr(ctx, make_TacAddPtr(1l, &src_ptr, &idx, &dst_cp));
     }
-    return make_TacPlainOperand(&dst);
+    free_TacExpResult(exp_res);
+    *exp_res = make_TacPlainOperand(&dst);
 }
 
 static unique_ptr_t(TacExpResult) addrof_res_instr(Ctx ctx, CAddrOf* node) {
@@ -759,16 +759,12 @@ static unique_ptr_t(TacExpResult) addrof_res_instr(Ctx ctx, CAddrOf* node) {
         case AST_TacPlainOperand_t:
             plain_op_addrof_res_instr(ctx, &res->get._TacPlainOperand, node);
             break;
-        case AST_TacDereferencedPointer_t: {
-            // TODO for sure free here ?
-            res = deref_ptr_addrof_res_instr(&res->get._TacDereferencedPointer);
+        case AST_TacDereferencedPointer_t:
+            deref_ptr_addrof_res_instr(&res->get._TacDereferencedPointer, &res);
             break;
-        }
-        case AST_TacSubObject_t: {
-            // TODO and here ?
-            res = sub_obj_addrof_res_instr(ctx, &res->get._TacSubObject, node);
+        case AST_TacSubObject_t:
+            sub_obj_addrof_res_instr(ctx, &res->get._TacSubObject, node, &res);
             break;
-        }
         default:
             THROW_ABORT;
     }
@@ -816,11 +812,12 @@ static unique_ptr_t(TacExpResult) sizeoft_res_instr(Ctx ctx, CSizeOfT* node) {
     return make_TacPlainOperand(&val);
 }
 
-static unique_ptr_t(TacExpResult) plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
+static void plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset, unique_ptr_t(TacExpResult) * exp_res) {
     THROW_ABORT_IF(res->val->type != AST_TacVariable_t);
     TIdentifier base_name = res->val->get._TacVariable.name;
     TLong offset = member_offset;
-    return make_TacSubObject(base_name, offset);
+    free_TacExpResult(exp_res);
+    *exp_res = make_TacSubObject(base_name, offset);
 }
 
 static void deref_ptr_dot_res_instr(Ctx ctx, TacDereferencedPointer* res, CDot* node, TLong member_offset) {
@@ -850,11 +847,9 @@ static unique_ptr_t(TacExpResult) dot_res_instr(Ctx ctx, CDot* node) {
     TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
     unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->structure);
     switch (res->type) {
-        case AST_TacPlainOperand_t: {
-            // TODO see here
-            res = plain_op_dot_res_instr(&res->get._TacPlainOperand, member_offset);
+        case AST_TacPlainOperand_t:
+            plain_op_dot_res_instr(&res->get._TacPlainOperand, member_offset, &res);
             break;
-        }
         case AST_TacDereferencedPointer_t:
             deref_ptr_dot_res_instr(ctx, &res->get._TacDereferencedPointer, node, member_offset);
             break;
@@ -956,20 +951,28 @@ static shared_ptr_t(TacValue) sub_obj_exp_instr(Ctx ctx, TacSubObject* res, CExp
     return dst;
 }
 
-// TODO check the whole res = thing
 // exp_result = PlainOperand(val) | DereferencedPointer(val) | SubObject(val)
 static shared_ptr_t(TacValue) repr_exp_instr(Ctx ctx, CExp* node) {
+    shared_ptr_t(TacValue) val = sptr_new();
     unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node);
     switch (res->type) {
-        case AST_TacPlainOperand_t:
-            return plain_op_exp_instr(&res->get._TacPlainOperand);
-        case AST_TacDereferencedPointer_t:
-            return deref_ptr_exp_instr(ctx, &res->get._TacDereferencedPointer, node);
-        case AST_TacSubObject_t:
-            return sub_obj_exp_instr(ctx, &res->get._TacSubObject, node);
+        case AST_TacPlainOperand_t: {
+            val = plain_op_exp_instr(&res->get._TacPlainOperand);
+            break;
+        }
+        case AST_TacDereferencedPointer_t: {
+            val = deref_ptr_exp_instr(ctx, &res->get._TacDereferencedPointer, node);
+            break;
+        }
+        case AST_TacSubObject_t: {
+            val = sub_obj_exp_instr(ctx, &res->get._TacSubObject, node);
+            break;
+        }
         default:
             THROW_ABORT;
     }
+    free_TacExpResult(&res);
+    return val;
 }
 
 static void repr_block(Ctx ctx, CBlock* node);
@@ -1119,8 +1122,8 @@ static void switch_statement_instr(Ctx ctx, CSwitch* node) {
             }
             push_instr(ctx, make_TacJumpIfNotZero(target_case, &case_match));
         }
+        free_TacValue(&match);
     }
-    // TODO free sptr after copies in foor loop
     if (node->is_default) {
         TIdentifier target_default = repr_loop_identifier(ctx->identifiers, LBL_Ldefault, node->target);
         push_instr(ctx, make_TacJump(target_default));
