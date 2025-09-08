@@ -25,9 +25,9 @@ typedef struct StackFixContext {
 
 typedef StackFixContext* Ctx;
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Pseudo register replacement
+// Pseudo register replacement
 
 // static std::shared_ptr<AsmData> pseudo_data(AsmPseudo* node) {
 //     TIdentifier name = node->name;
@@ -458,24 +458,24 @@ typedef StackFixContext* Ctx;
 //     }
 // }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Instruction fix up
+// Instruction fix up
 
-// std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte) {
-//     std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmSub>();
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     std::shared_ptr<AsmOperand> src;
-//     {
-//         TULong value = (TULong)byte;
-//         bool is_byte = byte <= 127l && byte >= -128l;
-//         bool is_quad = byte > 2147483647l || byte < -2147483648l;
-//         bool is_neg = byte < 0l;
-//         src = std::make_shared<AsmImm>(value, is_byte, is_quad, is_neg);
-//     }
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
-//     return std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type), std::move(src), std::move(dst));
-// }
+unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte) {
+    unique_ptr_t(AsmBinaryOp) binop = make_AsmSub();
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    {
+        TULong value = (TULong)byte;
+        bool is_byte = byte <= 127l && byte >= -128l;
+        bool is_quad = byte > 2147483647l || byte < -2147483648l;
+        bool is_neg = byte < 0l;
+        src = make_AsmImm(value, is_byte, is_quad, is_neg);
+    }
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Sp);
+    return make_AsmBinary(&binop, &asm_type, &src, &dst);
+}
 
 // static void push_fix_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) {
 //     vec_move_back(*ctx->p_fix_instrs, instr);

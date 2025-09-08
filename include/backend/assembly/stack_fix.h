@@ -5,7 +5,7 @@
 
 #include "ast_t.h" // ast
 
-typedef struct AsmBinary AsmBinary;
+typedef struct AsmInstruction AsmInstruction;
 typedef struct AsmProgram AsmProgram;
 typedef struct BackEndContext BackEndContext;
 
@@ -21,7 +21,7 @@ typedef struct BackEndContext BackEndContext;
 #ifdef __cplusplus
 extern "C" {
 #endif
-unique_ptr_t(AsmBinary) alloc_stack_bytes(TLong byte);
+unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node, BackEndContext* backend);
 #ifdef __cplusplus
 }
