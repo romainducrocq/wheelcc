@@ -54,161 +54,161 @@ typedef struct AsmGenContext {
 
 typedef AsmGenContext* Ctx;
 
-// static std::shared_ptr<AsmImm> char_imm_op(CConstChar* node) {
-//     TULong value = (TULong)node->value;
-//     bool is_neg = node->value < 0;
-//     return std::make_shared<AsmImm>(value, true, false, is_neg);
-// }
+static shared_ptr_t(AsmOperand) char_imm_op(CConstChar* node) {
+    TULong value = (TULong)node->value;
+    bool is_neg = node->value < 0;
+    return make_AsmImm(value, true, false, is_neg);
+}
 
-// static std::shared_ptr<AsmImm> int_imm_op(CConstInt* node) {
-//     TULong value = (TULong)node->value;
-//     bool is_byte = node->value <= 127 && node->value >= -128;
-//     bool is_neg = node->value < 0;
-//     return std::make_shared<AsmImm>(value, is_byte, false, is_neg);
-// }
+static shared_ptr_t(AsmOperand) int_imm_op(CConstInt* node) {
+    TULong value = (TULong)node->value;
+    bool is_byte = node->value <= 127 && node->value >= -128;
+    bool is_neg = node->value < 0;
+    return make_AsmImm(value, is_byte, false, is_neg);
+}
 
-// static std::shared_ptr<AsmImm> long_imm_op(CConstLong* node) {
-//     TULong value = (TULong)node->value;
-//     bool is_byte = node->value <= 127l && node->value >= -128l;
-//     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
-//     bool is_neg = node->value < 0l;
-//     return std::make_shared<AsmImm>(value, is_byte, is_quad, is_neg);
-// }
+static shared_ptr_t(AsmOperand) long_imm_op(CConstLong* node) {
+    TULong value = (TULong)node->value;
+    bool is_byte = node->value <= 127l && node->value >= -128l;
+    bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
+    bool is_neg = node->value < 0l;
+    return make_AsmImm(value, is_byte, is_quad, is_neg);
+}
 
-// static std::shared_ptr<AsmImm> uchar_imm(CConstUChar* node) {
-//     TULong value = (TULong)node->value;
-//     return std::make_shared<AsmImm>(value, true, false, false);
-// }
+static shared_ptr_t(AsmOperand) uchar_imm(CConstUChar* node) {
+    TULong value = (TULong)node->value;
+    return make_AsmImm(value, true, false, false);
+}
 
-// static std::shared_ptr<AsmImm> uint_imm_op(CConstUInt* node) {
-//     TULong value = (TULong)node->value;
-//     bool is_byte = node->value <= 255u;
-//     bool is_quad = node->value > 2147483647u;
-//     return std::make_shared<AsmImm>(value, is_byte, is_quad, false);
-// }
+static shared_ptr_t(AsmOperand) uint_imm_op(CConstUInt* node) {
+    TULong value = (TULong)node->value;
+    bool is_byte = node->value <= 255u;
+    bool is_quad = node->value > 2147483647u;
+    return make_AsmImm(value, is_byte, is_quad, false);
+}
 
-// static std::shared_ptr<AsmImm> ulong_imm_op(CConstULong* node) {
-//     TULong value = node->value;
-//     bool is_byte = node->value <= 255ul;
-//     bool is_quad = node->value > 2147483647ul;
-//     return std::make_shared<AsmImm>(value, is_byte, is_quad, false);
-// }
+static shared_ptr_t(AsmOperand) ulong_imm_op(CConstULong* node) {
+    TULong value = node->value;
+    bool is_byte = node->value <= 255ul;
+    bool is_quad = node->value > 2147483647ul;
+    return make_AsmImm(value, is_byte, is_quad, false);
+}
 
-// static TIdentifier repr_asm_label(Ctx ctx, ASM_LABEL_KIND asm_label_kind) {
-//     string_t name = str_new(NULL);
-//     switch (asm_label_kind) {
-//         case LBL_Lcomisd_nan: {
-//             name = str_new("comisd_nan");
-//             break;
-//         }
-//         case LBL_Ldouble: {
-//             name = str_new("double");
-//             break;
-//         }
-//         case LBL_Lsd2si_after: {
-//             name = str_new("sd2si_after");
-//             break;
-//         }
-//         case LBL_Lsd2si_out_of_range: {
-//             name = str_new("sd2si_out_of_range");
-//             break;
-//         }
-//         case LBL_Lsi2sd_after: {
-//             name = str_new("si2sd_after");
-//             break;
-//         }
-//         case LBL_Lsi2sd_out_of_range: {
-//             name = str_new("si2sd_out_of_range");
-//             break;
-//         }
-//         default:
-//             THROW_ABORT;
-//     }
-//     return make_label_identifier(ctx->identifiers, &name);
-// }
+static TIdentifier repr_asm_label(Ctx ctx, ASM_LABEL_KIND asm_label_kind) {
+    string_t name = str_new(NULL);
+    switch (asm_label_kind) {
+        case LBL_Lcomisd_nan: {
+            name = str_new("comisd_nan");
+            break;
+        }
+        case LBL_Ldouble: {
+            name = str_new("double");
+            break;
+        }
+        case LBL_Lsd2si_after: {
+            name = str_new("sd2si_after");
+            break;
+        }
+        case LBL_Lsd2si_out_of_range: {
+            name = str_new("sd2si_out_of_range");
+            break;
+        }
+        case LBL_Lsi2sd_after: {
+            name = str_new("si2sd_after");
+            break;
+        }
+        case LBL_Lsi2sd_out_of_range: {
+            name = str_new("si2sd_out_of_range");
+            break;
+        }
+        default:
+            THROW_ABORT;
+    }
+    return make_label_identifier(ctx->identifiers, &name);
+}
 
-// static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte);
+static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte);
 
-// static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
-//     string_t strto_binary = str_to_string(binary);
-//     return make_string_identifier(ctx->identifiers, &strto_binary);
-// }
+static TIdentifier make_binary_identifier(Ctx ctx, TULong binary) {
+    string_t strto_binary = str_to_string(binary);
+    return make_string_identifier(ctx->identifiers, &strto_binary);
+}
 
-// static std::shared_ptr<AsmData> dbl_static_const_op(Ctx ctx, TULong binary, TInt byte) {
-//     TIdentifier dbl_const_label;
-//     {
-//         TIdentifier dbl_const = make_binary_identifier(ctx, binary);
-//         if (map_find(ctx->dbl_const_table, dbl_const) != map_end()) {
-//             dbl_const_label = map_get(ctx->dbl_const_table, dbl_const);
-//         }
-//         else {
-//             dbl_const_label = repr_asm_label(ctx, LBL_Ldouble);
-//             map_add(ctx->dbl_const_table, dbl_const, dbl_const_label);
-//             dbl_static_const_toplvl(ctx, dbl_const_label, dbl_const, byte);
-//         }
-//     }
-//     return std::make_shared<AsmData>(dbl_const_label, 0l);
-// }
+static shared_ptr_t(AsmOperand) dbl_static_const_op(Ctx ctx, TULong binary, TInt byte) {
+    TIdentifier dbl_const_label;
+    {
+        TIdentifier dbl_const = make_binary_identifier(ctx, binary);
+        if (map_find(ctx->dbl_const_table, dbl_const) != map_end()) {
+            dbl_const_label = map_get(ctx->dbl_const_table, dbl_const);
+        }
+        else {
+            dbl_const_label = repr_asm_label(ctx, LBL_Ldouble);
+            map_add(ctx->dbl_const_table, dbl_const, dbl_const_label);
+            dbl_static_const_toplvl(ctx, dbl_const_label, dbl_const, byte);
+        }
+    }
+    return make_AsmData(dbl_const_label, 0l);
+}
 
-// static std::shared_ptr<AsmData> dbl_const_op(Ctx ctx, CConstDouble* node) {
-//     TULong binary = dbl_to_binary(node->value);
-//     TInt byte = binary == 9223372036854775808ul ? 16 : 8;
-//     return dbl_static_const_op(ctx, binary, byte);
-// }
+static shared_ptr_t(AsmOperand) dbl_const_op(Ctx ctx, CConstDouble* node) {
+    TULong binary = dbl_to_binary(node->value);
+    TInt byte = binary == 9223372036854775808ul ? 16 : 8;
+    return dbl_static_const_op(ctx, binary, byte);
+}
 
-// static std::shared_ptr<AsmOperand> const_op(Ctx ctx, TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//             return char_imm_op(static_cast<CConstChar*>(node->constant.get()));
-//         case AST_CConstInt_t:
-//             return int_imm_op(static_cast<CConstInt*>(node->constant.get()));
-//         case AST_CConstLong_t:
-//             return long_imm_op(static_cast<CConstLong*>(node->constant.get()));
-//         case AST_CConstDouble_t:
-//             return dbl_const_op(ctx, static_cast<CConstDouble*>(node->constant.get()));
-//         case AST_CConstUChar_t:
-//             return uchar_imm(static_cast<CConstUChar*>(node->constant.get()));
-//         case AST_CConstUInt_t:
-//             return uint_imm_op(static_cast<CConstUInt*>(node->constant.get()));
-//         case AST_CConstULong_t:
-//             return ulong_imm_op(static_cast<CConstULong*>(node->constant.get()));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static shared_ptr_t(AsmOperand) const_op(Ctx ctx, TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+            return char_imm_op(&node->constant->get._CConstChar);
+        case AST_CConstInt_t:
+            return int_imm_op(&node->constant->get._CConstInt);
+        case AST_CConstLong_t:
+            return long_imm_op(&node->constant->get._CConstLong);
+        case AST_CConstDouble_t:
+            return dbl_const_op(ctx, &node->constant->get._CConstDouble);
+        case AST_CConstUChar_t:
+            return uchar_imm(&node->constant->get._CConstUChar);
+        case AST_CConstUInt_t:
+            return uint_imm_op(&node->constant->get._CConstUInt);
+        case AST_CConstULong_t:
+            return ulong_imm_op(&node->constant->get._CConstULong);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<AsmPseudo> pseudo_op(TacVariable* node) {
-//     TIdentifier name = node->name;
-//     return std::make_shared<AsmPseudo>(name);
-// }
+static shared_ptr_t(AsmOperand) pseudo_op(TacVariable* node) {
+    TIdentifier name = node->name;
+    return make_AsmPseudo(name);
+}
 
-// static std::shared_ptr<AsmPseudoMem> pseudo_mem_op(TacVariable* node) {
-//     TIdentifier name = node->name;
-//     return std::make_shared<AsmPseudoMem>(name, 0l);
-// }
+static shared_ptr_t(AsmOperand) pseudo_mem_op(TacVariable* node) {
+    TIdentifier name = node->name;
+    return make_AsmPseudoMem(name, 0l);
+}
 
-// static std::shared_ptr<AsmOperand> var_op(Ctx ctx, TacVariable* node) {
-//     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
-//         case AST_Array_t:
-//         case AST_Structure_t:
-//             return pseudo_mem_op(node);
-//         default:
-//             return pseudo_op(node);
-//     }
-// }
+static shared_ptr_t(AsmOperand) var_op(Ctx ctx, TacVariable* node) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
+        case AST_Array_t:
+        case AST_Structure_t:
+            return pseudo_mem_op(node);
+        default:
+            return pseudo_op(node);
+    }
+}
 
-// // operand = Imm(int, bool, bool, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier, int)
-// //         | PseudoMem(identifier, int) | Indexed(int, reg, reg)
-// static std::shared_ptr<AsmOperand> gen_op(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return const_op(ctx, static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return var_op(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// operand = Imm(int, bool, bool, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier, int)
+//         | PseudoMem(identifier, int) | Indexed(int, reg, reg)
+static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return const_op(ctx, &node->get._TacConstant);
+        case AST_TacVariable_t:
+            return var_op(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
 // // (signed) cond_code = E | NE | L | LE | G | GE
 // static std::unique_ptr<AsmCondCode> gen_signed_cond_code(TacBinaryOp* node) {
