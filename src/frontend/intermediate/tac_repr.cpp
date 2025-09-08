@@ -113,13 +113,9 @@ static shared_ptr_t(TacValue) exp_inner_value(Ctx ctx, CExp* node, bool is_ptr) 
     return make_TacVariable(inner_name);
 }
 
-static shared_ptr_t(TacValue) plain_inner_value(Ctx ctx, CExp* node) {
-    return exp_inner_value(ctx, node, false);
-}
+static shared_ptr_t(TacValue) plain_inner_value(Ctx ctx, CExp* node) { return exp_inner_value(ctx, node, false); }
 
-static shared_ptr_t(TacValue) ptr_inner_value(Ctx ctx, CExp* node) {
-    return exp_inner_value(ctx, node, true);
-}
+static shared_ptr_t(TacValue) ptr_inner_value(Ctx ctx, CExp* node) { return exp_inner_value(ctx, node, true); }
 
 // val = Constant(int) | Var(identifier)
 static shared_ptr_t(TacValue) repr_value(CExp* node) {
@@ -496,7 +492,7 @@ static unique_ptr_t(TacExpResult) binary_res_instr(Ctx ctx, CBinary* node) {
     }
 }
 
-static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue)* dst) {
+static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue) * dst) {
     shared_ptr_t(TacValue) src = sptr_new();
     sptr_copy(TacValue, res->val, src);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
@@ -504,7 +500,7 @@ static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, shared_ptr
     push_instr(ctx, make_TacCopy(&src, &dst_cp));
 }
 
-static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue)* dst) {
+static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * dst) {
     shared_ptr_t(TacValue) src = sptr_new();
     sptr_copy(TacValue, res->val, src);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
@@ -512,7 +508,7 @@ static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, sh
     push_instr(ctx, make_TacLoad(&src, &dst_cp));
 }
 
-static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue)* dst) {
+static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue) * dst) {
     TIdentifier src_name = res->base_name;
     TLong offset = res->offset;
     shared_ptr_t(TacValue) dst_cp = sptr_new();
@@ -520,14 +516,14 @@ static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(T
     push_instr(ctx, make_TacCopyFromOffset(src_name, offset, &dst_cp));
 }
 
-static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue)* src) {
+static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue) * src) {
     shared_ptr_t(TacValue) dst = sptr_new();
     sptr_copy(TacValue, res->val, dst);
     push_instr(ctx, make_TacCopy(src, &dst));
 }
 
-static unique_ptr_t(TacExpResult) deref_ptr_assign_res_instr(
-    Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue)* src) {
+static unique_ptr_t(TacExpResult)
+    deref_ptr_assign_res_instr(Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * src) {
     shared_ptr_t(TacValue) src_cp = sptr_new();
     sptr_copy(TacValue, *src, src_cp);
     shared_ptr_t(TacValue) dst = sptr_new();
@@ -536,8 +532,7 @@ static unique_ptr_t(TacExpResult) deref_ptr_assign_res_instr(
     return make_TacPlainOperand(src);
 }
 
-static unique_ptr_t(TacExpResult) sub_obj_assign_res_instr(
-    Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue)* src) {
+static unique_ptr_t(TacExpResult) sub_obj_assign_res_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(TacValue) * src) {
     TIdentifier dst_name = res->base_name;
     TLong offset = res->offset;
     shared_ptr_t(TacValue) src_cp = sptr_new();
@@ -1396,7 +1391,7 @@ static void declaration_instr(Ctx ctx, CDeclaration* node) {
 //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
 //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier) | Label(identifier)
-static void repr_instr_list(Ctx ctx, const vector_t(unique_ptr_t(CBlockItem)) node_list) {
+static void repr_instr_list(Ctx ctx, vector_t(unique_ptr_t(CBlockItem)) node_list) {
     for (size_t i = 0; i < vec_size(node_list); ++i) {
         switch (node_list[i]->type) {
             case AST_CS_t:
@@ -1411,172 +1406,172 @@ static void repr_instr_list(Ctx ctx, const vector_t(unique_ptr_t(CBlockItem)) no
     }
 }
 
-// static void repr_block(Ctx ctx, CBlock* node) {
-//     if (node->type() == AST_CB_t) {
-//         repr_instr_list(ctx, static_cast<CB*>(node)->block_items);
-//     }
-//     else {
-//         THROW_ABORT;
-//     }
-// }
+static void repr_block(Ctx ctx, CBlock* node) {
+    if (node->type == AST_CB_t) {
+        repr_instr_list(ctx, node->get._CB.block_items);
+    }
+    else {
+        THROW_ABORT;
+    }
+}
 
-// static std::unique_ptr<TacFunction> repr_fun_toplvl(Ctx ctx, CFunctionDeclaration* node) {
-//     TIdentifier name = node->name;
-//     bool is_glob = static_cast<FunAttr*>(map_get(ctx->frontend->symbol_table, node->name)->attrs.get())->is_glob;
+static unique_ptr_t(TacTopLevel) repr_fun_toplvl(Ctx ctx, CFunctionDeclaration* node) {
+    TIdentifier name = node->name;
+    bool is_glob = map_get(ctx->frontend->symbol_table, node->name)->attrs->get._FunAttr.is_glob;
 
-//     vector_t(TIdentifier) params = vec_new();
-//     vec_resize(params, vec_size(node->params));
-//     memcpy(params, node->params, sizeof(TIdentifier) * vec_size(node->params));
+    vector_t(TIdentifier) params = vec_new();
+    vec_resize(params, vec_size(node->params));
+    memcpy(params, node->params, sizeof(TIdentifier) * vec_size(node->params));
 
-//     vector_t(std::unique_ptr<TacInstruction>) body = vec_new();
-//     {
-//         ctx->p_instrs = &body;
-//         repr_block(ctx, node->body.get());
-//         {
-//             std::shared_ptr<CConst> constant = std::make_shared<CConstInt>(0);
-//             std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
-//             push_instr(ctx, std::make_unique<TacReturn>(std::move(val)));
-//         }
-//         ctx->p_instrs = NULL;
-//     }
+    vector_t(unique_ptr_t(TacInstruction)) body = vec_new();
+    {
+        ctx->p_instrs = &body;
+        repr_block(ctx, node->body);
+        {
+            shared_ptr_t(CConst) constant = make_CConstInt(0);
+            shared_ptr_t(TacValue) val = make_TacConstant(&constant);
+            push_instr(ctx, make_TacReturn(&val));
+        }
+        ctx->p_instrs = NULL;
+    }
 
-//     return std::make_unique<TacFunction>(name, is_glob, &params, &body);
-// }
+    return make_TacFunction(name, is_glob, &params, &body);
+}
 
-// static void push_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& top_level) {
-//     vec_move_back(*ctx->p_toplvls, top_level);
-// }
+static void push_toplvl(Ctx ctx, unique_ptr_t(TacTopLevel) top_level) { vec_move_back(*ctx->p_toplvls, top_level); }
 
-// static void fun_decl_toplvl(Ctx ctx, CFunDecl* node) {
-//     if (node->fun_decl->body) {
-//         push_toplvl(ctx, repr_fun_toplvl(ctx, node->fun_decl.get()));
-//     }
-// }
+static void fun_decl_toplvl(Ctx ctx, CFunDecl* node) {
+    if (node->fun_decl->body) {
+        push_toplvl(ctx, repr_fun_toplvl(ctx, node->fun_decl));
+    }
+}
 
-// // (function) top_level = Function(identifier, bool, identifier*, instruction*)
-// static void declaration_toplvl(Ctx ctx, CDeclaration* node) {
-//     switch (node->type()) {
-//         case AST_CFunDecl_t:
-//             fun_decl_toplvl(ctx, static_cast<CFunDecl*>(node));
-//             break;
-//         case AST_CVarDecl_t:
-//         case AST_CStructDecl_t:
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// (function) top_level = Function(identifier, bool, identifier*, instruction*)
+static void declaration_toplvl(Ctx ctx, CDeclaration* node) {
+    switch (node->type) {
+        case AST_CFunDecl_t:
+            fun_decl_toplvl(ctx, &node->get._CFunDecl);
+            break;
+        case AST_CVarDecl_t:
+        case AST_CStructDecl_t:
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static vector_t(std::shared_ptr<StaticInit>) tentative_static_toplvl(Ctx ctx, Type* static_init_type) {
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     {
-//         TLong byte = get_type_scale(ctx, static_init_type);
-//         std::shared_ptr<StaticInit> static_init = std::make_shared<ZeroInit>(byte);
-//         vec_move_back(static_inits, static_init);
-//     }
-//     return static_inits;
-// }
+static vector_t(shared_ptr_t(StaticInit)) tentative_static_toplvl(Ctx ctx, Type* static_init_type) {
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    {
+        TLong byte = get_type_scale(ctx, static_init_type);
+        shared_ptr_t(StaticInit) static_init = make_ZeroInit(byte);
+        vec_move_back(static_inits, static_init);
+    }
+    return static_inits;
+}
 
-// static vector_t(std::shared_ptr<StaticInit>) initial_static_toplvl(Initial* node) {
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     vec_reserve(static_inits, vec_size(node->static_inits));
-//     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
-//         std::shared_ptr<StaticInit> static_init = node->static_inits[i];
-//         vec_move_back(static_inits, static_init);
-//     }
-//     return static_inits;
-// }
+static vector_t(shared_ptr_t(StaticInit)) initial_static_toplvl(Initial* node) {
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    vec_reserve(static_inits, vec_size(node->static_inits));
+    for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
+        shared_ptr_t(StaticInit) static_init = node->static_inits[i];
+        vec_move_back(static_inits, static_init);
+    }
+    return static_inits;
+}
 
-// static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
-//     StaticAttr* static_attr = static_cast<StaticAttr*>(node->attrs.get());
-//     if (static_attr->init->type() == AST_NoInitializer_t) {
-//         return;
-//     }
+static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
+    StaticAttr* static_attr = &node->attrs->get._StaticAttr;
+    if (static_attr->init->type == AST_NoInitializer_t) {
+        return;
+    }
 
-//     TIdentifier name = symbol;
-//     bool is_glob = static_attr->is_glob;
-//     std::shared_ptr<Type> static_init_type = node->type_t;
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     switch (static_attr->init->type()) {
-//         case AST_Tentative_t:
-//             static_inits = tentative_static_toplvl(ctx, static_init_type.get());
-//             break;
-//         case AST_Initial_t:
-//             static_inits = initial_static_toplvl(static_cast<Initial*>(static_attr->init.get()));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
+    TIdentifier name = symbol;
+    bool is_glob = static_attr->is_glob;
+    shared_ptr_t(Type) static_init_type = sptr_new();
+    sptr_copy(Type, node->type_t, static_init_type);
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    switch (static_attr->init->type) {
+        case AST_Tentative_t:
+            static_inits = tentative_static_toplvl(ctx, static_init_type);
+            break;
+        case AST_Initial_t:
+            static_inits = initial_static_toplvl(&static_attr->init->get._Initial);
+            break;
+        default:
+            THROW_ABORT;
+    }
 
-//     push_toplvl(ctx, std::make_unique<TacStaticVariable>(name, is_glob, std::move(static_init_type), &static_inits));
-// }
+    push_toplvl(ctx, make_TacStaticVariable(name, is_glob, &static_init_type, &static_inits));
+}
 
-// static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<TacTopLevel>&& static_const_toplvls) {
-//     vec_move_back(*ctx->p_static_consts, static_const_toplvls);
-// }
+static void push_static_const_toplvl(Ctx ctx, unique_ptr_t(TacTopLevel) static_const_toplvls) {
+    vec_move_back(*ctx->p_static_consts, static_const_toplvls);
+}
 
-// static void repr_static_const_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
-//     TIdentifier name = symbol;
-//     std::shared_ptr<Type> static_init_type = node->type_t;
-//     std::shared_ptr<StaticInit> static_init = static_cast<ConstantAttr*>(node->attrs.get())->static_init;
-//     push_static_const_toplvl(
-//         ctx, std::make_unique<TacStaticConstant>(name, std::move(static_init_type), std::move(static_init)));
-// }
+static void repr_static_const_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
+    TIdentifier name = symbol;
+    shared_ptr_t(Type) static_init_type = sptr_new();
+    sptr_copy(Type, node->type_t, static_init_type);
+    shared_ptr_t(StaticInit) static_init = sptr_new();
+    sptr_copy(StaticInit, node->attrs->get._ConstantAttr.static_init, static_init);
+    push_static_const_toplvl(ctx, make_TacStaticConstant(name, &static_init_type, &static_init));
+}
 
-// // (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
-// // (static constant) top_level = StaticConstant(identifier, type, static_init)
-// static void symbol_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
-//     switch (node->attrs->type()) {
-//         case AST_StaticAttr_t:
-//             repr_static_var_toplvl(ctx, node, symbol);
-//             break;
-//         case AST_ConstantAttr_t:
-//             repr_static_const_toplvl(ctx, node, symbol);
-//             break;
-//         default:
-//             break;
-//     }
-// }
+// (static variable) top_level = StaticVariable(identifier, bool, type, static_init*)
+// (static constant) top_level = StaticConstant(identifier, type, static_init)
+static void symbol_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
+    switch (node->attrs->type) {
+        case AST_StaticAttr_t:
+            repr_static_var_toplvl(ctx, node, symbol);
+            break;
+        case AST_ConstantAttr_t:
+            repr_static_const_toplvl(ctx, node, symbol);
+            break;
+        default:
+            break;
+    }
+}
 
-// // AST = Program(top_level*, top_level*, top_level*)
-// static std::unique_ptr<TacProgram> repr_program(Ctx ctx, CProgram* node) {
-//     vector_t(std::unique_ptr<TacTopLevel>) fun_toplvls = vec_new();
-//     {
-//         ctx->p_toplvls = &fun_toplvls;
-//         for (size_t i = 0; i < vec_size(node->declarations); ++i) {
-//             declaration_toplvl(ctx, node->declarations[i].get());
-//         }
-//         ctx->p_toplvls = NULL;
-//     }
+// AST = Program(top_level*, top_level*, top_level*)
+static unique_ptr_t(TacProgram) repr_program(Ctx ctx, CProgram* node) {
+    vector_t(unique_ptr_t(TacTopLevel)) fun_toplvls = vec_new();
+    {
+        ctx->p_toplvls = &fun_toplvls;
+        for (size_t i = 0; i < vec_size(node->declarations); ++i) {
+            declaration_toplvl(ctx, node->declarations[i]);
+        }
+        ctx->p_toplvls = NULL;
+    }
 
-//     vector_t(std::unique_ptr<TacTopLevel>) static_var_toplvls = vec_new();
-//     vector_t(std::unique_ptr<TacTopLevel>) static_const_toplvls = vec_new();
-//     {
-//         ctx->p_toplvls = &static_var_toplvls;
-//         ctx->p_static_consts = &static_const_toplvls;
-//         for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
-//             const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
-//             symbol_toplvl(ctx, pair_second(*symbol).get(), pair_first(*symbol));
-//         }
-//         ctx->p_toplvls = NULL;
-//         ctx->p_static_consts = NULL;
-//     }
+    vector_t(unique_ptr_t(TacTopLevel)) static_var_toplvls = vec_new();
+    vector_t(unique_ptr_t(TacTopLevel)) static_const_toplvls = vec_new();
+    {
+        ctx->p_toplvls = &static_var_toplvls;
+        ctx->p_static_consts = &static_const_toplvls;
+        for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
+            const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
+            symbol_toplvl(ctx, pair_second(*symbol), pair_first(*symbol));
+        }
+        ctx->p_toplvls = NULL;
+        ctx->p_static_consts = NULL;
+    }
 
-//     return std::make_unique<TacProgram>(&static_const_toplvls, &static_var_toplvls, &fun_toplvls);
-// }
+    return make_TacProgram(&static_const_toplvls, &static_var_toplvls, &fun_toplvls);
+}
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// std::unique_ptr<TacProgram> represent_three_address_code(
-//     std::unique_ptr<CProgram>* c_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
-//     TacReprContext ctx;
-//     {
-//         ctx.frontend = frontend;
-//         ctx.identifiers = identifiers;
-//     }
-//     std::unique_ptr<TacProgram> tac_ast = repr_program(&ctx, c_ast->get());
+unique_ptr_t(TacProgram) represent_three_address_code(
+    unique_ptr_t(CProgram) * c_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
+    TacReprContext ctx;
+    {
+        ctx.frontend = frontend;
+        ctx.identifiers = identifiers;
+    }
+    unique_ptr_t(TacProgram) tac_ast = repr_program(&ctx, *c_ast);
 
-//     c_ast->reset();
-//     THROW_ABORT_IF(!tac_ast);
-//     return tac_ast;
-// }
+    free_CProgram(c_ast);
+    THROW_ABORT_IF(!tac_ast);
+    return tac_ast;
+}
