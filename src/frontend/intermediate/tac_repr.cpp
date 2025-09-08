@@ -1211,206 +1211,205 @@ static void statement_instr(Ctx ctx, CStatement* node) {
     }
 }
 
-// static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size);
+static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size);
 
-// static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TIdentifier symbol, TLong size) {
-//     size_t byte_at = 0;
+static void string_single_init_instr(Ctx ctx, CString* node, Array* arr_type, TIdentifier symbol, TLong size) {
+    size_t byte_at = 0;
 
-//     size_t bytes_size = (size_t)arr_type->size;
-//     size_t bytes_copy =
-//         arr_type->size > (TLong)vec_size(node->literal->value) ? vec_size(node->literal->value) : bytes_size;
+    size_t bytes_size = (size_t)arr_type->size;
+    size_t bytes_copy =
+        arr_type->size > (TLong)vec_size(node->literal->value) ? vec_size(node->literal->value) : bytes_size;
 
-//     while (byte_at < bytes_copy) {
-//         TIdentifier dst_name = symbol;
-//         TLong offset = size + ((TLong)byte_at);
-//         std::shared_ptr<TacValue> src;
-//         {
-//             std::shared_ptr<CConst> constant;
-//             {
-//                 size_t bytes_left = bytes_size - byte_at;
-//                 if (bytes_left < 4) {
-//                     TChar value = string_bytes_to_int8(node->literal->value, byte_at);
-//                     constant = std::make_shared<CConstChar>(value);
-//                     byte_at++;
-//                 }
-//                 else if (bytes_left < 8) {
-//                     TInt value = string_bytes_to_int32(node->literal->value, byte_at);
-//                     constant = std::make_shared<CConstInt>(value);
-//                     byte_at += 4;
-//                 }
-//                 else {
-//                     TLong value = string_bytes_to_int64(node->literal->value, byte_at);
-//                     constant = std::make_shared<CConstLong>(value);
-//                     byte_at += 8;
-//                 }
-//             }
-//             src = std::make_shared<TacConstant>(std::move(constant));
-//         }
-//         push_instr(ctx, std::make_unique<TacCopyToOffset>(dst_name, offset, std::move(src)));
-//     }
+    while (byte_at < bytes_copy) {
+        TIdentifier dst_name = symbol;
+        TLong offset = size + ((TLong)byte_at);
+        shared_ptr_t(TacValue) src = sptr_new();
+        {
+            shared_ptr_t(CConst) constant = sptr_new();
+            {
+                size_t bytes_left = bytes_size - byte_at;
+                if (bytes_left < 4) {
+                    TChar value = string_bytes_to_int8(node->literal->value, byte_at);
+                    constant = make_CConstChar(value);
+                    byte_at++;
+                }
+                else if (bytes_left < 8) {
+                    TInt value = string_bytes_to_int32(node->literal->value, byte_at);
+                    constant = make_CConstInt(value);
+                    byte_at += 4;
+                }
+                else {
+                    TLong value = string_bytes_to_int64(node->literal->value, byte_at);
+                    constant = make_CConstLong(value);
+                    byte_at += 8;
+                }
+            }
+            src = make_TacConstant(&constant);
+        }
+        push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src));
+    }
 
-//     while (byte_at < bytes_size) {
-//         TIdentifier dst_name = symbol;
-//         TLong offset = size + ((TLong)byte_at);
-//         std::shared_ptr<TacValue> src;
-//         {
-//             std::shared_ptr<CConst> constant;
-//             {
-//                 size_t bytes_left = bytes_size - byte_at;
-//                 if (bytes_left < 4) {
-//                     constant = std::make_shared<CConstChar>(0);
-//                     byte_at++;
-//                 }
-//                 else if (bytes_left < 8) {
-//                     constant = std::make_shared<CConstInt>(0);
-//                     byte_at += 4;
-//                 }
-//                 else {
-//                     constant = std::make_shared<CConstLong>(0l);
-//                     byte_at += 8;
-//                 }
-//             }
-//             src = std::make_shared<TacConstant>(std::move(constant));
-//         }
-//         push_instr(ctx, std::make_unique<TacCopyToOffset>(dst_name, offset, std::move(src)));
-//     }
-// }
+    while (byte_at < bytes_size) {
+        TIdentifier dst_name = symbol;
+        TLong offset = size + ((TLong)byte_at);
+        shared_ptr_t(TacValue) src = sptr_new();
+        {
+            shared_ptr_t(CConst) constant = sptr_new();
+            {
+                size_t bytes_left = bytes_size - byte_at;
+                if (bytes_left < 4) {
+                    constant = make_CConstChar(0);
+                    byte_at++;
+                }
+                else if (bytes_left < 8) {
+                    constant = make_CConstInt(0);
+                    byte_at += 4;
+                }
+                else {
+                    constant = make_CConstLong(0l);
+                    byte_at += 8;
+                }
+            }
+            src = make_TacConstant(&constant);
+        }
+        push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src));
+    }
+}
 
-// static void single_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol) {
-//     if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
-//         string_single_init_instr(
-//             ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, 0l);
-//     }
-//     else {
-//         std::shared_ptr<TacValue> src = repr_exp_instr(ctx, node->exp.get());
-//         std::shared_ptr<TacValue> dst;
-//         {
-//             TIdentifier name = symbol;
-//             std::unique_ptr<CExp> exp = std::make_unique<CVar>(name, 0);
-//             dst = repr_value(exp.get());
-//         }
-//         push_instr(ctx, std::make_unique<TacCopy>(std::move(src), std::move(dst)));
-//     }
-// }
+static void single_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol) {
+    if (node->exp->type == AST_CString_t && init_type->type == AST_Array_t) {
+        string_single_init_instr(ctx, &node->exp->get._CString, &init_type->get._Array, symbol, 0l);
+    }
+    else {
+        shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
+        shared_ptr_t(TacValue) dst = sptr_new();
+        {
+            TIdentifier name = symbol;
+            unique_ptr_t(CExp) exp = make_CVar(name, 0);
+            dst = repr_value(exp);
+            // TOOD free exp here
+        }
+        push_instr(ctx, make_TacCopy(&src, &dst));
+    }
+}
 
-// static void scalar_compound_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
-//     if (node->exp->type() == AST_CString_t && init_type->type() == AST_Array_t) {
-//         string_single_init_instr(
-//             ctx, static_cast<CString*>(node->exp.get()), static_cast<Array*>(init_type), symbol, *size);
-//     }
-//     else {
-//         TIdentifier dst_name = symbol;
-//         TLong offset = *size;
-//         std::shared_ptr<TacValue> src = repr_exp_instr(ctx, node->exp.get());
-//         push_instr(ctx, std::make_unique<TacCopyToOffset>(dst_name, offset, std::move(src)));
-//     }
-// }
+static void scalar_compound_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
+    if (node->exp->type == AST_CString_t && init_type->type == AST_Array_t) {
+        string_single_init_instr(ctx, &node->exp->get._CString, &init_type->get._Array, symbol, *size);
+    }
+    else {
+        TIdentifier dst_name = symbol;
+        TLong offset = *size;
+        shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
+        push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src));
+    }
+}
 
-// static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong* size) {
-//     for (size_t i = 0; i < vec_size(node->initializers); ++i) {
-//         compound_init_instr(ctx, node->initializers[i].get(), arr_type->elem_type.get(), symbol, size);
-//         if (node->initializers[i]->type() == AST_CSingleInit_t) {
-//             *size += get_type_scale(ctx, arr_type->elem_type.get());
-//         }
-//     }
-// }
+static void arr_compound_init_instr(Ctx ctx, CCompoundInit* node, Array* arr_type, TIdentifier symbol, TLong* size) {
+    for (size_t i = 0; i < vec_size(node->initializers); ++i) {
+        compound_init_instr(ctx, node->initializers[i], arr_type->elem_type, symbol, size);
+        if (node->initializers[i]->type == AST_CSingleInit_t) {
+            *size += get_type_scale(ctx, arr_type->elem_type);
+        }
+    }
+}
 
-// static void struct_compound_init_instr(
-//     Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong* size) {
-//     for (size_t i = vec_size(node->initializers); i-- > 0;) {
-//         StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
-//         TLong offset = *size + member->offset;
-//         compound_init_instr(ctx, node->initializers[i].get(), member->member_type.get(), symbol, &offset);
-//     }
-//     *size += get_type_scale(ctx, struct_type);
-// }
+static void struct_compound_init_instr(
+    Ctx ctx, CCompoundInit* node, Structure* struct_type, TIdentifier symbol, TLong* size) {
+    for (size_t i = vec_size(node->initializers); i-- > 0;) {
+        StructMember* member = get_struct_typedef_member(ctx->frontend, struct_type->tag, i);
+        TLong offset = *size + member->offset;
+        compound_init_instr(ctx, node->initializers[i], member->member_type, symbol, &offset);
+    }
+    *size += get_struct_scale(ctx, struct_type);
+}
 
-// static void aggr_compound_init_instr(Ctx ctx, CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
-//     switch (init_type->type()) {
-//         case AST_Array_t:
-//             arr_compound_init_instr(ctx, node, static_cast<Array*>(init_type), symbol, size);
-//             break;
-//         case AST_Structure_t:
-//             struct_compound_init_instr(ctx, node, static_cast<Structure*>(init_type), symbol, size);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void aggr_compound_init_instr(Ctx ctx, CCompoundInit* node, Type* init_type, TIdentifier symbol, TLong* size) {
+    switch (init_type->type) {
+        case AST_Array_t:
+            arr_compound_init_instr(ctx, node, &init_type->get._Array, symbol, size);
+            break;
+        case AST_Structure_t:
+            struct_compound_init_instr(ctx, node, &init_type->get._Structure, symbol, size);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size) {
-//     switch (node->type()) {
-//         case AST_CSingleInit_t:
-//             scalar_compound_init_instr(ctx, static_cast<CSingleInit*>(node), init_type, symbol, size);
-//             break;
-//         case AST_CCompoundInit_t:
-//             aggr_compound_init_instr(ctx, static_cast<CCompoundInit*>(node), init_type, symbol, size);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TIdentifier symbol, TLong* size) {
+    switch (node->type) {
+        case AST_CSingleInit_t:
+            scalar_compound_init_instr(ctx, &node->get._CSingleInit, init_type, symbol, size);
+            break;
+        case AST_CCompoundInit_t:
+            aggr_compound_init_instr(ctx, &node->get._CCompoundInit, init_type, symbol, size);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // TODO map_get
-// static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
-//     switch (node->init->type()) {
-//         case AST_CSingleInit_t:
-//             single_init_instr(ctx, static_cast<CSingleInit*>(node->init.get()),
-//                 map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name);
-//             break;
-//         case AST_CCompoundInit_t: {
-//             TLong size = 0l;
-//             aggr_compound_init_instr(ctx, static_cast<CCompoundInit*>(node->init.get()),
-//                 map_get(ctx->frontend->symbol_table, node->name)->type_t.get(), node->name, &size);
-//             break;
-//         }
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// TODO map_get
+static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
+    switch (node->init->type) {
+        case AST_CSingleInit_t:
+            single_init_instr(ctx, &node->init->get._CSingleInit,
+                map_get(ctx->frontend->symbol_table, node->name)->type_t, node->name);
+            break;
+        case AST_CCompoundInit_t: {
+            TLong size = 0l;
+            aggr_compound_init_instr(ctx, &node->init->get._CCompoundInit,
+                map_get(ctx->frontend->symbol_table, node->name)->type_t, node->name, &size);
+            break;
+        }
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // TODO do map_get last ?
-// static void var_declaration_instr(Ctx ctx, CVarDecl* node) {
-//     if (map_get(ctx->frontend->symbol_table, node->var_decl->name)->attrs->type() != AST_StaticAttr_t
-//         && node->var_decl->init) {
-//         var_decl_instr(ctx, node->var_decl.get());
-//     }
-// }
+// TODO do map_get last ?
+static void var_declaration_instr(Ctx ctx, CVarDecl* node) {
+    if (map_get(ctx->frontend->symbol_table, node->var_decl->name)->attrs->type != AST_StaticAttr_t
+        && node->var_decl->init) {
+        var_decl_instr(ctx, node->var_decl);
+    }
+}
 
-// static void declaration_instr(Ctx ctx, CDeclaration* node) {
-//     switch (node->type()) {
-//         case AST_CFunDecl_t:
-//         case AST_CStructDecl_t:
-//             break;
-//         case AST_CVarDecl_t:
-//             var_declaration_instr(ctx, static_cast<CVarDecl*>(node));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void declaration_instr(Ctx ctx, CDeclaration* node) {
+    switch (node->type) {
+        case AST_CFunDecl_t:
+        case AST_CStructDecl_t:
+            break;
+        case AST_CVarDecl_t:
+            var_declaration_instr(ctx, &node->get._CVarDecl);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // instruction = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
-// //             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
-// //             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
-// //             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
-// //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
-// //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
-// //             | JumpIfNotZero(val, identifier) | Label(identifier)
-// static void repr_instr_list(Ctx ctx, const vector_t(std::unique_ptr<CBlockItem>) node_list) {
-//     for (size_t i = 0; i < vec_size(node_list); ++i) {
-//         switch (node_list[i]->type()) {
-//             case AST_CS_t:
-//                 statement_instr(ctx, static_cast<CS*>(node_list[i].get())->statement.get());
-//                 break;
-//             case AST_CD_t:
-//                 declaration_instr(ctx, static_cast<CD*>(node_list[i].get())->declaration.get());
-//                 break;
-//             default:
-//                 THROW_ABORT;
-//         }
-//     }
-// }
+// instruction = Return(val?) | SignExtend(val, val) | Truncate(val, val) | ZeroExtend(val, val)
+//             | TacDoubleToInt(val, val) | TacDoubleToUInt(val, val) | TacIntToDouble(val, val)
+//             | TacUIntToDouble(val, val) | FunCall(identifier, val*, val?) | Unary(unary_operator, val, val)
+//             | Binary(binary_operator, val, val, val) | Copy(val, val) | GetAddress(val, val) | Load(val, val)
+//             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
+//             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
+//             | JumpIfNotZero(val, identifier) | Label(identifier)
+static void repr_instr_list(Ctx ctx, const vector_t(unique_ptr_t(CBlockItem)) node_list) {
+    for (size_t i = 0; i < vec_size(node_list); ++i) {
+        switch (node_list[i]->type) {
+            case AST_CS_t:
+                statement_instr(ctx, node_list[i]->get._CS.statement);
+                break;
+            case AST_CD_t:
+                declaration_instr(ctx, node_list[i]->get._CD.declaration);
+                break;
+            default:
+                THROW_ABORT;
+        }
+    }
+}
 
 // static void repr_block(Ctx ctx, CBlock* node) {
 //     if (node->type() == AST_CB_t) {
