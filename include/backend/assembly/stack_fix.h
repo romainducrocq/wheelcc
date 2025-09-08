@@ -1,7 +1,7 @@
 #ifndef _BACK_ASSEMBLY_STACK_FIX_H
 #define _BACK_ASSEMBLY_STACK_FIX_H
 
-#include <memory>
+#include "util/c_std.h"
 
 #include "ast_t.h" // ast
 
@@ -18,13 +18,13 @@ typedef struct BackEndContext BackEndContext;
 // Pseudo register replacement
 // Instruction fix up
 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-std::unique_ptr<AsmBinary> alloc_stack_bytes(TLong byte);
+#ifdef __cplusplus
+extern "C" {
+#endif
+unique_ptr_t(AsmBinary) alloc_stack_bytes(TLong byte);
 void fix_stack(AsmProgram* node, BackEndContext* backend);
-// #ifdef __cplusplus
-// }
-// #endif
+#ifdef __cplusplus
+}
+#endif
 
 #endif
