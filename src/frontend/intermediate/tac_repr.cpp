@@ -1285,7 +1285,7 @@ static void single_init_instr(Ctx ctx, CSingleInit* node, Type* init_type, TIden
             TIdentifier name = symbol;
             unique_ptr_t(CExp) exp = make_CVar(name, 0);
             dst = repr_value(exp);
-            // TOOD free exp here
+            free_CExp(&exp);
         }
         push_instr(ctx, make_TacCopy(&src, &dst));
     }
@@ -1348,17 +1348,15 @@ static void compound_init_instr(Ctx ctx, CInitializer* node, Type* init_type, TI
     }
 }
 
-// TODO map_get
 static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
+    Type* init_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
     switch (node->init->type) {
         case AST_CSingleInit_t:
-            single_init_instr(ctx, &node->init->get._CSingleInit,
-                map_get(ctx->frontend->symbol_table, node->name)->type_t, node->name);
+            single_init_instr(ctx, &node->init->get._CSingleInit, init_type, node->name);
             break;
         case AST_CCompoundInit_t: {
             TLong size = 0l;
-            aggr_compound_init_instr(ctx, &node->init->get._CCompoundInit,
-                map_get(ctx->frontend->symbol_table, node->name)->type_t, node->name, &size);
+            aggr_compound_init_instr(ctx, &node->init->get._CCompoundInit, init_type, node->name, &size);
             break;
         }
         default:
@@ -1366,10 +1364,9 @@ static void var_decl_instr(Ctx ctx, CVariableDeclaration* node) {
     }
 }
 
-// TODO do map_get last ?
 static void var_declaration_instr(Ctx ctx, CVarDecl* node) {
-    if (map_get(ctx->frontend->symbol_table, node->var_decl->name)->attrs->type != AST_StaticAttr_t
-        && node->var_decl->init) {
+    if (node->var_decl->init
+        && map_get(ctx->frontend->symbol_table, node->var_decl->name)->attrs->type != AST_StaticAttr_t) {
         var_decl_instr(ctx, node->var_decl);
     }
 }
