@@ -544,8 +544,8 @@ static unique_ptr_t(TacExpResult) sub_obj_assign_res_instr(Ctx ctx, TacSubObject
 // TODO there is probably something here that is not freed
 static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
     shared_ptr_t(TacValue) src = sptr_new();
-    unique_ptr_t(TacExpResult) res = sptr_new();
-    unique_ptr_t(TacExpResult) res_postfix = sptr_new();
+    unique_ptr_t(TacExpResult) res = uptr_new();
+    unique_ptr_t(TacExpResult) res_postfix = uptr_new();
     if (node->exp_left) {
         src = repr_exp_instr(ctx, node->exp_right);
         res = repr_res_instr(ctx, node->exp_left);
@@ -1474,7 +1474,8 @@ static vector_t(shared_ptr_t(StaticInit)) initial_static_toplvl(Initial* node) {
     vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
     vec_reserve(static_inits, vec_size(node->static_inits));
     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
-        shared_ptr_t(StaticInit) static_init = node->static_inits[i];
+        shared_ptr_t(StaticInit) static_init = sptr_new();
+        sptr_copy(StaticInit, node->static_inits[i], static_init);
         vec_move_back(static_inits, static_init);
     }
     return static_inits;
