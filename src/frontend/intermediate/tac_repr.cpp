@@ -717,247 +717,264 @@ static unique_ptr_t(TacExpResult) deref_res_instr(Ctx ctx, CDereference* node) {
     return make_TacDereferencedPointer(&val);
 }
 
-// static void plain_op_addrof_res_instr(Ctx ctx, TacPlainOperand* res, CAddrOf* node) {
-//     std::shared_ptr<TacValue> src = std::move(res->val);
-//     std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacGetAddress>(std::move(src), std::move(dst_cp)));
-//     res->val = std::move(dst);
-// }
+static void plain_op_addrof_res_instr(Ctx ctx, TacPlainOperand* res, CAddrOf* node) {
+    shared_ptr_t(TacValue) src = sptr_new();
+    sptr_move(TacValue, res->val, src);
+    shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacGetAddress(&src, &dst_cp));
+    sptr_move(TacValue, dst, res->val);
+}
 
-// static std::unique_ptr<TacPlainOperand> deref_ptr_addrof_res_instr(TacDereferencedPointer* res) {
-//     std::shared_ptr<TacValue> val = std::move(res->val);
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) deref_ptr_addrof_res_instr(TacDereferencedPointer* res) {
+    shared_ptr_t(TacValue) val = sptr_new();
+    sptr_move(TacValue, res->val, val);
+    return make_TacPlainOperand(&val);
+}
 
-// static std::unique_ptr<TacPlainOperand> sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node) {
-//     std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//     {
-//         TIdentifier name = res->base_name;
-//         std::shared_ptr<TacValue> src = std::make_shared<TacVariable>(name);
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacGetAddress>(std::move(src), std::move(dst_cp)));
-//     }
-//     if (res->offset > 0l) {
-//         std::shared_ptr<TacValue> src_ptr = dst;
-//         std::shared_ptr<TacValue> idx;
-//         {
-//             TLong offset = res->offset;
-//             std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(offset);
-//             idx = std::make_shared<TacConstant>(std::move(constant));
-//         }
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacAddPtr>(1l, std::move(src_ptr), std::move(idx), std::move(dst_cp)));
-//     }
-//     return std::make_unique<TacPlainOperand>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node) {
+    shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+    {
+        TIdentifier name = res->base_name;
+        shared_ptr_t(TacValue) src = make_TacVariable(name);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacGetAddress(&src, &dst_cp));
+    }
+    if (res->offset > 0l) {
+        shared_ptr_t(TacValue) src_ptr = sptr_new();
+        sptr_copy(TacValue, dst, src_ptr);
+        shared_ptr_t(TacValue) idx = sptr_new();
+        {
+            TLong offset = res->offset;
+            shared_ptr_t(CConst) constant = make_CConstLong(offset);
+            idx = make_TacConstant(&constant);
+        }
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacAddPtr(1l, &src_ptr, &idx, &dst_cp));
+    }
+    return make_TacPlainOperand(&dst);
+}
 
-// static std::unique_ptr<TacExpResult> addrof_res_instr(Ctx ctx, CAddrOf* node) {
-//     std::unique_ptr<TacExpResult> res = repr_res_instr(ctx, node->exp.get());
-//     switch (res->type()) {
-//         case AST_TacPlainOperand_t:
-//             plain_op_addrof_res_instr(ctx, static_cast<TacPlainOperand*>(res.get()), node);
-//             break;
-//         case AST_TacDereferencedPointer_t: {
-//             res = deref_ptr_addrof_res_instr(static_cast<TacDereferencedPointer*>(res.get()));
-//             break;
-//         }
-//         case AST_TacSubObject_t: {
-//             res = sub_obj_addrof_res_instr(ctx, static_cast<TacSubObject*>(res.get()), node);
-//             break;
-//         }
-//         default:
-//             THROW_ABORT;
-//     }
-//     return res;
-// }
+static unique_ptr_t(TacExpResult) addrof_res_instr(Ctx ctx, CAddrOf* node) {
+    unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->exp);
+    switch (res->type) {
+        case AST_TacPlainOperand_t:
+            plain_op_addrof_res_instr(ctx, &res->get._TacPlainOperand, node);
+            break;
+        case AST_TacDereferencedPointer_t: {
+            // TODO for sure free here ?
+            res = deref_ptr_addrof_res_instr(&res->get._TacDereferencedPointer);
+            break;
+        }
+        case AST_TacSubObject_t: {
+            // TODO and here ?
+            res = sub_obj_addrof_res_instr(ctx, &res->get._TacSubObject, node);
+            break;
+        }
+        default:
+            THROW_ABORT;
+    }
+    return res;
+}
 
-// static std::unique_ptr<TacDereferencedPointer> subscript_res_instr(Ctx ctx, CSubscript* node) {
-//     TLong scale;
-//     std::shared_ptr<TacValue> src_ptr;
-//     std::shared_ptr<TacValue> idx;
-//     if (node->primary_exp->exp_type->type() == AST_Pointer_t) {
-//         scale = get_type_scale(ctx, static_cast<Pointer*>(node->primary_exp->exp_type.get())->ref_type.get());
-//         src_ptr = repr_exp_instr(ctx, node->primary_exp.get());
-//         idx = repr_exp_instr(ctx, node->subscript_exp.get());
-//     }
-//     else {
-//         scale = get_type_scale(ctx, static_cast<Pointer*>(node->subscript_exp->exp_type.get())->ref_type.get());
-//         src_ptr = repr_exp_instr(ctx, node->subscript_exp.get());
-//         idx = repr_exp_instr(ctx, node->primary_exp.get());
-//     }
-//     std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacAddPtr>(scale, std::move(src_ptr), std::move(idx), std::move(dst_cp)));
-//     return std::make_unique<TacDereferencedPointer>(std::move(dst));
-// }
+static unique_ptr_t(TacExpResult) subscript_res_instr(Ctx ctx, CSubscript* node) {
+    TLong scale;
+    shared_ptr_t(TacValue) src_ptr = sptr_new();
+    shared_ptr_t(TacValue) idx = sptr_new();
+    if (node->primary_exp->exp_type->type == AST_Pointer_t) {
+        scale = get_type_scale(ctx, node->primary_exp->exp_type->get._Pointer.ref_type);
+        src_ptr = repr_exp_instr(ctx, node->primary_exp);
+        idx = repr_exp_instr(ctx, node->subscript_exp);
+    }
+    else {
+        scale = get_type_scale(ctx, node->subscript_exp->exp_type->get._Pointer.ref_type);
+        src_ptr = repr_exp_instr(ctx, node->subscript_exp);
+        idx = repr_exp_instr(ctx, node->primary_exp);
+    }
+    shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
+    return make_TacDereferencedPointer(&dst);
+}
 
-// static std::unique_ptr<TacPlainOperand> sizeof_res_instr(Ctx ctx, CSizeOf* node) {
-//     std::shared_ptr<CConst> constant;
-//     {
-//         TULong value = (TULong)get_type_scale(ctx, node->exp->exp_type.get());
-//         constant = std::make_shared<CConstULong>(value);
-//     }
-//     std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) sizeof_res_instr(Ctx ctx, CSizeOf* node) {
+    shared_ptr_t(CConst) constant = sptr_new();
+    {
+        TULong value = (TULong)get_type_scale(ctx, node->exp->exp_type);
+        constant = make_CConstULong(value);
+    }
+    shared_ptr_t(TacValue) val = make_TacConstant(&constant);
+    return make_TacPlainOperand(&val);
+}
 
-// static std::unique_ptr<TacPlainOperand> sizeoft_res_instr(Ctx ctx, CSizeOfT* node) {
-//     std::shared_ptr<CConst> constant;
-//     {
-//         TULong value = (TULong)get_type_scale(ctx, node->target_type.get());
-//         constant = std::make_shared<CConstULong>(value);
-//     }
-//     std::shared_ptr<TacValue> val = std::make_shared<TacConstant>(std::move(constant));
-//     return std::make_unique<TacPlainOperand>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) sizeoft_res_instr(Ctx ctx, CSizeOfT* node) {
+    shared_ptr_t(CConst) constant = sptr_new();
+    {
+        TULong value = (TULong)get_type_scale(ctx, node->target_type);
+        constant = make_CConstULong(value);
+    }
+    shared_ptr_t(TacValue) val = make_TacConstant(&constant);
+    return make_TacPlainOperand(&val);
+}
 
-// static std::unique_ptr<TacSubObject> plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
-//     THROW_ABORT_IF(res->val->type() != AST_TacVariable_t);
-//     TIdentifier base_name = static_cast<TacVariable*>(res->val.get())->name;
-//     TLong offset = member_offset;
-//     return std::make_unique<TacSubObject>(base_name, offset);
-// }
+static unique_ptr_t(TacExpResult) plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset) {
+    THROW_ABORT_IF(res->val->type != AST_TacVariable_t);
+    TIdentifier base_name = res->val->get._TacVariable.name;
+    TLong offset = member_offset;
+    return make_TacSubObject(base_name, offset);
+}
 
-// static void deref_ptr_dot_res_instr(Ctx ctx, TacDereferencedPointer* res, CDot* node, TLong member_offset) {
-//     if (member_offset > 0l) {
-//         std::shared_ptr<TacValue> src_ptr = std::move(res->val);
-//         std::shared_ptr<TacValue> idx;
-//         {
-//             TLong offset = member_offset;
-//             std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(offset);
-//             idx = std::make_shared<TacConstant>(std::move(constant));
-//         }
-//         std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacAddPtr>(1l, std::move(src_ptr), std::move(idx), std::move(dst_cp)));
-//         res->val = std::move(dst);
-//     }
-// }
+static void deref_ptr_dot_res_instr(Ctx ctx, TacDereferencedPointer* res, CDot* node, TLong member_offset) {
+    if (member_offset > 0l) {
+        shared_ptr_t(TacValue) src_ptr = sptr_new();
+        sptr_move(TacValue, res->val, src_ptr);
+        shared_ptr_t(TacValue) idx = sptr_new();
+        {
+            TLong offset = member_offset;
+            shared_ptr_t(CConst) constant = make_CConstLong(offset);
+            idx = make_TacConstant(&constant);
+        }
+        shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacAddPtr(1l, &src_ptr, &idx, &dst_cp));
+        sptr_move(TacValue, dst, res->val);
+    }
+}
 
-// static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) { res->offset += member_offset; }
+static void sub_obj_dot_res_instr(TacSubObject* res, TLong member_offset) { res->offset += member_offset; }
 
-// static std::unique_ptr<TacExpResult> dot_res_instr(Ctx ctx, CDot* node) {
-//     THROW_ABORT_IF(node->structure->exp_type->type() != AST_Structure_t);
-//     Structure* struct_type = static_cast<Structure*>(node->structure->exp_type.get());
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
-//     std::unique_ptr<TacExpResult> res = repr_res_instr(ctx, node->structure.get());
-//     switch (res->type()) {
-//         case AST_TacPlainOperand_t: {
-//             res = plain_op_dot_res_instr(static_cast<TacPlainOperand*>(res.get()), member_offset);
-//             break;
-//         }
-//         case AST_TacDereferencedPointer_t:
-//             deref_ptr_dot_res_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), node, member_offset);
-//             break;
-//         case AST_TacSubObject_t:
-//             sub_obj_dot_res_instr(static_cast<TacSubObject*>(res.get()), member_offset);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     return res;
-// }
+static unique_ptr_t(TacExpResult) dot_res_instr(Ctx ctx, CDot* node) {
+    THROW_ABORT_IF(node->structure->exp_type->type != AST_Structure_t);
+    Structure* struct_type = &node->structure->exp_type->get._Structure;
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
+    unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node->structure);
+    switch (res->type) {
+        case AST_TacPlainOperand_t: {
+            // TODO see here
+            res = plain_op_dot_res_instr(&res->get._TacPlainOperand, member_offset);
+            break;
+        }
+        case AST_TacDereferencedPointer_t:
+            deref_ptr_dot_res_instr(ctx, &res->get._TacDereferencedPointer, node, member_offset);
+            break;
+        case AST_TacSubObject_t:
+            sub_obj_dot_res_instr(&res->get._TacSubObject, member_offset);
+            break;
+        default:
+            THROW_ABORT;
+    }
+    return res;
+}
 
-// static std::unique_ptr<TacDereferencedPointer> arrow_res_instr(Ctx ctx, CArrow* node) {
-//     THROW_ABORT_IF(node->pointer->exp_type->type() != AST_Pointer_t);
-//     Pointer* ptr_type = static_cast<Pointer*>(node->pointer->exp_type.get());
-//     THROW_ABORT_IF(ptr_type->ref_type->type() != AST_Structure_t);
-//     Structure* struct_type = static_cast<Structure*>(ptr_type->ref_type.get());
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
-//     std::shared_ptr<TacValue> val = repr_exp_instr(ctx, node->pointer.get());
-//     if (member_offset > 0l) {
-//         std::shared_ptr<TacValue> idx;
-//         {
-//             TLong offset = member_offset;
-//             std::shared_ptr<CConst> constant = std::make_shared<CConstLong>(offset);
-//             idx = std::make_shared<TacConstant>(std::move(constant));
-//         }
-//         std::shared_ptr<TacValue> dst = ptr_inner_value(ctx, node);
-//         std::shared_ptr<TacValue> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<TacAddPtr>(1l, std::move(val), std::move(idx), std::move(dst_cp)));
-//         val = std::move(dst);
-//     }
-//     return std::make_unique<TacDereferencedPointer>(std::move(val));
-// }
+static unique_ptr_t(TacExpResult) arrow_res_instr(Ctx ctx, CArrow* node) {
+    THROW_ABORT_IF(node->pointer->exp_type->type != AST_Pointer_t);
+    Pointer* ptr_type = &node->pointer->exp_type->get._Pointer;
+    THROW_ABORT_IF(ptr_type->ref_type->type != AST_Structure_t);
+    Structure* struct_type = &ptr_type->ref_type->get._Structure;
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    TLong member_offset = map_get(struct_typedef->members, node->member)->offset;
+    shared_ptr_t(TacValue) val = repr_exp_instr(ctx, node->pointer);
+    if (member_offset > 0l) {
+        shared_ptr_t(TacValue) idx = sptr_new();
+        {
+            TLong offset = member_offset;
+            shared_ptr_t(CConst) constant = make_CConstLong(offset);
+            idx = make_TacConstant(&constant);
+        }
+        shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
+        shared_ptr_t(TacValue) dst_cp = sptr_new();
+        sptr_copy(TacValue, dst, dst_cp);
+        push_instr(ctx, make_TacAddPtr(1l, &val, &idx, &dst_cp));
+        sptr_move(TacValue, dst, val);
+    }
+    return make_TacDereferencedPointer(&val);
+}
 
-// static std::unique_ptr<TacExpResult> repr_res_instr(Ctx ctx, CExp* node) {
-//     switch (node->type()) {
-//         case AST_CConstant_t:
-//             return const_res_instr(static_cast<CConstant*>(node));
-//         case AST_CString_t:
-//             return string_res_instr(ctx, static_cast<CString*>(node));
-//         case AST_CVar_t:
-//             return var_res_instr(static_cast<CVar*>(node));
-//         case AST_CCast_t:
-//             return cast_res_instr(ctx, static_cast<CCast*>(node));
-//         case AST_CUnary_t:
-//             return unary_res_instr(ctx, static_cast<CUnary*>(node));
-//         case AST_CBinary_t:
-//             return binary_res_instr(ctx, static_cast<CBinary*>(node));
-//         case AST_CAssignment_t:
-//             return assign_res_instr(ctx, static_cast<CAssignment*>(node));
-//         case AST_CConditional_t:
-//             return conditional_res_instr(ctx, static_cast<CConditional*>(node));
-//         case AST_CFunctionCall_t:
-//             return call_res_instr(ctx, static_cast<CFunctionCall*>(node));
-//         case AST_CDereference_t:
-//             return deref_res_instr(ctx, static_cast<CDereference*>(node));
-//         case AST_CAddrOf_t:
-//             return addrof_res_instr(ctx, static_cast<CAddrOf*>(node));
-//         case AST_CSubscript_t:
-//             return subscript_res_instr(ctx, static_cast<CSubscript*>(node));
-//         case AST_CSizeOf_t:
-//             return sizeof_res_instr(ctx, static_cast<CSizeOf*>(node));
-//         case AST_CSizeOfT_t:
-//             return sizeoft_res_instr(ctx, static_cast<CSizeOfT*>(node));
-//         case AST_CDot_t:
-//             return dot_res_instr(ctx, static_cast<CDot*>(node));
-//         case AST_CArrow_t:
-//             return arrow_res_instr(ctx, static_cast<CArrow*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static unique_ptr_t(TacExpResult) repr_res_instr(Ctx ctx, CExp* node) {
+    switch (node->type) {
+        case AST_CConstant_t:
+            return const_res_instr(&node->get._CConstant);
+        case AST_CString_t:
+            return string_res_instr(ctx, &node->get._CString);
+        case AST_CVar_t:
+            return var_res_instr(&node->get._CVar);
+        case AST_CCast_t:
+            return cast_res_instr(ctx, &node->get._CCast);
+        case AST_CUnary_t:
+            return unary_res_instr(ctx, &node->get._CUnary);
+        case AST_CBinary_t:
+            return binary_res_instr(ctx, &node->get._CBinary);
+        case AST_CAssignment_t:
+            return assign_res_instr(ctx, &node->get._CAssignment);
+        case AST_CConditional_t:
+            return conditional_res_instr(ctx, &node->get._CConditional);
+        case AST_CFunctionCall_t:
+            return call_res_instr(ctx, &node->get._CFunctionCall);
+        case AST_CDereference_t:
+            return deref_res_instr(ctx, &node->get._CDereference);
+        case AST_CAddrOf_t:
+            return addrof_res_instr(ctx, &node->get._CAddrOf);
+        case AST_CSubscript_t:
+            return subscript_res_instr(ctx, &node->get._CSubscript);
+        case AST_CSizeOf_t:
+            return sizeof_res_instr(ctx, &node->get._CSizeOf);
+        case AST_CSizeOfT_t:
+            return sizeoft_res_instr(ctx, &node->get._CSizeOfT);
+        case AST_CDot_t:
+            return dot_res_instr(ctx, &node->get._CDot);
+        case AST_CArrow_t:
+            return arrow_res_instr(ctx, &node->get._CArrow);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<TacValue> plain_op_exp_instr(TacPlainOperand* res) {
-//     std::shared_ptr<TacValue> dst = std::move(res->val);
-//     return dst;
-// }
+static shared_ptr_t(TacValue) plain_op_exp_instr(TacPlainOperand* res) {
+    shared_ptr_t(TacValue) dst = sptr_new();
+    sptr_move(TacValue, res->val, dst);
+    return dst;
+}
 
-// static std::shared_ptr<TacValue> deref_ptr_exp_instr(Ctx ctx, TacDereferencedPointer* res, CExp* node) {
-//     std::shared_ptr<TacValue> src = std::move(res->val);
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacLoad>(std::move(src), std::move(dst_cp)));
-//     return dst;
-// }
+static shared_ptr_t(TacValue) deref_ptr_exp_instr(Ctx ctx, TacDereferencedPointer* res, CExp* node) {
+    shared_ptr_t(TacValue) src = sptr_new();
+    sptr_move(TacValue, res->val, src);
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacLoad(&src, &dst_cp));
+    return dst;
+}
 
-// static std::shared_ptr<TacValue> sub_obj_exp_instr(Ctx ctx, TacSubObject* res, CExp* node) {
-//     TIdentifier src_name = res->base_name;
-//     TLong offset = res->offset;
-//     std::shared_ptr<TacValue> dst = plain_inner_value(ctx, node);
-//     std::shared_ptr<TacValue> dst_cp = dst;
-//     push_instr(ctx, std::make_unique<TacCopyFromOffset>(src_name, offset, std::move(dst_cp)));
-//     return dst;
-// }
+static shared_ptr_t(TacValue) sub_obj_exp_instr(Ctx ctx, TacSubObject* res, CExp* node) {
+    TIdentifier src_name = res->base_name;
+    TLong offset = res->offset;
+    shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node);
+    shared_ptr_t(TacValue) dst_cp = sptr_new();
+    sptr_copy(TacValue, dst, dst_cp);
+    push_instr(ctx, make_TacCopyFromOffset(src_name, offset, &dst_cp));
+    return dst;
+}
 
-// // exp_result = PlainOperand(val) | DereferencedPointer(val) | SubObject(val)
-// static std::shared_ptr<TacValue> repr_exp_instr(Ctx ctx, CExp* node) {
-//     std::unique_ptr<TacExpResult> res = repr_res_instr(ctx, node);
-//     switch (res->type()) {
-//         case AST_TacPlainOperand_t:
-//             return plain_op_exp_instr(static_cast<TacPlainOperand*>(res.get()));
-//         case AST_TacDereferencedPointer_t:
-//             return deref_ptr_exp_instr(ctx, static_cast<TacDereferencedPointer*>(res.get()), node);
-//         case AST_TacSubObject_t:
-//             return sub_obj_exp_instr(ctx, static_cast<TacSubObject*>(res.get()), node);
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// exp_result = PlainOperand(val) | DereferencedPointer(val) | SubObject(val)
+static shared_ptr_t(TacValue) repr_exp_instr(Ctx ctx, CExp* node) {
+    unique_ptr_t(TacExpResult) res = repr_res_instr(ctx, node);
+    switch (res->type) {
+        case AST_TacPlainOperand_t:
+            return plain_op_exp_instr(&res->get._TacPlainOperand);
+        case AST_TacDereferencedPointer_t:
+            return deref_ptr_exp_instr(ctx, &res->get._TacDereferencedPointer, node);
+        case AST_TacSubObject_t:
+            return sub_obj_exp_instr(ctx, &res->get._TacSubObject, node);
+        default:
+            THROW_ABORT;
+    }
+}
 
 // static void repr_block(Ctx ctx, CBlock* node);
 
