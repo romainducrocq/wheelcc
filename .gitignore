@@ -47,3 +47,4 @@ format.out.*
 /src/frontend/parser/lexer.cpp
 /src/backend/assembly/asm_gen.cpp
 /src/backend/assembly/registers.cpp
+/src/backend/assembly/symt_cvt.cpp
