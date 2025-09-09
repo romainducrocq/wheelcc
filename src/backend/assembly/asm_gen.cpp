@@ -1198,21 +1198,24 @@ static void reg_arg_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
 
 static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node);
-    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node);
-    if (src->type == AST_AsmRegister_t || src->type == AST_AsmImm_t || asm_type_src->type == AST_QuadWord_t
-        || asm_type_src->type == AST_BackendDouble_t) {
+    if (src->type == AST_AsmRegister_t || src->type == AST_AsmImm_t) {
         push_instr(ctx, make_AsmPush(&src));
-        free_AssemblyType(&asm_type_src);
-        // TODO can even refactor to not make asm_type_src if not needed
     }
     else {
-        shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
-        {
-            shared_ptr_t(AsmOperand) dst_cp = sptr_new();
-            sptr_copy(AsmOperand, dst, dst_cp);
-            push_instr(ctx, make_AsmPush(&dst_cp));
+        shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node);
+        if (asm_type_src->type == AST_QuadWord_t || asm_type_src->type == AST_BackendDouble_t) {
+            push_instr(ctx, make_AsmPush(&src));
+            free_AssemblyType(&asm_type_src);
         }
-        push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+        else {
+            shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
+            {
+                shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+                sptr_copy(AsmOperand, dst, dst_cp);
+                push_instr(ctx, make_AsmPush(&dst_cp));
+            }
+            push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+        }
     }
 }
 
@@ -1278,7 +1281,7 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
         }
         for (size_t i = vec_size(byte_instrs); i-- > 0;) {
             push_instr(ctx, byte_instrs[i]);
-            byte_instrs[i] = uptr_new(); // TODO check this
+            byte_instrs[i] = uptr_new();
         }
         vec_delete(byte_instrs);
     }
@@ -1392,7 +1395,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     stack_padding *= 8l;
     for (size_t i = vec_size(stack_instrs); i-- > 0;) {
         push_instr(ctx, stack_instrs[i]);
-        stack_instrs[i] = uptr_new(); // TODO check this
+        stack_instrs[i] = uptr_new();
     }
     vec_delete(stack_instrs);
     return stack_padding;
@@ -1467,24 +1470,23 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
     }
 }
 
-// TODO remove scope on if, keep before stack_padding?
 static void call_instr(Ctx ctx, TacFunCall* node) {
     bool is_ret_memory = false;
     FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
-    {
-        if (node->dst && is_value_struct(ctx, node->dst)) {
-            TIdentifier name = node->dst->get._TacVariable.name;
-            Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
-            struct_8b_class(ctx, struct_type);
-            if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
-                is_ret_memory = true;
-                {
-                    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->dst);
-                    shared_ptr_t(AsmOperand) dst = gen_register(REG_Di);
-                    push_instr(ctx, make_AsmLea(&src, &dst));
-                }
+    if (node->dst && is_value_struct(ctx, node->dst)) {
+        TIdentifier name = node->dst->get._TacVariable.name;
+        Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+        struct_8b_class(ctx, struct_type);
+        if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
+            is_ret_memory = true;
+            {
+                shared_ptr_t(AsmOperand) src = gen_op(ctx, node->dst);
+                shared_ptr_t(AsmOperand) dst = gen_register(REG_Di);
+                push_instr(ctx, make_AsmLea(&src, &dst));
             }
         }
+    }
+    {
         TLong stack_padding = arg_call_instr(ctx, node, fun_type, is_ret_memory);
 
         {
@@ -2596,14 +2598,14 @@ static void stack_8b_fun_param_instr(
     }
 }
 
-// TODO dup map_get
 static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool is_ret_memory) {
     size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
     for (size_t i = 0; i < vec_size(node->params); ++i) {
         TIdentifier param = node->params[i];
-        if (map_get(ctx->frontend->symbol_table, param)->type_t->type == AST_Double_t) {
+        Type* param_type = map_get(ctx->frontend->symbol_table, param)->type_t;
+        if (param_type->type == AST_Double_t) {
             if (sse_size < 8) {
                 reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);
                 sse_size++;
@@ -2613,7 +2615,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
                 stack_bytes += 8l;
             }
         }
-        else if (map_get(ctx->frontend->symbol_table, param)->type_t->type != AST_Structure_t) {
+        else if (param_type->type != AST_Structure_t) {
             if (reg_size < 6) {
                 reg_fun_param_instr(ctx, param, ctx->arg_regs[reg_size]);
                 reg_size++;
@@ -2626,7 +2628,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            Structure* struct_type = &map_get(ctx->frontend->symbol_table, param)->type_t->get._Structure;
+            Structure* struct_type = &param_type->get._Structure;
             struct_8b_class(ctx, struct_type);
             Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
             if (struct_8b->clss[0] != CLS_memory) {
