@@ -971,7 +971,8 @@ static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
         unique_ptr_t(AsmBinaryOp) binop_out_of_range_sd_sub = make_AsmSub();
         shared_ptr_t(AsmOperand) dst_out_of_range_sd_cp = sptr_new();
         sptr_copy(AsmOperand, dst_out_of_range_sd, dst_out_of_range_sd_cp);
-        push_instr(ctx, make_AsmBinary(&binop_out_of_range_sd_sub, &asm_type_sd, &upper_bound_sd, &dst_out_of_range_sd_cp));
+        push_instr(
+            ctx, make_AsmBinary(&binop_out_of_range_sd_sub, &asm_type_sd, &upper_bound_sd, &dst_out_of_range_sd_cp));
     }
     {
         shared_ptr_t(AsmOperand) dst_cp = sptr_new();
@@ -1132,7 +1133,8 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         sptr_copy(AsmOperand, dst_out_of_range_si, dst_out_of_range_si_cp);
         shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
         sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
-        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_and, &asm_type_si_cp, &set_bit_si, &dst_out_of_range_si_cp));
+        push_instr(
+            ctx, make_AsmBinary(&binop_out_of_range_si_and, &asm_type_si_cp, &set_bit_si, &dst_out_of_range_si_cp));
     }
     {
         unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_or = make_AsmBitOr();
@@ -1140,7 +1142,8 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
         shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
         sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
-        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_or, &asm_type_si_cp, &dst_out_of_range_si, &dst_out_of_range_si_shr_cp));
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_or, &asm_type_si_cp, &dst_out_of_range_si,
+                            &dst_out_of_range_si_shr_cp));
     }
     {
         shared_ptr_t(AsmOperand) dst_cp = sptr_new();
@@ -1228,8 +1231,7 @@ static void quad_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset) {
     push_instr(ctx, make_AsmPush(&src));
 }
 
-static void long_stack_arg_call_instr(
-    Ctx ctx, TIdentifier name, TLong offset, shared_ptr_t(AssemblyType)* asm_type) {
+static void long_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, shared_ptr_t(AssemblyType) * asm_type) {
     shared_ptr_t(AsmOperand) src = sptr_new();
     {
         TIdentifier src_name = name;
@@ -1390,7 +1392,7 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     stack_padding *= 8l;
     for (size_t i = vec_size(stack_instrs); i-- > 0;) {
         push_instr(ctx, stack_instrs[i]);
-        stack_instrs[i] = uptr_new();
+        stack_instrs[i] = uptr_new(); // TODO check this
     }
     vec_delete(stack_instrs);
     return stack_padding;
@@ -1846,7 +1848,7 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code = sptr_new();
+        unique_ptr_t(AsmCondCode) cond_code = uptr_new();
         if (is_value_signed(ctx, node->src1)) {
             cond_code = gen_signed_cond_code(node->binop);
         }
@@ -2778,8 +2780,8 @@ static unique_ptr_t(AsmProgram) gen_program(Ctx ctx, TacProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(AsmProgram) generate_assembly(
-    unique_ptr_t(TacProgram)* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
+unique_ptr_t(AsmProgram)
+    generate_assembly(unique_ptr_t(TacProgram) * tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
     AsmGenContext ctx;
     {
         ctx.frontend = frontend;

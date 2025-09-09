@@ -15,8 +15,8 @@ typedef struct IdentifierContext IdentifierContext;
 #ifdef __cplusplus
 extern "C" {
 #endif
-unique_ptr_t(AsmProgram) generate_assembly(
-    unique_ptr_t(TacProgram)* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
+unique_ptr_t(AsmProgram)
+    generate_assembly(unique_ptr_t(TacProgram) * tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers);
 #ifdef __cplusplus
 }
 #endif
