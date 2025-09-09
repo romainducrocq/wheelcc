@@ -88,9 +88,9 @@ static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, Structur
     TLong size;
     TInt alignment;
     if (map_find(ctx->struct_typedef_table, struct_type->tag) != map_end()) {
-        // TODO dup map_get
-        size = map_get(ctx->struct_typedef_table, struct_type->tag)->size;
-        alignment = map_get(ctx->struct_typedef_table, struct_type->tag)->alignment;
+        StructTypedef* struct_typedef = map_get(ctx->struct_typedef_table, struct_type->tag);
+        size = struct_typedef->size;
+        alignment = struct_typedef->alignment;
     }
     else {
         size = -1l;
@@ -100,8 +100,8 @@ static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, Structur
 }
 
 shared_ptr_t(AssemblyType) cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name) {
-    // TODO dup map_get
-    switch (map_get(ctx->symbol_table, name)->type_t->type) {
+    Type* symbol_type = map_get(ctx->symbol_table, name)->type_t;
+    switch (symbol_type->type) {
         case AST_Char_t:
         case AST_SChar_t:
         case AST_UChar_t:
@@ -116,9 +116,9 @@ shared_ptr_t(AssemblyType) cvt_backend_asm_type(FrontEndContext* ctx, TIdentifie
         case AST_Double_t:
             return make_BackendDouble();
         case AST_Array_t:
-            return arr_asm_type(ctx, &map_get(ctx->symbol_table, name)->type_t->get._Array);
+            return arr_asm_type(ctx, &symbol_type->get._Array);
         case AST_Structure_t:
-            return struct_asm_type(ctx, &map_get(ctx->symbol_table, name)->type_t->get._Structure);
+            return struct_asm_type(ctx, &symbol_type->get._Structure);
         default:
             THROW_ABORT;
     }
@@ -186,8 +186,7 @@ static void cvt_program(Ctx ctx, AsmProgram* node) {
         const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
         ctx->symbol = pair_first(*symbol);
         if (pair_second(*symbol)->type_t->type == AST_FunType_t) {
-            cvt_fun_type(ctx, &pair_second(*symbol)->attrs->get._FunAttr,
-                &pair_second(*symbol)->type_t->get._FunType);
+            cvt_fun_type(ctx, &pair_second(*symbol)->attrs->get._FunAttr, &pair_second(*symbol)->type_t->get._FunType);
         }
         else {
             cvt_obj_type(ctx, pair_second(*symbol)->attrs);
