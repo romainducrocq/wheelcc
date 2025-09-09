@@ -1676,254 +1676,271 @@ static void unary_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-// static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AsmOperand> src1_dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src1_dst_cp = src1_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(src1), std::move(src1_dst_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop = gen_binop(node->binop.get());
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         push_instr(ctx, std::make_unique<AsmBinary>(
-//                             std::move(binop), std::move(asm_type_src1), std::move(src2), std::move(src1_dst)));
-//     }
-// }
+static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AsmOperand) src1_dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src1_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src1_dst, src1_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop = gen_binop(node->binop);
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        push_instr(ctx, make_AsmBinary(&binop, &asm_type_src1, &src2, &src1_dst));
+    }
+}
 
-// static void signed_divide_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src1_dst_cp = src1_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(src1), std::move(src1_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmCdq>(std::move(asm_type_src1_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmIdiv>(std::move(asm_type_src1_cp), std::move(src2)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1), std::move(src1_dst), std::move(dst)));
-//     }
-// }
+static void signed_divide_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src1_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src1_dst, src1_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
+    }
+    {
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmCdq(&asm_type_src1_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmIdiv(&asm_type_src1_cp, &src2));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmMov(&asm_type_src1, &src1_dst, &dst));
+    }
+}
 
-// static void unsigned_divide_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src1_dst_cp = src1_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(src1), std::move(src1_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-//         std::shared_ptr<AsmOperand> imm_zero_dst = gen_register(REG_Dx);
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(
-//             ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(imm_zero), std::move(imm_zero_dst)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmDiv>(std::move(asm_type_src1_cp), std::move(src2)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1), std::move(src1_dst), std::move(dst)));
-//     }
-// }
+static void unsigned_divide_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src1_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src1_dst, src1_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
+        shared_ptr_t(AsmOperand) imm_zero_dst = gen_register(REG_Dx);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &imm_zero, &imm_zero_dst));
+    }
+    {
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmDiv(&asm_type_src1_cp, &src2));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmMov(&asm_type_src1, &src1_dst, &dst));
+    }
+}
 
-// static void binop_divide_instr(Ctx ctx, TacBinary* node) {
-//     if (is_value_dbl(ctx, node->src1.get())) {
-//         binop_arithmetic_instr(ctx, node);
-//     }
-//     else if (is_value_signed(ctx, node->src1.get())) {
-//         signed_divide_instr(ctx, node);
-//     }
-//     else {
-//         unsigned_divide_instr(ctx, node);
-//     }
-// }
+static void binop_divide_instr(Ctx ctx, TacBinary* node) {
+    if (is_value_dbl(ctx, node->src1)) {
+        binop_arithmetic_instr(ctx, node);
+    }
+    else if (is_value_signed(ctx, node->src1)) {
+        signed_divide_instr(ctx, node);
+    }
+    else {
+        unsigned_divide_instr(ctx, node);
+    }
+}
 
-// static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(src1), std::move(src1_dst)));
-//     }
-//     {
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmCdq>(std::move(asm_type_src1_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmIdiv>(std::move(asm_type_src1_cp), std::move(src2)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst_src = gen_register(REG_Dx);
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1), std::move(dst_src), std::move(dst)));
-//     }
-// }
+static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst));
+    }
+    {
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmCdq(&asm_type_src1_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmIdiv(&asm_type_src1_cp, &src2));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst_src = gen_register(REG_Dx);
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmMov(&asm_type_src1, &dst_src, &dst));
+    }
+}
 
-// static void unsigned_remainder_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AsmOperand> dst_src = gen_register(REG_Dx);
-//     std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src1_dst = gen_register(REG_Ax);
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(src1), std::move(src1_dst)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-//         std::shared_ptr<AsmOperand> dst_src_cp = dst_src;
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(
-//             ctx, std::make_unique<AsmMov>(std::move(asm_type_src1_cp), std::move(imm_zero), std::move(dst_src_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1_cp = asm_type_src1;
-//         push_instr(ctx, std::make_unique<AsmDiv>(std::move(asm_type_src1_cp), std::move(src2)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src1), std::move(dst_src), std::move(dst)));
-//     }
-// }
+static void unsigned_remainder_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AsmOperand) dst_src = gen_register(REG_Dx);
+    shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst));
+    }
+    {
+        shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
+        shared_ptr_t(AsmOperand) dst_src_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_src, dst_src_cp);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &imm_zero, &dst_src_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src1, asm_type_src1_cp);
+        push_instr(ctx, make_AsmDiv(&asm_type_src1_cp, &src2));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmMov(&asm_type_src1, &dst_src, &dst));
+    }
+}
 
-// static void binop_remainder_instr(Ctx ctx, TacBinary* node) {
-//     if (is_value_signed(ctx, node->src1.get())) {
-//         signed_remainder_instr(ctx, node);
-//     }
-//     else {
-//         unsigned_remainder_instr(ctx, node);
-//     }
-// }
+static void binop_remainder_instr(Ctx ctx, TacBinary* node) {
+    if (is_value_signed(ctx, node->src1)) {
+        signed_remainder_instr(ctx, node);
+    }
+    else {
+        unsigned_remainder_instr(ctx, node);
+    }
+}
 
-// static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
-//     std::shared_ptr<AsmOperand> cmp_dst = gen_op(ctx, node->dst.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_src1), std::move(src2), std::move(src1)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-//         std::shared_ptr<AsmOperand> cmp_dst_cp = cmp_dst;
-//         std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), std::move(cmp_dst_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmCondCode> cond_code;
-//         if (is_value_signed(ctx, node->src1.get())) {
-//             cond_code = gen_signed_cond_code(node->binop.get());
-//         }
-//         else {
-//             cond_code = gen_unsigned_cond_code(node->binop.get());
-//         }
-//         push_instr(ctx, std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
-//     }
-// }
+static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
+    shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+        push_instr(ctx, make_AsmCmp(&asm_type_src1, &src2, &src1));
+    }
+    {
+        shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
+        shared_ptr_t(AsmOperand) cmp_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, cmp_dst, cmp_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_dst = gen_asm_type(ctx, node->dst);
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
+    }
+    {
+        unique_ptr_t(AsmCondCode) cond_code = sptr_new();
+        if (is_value_signed(ctx, node->src1)) {
+            cond_code = gen_signed_cond_code(node->binop);
+        }
+        else {
+            cond_code = gen_unsigned_cond_code(node->binop);
+        }
+        push_instr(ctx, make_AsmSetCC(&cond_code, &cmp_dst));
+    }
+}
 
-// static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
-//     TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
-//     std::shared_ptr<AsmOperand> cmp_dst = gen_op(ctx, node->dst.get());
-//     {
-//         std::shared_ptr<AsmOperand> src1 = gen_op(ctx, node->src1.get());
-//         std::shared_ptr<AsmOperand> src2 = gen_op(ctx, node->src2.get());
-//         std::shared_ptr<AssemblyType> asm_type_src1 = gen_asm_type(ctx, node->src1.get());
-//         push_instr(ctx, std::make_unique<AsmCmp>(std::move(asm_type_src1), std::move(src2), std::move(src1)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> imm_zero = std::make_shared<AsmImm>(0ul, true, false, false);
-//         std::shared_ptr<AsmOperand> cmp_dst_cp = cmp_dst;
-//         std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(imm_zero), std::move(cmp_dst_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmCondCode> cond_code_p = std::make_unique<AsmP>();
-//         push_instr(ctx, std::make_unique<AsmJmpCC>(target_nan, std::move(cond_code_p)));
-//     }
-//     {
-//         std::unique_ptr<AsmCondCode> cond_code = gen_unsigned_cond_code(node->binop.get());
-//         if (cond_code->type() == AST_AsmNE_t) {
-//             TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
-//             {
-//                 std::shared_ptr<AsmOperand> cmp_dst_cp = cmp_dst;
-//                 push_instr(ctx, std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst_cp)));
-//             }
-//             push_instr(ctx, std::make_unique<AsmJmp>(target_nan_ne));
-//             push_instr(ctx, std::make_unique<AsmLabel>(target_nan));
-//             {
-//                 std::unique_ptr<AsmCondCode> cond_code_e = std::make_unique<AsmE>();
-//                 push_instr(ctx, std::make_unique<AsmSetCC>(std::move(cond_code_e), std::move(cmp_dst)));
-//             }
-//             push_instr(ctx, std::make_unique<AsmLabel>(target_nan_ne));
-//         }
-//         else {
-//             push_instr(ctx, std::make_unique<AsmSetCC>(std::move(cond_code), std::move(cmp_dst)));
-//             push_instr(ctx, std::make_unique<AsmLabel>(target_nan));
-//         }
-//     }
-// }
+static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
+    TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
+    shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
+    {
+        shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
+        shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
+        shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
+        push_instr(ctx, make_AsmCmp(&asm_type_src1, &src2, &src1));
+    }
+    {
+        shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
+        shared_ptr_t(AsmOperand) cmp_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, cmp_dst, cmp_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
+    }
+    {
+        unique_ptr_t(AsmCondCode) cond_code_p = make_AsmP();
+        push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
+    }
+    {
+        unique_ptr_t(AsmCondCode) cond_code = gen_unsigned_cond_code(node->binop);
+        if (cond_code->type == AST_AsmNE_t) {
+            TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
+            {
+                shared_ptr_t(AsmOperand) cmp_dst_cp = sptr_new();
+                sptr_copy(AsmOperand, cmp_dst, cmp_dst_cp);
+                push_instr(ctx, make_AsmSetCC(&cond_code, &cmp_dst_cp));
+            }
+            push_instr(ctx, make_AsmJmp(target_nan_ne));
+            push_instr(ctx, make_AsmLabel(target_nan));
+            {
+                unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+                push_instr(ctx, make_AsmSetCC(&cond_code_e, &cmp_dst));
+            }
+            push_instr(ctx, make_AsmLabel(target_nan_ne));
+        }
+        else {
+            push_instr(ctx, make_AsmSetCC(&cond_code, &cmp_dst));
+            push_instr(ctx, make_AsmLabel(target_nan));
+        }
+    }
+}
 
-// static void binop_conditional_instr(Ctx ctx, TacBinary* node) {
-//     if (is_value_dbl(ctx, node->src1.get())) {
-//         binop_dbl_conditional_instr(ctx, node);
-//     }
-//     else {
-//         binop_int_conditional_instr(ctx, node);
-//     }
-// }
+static void binop_conditional_instr(Ctx ctx, TacBinary* node) {
+    if (is_value_dbl(ctx, node->src1)) {
+        binop_dbl_conditional_instr(ctx, node);
+    }
+    else {
+        binop_int_conditional_instr(ctx, node);
+    }
+}
 
-// static void binary_instr(Ctx ctx, TacBinary* node) {
-//     switch (node->binop->type()) {
-//         case AST_TacAdd_t:
-//         case AST_TacSubtract_t:
-//         case AST_TacMultiply_t:
-//         case AST_TacBitAnd_t:
-//         case AST_TacBitOr_t:
-//         case AST_TacBitXor_t:
-//         case AST_TacBitShiftLeft_t:
-//         case AST_TacBitShiftRight_t:
-//         case AST_TacBitShrArithmetic_t:
-//             binop_arithmetic_instr(ctx, node);
-//             break;
-//         case AST_TacDivide_t:
-//             binop_divide_instr(ctx, node);
-//             break;
-//         case AST_TacRemainder_t:
-//             binop_remainder_instr(ctx, node);
-//             break;
-//         case AST_TacEqual_t:
-//         case AST_TacNotEqual_t:
-//         case AST_TacLessThan_t:
-//         case AST_TacLessOrEqual_t:
-//         case AST_TacGreaterThan_t:
-//         case AST_TacGreaterOrEqual_t:
-//             binop_conditional_instr(ctx, node);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void binary_instr(Ctx ctx, TacBinary* node) {
+    switch (node->binop->type) {
+        case AST_TacAdd_t:
+        case AST_TacSubtract_t:
+        case AST_TacMultiply_t:
+        case AST_TacBitAnd_t:
+        case AST_TacBitOr_t:
+        case AST_TacBitXor_t:
+        case AST_TacBitShiftLeft_t:
+        case AST_TacBitShiftRight_t:
+        case AST_TacBitShrArithmetic_t:
+            binop_arithmetic_instr(ctx, node);
+            break;
+        case AST_TacDivide_t:
+            binop_divide_instr(ctx, node);
+            break;
+        case AST_TacRemainder_t:
+            binop_remainder_instr(ctx, node);
+            break;
+        case AST_TacEqual_t:
+        case AST_TacNotEqual_t:
+        case AST_TacLessThan_t:
+        case AST_TacLessOrEqual_t:
+        case AST_TacGreaterThan_t:
+        case AST_TacGreaterOrEqual_t:
+            binop_conditional_instr(ctx, node);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
 // static void copy_struct_instr(Ctx ctx, TacCopy* node) {
 //     TIdentifier src_name = static_cast<TacVariable*>(node->src.get())->name;
