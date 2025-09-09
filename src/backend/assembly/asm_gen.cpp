@@ -630,520 +630,544 @@ static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
     }
 }
 
-// static void push_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
+static void push_instr(Ctx ctx, unique_ptr_t(AsmInstruction) instr) { vec_move_back(*ctx->p_instrs, instr); }
 
-// static void ret_int_instr(Ctx ctx, TacReturn* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_val = gen_asm_type(ctx, node->val.get());
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_val), std::move(src), std::move(dst)));
-//     ret_1_reg_mask(ctx->p_fun_type, true);
-// }
+static void ret_int_instr(Ctx ctx, TacReturn* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->val);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_val = gen_asm_type(ctx, node->val);
+    push_instr(ctx, make_AsmMov(&asm_type_val, &src, &dst));
+    ret_1_reg_mask(ctx->p_fun_type, true);
+}
 
-// static void ret_dbl_instr(Ctx ctx, TacReturn* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm0);
-//     std::shared_ptr<AssemblyType> asm_type_val = std::make_shared<BackendDouble>();
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_val), std::move(src), std::move(dst)));
-//     ret_1_reg_mask(ctx->p_fun_type, false);
-// }
+static void ret_dbl_instr(Ctx ctx, TacReturn* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->val);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Xmm0);
+    shared_ptr_t(AssemblyType) asm_type_val = make_BackendDouble();
+    push_instr(ctx, make_AsmMov(&asm_type_val, &src, &dst));
+    ret_1_reg_mask(ctx->p_fun_type, false);
+}
 
-// static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
-//     TIdentifier src_name = name;
-//     std::shared_ptr<AsmOperand> dst = gen_register(arg_reg);
-//     std::shared_ptr<AssemblyType> asm_type_src =
-//         struct_type ? asm_type_8b(ctx, struct_type, offset) : std::make_shared<BackendDouble>();
-//     if (asm_type_src->type() == AST_ByteArray_t) {
-//         TLong size = offset + 2l;
-//         offset += static_cast<ByteArray*>(asm_type_src.get())->size - 1l;
-//         asm_type_src = std::make_shared<Byte>();
-//         std::shared_ptr<AsmOperand> src_shl = std::make_shared<AsmImm>(8ul, true, false, false);
-//         std::shared_ptr<AssemblyType> asm_type_shl = std::make_shared<QuadWord>();
-//         while (offset >= size) {
-//             {
-//                 std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
-//                 std::shared_ptr<AsmOperand> dst_cp = dst;
-//                 std::shared_ptr<AssemblyType> asm_type_src_cp = asm_type_src;
-//                 push_instr(
-//                     ctx, std::make_unique<AsmMov>(std::move(asm_type_src_cp), std::move(src), std::move(dst_cp)));
-//             }
-//             {
-//                 std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftLeft>();
-//                 std::shared_ptr<AssemblyType> asm_type_shl_cp = asm_type_shl;
-//                 std::shared_ptr<AsmOperand> src_shl_cp = src_shl;
-//                 std::shared_ptr<AsmOperand> dst_cp = dst;
-//                 push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_shl_cp),
-//                                     std::move(src_shl_cp), std::move(dst_cp)));
-//             }
-//             offset--;
-//         }
-//         {
-//             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
-//             std::shared_ptr<AsmOperand> dst_cp = dst;
-//             std::shared_ptr<AssemblyType> asm_type_src_cp = asm_type_src;
-//             push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src_cp), std::move(src), std::move(dst_cp)));
-//         }
-//         {
-//             std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmBitShiftLeft>();
-//             std::shared_ptr<AsmOperand> dst_cp = dst;
-//             push_instr(ctx, std::make_unique<AsmBinary>(
-//                                 std::move(binop), std::move(asm_type_shl), std::move(src_shl), std::move(dst_cp)));
-//         }
-//         offset--;
-//         {
-//             std::shared_ptr<AsmOperand> src = std::make_shared<AsmPseudoMem>(src_name, offset);
-//             push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
-//         }
-//     }
-//     else {
-//         std::shared_ptr<AsmOperand> src;
-//         {
-//             TLong from_offset = offset;
-//             src = std::make_shared<AsmPseudoMem>(src_name, from_offset);
-//         }
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
-//     }
-// }
+static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+    TIdentifier src_name = name;
+    shared_ptr_t(AsmOperand) dst = gen_register(arg_reg);
+    shared_ptr_t(AssemblyType) asm_type_src =
+        struct_type ? asm_type_8b(ctx, struct_type, offset) : make_BackendDouble();
+    if (asm_type_src->type == AST_ByteArray_t) {
+        TLong size = offset + 2l;
+        offset += asm_type_src->get._ByteArray.size - 1l;
+        // TODO free_AssemblyType(&asm_type_src);
+        asm_type_src = make_Byte();
+        shared_ptr_t(AsmOperand) src_shl = make_AsmImm(8ul, true, false, false);
+        shared_ptr_t(AssemblyType) asm_type_shl = make_QuadWord();
+        while (offset >= size) {
+            {
+                shared_ptr_t(AsmOperand) src = make_AsmPseudoMem(src_name, offset);
+                shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+                sptr_copy(AsmOperand, dst, dst_cp);
+                shared_ptr_t(AssemblyType) asm_type_src_cp = sptr_new();
+                sptr_copy(AssemblyType, asm_type_src, asm_type_src_cp);
+                push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &dst_cp));
+            }
+            {
+                unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftLeft();
+                shared_ptr_t(AssemblyType) asm_type_shl_cp = sptr_new();
+                sptr_copy(AssemblyType, asm_type_shl, asm_type_shl_cp);
+                shared_ptr_t(AsmOperand) src_shl_cp = sptr_new();
+                sptr_copy(AsmOperand, src_shl, src_shl_cp);
+                shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+                sptr_copy(AsmOperand, dst, dst_cp);
+                push_instr(ctx, make_AsmBinary(&binop, &asm_type_shl_cp, &src_shl_cp, &dst_cp));
+            }
+            offset--;
+        }
+        {
+            shared_ptr_t(AsmOperand) src = make_AsmPseudoMem(src_name, offset);
+            shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+            sptr_copy(AsmOperand, dst, dst_cp);
+            shared_ptr_t(AssemblyType) asm_type_src_cp = sptr_new();
+            sptr_copy(AssemblyType, asm_type_src, asm_type_src_cp);
+            push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &dst_cp));
+        }
+        {
+            unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftLeft();
+            shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+            sptr_copy(AsmOperand, dst, dst_cp);
+            push_instr(ctx, make_AsmBinary(&binop, &asm_type_shl, &src_shl, &dst_cp));
+        }
+        offset--;
+        {
+            shared_ptr_t(AsmOperand) src = make_AsmPseudoMem(src_name, offset);
+            push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+        }
+    }
+    else {
+        shared_ptr_t(AsmOperand) src = sptr_new();
+        {
+            TLong from_offset = offset;
+            src = make_AsmPseudoMem(src_name, from_offset);
+        }
+        push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+    }
+}
 
-// static void ret_struct_instr(Ctx ctx, TacReturn* node) {
-//     TIdentifier name = static_cast<TacVariable*>(node->val.get())->name;
-//     Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, name)->type_t.get());
-//     struct_8b_class(ctx, struct_type);
-//     Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
-//     if (struct_8b->clss[0] == CLS_memory) {
-//         {
-//             std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, -8l);
-//             std::shared_ptr<AsmOperand> dst = gen_register(REG_Ax);
-//             std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
-//             push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
-//             ret_1_reg_mask(ctx->p_fun_type, true);
-//         }
-//         {
-//             TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
-//             TLong offset = 0l;
-//             while (size > 0l) {
-//                 std::shared_ptr<AsmOperand> src = gen_op(ctx, node->val.get());
-//                 THROW_ABORT_IF(src->type() != AST_AsmPseudoMem_t);
-//                 static_cast<AsmPseudoMem*>(src.get())->offset = offset;
-//                 std::shared_ptr<AsmOperand> dst = gen_memory(REG_Ax, offset);
-//                 std::shared_ptr<AssemblyType> asm_type_src;
-//                 if (size >= 8l) {
-//                     asm_type_src = std::make_shared<QuadWord>();
-//                     size -= 8l;
-//                     offset += 8l;
-//                 }
-//                 else if (size >= 4l) {
-//                     asm_type_src = std::make_shared<LongWord>();
-//                     size -= 4l;
-//                     offset += 4l;
-//                 }
-//                 else {
-//                     asm_type_src = std::make_shared<Byte>();
-//                     size--;
-//                     offset++;
-//                 }
-//                 push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src), std::move(dst)));
-//             }
-//         }
-//     }
-//     else {
-//         bool reg_size = false;
-//         switch (struct_8b->clss[0]) {
-//             case CLS_integer: {
-//                 ret_8b_instr(ctx, name, 0l, struct_type, REG_Ax);
-//                 reg_size = true;
-//                 break;
-//             }
-//             case CLS_sse:
-//                 ret_8b_instr(ctx, name, 0l, NULL, REG_Xmm0);
-//                 break;
-//             default:
-//                 THROW_ABORT;
-//         }
-//         if (struct_8b->size == 2) {
-//             bool sse_size = !reg_size;
-//             switch (struct_8b->clss[1]) {
-//                 case CLS_integer:
-//                     ret_8b_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
-//                     break;
-//                 case CLS_sse: {
-//                     ret_8b_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
-//                     sse_size = true;
-//                     break;
-//                 }
-//                 default:
-//                     THROW_ABORT;
-//             }
-//             ret_2_reg_mask(ctx->p_fun_type, reg_size, sse_size);
-//         }
-//         else {
-//             ret_1_reg_mask(ctx->p_fun_type, reg_size);
-//         }
-//     }
-// }
+static void ret_struct_instr(Ctx ctx, TacReturn* node) {
+    TIdentifier name = node->val->get._TacVariable.name;
+    Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+    struct_8b_class(ctx, struct_type);
+    Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+    if (struct_8b->clss[0] == CLS_memory) {
+        {
+            shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, -8l);
+            shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
+            shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
+            push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+            ret_1_reg_mask(ctx->p_fun_type, true);
+        }
+        {
+            TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+            TLong offset = 0l;
+            while (size > 0l) {
+                shared_ptr_t(AsmOperand) src = gen_op(ctx, node->val);
+                THROW_ABORT_IF(src->type != AST_AsmPseudoMem_t);
+                src->get._AsmPseudoMem.offset = offset;
+                shared_ptr_t(AsmOperand) dst = gen_memory(REG_Ax, offset);
+                shared_ptr_t(AssemblyType) asm_type_src = sptr_new();
+                if (size >= 8l) {
+                    asm_type_src = make_QuadWord();
+                    size -= 8l;
+                    offset += 8l;
+                }
+                else if (size >= 4l) {
+                    asm_type_src = make_LongWord();
+                    size -= 4l;
+                    offset += 4l;
+                }
+                else {
+                    asm_type_src = make_Byte();
+                    size--;
+                    offset++;
+                }
+                push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
+            }
+        }
+    }
+    else {
+        bool reg_size = false;
+        switch (struct_8b->clss[0]) {
+            case CLS_integer: {
+                ret_8b_instr(ctx, name, 0l, struct_type, REG_Ax);
+                reg_size = true;
+                break;
+            }
+            case CLS_sse:
+                ret_8b_instr(ctx, name, 0l, NULL, REG_Xmm0);
+                break;
+            default:
+                THROW_ABORT;
+        }
+        if (struct_8b->size == 2) {
+            bool sse_size = !reg_size;
+            switch (struct_8b->clss[1]) {
+                case CLS_integer:
+                    ret_8b_instr(ctx, name, 8l, struct_type, reg_size ? REG_Dx : REG_Ax);
+                    break;
+                case CLS_sse: {
+                    ret_8b_instr(ctx, name, 8l, NULL, sse_size ? REG_Xmm1 : REG_Xmm0);
+                    sse_size = true;
+                    break;
+                }
+                default:
+                    THROW_ABORT;
+            }
+            ret_2_reg_mask(ctx->p_fun_type, reg_size, sse_size);
+        }
+        else {
+            ret_1_reg_mask(ctx->p_fun_type, reg_size);
+        }
+    }
+}
 
-// static void ret_instr(Ctx ctx, TacReturn* node) {
-//     if (node->val) {
-//         if (is_value_dbl(ctx, node->val.get())) {
-//             ret_dbl_instr(ctx, node);
-//         }
-//         else if (!is_value_struct(ctx, node->val.get())) {
-//             ret_int_instr(ctx, node);
-//         }
-//         else {
-//             ret_struct_instr(ctx, node);
-//         }
-//     }
-//     else {
-//         ret_2_reg_mask(ctx->p_fun_type, false, false);
-//     }
-//     push_instr(ctx, std::make_unique<AsmRet>());
-// }
+static void ret_instr(Ctx ctx, TacReturn* node) {
+    if (node->val) {
+        if (is_value_dbl(ctx, node->val)) {
+            ret_dbl_instr(ctx, node);
+        }
+        else if (!is_value_struct(ctx, node->val)) {
+            ret_int_instr(ctx, node);
+        }
+        else {
+            ret_struct_instr(ctx, node);
+        }
+    }
+    else {
+        ret_2_reg_mask(ctx->p_fun_type, false, false);
+    }
+    push_instr(ctx, make_AsmRet());
+}
 
-// static void sign_extend_instr(Ctx ctx, TacSignExtend* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
-//     std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
-//     push_instr(ctx,
-//         std::make_unique<AsmMovSx>(std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void sign_extend_instr(Ctx ctx, TacSignExtend* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
+    shared_ptr_t(AssemblyType) asm_type_dst = gen_asm_type(ctx, node->dst);
+    push_instr(ctx, make_AsmMovSx(&asm_type_src, &asm_type_dst, &src, &dst));
+}
 
-// static void truncate_imm_byte_instr(AsmImm* node) {
-//     if (!node->is_byte) {
-//         node->value %= 256ul;
-//     }
-// }
+static void truncate_imm_byte_instr(AsmImm* node) {
+    if (!node->is_byte) {
+        node->value %= 256ul;
+    }
+}
 
-// static void truncate_byte_instr(Ctx ctx, TacTruncate* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
-//     if (src->type() == AST_AsmImm_t) {
-//         truncate_imm_byte_instr(static_cast<AsmImm*>(src.get()));
-//     }
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void truncate_byte_instr(Ctx ctx, TacTruncate* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_dst = make_Byte();
+    if (src->type == AST_AsmImm_t) {
+        truncate_imm_byte_instr(&src->get._AsmImm);
+    }
+    push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+}
 
-// static void truncate_imm_long_instr(AsmImm* node) {
-//     if (node->is_quad) {
-//         node->value -= 4294967296ul;
-//     }
-// }
+static void truncate_imm_long_instr(AsmImm* node) {
+    if (node->is_quad) {
+        node->value -= 4294967296ul;
+    }
+}
 
-// static void truncate_long_instr(Ctx ctx, TacTruncate* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
-//     if (src->type() == AST_AsmImm_t) {
-//         truncate_imm_long_instr(static_cast<AsmImm*>(src.get()));
-//     }
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void truncate_long_instr(Ctx ctx, TacTruncate* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
+    if (src->type == AST_AsmImm_t) {
+        truncate_imm_long_instr(&src->get._AsmImm);
+    }
+    push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+}
 
-// static void truncate_instr(Ctx ctx, TacTruncate* node) {
-//     if (is_value_1b(ctx, node->dst.get())) {
-//         truncate_byte_instr(ctx, node);
-//     }
-//     else {
-//         truncate_long_instr(ctx, node);
-//     }
-// }
+static void truncate_instr(Ctx ctx, TacTruncate* node) {
+    if (is_value_1b(ctx, node->dst)) {
+        truncate_byte_instr(ctx, node);
+    }
+    else {
+        truncate_long_instr(ctx, node);
+    }
+}
 
-// static void zero_extend_instr(Ctx ctx, TacZeroExtend* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
-//     std::shared_ptr<AssemblyType> asm_type_dst = gen_asm_type(ctx, node->dst.get());
-//     push_instr(ctx, std::make_unique<AsmMovZeroExtend>(
-//                         std::move(asm_type_src), std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void zero_extend_instr(Ctx ctx, TacZeroExtend* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
+    shared_ptr_t(AssemblyType) asm_type_dst = gen_asm_type(ctx, node->dst);
+    push_instr(ctx, make_AsmMovZeroExtend(&asm_type_src, &asm_type_dst, &src, &dst));
+}
 
-// static void dbl_to_char_instr(Ctx ctx, TacDoubleToInt* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
-//         push_instr(ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void dbl_to_char_instr(Ctx ctx, TacDoubleToInt* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_LongWord();
+        push_instr(ctx, make_AsmCvttsd2si(&asm_type_src, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        shared_ptr_t(AssemblyType) asm_type_dst = make_Byte();
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void dbl_to_long_instr(Ctx ctx, TacDoubleToInt* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->dst.get());
-//     push_instr(ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(dst)));
-// }
+static void dbl_to_long_instr(Ctx ctx, TacDoubleToInt* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->dst);
+    push_instr(ctx, make_AsmCvttsd2si(&asm_type_src, &src, &dst));
+}
 
-// static void dbl_to_signed_instr(Ctx ctx, TacDoubleToInt* node) {
-//     if (is_value_1b(ctx, node->dst.get())) {
-//         dbl_to_char_instr(ctx, node);
-//     }
-//     else {
-//         dbl_to_long_instr(ctx, node);
-//     }
-// }
+static void dbl_to_signed_instr(Ctx ctx, TacDoubleToInt* node) {
+    if (is_value_1b(ctx, node->dst)) {
+        dbl_to_char_instr(ctx, node);
+    }
+    else {
+        dbl_to_long_instr(ctx, node);
+    }
+}
 
-// static void dbl_to_uchar_instr(Ctx ctx, TacDoubleToUInt* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
-//         push_instr(ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<Byte>();
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void dbl_to_uchar_instr(Ctx ctx, TacDoubleToUInt* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_LongWord();
+        push_instr(ctx, make_AsmCvttsd2si(&asm_type_src, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        shared_ptr_t(AssemblyType) asm_type_dst = make_Byte();
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
-//         push_instr(ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_src), std::move(src), std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
+        push_instr(ctx, make_AsmCvttsd2si(&asm_type_src, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
-//     TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsd2si_out_of_range);
-//     TIdentifier target_after = repr_asm_label(ctx, LBL_Lsd2si_after);
-//     std::shared_ptr<AsmOperand> upper_bound_sd = dbl_static_const_op(ctx, 4890909195324358656ul, 8);
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AsmOperand> dst_out_of_range_sd = gen_register(REG_Xmm1);
-//     std::shared_ptr<AssemblyType> asm_type_sd = std::make_shared<BackendDouble>();
-//     std::shared_ptr<AssemblyType> asm_type_si = std::make_shared<QuadWord>();
-//     {
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AsmOperand> upper_bound_sd_cp = upper_bound_sd;
-//         std::shared_ptr<AssemblyType> asm_type_sd_cp = asm_type_sd;
-//         push_instr(
-//             ctx, std::make_unique<AsmCmp>(std::move(asm_type_sd_cp), std::move(upper_bound_sd_cp), std::move(src_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmCondCode> cond_code_ae = std::make_unique<AsmAE>();
-//         push_instr(ctx, std::make_unique<AsmJmpCC>(target_out_of_range, std::move(cond_code_ae)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(
-//             ctx, std::make_unique<AsmCvttsd2si>(std::move(asm_type_si_cp), std::move(src_cp), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<AsmJmp>(target_after));
-//     push_instr(ctx, std::make_unique<AsmLabel>(target_out_of_range));
-//     {
-//         std::shared_ptr<AsmOperand> dst_out_of_range_sd_cp = dst_out_of_range_sd;
-//         std::shared_ptr<AssemblyType> asm_type_sd_cp = asm_type_sd;
-//         push_instr(ctx,
-//             std::make_unique<AsmMov>(std::move(asm_type_sd_cp), std::move(src), std::move(dst_out_of_range_sd_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop_out_of_range_sd_sub = std::make_unique<AsmSub>();
-//         std::shared_ptr<AsmOperand> dst_out_of_range_sd_cp = dst_out_of_range_sd;
-//         push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop_out_of_range_sd_sub), std::move(asm_type_sd),
-//                             std::move(upper_bound_sd), std::move(dst_out_of_range_sd_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmCvttsd2si>(
-//                             std::move(asm_type_si_cp), std::move(dst_out_of_range_sd), std::move(dst_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop_out_of_range_si_add = std::make_unique<AsmAdd>();
-//         std::shared_ptr<AsmOperand> upper_bound_si =
-//             std::make_shared<AsmImm>(9223372036854775808ul, false, true, false);
-//         push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop_out_of_range_si_add), std::move(asm_type_si),
-//                             std::move(upper_bound_si), std::move(dst)));
-//     }
-//     push_instr(ctx, std::make_unique<AsmLabel>(target_after));
-// }
+static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
+    TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsd2si_out_of_range);
+    TIdentifier target_after = repr_asm_label(ctx, LBL_Lsd2si_after);
+    shared_ptr_t(AsmOperand) upper_bound_sd = dbl_static_const_op(ctx, 4890909195324358656ul, 8);
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AsmOperand) dst_out_of_range_sd = gen_register(REG_Xmm1);
+    shared_ptr_t(AssemblyType) asm_type_sd = make_BackendDouble();
+    shared_ptr_t(AssemblyType) asm_type_si = make_QuadWord();
+    {
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AsmOperand) upper_bound_sd_cp = sptr_new();
+        sptr_copy(AsmOperand, upper_bound_sd, upper_bound_sd_cp);
+        shared_ptr_t(AssemblyType) asm_type_sd_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_sd, asm_type_sd_cp);
+        push_instr(ctx, make_AsmCmp(&asm_type_sd_cp, &upper_bound_sd_cp, &src_cp));
+    }
+    {
+        unique_ptr_t(AsmCondCode) cond_code_ae = make_AsmAE();
+        push_instr(ctx, make_AsmJmpCC(target_out_of_range, &cond_code_ae));
+    }
+    {
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmCvttsd2si(&asm_type_si_cp, &src_cp, &dst_cp));
+    }
+    push_instr(ctx, make_AsmJmp(target_after));
+    push_instr(ctx, make_AsmLabel(target_out_of_range));
+    {
+        shared_ptr_t(AsmOperand) dst_out_of_range_sd_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_sd, dst_out_of_range_sd_cp);
+        shared_ptr_t(AssemblyType) asm_type_sd_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_sd, asm_type_sd_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_sd_cp, &src, &dst_out_of_range_sd_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop_out_of_range_sd_sub = make_AsmSub();
+        shared_ptr_t(AsmOperand) dst_out_of_range_sd_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_sd, dst_out_of_range_sd_cp);
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_sd_sub, &asm_type_sd, &upper_bound_sd, &dst_out_of_range_sd_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmCvttsd2si(&asm_type_si_cp, &dst_out_of_range_sd, &dst_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_add = make_AsmAdd();
+        shared_ptr_t(AsmOperand) upper_bound_si = make_AsmImm(9223372036854775808ul, false, true, false);
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_add, &asm_type_si, &upper_bound_si, &dst));
+    }
+    push_instr(ctx, make_AsmLabel(target_after));
+}
 
-// static void dbl_to_unsigned_instr(Ctx ctx, TacDoubleToUInt* node) {
-//     if (is_value_1b(ctx, node->dst.get())) {
-//         dbl_to_uchar_instr(ctx, node);
-//     }
-//     else if (is_value_4b(ctx, node->dst.get())) {
-//         dbl_to_uint_instr(ctx, node);
-//     }
-//     else {
-//         dbl_to_ulong_instr(ctx, node);
-//     }
-// }
+static void dbl_to_unsigned_instr(Ctx ctx, TacDoubleToUInt* node) {
+    if (is_value_1b(ctx, node->dst)) {
+        dbl_to_uchar_instr(ctx, node);
+    }
+    else if (is_value_4b(ctx, node->dst)) {
+        dbl_to_uint_instr(ctx, node);
+    }
+    else {
+        dbl_to_ulong_instr(ctx, node);
+    }
+}
 
-// static void char_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<Byte>();
-//         std::shared_ptr<AssemblyType> asm_type_dst_cp = asm_type_dst;
-//         push_instr(ctx, std::make_unique<AsmMovSx>(std::move(asm_type_src), std::move(asm_type_dst_cp), std::move(src),
-//                             std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void char_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_Byte();
+        shared_ptr_t(AssemblyType) asm_type_dst_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_dst, asm_type_dst_cp);
+        push_instr(ctx, make_AsmMovSx(&asm_type_src, &asm_type_dst_cp, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmCvtsi2sd(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void long_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AssemblyType> asm_type_src = gen_asm_type(ctx, node->src.get());
-//     push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_src), std::move(src), std::move(dst)));
-// }
+static void long_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
+    push_instr(ctx, make_AsmCvtsi2sd(&asm_type_src, &src, &dst));
+}
 
-// static void signed_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
-//     if (is_value_1b(ctx, node->src.get())) {
-//         char_to_dbl_instr(ctx, node);
-//     }
-//     else {
-//         long_to_dbl_instr(ctx, node);
-//     }
-// }
+static void signed_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+    if (is_value_1b(ctx, node->src)) {
+        char_to_dbl_instr(ctx, node);
+    }
+    else {
+        long_to_dbl_instr(ctx, node);
+    }
+}
 
-// static void uchar_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<LongWord>();
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<Byte>();
-//         std::shared_ptr<AssemblyType> asm_type_dst_cp = asm_type_dst;
-//         push_instr(ctx, std::make_unique<AsmMovZeroExtend>(std::move(asm_type_src), std::move(asm_type_dst_cp),
-//                             std::move(src), std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void uchar_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_Byte();
+        shared_ptr_t(AssemblyType) asm_type_dst_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_dst, asm_type_dst_cp);
+        push_instr(ctx, make_AsmMovZeroExtend(&asm_type_src, &asm_type_dst_cp, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmCvtsi2sd(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
-//     std::shared_ptr<AsmOperand> src_dst = gen_register(REG_Ax);
-//     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<QuadWord>();
-//     {
-//         std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//         std::shared_ptr<AsmOperand> src_dst_cp = src_dst;
-//         std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<LongWord>();
-//         std::shared_ptr<AssemblyType> asm_type_dst_cp = asm_type_dst;
-//         push_instr(ctx, std::make_unique<AsmMovZeroExtend>(std::move(asm_type_src), std::move(asm_type_dst_cp),
-//                             std::move(src), std::move(src_dst_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//         push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_dst), std::move(src_dst), std::move(dst)));
-//     }
-// }
+static void uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+    shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
+    shared_ptr_t(AssemblyType) asm_type_dst = make_QuadWord();
+    {
+        shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+        shared_ptr_t(AsmOperand) src_dst_cp = sptr_new();
+        sptr_copy(AsmOperand, src_dst, src_dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_src = make_LongWord();
+        shared_ptr_t(AssemblyType) asm_type_dst_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_dst, asm_type_dst_cp);
+        push_instr(ctx, make_AsmMovZeroExtend(&asm_type_src, &asm_type_dst_cp, &src, &src_dst_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+        push_instr(ctx, make_AsmCvtsi2sd(&asm_type_dst, &src_dst, &dst));
+    }
+}
 
-// static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
-//     TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsi2sd_out_of_range);
-//     TIdentifier target_after = repr_asm_label(ctx, LBL_Lsi2sd_after);
-//     std::shared_ptr<AsmOperand> src = gen_op(ctx, node->src.get());
-//     std::shared_ptr<AsmOperand> dst = gen_op(ctx, node->dst.get());
-//     std::shared_ptr<AsmOperand> dst_out_of_range_si = gen_register(REG_Ax);
-//     std::shared_ptr<AsmOperand> dst_out_of_range_si_shr = gen_register(REG_Dx);
-//     std::shared_ptr<AssemblyType> asm_type_si = std::make_shared<QuadWord>();
-//     {
-//         std::shared_ptr<AsmOperand> lower_bound_si = std::make_shared<AsmImm>(0ul, true, false, false);
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(
-//             ctx, std::make_unique<AsmCmp>(std::move(asm_type_si_cp), std::move(lower_bound_si), std::move(src_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmCondCode> cond_code_l = std::make_unique<AsmL>();
-//         push_instr(ctx, std::make_unique<AsmJmpCC>(target_out_of_range, std::move(cond_code_l)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmCvtsi2sd>(std::move(asm_type_si_cp), std::move(src_cp), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<AsmJmp>(target_after));
-//     push_instr(ctx, std::make_unique<AsmLabel>(target_out_of_range));
-//     {
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_cp = dst_out_of_range_si;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx,
-//             std::make_unique<AsmMov>(std::move(asm_type_si_cp), std::move(src), std::move(dst_out_of_range_si_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_cp = dst_out_of_range_si;
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_shr_cp = dst_out_of_range_si_shr;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_si_cp), std::move(dst_out_of_range_si_cp),
-//                             std::move(dst_out_of_range_si_shr_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmUnaryOp> unop_out_of_range_si_shr = std::make_unique<AsmShr>();
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_shr_cp = dst_out_of_range_si_shr;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmUnary>(std::move(unop_out_of_range_si_shr), std::move(asm_type_si_cp),
-//                             std::move(dst_out_of_range_si_shr_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop_out_of_range_si_and = std::make_unique<AsmBitAnd>();
-//         std::shared_ptr<AsmOperand> set_bit_si = std::make_shared<AsmImm>(1ul, true, false, false);
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_cp = dst_out_of_range_si;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop_out_of_range_si_and), std::move(asm_type_si_cp),
-//                             std::move(set_bit_si), std::move(dst_out_of_range_si_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop_out_of_range_si_or = std::make_unique<AsmBitOr>();
-//         std::shared_ptr<AsmOperand> dst_out_of_range_si_shr_cp = dst_out_of_range_si_shr;
-//         std::shared_ptr<AssemblyType> asm_type_si_cp = asm_type_si;
-//         push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop_out_of_range_si_or), std::move(asm_type_si_cp),
-//                             std::move(dst_out_of_range_si), std::move(dst_out_of_range_si_shr_cp)));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         push_instr(ctx, std::make_unique<AsmCvtsi2sd>(
-//                             std::move(asm_type_si), std::move(dst_out_of_range_si_shr), std::move(dst_cp)));
-//     }
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop_out_of_range_sq_add = std::make_unique<AsmAdd>();
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_sq = std::make_shared<BackendDouble>();
-//         push_instr(ctx, std::make_unique<AsmBinary>(std::move(binop_out_of_range_sq_add), std::move(asm_type_sq),
-//                             std::move(dst), std::move(dst_cp)));
-//     }
-//     push_instr(ctx, std::make_unique<AsmLabel>(target_after));
-// }
+static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+    TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsi2sd_out_of_range);
+    TIdentifier target_after = repr_asm_label(ctx, LBL_Lsi2sd_after);
+    shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
+    shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
+    shared_ptr_t(AsmOperand) dst_out_of_range_si = gen_register(REG_Ax);
+    shared_ptr_t(AsmOperand) dst_out_of_range_si_shr = gen_register(REG_Dx);
+    shared_ptr_t(AssemblyType) asm_type_si = make_QuadWord();
+    {
+        shared_ptr_t(AsmOperand) lower_bound_si = make_AsmImm(0ul, true, false, false);
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmCmp(&asm_type_si_cp, &lower_bound_si, &src_cp));
+    }
+    {
+        unique_ptr_t(AsmCondCode) cond_code_l = make_AsmL();
+        push_instr(ctx, make_AsmJmpCC(target_out_of_range, &cond_code_l));
+    }
+    {
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmCvtsi2sd(&asm_type_si_cp, &src_cp, &dst_cp));
+    }
+    push_instr(ctx, make_AsmJmp(target_after));
+    push_instr(ctx, make_AsmLabel(target_out_of_range));
+    {
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si, dst_out_of_range_si_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_si_cp, &src, &dst_out_of_range_si_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si, dst_out_of_range_si_cp);
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_shr_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmMov(&asm_type_si_cp, &dst_out_of_range_si_cp, &dst_out_of_range_si_shr_cp));
+    }
+    {
+        unique_ptr_t(AsmUnaryOp) unop_out_of_range_si_shr = make_AsmShr();
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_shr_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmUnary(&unop_out_of_range_si_shr, &asm_type_si_cp, &dst_out_of_range_si_shr_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_and = make_AsmBitAnd();
+        shared_ptr_t(AsmOperand) set_bit_si = make_AsmImm(1ul, true, false, false);
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si, dst_out_of_range_si_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_and, &asm_type_si_cp, &set_bit_si, &dst_out_of_range_si_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_or = make_AsmBitOr();
+        shared_ptr_t(AsmOperand) dst_out_of_range_si_shr_cp = sptr_new();
+        sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
+        shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_si, asm_type_si_cp);
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_or, &asm_type_si_cp, &dst_out_of_range_si, &dst_out_of_range_si_shr_cp));
+    }
+    {
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        push_instr(ctx, make_AsmCvtsi2sd(&asm_type_si, &dst_out_of_range_si_shr, &dst_cp));
+    }
+    {
+        unique_ptr_t(AsmBinaryOp) binop_out_of_range_sq_add = make_AsmAdd();
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_sq = make_BackendDouble();
+        push_instr(ctx, make_AsmBinary(&binop_out_of_range_sq_add, &asm_type_sq, &dst, &dst_cp));
+    }
+    push_instr(ctx, make_AsmLabel(target_after));
+}
 
-// static void unsigned_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
-//     if (is_value_1b(ctx, node->src.get())) {
-//         uchar_to_dbl_instr(ctx, node);
-//     }
-//     else if (is_value_4b(ctx, node->src.get())) {
-//         uint_to_dbl_instr(ctx, node);
-//     }
-//     else {
-//         ulong_to_dbl_instr(ctx, node);
-//     }
-// }
+static void unsigned_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+    if (is_value_1b(ctx, node->src)) {
+        uchar_to_dbl_instr(ctx, node);
+    }
+    else if (is_value_4b(ctx, node->src)) {
+        uint_to_dbl_instr(ctx, node);
+    }
+    else {
+        ulong_to_dbl_instr(ctx, node);
+    }
+}
 
 // static void alloc_stack_instr(Ctx ctx, TLong byte) { push_instr(ctx, alloc_stack_bytes(byte)); }
 
