@@ -656,7 +656,7 @@ static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* str
     if (asm_type_src->type == AST_ByteArray_t) {
         TLong size = offset + 2l;
         offset += asm_type_src->get._ByteArray.size - 1l;
-        // TODO free_AssemblyType(&asm_type_src);
+        free_AssemblyType(&asm_type_src);
         asm_type_src = make_Byte();
         shared_ptr_t(AsmOperand) src_shl = make_AsmImm(8ul, true, false, false);
         shared_ptr_t(AssemblyType) asm_type_shl = make_QuadWord();
@@ -1202,8 +1202,8 @@ static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
     if (src->type == AST_AsmRegister_t || src->type == AST_AsmImm_t || asm_type_src->type == AST_QuadWord_t
         || asm_type_src->type == AST_BackendDouble_t) {
         push_instr(ctx, make_AsmPush(&src));
-        // TODO free_AssemblyType(&asm_type_src);
-        // can even refactor to not make asm_type_src if not needed
+        free_AssemblyType(&asm_type_src);
+        // TODO can even refactor to not make asm_type_src if not needed
     }
     else {
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -1304,7 +1304,7 @@ static void stack_8b_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, Str
             long_stack_arg_call_instr(ctx, name, offset, &asm_type);
             break;
     }
-    // TODO free asm_type
+    free_AssemblyType(&asm_type);
 }
 
 static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool is_ret_memory) {
@@ -1412,7 +1412,7 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
         struct_type ? asm_type_8b(ctx, struct_type, offset) : make_BackendDouble();
     if (asm_type_dst->type == AST_ByteArray_t) {
         TLong size = asm_type_dst->get._ByteArray.size + offset - 2l;
-        // TODO free_AssemblyType(&asm_type_dst);
+        free_AssemblyType(&asm_type_dst);
         asm_type_dst = make_Byte();
         shared_ptr_t(AsmOperand) src_shr2op = make_AsmImm(8ul, true, false, false);
         shared_ptr_t(AssemblyType) asm_type_shr2op = make_QuadWord();
@@ -2565,7 +2565,7 @@ static void stack_8b_fun_param_instr(
     shared_ptr_t(AssemblyType) asm_type_dst = asm_type_8b(ctx, struct_type, offset);
     if (asm_type_dst->type == AST_ByteArray_t) {
         TLong size = asm_type_dst->get._ByteArray.size;
-        // TODO free_AssemblyType(&asm_type_dst);
+        free_AssemblyType(&asm_type_dst);
         while (size > 0l) {
             shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, stack_bytes);
             shared_ptr_t(AsmOperand) dst = make_AsmPseudoMem(name, offset);
