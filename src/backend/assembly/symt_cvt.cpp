@@ -124,89 +124,88 @@ shared_ptr_t(AssemblyType) cvt_backend_asm_type(FrontEndContext* ctx, TIdentifie
     }
 }
 
-// static void cvt_backend_symbol(Ctx ctx, std::unique_ptr<BackendSymbol>&& node) {
-//     map_move_add(ctx->backend->symbol_table, ctx->symbol, node);
-// }
+static void cvt_backend_symbol(Ctx ctx, unique_ptr_t(BackendSymbol) node) {
+    map_move_add(ctx->backend->symbol_table, ctx->symbol, node);
+}
 
-// static void dbl_static_const(Ctx ctx) {
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
-//     cvt_backend_symbol(ctx, std::make_unique<BackendObj>(true, true, std::move(asm_type)));
-// }
+static void dbl_static_const(Ctx ctx) {
+    shared_ptr_t(AssemblyType) asm_type = make_BackendDouble();
+    cvt_backend_symbol(ctx, make_BackendObj(true, true, &asm_type));
+}
 
-// static void string_static_const(Ctx ctx, Array* arr_type) {
-//     std::shared_ptr<AssemblyType> asm_type = arr_asm_type(ctx->frontend, arr_type);
-//     cvt_backend_symbol(ctx, std::make_unique<BackendObj>(true, true, std::move(asm_type)));
-// }
+static void string_static_const(Ctx ctx, Array* arr_type) {
+    shared_ptr_t(AssemblyType) asm_type = arr_asm_type(ctx->frontend, arr_type);
+    cvt_backend_symbol(ctx, make_BackendObj(true, true, &asm_type));
+}
 
-// static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
-//     ctx->symbol = node->name;
-//     switch (node->static_init->type()) {
-//         case AST_DoubleInit_t:
-//             dbl_static_const(ctx);
-//             break;
-//         case AST_StringInit_t:
-//             string_static_const(
-//                 ctx, static_cast<Array*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get()));
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
+    ctx->symbol = node->name;
+    switch (node->static_init->type) {
+        case AST_DoubleInit_t:
+            dbl_static_const(ctx);
+            break;
+        case AST_StringInit_t:
+            string_static_const(ctx, &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._Array);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void cvt_toplvl(Ctx ctx, AsmTopLevel* node) {
-//     if (node->type() == AST_AsmStaticConstant_t) {
-//         cvt_static_const_toplvl(ctx, static_cast<AsmStaticConstant*>(node));
-//     }
-//     else {
-//         THROW_ABORT;
-//     }
-// }
+static void cvt_toplvl(Ctx ctx, AsmTopLevel* node) {
+    if (node->type == AST_AsmStaticConstant_t) {
+        cvt_static_const_toplvl(ctx, &node->get._AsmStaticConstant);
+    }
+    else {
+        THROW_ABORT;
+    }
+}
 
-// static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
-//     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-//         THROW_ABORT_IF(node->is_def);
-//         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
-//     }
-//     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
-//         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
-//     }
-//     bool is_def = node->is_def;
-//     cvt_backend_symbol(ctx, std::make_unique<BackendFun>(is_def));
-// }
+static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
+    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        THROW_ABORT_IF(node->is_def);
+        fun_type->param_reg_mask = REGISTER_MASK_FALSE;
+    }
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
+    }
+    bool is_def = node->is_def;
+    cvt_backend_symbol(ctx, make_BackendFun(is_def));
+}
 
-// static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
-//     if (node->type() != AST_ConstantAttr_t) {
-//         std::shared_ptr<AssemblyType> asm_type = cvt_backend_asm_type(ctx->frontend, ctx->symbol);
-//         bool is_static = node->type() == AST_StaticAttr_t;
-//         cvt_backend_symbol(ctx, std::make_unique<BackendObj>(is_static, false, std::move(asm_type)));
-//     }
-// }
+static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
+    if (node->type != AST_ConstantAttr_t) {
+        shared_ptr_t(AssemblyType) asm_type = cvt_backend_asm_type(ctx->frontend, ctx->symbol);
+        bool is_static = node->type == AST_StaticAttr_t;
+        cvt_backend_symbol(ctx, make_BackendObj(is_static, false, &asm_type));
+    }
+}
 
-// static void cvt_program(Ctx ctx, AsmProgram* node) {
-//     for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
-//         const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
-//         ctx->symbol = pair_first(*symbol);
-//         if (pair_second(*symbol)->type_t->type() == AST_FunType_t) {
-//             cvt_fun_type(ctx, static_cast<FunAttr*>(pair_second(*symbol)->attrs.get()),
-//                 static_cast<FunType*>(pair_second(*symbol)->type_t.get()));
-//         }
-//         else {
-//             cvt_obj_type(ctx, pair_second(*symbol)->attrs.get());
-//         }
-//     }
+static void cvt_program(Ctx ctx, AsmProgram* node) {
+    for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
+        const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
+        ctx->symbol = pair_first(*symbol);
+        if (pair_second(*symbol)->type_t->type == AST_FunType_t) {
+            cvt_fun_type(ctx, &pair_second(*symbol)->attrs->get._FunAttr,
+                &pair_second(*symbol)->type_t->get._FunType);
+        }
+        else {
+            cvt_obj_type(ctx, pair_second(*symbol)->attrs);
+        }
+    }
 
-//     for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
-//         cvt_toplvl(ctx, node->static_const_toplvls[i].get());
-//     }
-// }
+    for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
+        cvt_toplvl(ctx, node->static_const_toplvls[i]);
+    }
+}
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void convert_symbol_table(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend) {
-//     SymtCvtContext ctx;
-//     {
-//         ctx.backend = backend;
-//         ctx.frontend = frontend;
-//     }
-//     cvt_program(&ctx, node);
-// }
+void convert_symbol_table(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend) {
+    SymtCvtContext ctx;
+    {
+        ctx.backend = backend;
+        ctx.frontend = frontend;
+    }
+    cvt_program(&ctx, node);
+}
