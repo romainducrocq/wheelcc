@@ -1198,25 +1198,31 @@ static void reg_arg_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
 
 static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node);
-    if (src->type == AST_AsmRegister_t || src->type == AST_AsmImm_t) {
-        push_instr(ctx, make_AsmPush(&src));
+    switch (src->type) {
+        case AST_AsmRegister_t:
+        case AST_AsmImm_t:
+            push_instr(ctx, make_AsmPush(&src));
+            return;
+        default:
+            break;
     }
-    else {
-        shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node);
-        if (asm_type_src->type == AST_QuadWord_t || asm_type_src->type == AST_BackendDouble_t) {
+    shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node);
+    switch (asm_type_src->type) {
+        case AST_QuadWord_t:
+        case AST_BackendDouble_t:
             push_instr(ctx, make_AsmPush(&src));
             free_AssemblyType(&asm_type_src);
-        }
-        else {
-            shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
-            {
-                shared_ptr_t(AsmOperand) dst_cp = sptr_new();
-                sptr_copy(AsmOperand, dst, dst_cp);
-                push_instr(ctx, make_AsmPush(&dst_cp));
-            }
-            push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
-        }
+            return;
+        default:
+            break;
     }
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
+    {
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        push_instr(ctx, make_AsmPush(&dst_cp));
+    }
+    push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
 }
 
 static void reg_8b_arg_call_instr(
