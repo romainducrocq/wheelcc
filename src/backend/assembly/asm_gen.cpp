@@ -2531,281 +2531,284 @@ static void gen_instr_list(Ctx ctx, vector_t(unique_ptr_t(TacInstruction)) node_
     }
 }
 
-// static void reg_fun_param_instr(Ctx ctx, TIdentifier name, REGISTER_KIND arg_reg) {
-//     std::shared_ptr<AsmOperand> src = gen_register(arg_reg);
-//     std::shared_ptr<AsmOperand> dst;
-//     {
-//         TIdentifier dst_name = name;
-//         dst = std::make_shared<AsmPseudo>(dst_name);
-//     }
-//     std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void reg_fun_param_instr(Ctx ctx, TIdentifier name, REGISTER_KIND arg_reg) {
+    shared_ptr_t(AsmOperand) src = gen_register(arg_reg);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    {
+        TIdentifier dst_name = name;
+        dst = make_AsmPseudo(dst_name);
+    }
+    shared_ptr_t(AssemblyType) asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
+    push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+}
 
-// static void stack_fun_param_instr(Ctx ctx, TIdentifier name, TLong stack_bytes) {
-//     std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, stack_bytes);
-//     std::shared_ptr<AsmOperand> dst;
-//     {
-//         TIdentifier dst_name = name;
-//         dst = std::make_shared<AsmPseudo>(dst_name);
-//     }
-//     std::shared_ptr<AssemblyType> asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
-//     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-// }
+static void stack_fun_param_instr(Ctx ctx, TIdentifier name, TLong stack_bytes) {
+    shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, stack_bytes);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    {
+        TIdentifier dst_name = name;
+        dst = make_AsmPseudo(dst_name);
+    }
+    shared_ptr_t(AssemblyType) asm_type_dst = cvt_backend_asm_type(ctx->frontend, name);
+    push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+}
 
-// static void reg_8b_fun_param_instr(
-//     Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
-//     ret_8b_call_instr(ctx, name, offset, struct_type, arg_reg);
-// }
+static void reg_8b_fun_param_instr(
+    Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+    ret_8b_call_instr(ctx, name, offset, struct_type, arg_reg);
+}
 
-// static void stack_8b_fun_param_instr(
-//     Ctx ctx, TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
-//     std::shared_ptr<AssemblyType> asm_type_dst = asm_type_8b(ctx, struct_type, offset);
-//     if (asm_type_dst->type() == AST_ByteArray_t) {
-//         TLong size = static_cast<ByteArray*>(asm_type_dst.get())->size;
-//         while (size > 0l) {
-//             std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, stack_bytes);
-//             std::shared_ptr<AsmOperand> dst = std::make_shared<AsmPseudoMem>(name, offset);
-//             if (size >= 4l) {
-//                 asm_type_dst = std::make_shared<LongWord>();
-//                 size -= 4l;
-//                 offset += 4l;
-//                 stack_bytes += 4l;
-//             }
-//             else {
-//                 asm_type_dst = std::make_shared<Byte>();
-//                 size--;
-//                 offset++;
-//                 stack_bytes++;
-//             }
-//             push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-//         }
-//     }
-//     else {
-//         std::shared_ptr<AsmOperand> src = gen_memory(REG_Bp, stack_bytes);
-//         std::shared_ptr<AsmOperand> dst;
-//         {
-//             TIdentifier dst_name = name;
-//             TLong to_offset = offset;
-//             dst = std::make_shared<AsmPseudoMem>(dst_name, to_offset);
-//         }
-//         push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-//     }
-// }
+static void stack_8b_fun_param_instr(
+    Ctx ctx, TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
+    shared_ptr_t(AssemblyType) asm_type_dst = asm_type_8b(ctx, struct_type, offset);
+    if (asm_type_dst->type == AST_ByteArray_t) {
+        TLong size = asm_type_dst->get._ByteArray.size;
+        // TODO free_AssemblyType(&asm_type_dst);
+        while (size > 0l) {
+            shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, stack_bytes);
+            shared_ptr_t(AsmOperand) dst = make_AsmPseudoMem(name, offset);
+            if (size >= 4l) {
+                asm_type_dst = make_LongWord();
+                size -= 4l;
+                offset += 4l;
+                stack_bytes += 4l;
+            }
+            else {
+                asm_type_dst = make_Byte();
+                size--;
+                offset++;
+                stack_bytes++;
+            }
+            push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+        }
+    }
+    else {
+        shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, stack_bytes);
+        shared_ptr_t(AsmOperand) dst = sptr_new();
+        {
+            TIdentifier dst_name = name;
+            TLong to_offset = offset;
+            dst = make_AsmPseudoMem(dst_name, to_offset);
+        }
+        push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+    }
+}
 
-// // TODO dup map_get
-// static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool is_ret_memory) {
-//     size_t reg_size = is_ret_memory ? 1 : 0;
-//     size_t sse_size = 0;
-//     TLong stack_bytes = 16l;
-//     for (size_t i = 0; i < vec_size(node->params); ++i) {
-//         TIdentifier param = node->params[i];
-//         if (map_get(ctx->frontend->symbol_table, param)->type_t->type() == AST_Double_t) {
-//             if (sse_size < 8) {
-//                 reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);
-//                 sse_size++;
-//             }
-//             else {
-//                 stack_fun_param_instr(ctx, param, stack_bytes);
-//                 stack_bytes += 8l;
-//             }
-//         }
-//         else if (map_get(ctx->frontend->symbol_table, param)->type_t->type() != AST_Structure_t) {
-//             if (reg_size < 6) {
-//                 reg_fun_param_instr(ctx, param, ctx->arg_regs[reg_size]);
-//                 reg_size++;
-//             }
-//             else {
-//                 stack_fun_param_instr(ctx, param, stack_bytes);
-//                 stack_bytes += 8l;
-//             }
-//         }
-//         else {
-//             size_t struct_reg_size = 7;
-//             size_t struct_sse_size = 9;
-//             Structure* struct_type = static_cast<Structure*>(map_get(ctx->frontend->symbol_table, param)->type_t.get());
-//             struct_8b_class(ctx, struct_type);
-//             Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
-//             if (struct_8b->clss[0] != CLS_memory) {
-//                 struct_reg_size = 0;
-//                 struct_sse_size = 0;
-//                 for (size_t j = 0; j < struct_8b->size; ++j) {
-//                     if (struct_8b->clss[j] == CLS_sse) {
-//                         struct_sse_size++;
-//                     }
-//                     else {
-//                         struct_reg_size++;
-//                     }
-//                 }
-//             }
-//             if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
-//                 TLong offset = 0l;
-//                 for (size_t j = 0; j < struct_8b->size; ++j) {
-//                     if (struct_8b->clss[j] == CLS_sse) {
-//                         reg_8b_fun_param_instr(ctx, param, offset, NULL, ctx->sse_arg_regs[sse_size]);
-//                         sse_size++;
-//                     }
-//                     else {
-//                         reg_8b_fun_param_instr(ctx, param, offset, struct_type, ctx->arg_regs[reg_size]);
-//                         reg_size++;
-//                     }
-//                     offset += 8l;
-//                 }
-//             }
-//             else {
-//                 TLong offset = 0l;
-//                 for (size_t j = 0; j < struct_8b->size; ++j) {
-//                     stack_8b_fun_param_instr(ctx, param, stack_bytes, offset, struct_type);
-//                     stack_bytes += 8l;
-//                     offset += 8l;
-//                 }
-//             }
-//         }
-//     }
-//     fun_param_reg_mask(ctx, fun_type, reg_size, sse_size);
-// }
+// TODO dup map_get
+static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool is_ret_memory) {
+    size_t reg_size = is_ret_memory ? 1 : 0;
+    size_t sse_size = 0;
+    TLong stack_bytes = 16l;
+    for (size_t i = 0; i < vec_size(node->params); ++i) {
+        TIdentifier param = node->params[i];
+        if (map_get(ctx->frontend->symbol_table, param)->type_t->type == AST_Double_t) {
+            if (sse_size < 8) {
+                reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);
+                sse_size++;
+            }
+            else {
+                stack_fun_param_instr(ctx, param, stack_bytes);
+                stack_bytes += 8l;
+            }
+        }
+        else if (map_get(ctx->frontend->symbol_table, param)->type_t->type != AST_Structure_t) {
+            if (reg_size < 6) {
+                reg_fun_param_instr(ctx, param, ctx->arg_regs[reg_size]);
+                reg_size++;
+            }
+            else {
+                stack_fun_param_instr(ctx, param, stack_bytes);
+                stack_bytes += 8l;
+            }
+        }
+        else {
+            size_t struct_reg_size = 7;
+            size_t struct_sse_size = 9;
+            Structure* struct_type = &map_get(ctx->frontend->symbol_table, param)->type_t->get._Structure;
+            struct_8b_class(ctx, struct_type);
+            Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+            if (struct_8b->clss[0] != CLS_memory) {
+                struct_reg_size = 0;
+                struct_sse_size = 0;
+                for (size_t j = 0; j < struct_8b->size; ++j) {
+                    if (struct_8b->clss[j] == CLS_sse) {
+                        struct_sse_size++;
+                    }
+                    else {
+                        struct_reg_size++;
+                    }
+                }
+            }
+            if (struct_reg_size + reg_size <= 6 && struct_sse_size + sse_size <= 8) {
+                TLong offset = 0l;
+                for (size_t j = 0; j < struct_8b->size; ++j) {
+                    if (struct_8b->clss[j] == CLS_sse) {
+                        reg_8b_fun_param_instr(ctx, param, offset, NULL, ctx->sse_arg_regs[sse_size]);
+                        sse_size++;
+                    }
+                    else {
+                        reg_8b_fun_param_instr(ctx, param, offset, struct_type, ctx->arg_regs[reg_size]);
+                        reg_size++;
+                    }
+                    offset += 8l;
+                }
+            }
+            else {
+                TLong offset = 0l;
+                for (size_t j = 0; j < struct_8b->size; ++j) {
+                    stack_8b_fun_param_instr(ctx, param, stack_bytes, offset, struct_type);
+                    stack_bytes += 8l;
+                    offset += 8l;
+                }
+            }
+        }
+    }
+    fun_param_reg_mask(ctx, fun_type, reg_size, sse_size);
+}
 
-// static std::unique_ptr<AsmFunction> gen_fun_toplvl(Ctx ctx, TacFunction* node) {
-//     TIdentifier name = node->name;
-//     bool is_glob = node->is_glob;
-//     bool is_ret_memory = false;
+static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, TacFunction* node) {
+    TIdentifier name = node->name;
+    bool is_glob = node->is_glob;
+    bool is_ret_memory = false;
 
-//     vector_t(std::unique_ptr<AsmInstruction>) body = vec_new();
-//     {
-//         ctx->p_instrs = &body;
+    vector_t(unique_ptr_t(AsmInstruction)) body = vec_new();
+    {
+        ctx->p_instrs = &body;
 
-//         FunType* fun_type = static_cast<FunType*>(map_get(ctx->frontend->symbol_table, node->name)->type_t.get());
-//         if (fun_type->ret_type->type() == AST_Structure_t) {
-//             Structure* struct_type = static_cast<Structure*>(fun_type->ret_type.get());
-//             struct_8b_class(ctx, struct_type);
-//             if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
-//                 is_ret_memory = true;
-//                 {
-//                     std::shared_ptr<AsmOperand> src = gen_register(REG_Di);
-//                     std::shared_ptr<AsmOperand> dst = gen_memory(REG_Bp, -8l);
-//                     std::shared_ptr<AssemblyType> asm_type_dst = std::make_shared<QuadWord>();
-//                     push_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_dst), std::move(src), std::move(dst)));
-//                 }
-//             }
-//         }
-//         fun_param_toplvl(ctx, node, fun_type, is_ret_memory);
+        FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
+        if (fun_type->ret_type->type == AST_Structure_t) {
+            Structure* struct_type = &fun_type->ret_type->get._Structure;
+            struct_8b_class(ctx, struct_type);
+            if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
+                is_ret_memory = true;
+                {
+                    shared_ptr_t(AsmOperand) src = gen_register(REG_Di);
+                    shared_ptr_t(AsmOperand) dst = gen_memory(REG_Bp, -8l);
+                    shared_ptr_t(AssemblyType) asm_type_dst = make_QuadWord();
+                    push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
+                }
+            }
+        }
+        fun_param_toplvl(ctx, node, fun_type, is_ret_memory);
 
-//         ctx->p_fun_type = fun_type;
-//         gen_instr_list(ctx, node->body);
-//         ctx->p_fun_type = NULL;
-//         ctx->p_instrs = NULL;
-//     }
+        ctx->p_fun_type = fun_type;
+        gen_instr_list(ctx, node->body);
+        ctx->p_fun_type = NULL;
+        ctx->p_instrs = NULL;
+    }
 
-//     return std::make_unique<AsmFunction>(name, is_glob, is_ret_memory, &body);
-// }
+    return make_AsmFunction(name, is_glob, is_ret_memory, &body);
+}
 
-// static std::unique_ptr<AsmStaticVariable> gen_static_var_toplvl(Ctx ctx, TacStaticVariable* node) {
-//     TIdentifier name = node->name;
-//     bool is_glob = node->is_glob;
-//     TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type.get());
-//     vector_t(std::shared_ptr<StaticInit>) static_inits = vec_new();
-//     vec_reserve(static_inits, vec_size(node->static_inits));
-//     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
-//         std::shared_ptr<StaticInit> static_init = node->static_inits[i];
-//         vec_move_back(static_inits, static_init);
-//     }
-//     return std::make_unique<AsmStaticVariable>(name, alignment, is_glob, &static_inits);
-// }
+static unique_ptr_t(AsmTopLevel) gen_static_var_toplvl(Ctx ctx, TacStaticVariable* node) {
+    TIdentifier name = node->name;
+    bool is_glob = node->is_glob;
+    TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type);
+    vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
+    vec_reserve(static_inits, vec_size(node->static_inits));
+    for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
+        shared_ptr_t(StaticInit) static_init = sptr_new();
+        sptr_copy(StaticInit, node->static_inits[i], static_init);
+        vec_move_back(static_inits, static_init);
+    }
+    return make_AsmStaticVariable(name, alignment, is_glob, &static_inits);
+}
 
-// static void push_static_const_toplvl(Ctx ctx, std::unique_ptr<AsmTopLevel>&& static_const_toplvls) {
-//     vec_move_back(*ctx->p_static_consts, static_const_toplvls);
-// }
+static void push_static_const_toplvl(Ctx ctx, unique_ptr_t(AsmTopLevel) static_const_toplvls) {
+    vec_move_back(*ctx->p_static_consts, static_const_toplvls);
+}
 
-// static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte) {
-//     TIdentifier name = identifier;
-//     TInt alignment = byte;
-//     std::shared_ptr<StaticInit> static_init = std::make_shared<DoubleInit>(dbl_const);
-//     push_static_const_toplvl(ctx, std::make_unique<AsmStaticConstant>(name, alignment, std::move(static_init)));
-// }
+static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier dbl_const, TInt byte) {
+    TIdentifier name = identifier;
+    TInt alignment = byte;
+    shared_ptr_t(StaticInit) static_init = make_DoubleInit(dbl_const);
+    push_static_const_toplvl(ctx, make_AsmStaticConstant(name, alignment, &static_init));
+}
 
-// static std::unique_ptr<AsmStaticConstant> gen_static_const_toplvl(Ctx ctx, TacStaticConstant* node) {
-//     TIdentifier name = node->name;
-//     TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type.get());
-//     std::shared_ptr<StaticInit> static_init = node->static_init;
-//     return std::make_unique<AsmStaticConstant>(name, alignment, std::move(static_init));
-// }
+static unique_ptr_t(AsmTopLevel) gen_static_const_toplvl(Ctx ctx, TacStaticConstant* node) {
+    TIdentifier name = node->name;
+    TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type);
+    shared_ptr_t(StaticInit) static_init = sptr_new();
+    sptr_copy(StaticInit, node->static_init, static_init);
+    return make_AsmStaticConstant(name, alignment, &static_init);
+}
 
-// // top_level = Function(identifier, bool, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
-// //           | StaticConstant(identifier, int, static_init)
-// static std::unique_ptr<AsmTopLevel> gen_toplvl(Ctx ctx, TacTopLevel* node) {
-//     switch (node->type()) {
-//         case AST_TacFunction_t:
-//             return gen_fun_toplvl(ctx, static_cast<TacFunction*>(node));
-//         case AST_TacStaticVariable_t:
-//             return gen_static_var_toplvl(ctx, static_cast<TacStaticVariable*>(node));
-//         case AST_TacStaticConstant_t:
-//             return gen_static_const_toplvl(ctx, static_cast<TacStaticConstant*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// top_level = Function(identifier, bool, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
+//           | StaticConstant(identifier, int, static_init)
+static unique_ptr_t(AsmTopLevel) gen_toplvl(Ctx ctx, TacTopLevel* node) {
+    switch (node->type) {
+        case AST_TacFunction_t:
+            return gen_fun_toplvl(ctx, &node->get._TacFunction);
+        case AST_TacStaticVariable_t:
+            return gen_static_var_toplvl(ctx, &node->get._TacStaticVariable);
+        case AST_TacStaticConstant_t:
+            return gen_static_const_toplvl(ctx, &node->get._TacStaticConstant);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // AST = Program(top_level*, top_level*)
-// static std::unique_ptr<AsmProgram> gen_program(Ctx ctx, TacProgram* node) {
-//     vector_t(std::unique_ptr<AsmTopLevel>) static_const_toplvls = vec_new();
-//     vec_reserve(static_const_toplvls, vec_size(node->static_const_toplvls));
-//     for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
-//         std::unique_ptr<AsmTopLevel> static_const_toplvl = gen_toplvl(ctx, node->static_const_toplvls[i].get());
-//         vec_move_back(static_const_toplvls, static_const_toplvl);
-//     }
+// AST = Program(top_level*, top_level*)
+static unique_ptr_t(AsmProgram) gen_program(Ctx ctx, TacProgram* node) {
+    vector_t(unique_ptr_t(AsmTopLevel)) static_const_toplvls = vec_new();
+    vec_reserve(static_const_toplvls, vec_size(node->static_const_toplvls));
+    for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
+        unique_ptr_t(AsmTopLevel) static_const_toplvl = gen_toplvl(ctx, node->static_const_toplvls[i]);
+        vec_move_back(static_const_toplvls, static_const_toplvl);
+    }
 
-//     vector_t(std::unique_ptr<AsmTopLevel>) top_levels = vec_new();
-//     vec_reserve(top_levels, vec_size(node->static_var_toplvls) + vec_size(node->fun_toplvls));
-//     {
-//         ctx->p_static_consts = &static_const_toplvls;
+    vector_t(unique_ptr_t(AsmTopLevel)) top_levels = vec_new();
+    vec_reserve(top_levels, vec_size(node->static_var_toplvls) + vec_size(node->fun_toplvls));
+    {
+        ctx->p_static_consts = &static_const_toplvls;
 
-//         for (size_t i = 0; i < vec_size(node->static_var_toplvls); ++i) {
-//             std::unique_ptr<AsmTopLevel> static_var_toplvl = gen_toplvl(ctx, node->static_var_toplvls[i].get());
-//             vec_move_back(top_levels, static_var_toplvl);
-//         }
-//         for (size_t i = 0; i < vec_size(node->fun_toplvls); ++i) {
-//             std::unique_ptr<AsmTopLevel> fun_toplvl = gen_toplvl(ctx, node->fun_toplvls[i].get());
-//             vec_move_back(top_levels, fun_toplvl);
-//         }
-//         ctx->p_static_consts = NULL;
-//     }
+        for (size_t i = 0; i < vec_size(node->static_var_toplvls); ++i) {
+            unique_ptr_t(AsmTopLevel) static_var_toplvl = gen_toplvl(ctx, node->static_var_toplvls[i]);
+            vec_move_back(top_levels, static_var_toplvl);
+        }
+        for (size_t i = 0; i < vec_size(node->fun_toplvls); ++i) {
+            unique_ptr_t(AsmTopLevel) fun_toplvl = gen_toplvl(ctx, node->fun_toplvls[i]);
+            vec_move_back(top_levels, fun_toplvl);
+        }
+        ctx->p_static_consts = NULL;
+    }
 
-//     return std::make_unique<AsmProgram>(&static_const_toplvls, &top_levels);
-// }
+    return make_AsmProgram(&static_const_toplvls, &top_levels);
+}
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// std::unique_ptr<AsmProgram> generate_assembly(
-//     std::unique_ptr<TacProgram>* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
-//     AsmGenContext ctx;
-//     {
-//         ctx.frontend = frontend;
-//         ctx.identifiers = identifiers;
+unique_ptr_t(AsmProgram) generate_assembly(
+    unique_ptr_t(TacProgram)* tac_ast, FrontEndContext* frontend, IdentifierContext* identifiers) {
+    AsmGenContext ctx;
+    {
+        ctx.frontend = frontend;
+        ctx.identifiers = identifiers;
 
-//         ctx.arg_regs[0] = REG_Di;
-//         ctx.arg_regs[1] = REG_Si;
-//         ctx.arg_regs[2] = REG_Dx;
-//         ctx.arg_regs[3] = REG_Cx;
-//         ctx.arg_regs[4] = REG_R8;
-//         ctx.arg_regs[5] = REG_R9;
+        ctx.arg_regs[0] = REG_Di;
+        ctx.arg_regs[1] = REG_Si;
+        ctx.arg_regs[2] = REG_Dx;
+        ctx.arg_regs[3] = REG_Cx;
+        ctx.arg_regs[4] = REG_R8;
+        ctx.arg_regs[5] = REG_R9;
 
-//         ctx.sse_arg_regs[0] = REG_Xmm0;
-//         ctx.sse_arg_regs[1] = REG_Xmm1;
-//         ctx.sse_arg_regs[2] = REG_Xmm2;
-//         ctx.sse_arg_regs[3] = REG_Xmm3;
-//         ctx.sse_arg_regs[4] = REG_Xmm4;
-//         ctx.sse_arg_regs[5] = REG_Xmm5;
-//         ctx.sse_arg_regs[6] = REG_Xmm6;
-//         ctx.sse_arg_regs[7] = REG_Xmm7;
+        ctx.sse_arg_regs[0] = REG_Xmm0;
+        ctx.sse_arg_regs[1] = REG_Xmm1;
+        ctx.sse_arg_regs[2] = REG_Xmm2;
+        ctx.sse_arg_regs[3] = REG_Xmm3;
+        ctx.sse_arg_regs[4] = REG_Xmm4;
+        ctx.sse_arg_regs[5] = REG_Xmm5;
+        ctx.sse_arg_regs[6] = REG_Xmm6;
+        ctx.sse_arg_regs[7] = REG_Xmm7;
 
-//         ctx.dbl_const_table = map_new();
-//         ctx.struct_8b_map = map_new();
-//     }
-//     std::unique_ptr<AsmProgram> asm_ast = gen_program(&ctx, tac_ast->get());
+        ctx.dbl_const_table = map_new();
+        ctx.struct_8b_map = map_new();
+    }
+    unique_ptr_t(AsmProgram) asm_ast = gen_program(&ctx, *tac_ast);
 
-//     tac_ast->reset();
-//     THROW_ABORT_IF(!asm_ast);
-//     map_delete(ctx.dbl_const_table);
-//     map_delete(ctx.struct_8b_map);
-//     return asm_ast;
-// }
+    free_TacProgram(tac_ast);
+    THROW_ABORT_IF(!asm_ast);
+    map_delete(ctx.dbl_const_table);
+    map_delete(ctx.struct_8b_map);
+    return asm_ast;
+}

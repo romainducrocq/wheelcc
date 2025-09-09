@@ -246,7 +246,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Assembly generation ... ");
-    // asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
+    asm_ast = generate_assembly(&tac_ast, &frontend, &identifiers);
     // convert_symbol_table(asm_ast.get(), &backend, &frontend);
     if (ctx->optim_2_code > 0) {
         verbose(ctx, "OK\n-- Level 2 optimization ... ");
