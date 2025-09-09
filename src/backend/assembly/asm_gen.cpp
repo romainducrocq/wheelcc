@@ -210,425 +210,425 @@ static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, TacValue* node) {
     }
 }
 
-// // (signed) cond_code = E | NE | L | LE | G | GE
-// static std::unique_ptr<AsmCondCode> gen_signed_cond_code(TacBinaryOp* node) {
-//     switch (node->type()) {
-//         case AST_TacEqual_t:
-//             return std::make_unique<AsmE>();
-//         case AST_TacNotEqual_t:
-//             return std::make_unique<AsmNE>();
-//         case AST_TacLessThan_t:
-//             return std::make_unique<AsmL>();
-//         case AST_TacLessOrEqual_t:
-//             return std::make_unique<AsmLE>();
-//         case AST_TacGreaterThan_t:
-//             return std::make_unique<AsmG>();
-//         case AST_TacGreaterOrEqual_t:
-//             return std::make_unique<AsmGE>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// (signed) cond_code = E | NE | L | LE | G | GE
+static unique_ptr_t(AsmCondCode) gen_signed_cond_code(TacBinaryOp* node) {
+    switch (node->type) {
+        case AST_TacEqual_t:
+            return make_AsmE();
+        case AST_TacNotEqual_t:
+            return make_AsmNE();
+        case AST_TacLessThan_t:
+            return make_AsmL();
+        case AST_TacLessOrEqual_t:
+            return make_AsmLE();
+        case AST_TacGreaterThan_t:
+            return make_AsmG();
+        case AST_TacGreaterOrEqual_t:
+            return make_AsmGE();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // (unsigned) cond_code = E | NE | B | BE | A | AE
-// static std::unique_ptr<AsmCondCode> gen_unsigned_cond_code(TacBinaryOp* node) {
-//     switch (node->type()) {
-//         case AST_TacEqual_t:
-//             return std::make_unique<AsmE>();
-//         case AST_TacNotEqual_t:
-//             return std::make_unique<AsmNE>();
-//         case AST_TacLessThan_t:
-//             return std::make_unique<AsmB>();
-//         case AST_TacLessOrEqual_t:
-//             return std::make_unique<AsmBE>();
-//         case AST_TacGreaterThan_t:
-//             return std::make_unique<AsmA>();
-//         case AST_TacGreaterOrEqual_t:
-//             return std::make_unique<AsmAE>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// (unsigned) cond_code = E | NE | B | BE | A | AE
+static unique_ptr_t(AsmCondCode) gen_unsigned_cond_code(TacBinaryOp* node) {
+    switch (node->type) {
+        case AST_TacEqual_t:
+            return make_AsmE();
+        case AST_TacNotEqual_t:
+            return make_AsmNE();
+        case AST_TacLessThan_t:
+            return make_AsmB();
+        case AST_TacLessOrEqual_t:
+            return make_AsmBE();
+        case AST_TacGreaterThan_t:
+            return make_AsmA();
+        case AST_TacGreaterOrEqual_t:
+            return make_AsmAE();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // unary_operator = Not | Neg | Shr
-// static std::unique_ptr<AsmUnaryOp> gen_unop(TacUnaryOp* node) {
-//     switch (node->type()) {
-//         case AST_TacComplement_t:
-//             return std::make_unique<AsmNot>();
-//         case AST_TacNegate_t:
-//             return std::make_unique<AsmNeg>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// unary_operator = Not | Neg | Shr
+static unique_ptr_t(AsmUnaryOp) gen_unop(TacUnaryOp* node) {
+    switch (node->type) {
+        case AST_TacComplement_t:
+            return make_AsmNot();
+        case AST_TacNegate_t:
+            return make_AsmNeg();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// // binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight |
-// //                 BitShrArithmetic
-// static std::unique_ptr<AsmBinaryOp> gen_binop(TacBinaryOp* node) {
-//     switch (node->type()) {
-//         case AST_TacAdd_t:
-//             return std::make_unique<AsmAdd>();
-//         case AST_TacSubtract_t:
-//             return std::make_unique<AsmSub>();
-//         case AST_TacMultiply_t:
-//             return std::make_unique<AsmMult>();
-//         case AST_TacDivide_t:
-//             return std::make_unique<AsmDivDouble>();
-//         case AST_TacBitAnd_t:
-//             return std::make_unique<AsmBitAnd>();
-//         case AST_TacBitOr_t:
-//             return std::make_unique<AsmBitOr>();
-//         case AST_TacBitXor_t:
-//             return std::make_unique<AsmBitXor>();
-//         case AST_TacBitShiftLeft_t:
-//             return std::make_unique<AsmBitShiftLeft>();
-//         case AST_TacBitShiftRight_t:
-//             return std::make_unique<AsmBitShiftRight>();
-//         case AST_TacBitShrArithmetic_t:
-//             return std::make_unique<AsmBitShrArithmetic>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+// binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight |
+//                 BitShrArithmetic
+static unique_ptr_t(AsmBinaryOp) gen_binop(TacBinaryOp* node) {
+    switch (node->type) {
+        case AST_TacAdd_t:
+            return make_AsmAdd();
+        case AST_TacSubtract_t:
+            return make_AsmSub();
+        case AST_TacMultiply_t:
+            return make_AsmMult();
+        case AST_TacDivide_t:
+            return make_AsmDivDouble();
+        case AST_TacBitAnd_t:
+            return make_AsmBitAnd();
+        case AST_TacBitOr_t:
+            return make_AsmBitOr();
+        case AST_TacBitXor_t:
+            return make_AsmBitXor();
+        case AST_TacBitShiftLeft_t:
+            return make_AsmBitShiftLeft();
+        case AST_TacBitShiftRight_t:
+            return make_AsmBitShiftRight();
+        case AST_TacBitShrArithmetic_t:
+            return make_AsmBitShrArithmetic();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_const_signed(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//         case AST_CConstInt_t:
-//         case AST_CConstLong_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_signed(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+        case AST_CConstInt_t:
+        case AST_CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_var_signed(Ctx ctx, TacVariable* node) {
-//     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//         case AST_Double_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_var_signed(Ctx ctx, TacVariable* node) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+        case AST_Double_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_value_signed(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return is_const_signed(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return is_var_signed(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_signed(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return is_const_signed(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return is_var_signed(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_const_1b(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//         case AST_CConstUChar_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_1b(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+        case AST_CConstUChar_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_var_1b(Ctx ctx, TacVariable* node) {
-//     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_UChar_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_var_1b(Ctx ctx, TacVariable* node) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_UChar_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_value_1b(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return is_const_1b(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return is_var_1b(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_1b(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return is_const_1b(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return is_var_1b(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_const_4b(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstInt_t:
-//         case AST_CConstUInt_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_4b(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstInt_t:
+        case AST_CConstUInt_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_var_4b(Ctx ctx, TacVariable* node) {
-//     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
-//         case AST_Int_t:
-//         case AST_UInt_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_var_4b(Ctx ctx, TacVariable* node) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
+        case AST_Int_t:
+        case AST_UInt_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_value_4b(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return is_const_4b(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return is_var_4b(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_4b(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return is_const_4b(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return is_var_4b(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_const_dbl(TacConstant* node) { return node->constant->type() == AST_CConstDouble_t; }
+static bool is_const_dbl(TacConstant* node) { return node->constant->type == AST_CConstDouble_t; }
 
-// static bool is_var_dbl(Ctx ctx, TacVariable* node) {
-//     return map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_Double_t;
-// }
+static bool is_var_dbl(Ctx ctx, TacVariable* node) {
+    return map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_Double_t;
+}
 
-// static bool is_value_dbl(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return is_const_dbl(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return is_var_dbl(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_dbl(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return is_const_dbl(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return is_var_dbl(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_var_struct(Ctx ctx, TacVariable* node) {
-//     return map_get(ctx->frontend->symbol_table, node->name)->type_t->type() == AST_Structure_t;
-// }
+static bool is_var_struct(Ctx ctx, TacVariable* node) {
+    return map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_Structure_t;
+}
 
-// static bool is_value_struct(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacVariable_t:
-//             return is_var_struct(ctx, static_cast<TacVariable*>(node));
-//         case AST_TacConstant_t:
-//             return false;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_struct(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacVariable_t:
+            return is_var_struct(ctx, &node->get._TacVariable);
+        case AST_TacConstant_t:
+            return false;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<AssemblyType> const_asm_type(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//         case AST_CConstUChar_t:
-//             return std::make_shared<Byte>();
-//         case AST_CConstInt_t:
-//         case AST_CConstUInt_t:
-//             return std::make_shared<LongWord>();
-//         case AST_CConstDouble_t:
-//             return std::make_shared<BackendDouble>();
-//         case AST_CConstLong_t:
-//         case AST_CConstULong_t:
-//             return std::make_shared<QuadWord>();
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static shared_ptr_t(AssemblyType) const_asm_type(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+        case AST_CConstUChar_t:
+            return make_Byte();
+        case AST_CConstInt_t:
+        case AST_CConstUInt_t:
+            return make_LongWord();
+        case AST_CConstDouble_t:
+            return make_BackendDouble();
+        case AST_CConstLong_t:
+        case AST_CConstULong_t:
+            return make_QuadWord();
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<AssemblyType> var_asm_type(Ctx ctx, TacVariable* node) {
-//     return cvt_backend_asm_type(ctx->frontend, node->name);
-// }
+static shared_ptr_t(AssemblyType) var_asm_type(Ctx ctx, TacVariable* node) {
+    return cvt_backend_asm_type(ctx->frontend, node->name);
+}
 
-// static std::shared_ptr<AssemblyType> gen_asm_type(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return const_asm_type(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return var_asm_type(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static shared_ptr_t(AssemblyType) gen_asm_type(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return const_asm_type(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return var_asm_type(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<AssemblyType> asm_type_8b(Ctx ctx, Structure* struct_type, TLong offset) {
-//     TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size - offset;
-//     if (size >= 8l) {
-//         return std::make_shared<QuadWord>();
-//     }
-//     switch (size) {
-//         case 1l:
-//             return std::make_shared<Byte>();
-//         case 4l:
-//             return std::make_shared<LongWord>();
-//         default:
-//             return std::make_shared<ByteArray>(size, 8);
-//     }
-// }
+static shared_ptr_t(AssemblyType) asm_type_8b(Ctx ctx, Structure* struct_type, TLong offset) {
+    TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size - offset;
+    if (size >= 8l) {
+        return make_QuadWord();
+    }
+    switch (size) {
+        case 1l:
+            return make_Byte();
+        case 4l:
+            return make_LongWord();
+        default:
+            return make_ByteArray(size, 8);
+    }
+}
 
-// static void struct_8b_class(Ctx ctx, Structure* struct_type);
+static void struct_8b_class(Ctx ctx, Structure* struct_type);
 
-// static void struct_1_reg_8b_class(Ctx ctx, Structure* struct_type) {
-//     Struct8Bytes struct_8b = {1, {CLS_sse, CLS_memory}};
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
-//     for (size_t i = 0; i < members_front; ++i) {
-//         if (struct_8b.clss[0] == CLS_integer) {
-//             break;
-//         }
-//         Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type.get();
-//         while (member_type->type() == AST_Array_t) {
-//             member_type = static_cast<Array*>(member_type)->elem_type.get();
-//         }
-//         if (member_type->type() == AST_Structure_t) {
-//             Structure* member_struct_type = static_cast<Structure*>(member_type);
-//             struct_8b_class(ctx, member_struct_type);
-//             if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
-//                 struct_8b.clss[0] = CLS_integer;
-//             }
-//         }
-//         else if (member_type->type() != AST_Double_t) {
-//             struct_8b.clss[0] = CLS_integer;
-//         }
-//     }
-//     map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
-// }
+static void struct_1_reg_8b_class(Ctx ctx, Structure* struct_type) {
+    Struct8Bytes struct_8b = {1, {CLS_sse, CLS_memory}};
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
+    for (size_t i = 0; i < members_front; ++i) {
+        if (struct_8b.clss[0] == CLS_integer) {
+            break;
+        }
+        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
+        while (member_type->type == AST_Array_t) {
+            member_type = member_type->get._Array.elem_type;
+        }
+        if (member_type->type == AST_Structure_t) {
+            Structure* member_struct_type = &member_type->get._Structure;
+            struct_8b_class(ctx, member_struct_type);
+            if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
+                struct_8b.clss[0] = CLS_integer;
+            }
+        }
+        else if (member_type->type != AST_Double_t) {
+            struct_8b.clss[0] = CLS_integer;
+        }
+    }
+    map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
+}
 
-// static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
-//     Struct8Bytes struct_8b = {2, {CLS_sse, CLS_sse}};
-//     StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag).get();
-//     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
-//     for (size_t i = 0; i < members_front; ++i) {
-//         if (struct_8b.clss[0] == CLS_integer && struct_8b.clss[1] == CLS_integer) {
-//             break;
-//         }
-//         TLong size = 1l;
-//         Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type.get();
-//         if (member_type->type() == AST_Array_t) {
-//             do {
-//                 Array* member_arr_type = static_cast<Array*>(member_type);
-//                 member_type = member_arr_type->elem_type.get();
-//                 size *= member_arr_type->size;
-//             }
-//             while (member_type->type() == AST_Array_t);
-//         }
-//         if (member_type->type() == AST_Structure_t) {
-//             size *= map_get(ctx->frontend->struct_typedef_table, static_cast<Structure*>(member_type)->tag)->size;
-//         }
-//         else {
-//             size *= gen_type_alignment(ctx->frontend, member_type);
-//         }
-//         if (size > 8l) {
-//             if (member_type->type() == AST_Structure_t) {
-//                 Structure* member_struct_type = static_cast<Structure*>(member_type);
-//                 struct_8b_class(ctx, member_struct_type);
-//                 Struct8Bytes* member_struct_8b = &map_get(ctx->struct_8b_map, member_struct_type->tag);
-//                 if (member_struct_8b->size > 1) {
-//                     if (member_struct_8b->clss[0] == CLS_integer) {
-//                         struct_8b.clss[0] = CLS_integer;
-//                     }
-//                     if (member_struct_8b->clss[1] == CLS_integer) {
-//                         struct_8b.clss[1] = CLS_integer;
-//                     }
-//                 }
-//                 else if (member_struct_8b->clss[0] == CLS_integer) {
-//                     struct_8b.clss[0] = CLS_integer;
-//                     struct_8b.clss[1] = CLS_integer;
-//                 }
-//             }
-//             else if (member_type->type() != AST_Double_t) {
-//                 struct_8b.clss[0] = CLS_integer;
-//                 struct_8b.clss[1] = CLS_integer;
-//             }
-//         }
-//         else {
-//             if (member_type->type() == AST_Structure_t) {
-//                 Structure* member_struct_type = static_cast<Structure*>(member_type);
-//                 struct_8b_class(ctx, member_struct_type);
-//                 if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
-//                     struct_8b.clss[0] = CLS_integer;
-//                 }
-//             }
-//             else if (member_type->type() != AST_Double_t) {
-//                 struct_8b.clss[0] = CLS_integer;
-//             }
-//             if (!struct_type->is_union) {
-//                 member_type = get_struct_typedef_back(ctx->frontend, struct_type->tag)->member_type.get();
-//                 while (member_type->type() == AST_Array_t) {
-//                     member_type = static_cast<Array*>(member_type)->elem_type.get();
-//                 }
-//                 if (member_type->type() == AST_Structure_t) {
-//                     Structure* member_struct_type = static_cast<Structure*>(member_type);
-//                     struct_8b_class(ctx, member_struct_type);
-//                     if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
-//                         struct_8b.clss[1] = CLS_integer;
-//                     }
-//                 }
-//                 else if (member_type->type() != AST_Double_t) {
-//                     struct_8b.clss[1] = CLS_integer;
-//                 }
-//             }
-//         }
-//     }
-//     map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
-// }
+static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
+    Struct8Bytes struct_8b = {2, {CLS_sse, CLS_sse}};
+    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
+    for (size_t i = 0; i < members_front; ++i) {
+        if (struct_8b.clss[0] == CLS_integer && struct_8b.clss[1] == CLS_integer) {
+            break;
+        }
+        TLong size = 1l;
+        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
+        if (member_type->type == AST_Array_t) {
+            do {
+                Array* member_arr_type = &member_type->get._Array;
+                member_type = member_arr_type->elem_type;
+                size *= member_arr_type->size;
+            }
+            while (member_type->type == AST_Array_t);
+        }
+        if (member_type->type == AST_Structure_t) {
+            size *= map_get(ctx->frontend->struct_typedef_table, member_type->get._Structure.tag)->size;
+        }
+        else {
+            size *= gen_type_alignment(ctx->frontend, member_type);
+        }
+        if (size > 8l) {
+            if (member_type->type == AST_Structure_t) {
+                Structure* member_struct_type = &member_type->get._Structure;
+                struct_8b_class(ctx, member_struct_type);
+                Struct8Bytes* member_struct_8b = &map_get(ctx->struct_8b_map, member_struct_type->tag);
+                if (member_struct_8b->size > 1) {
+                    if (member_struct_8b->clss[0] == CLS_integer) {
+                        struct_8b.clss[0] = CLS_integer;
+                    }
+                    if (member_struct_8b->clss[1] == CLS_integer) {
+                        struct_8b.clss[1] = CLS_integer;
+                    }
+                }
+                else if (member_struct_8b->clss[0] == CLS_integer) {
+                    struct_8b.clss[0] = CLS_integer;
+                    struct_8b.clss[1] = CLS_integer;
+                }
+            }
+            else if (member_type->type != AST_Double_t) {
+                struct_8b.clss[0] = CLS_integer;
+                struct_8b.clss[1] = CLS_integer;
+            }
+        }
+        else {
+            if (member_type->type == AST_Structure_t) {
+                Structure* member_struct_type = &member_type->get._Structure;
+                struct_8b_class(ctx, member_struct_type);
+                if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
+                    struct_8b.clss[0] = CLS_integer;
+                }
+            }
+            else if (member_type->type != AST_Double_t) {
+                struct_8b.clss[0] = CLS_integer;
+            }
+            if (!struct_type->is_union) {
+                member_type = get_struct_typedef_back(ctx->frontend, struct_type->tag)->member_type;
+                while (member_type->type == AST_Array_t) {
+                    member_type = member_type->get._Array.elem_type;
+                }
+                if (member_type->type == AST_Structure_t) {
+                    Structure* member_struct_type = &member_type->get._Structure;
+                    struct_8b_class(ctx, member_struct_type);
+                    if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
+                        struct_8b.clss[1] = CLS_integer;
+                    }
+                }
+                else if (member_type->type != AST_Double_t) {
+                    struct_8b.clss[1] = CLS_integer;
+                }
+            }
+        }
+    }
+    map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
+}
 
-// static void struct_8b_class(Ctx ctx, Structure* struct_type) {
-//     if (map_find(ctx->struct_8b_map, struct_type->tag) == map_end()) {
-//         TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
-//         if (size > 16l) {
-//             Struct8Bytes struct_8b = {3, {CLS_memory, CLS_memory}};
-//             size -= 24l;
-//             while (size > 0l) {
-//                 struct_8b.size++;
-//                 size -= 8l;
-//             }
-//             map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
-//         }
-//         else if (size > 8l) {
-//             struct_2_reg_8b_class(ctx, struct_type);
-//         }
-//         else {
-//             struct_1_reg_8b_class(ctx, struct_type);
-//         }
-//     }
-// }
+static void struct_8b_class(Ctx ctx, Structure* struct_type) {
+    if (map_find(ctx->struct_8b_map, struct_type->tag) == map_end()) {
+        TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
+        if (size > 16l) {
+            Struct8Bytes struct_8b = {3, {CLS_memory, CLS_memory}};
+            size -= 24l;
+            while (size > 0l) {
+                struct_8b.size++;
+                size -= 8l;
+            }
+            map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
+        }
+        else if (size > 8l) {
+            struct_2_reg_8b_class(ctx, struct_type);
+        }
+        else {
+            struct_1_reg_8b_class(ctx, struct_type);
+        }
+    }
+}
 
-// static void fun_param_reg_mask(Ctx ctx, FunType* fun_type, size_t reg_size, size_t sse_size) {
-//     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
-//         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
-//         for (size_t i = 0; i < reg_size; ++i) {
-//             register_mask_set(&fun_type->param_reg_mask, ctx->arg_regs[i], true);
-//         }
-//         for (size_t i = 0; i < sse_size; ++i) {
-//             register_mask_set(&fun_type->param_reg_mask, ctx->sse_arg_regs[i], true);
-//         }
-//     }
-// }
+static void fun_param_reg_mask(Ctx ctx, FunType* fun_type, size_t reg_size, size_t sse_size) {
+    if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->param_reg_mask = REGISTER_MASK_FALSE;
+        for (size_t i = 0; i < reg_size; ++i) {
+            register_mask_set(&fun_type->param_reg_mask, ctx->arg_regs[i], true);
+        }
+        for (size_t i = 0; i < sse_size; ++i) {
+            register_mask_set(&fun_type->param_reg_mask, ctx->sse_arg_regs[i], true);
+        }
+    }
+}
 
-// static void ret_1_reg_mask(FunType* fun_type, bool reg_size) {
-//     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
-//         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
-//         register_mask_set(&fun_type->ret_reg_mask, reg_size ? REG_Ax : REG_Xmm0, true);
-//     }
-// }
+static void ret_1_reg_mask(FunType* fun_type, bool reg_size) {
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
+        register_mask_set(&fun_type->ret_reg_mask, reg_size ? REG_Ax : REG_Xmm0, true);
+    }
+}
 
-// static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
-//     if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
-//         fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
-//         if (reg_size) {
-//             register_mask_set(&fun_type->ret_reg_mask, REG_Ax, true);
-//             register_mask_set(&fun_type->ret_reg_mask, sse_size ? REG_Xmm0 : REG_Dx, true);
-//         }
-//         else if (sse_size) {
-//             register_mask_set(&fun_type->ret_reg_mask, REG_Xmm0, true);
-//             register_mask_set(&fun_type->ret_reg_mask, REG_Xmm1, true);
-//         }
-//     }
-// }
+static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
+    if (fun_type->ret_reg_mask == NULL_REGISTER_MASK) {
+        fun_type->ret_reg_mask = REGISTER_MASK_FALSE;
+        if (reg_size) {
+            register_mask_set(&fun_type->ret_reg_mask, REG_Ax, true);
+            register_mask_set(&fun_type->ret_reg_mask, sse_size ? REG_Xmm0 : REG_Dx, true);
+        }
+        else if (sse_size) {
+            register_mask_set(&fun_type->ret_reg_mask, REG_Xmm0, true);
+            register_mask_set(&fun_type->ret_reg_mask, REG_Xmm1, true);
+        }
+    }
+}
 
 // static void push_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) { vec_move_back(*ctx->p_instrs, instr); }
 
