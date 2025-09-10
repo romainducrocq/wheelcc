@@ -29,434 +29,398 @@ typedef StackFixContext* Ctx;
 
 // Pseudo register replacement
 
-// static std::shared_ptr<AsmData> pseudo_data(AsmPseudo* node) {
-//     TIdentifier name = node->name;
-//     return std::make_shared<AsmData>(name, 0l);
-// }
+static void pseudo_data(AsmPseudo* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    TIdentifier name = node->name;
+    free_AsmOperand(pseudo_op);
+    *pseudo_op = make_AsmData(name, 0l);
+}
 
-// static std::shared_ptr<AsmData> pseudo_mem_data(AsmPseudoMem* node) {
-//     TIdentifier name = node->name;
-//     TLong offset = node->offset;
-//     return std::make_shared<AsmData>(name, offset);
-// }
+static void pseudo_mem_data(AsmPseudoMem* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    TIdentifier name = node->name;
+    TLong offset = node->offset;
+    free_AsmOperand(pseudo_op);
+    *pseudo_op = make_AsmData(name, offset);
+}
 
-// static std::shared_ptr<AsmMemory> pseudo_memory(Ctx ctx, AsmPseudo* node) {
-//     TLong value = -1l * map_get(ctx->pseudo_stack_map, node->name);
-//     return gen_memory(REG_Bp, value);
-// }
+static void pseudo_memory(Ctx ctx, AsmPseudo* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    TLong value = -1l * map_get(ctx->pseudo_stack_map, node->name);
+    free_AsmOperand(pseudo_op);
+    *pseudo_op = gen_memory(REG_Bp, value);
+}
 
-// static std::shared_ptr<AsmMemory> pseudo_mem_memory(Ctx ctx, AsmPseudoMem* node) {
-//     TLong value = -1l * (map_get(ctx->pseudo_stack_map, node->name) - node->offset);
-//     return gen_memory(REG_Bp, value);
-// }
+static void pseudo_mem_memory(Ctx ctx, AsmPseudoMem* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    TLong value = -1l * (map_get(ctx->pseudo_stack_map, node->name) - node->offset);
+    free_AsmOperand(pseudo_op);
+    *pseudo_op = gen_memory(REG_Bp, value);
+}
 
-// static void align_offset_stack_bytes(Ctx ctx, TInt alignment) {
-//     TLong offset = ctx->stack_bytes % alignment;
-//     if (offset != 0l) {
-//         ctx->stack_bytes += alignment - offset;
-//     }
-// }
+static void align_offset_stack_bytes(Ctx ctx, TInt alignment) {
+    TLong offset = ctx->stack_bytes % alignment;
+    if (offset != 0l) {
+        ctx->stack_bytes += alignment - offset;
+    }
+}
 
-// static void align_offset_pseudo(Ctx ctx, TLong size, TInt alignment) {
-//     ctx->stack_bytes += size;
-//     align_offset_stack_bytes(ctx, alignment);
-// }
+static void align_offset_pseudo(Ctx ctx, TLong size, TInt alignment) {
+    ctx->stack_bytes += size;
+    align_offset_stack_bytes(ctx, alignment);
+}
 
-// static void alloc_offset_pseudo(Ctx ctx, AssemblyType* asm_type) {
-//     switch (asm_type->type()) {
-//         case AST_Byte_t:
-//             align_offset_pseudo(ctx, 1l, 1);
-//             break;
-//         case AST_LongWord_t:
-//             align_offset_pseudo(ctx, 4l, 4);
-//             break;
-//         case AST_QuadWord_t:
-//         case AST_BackendDouble_t:
-//             align_offset_pseudo(ctx, 8l, 8);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void alloc_offset_pseudo(Ctx ctx, AssemblyType* asm_type) {
+    switch (asm_type->type) {
+        case AST_Byte_t:
+            align_offset_pseudo(ctx, 1l, 1);
+            break;
+        case AST_LongWord_t:
+            align_offset_pseudo(ctx, 4l, 4);
+            break;
+        case AST_QuadWord_t:
+        case AST_BackendDouble_t:
+            align_offset_pseudo(ctx, 8l, 8);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
-//     if (asm_type->type() == AST_ByteArray_t) {
-//         ByteArray* p_asm_type = static_cast<ByteArray*>(asm_type);
-//         align_offset_pseudo(ctx, p_asm_type->size, p_asm_type->alignment);
-//     }
-//     else {
-//         THROW_ABORT;
-//     }
-// }
+static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
+    if (asm_type->type == AST_ByteArray_t) {
+        ByteArray* p_asm_type = &asm_type->get._ByteArray;
+        align_offset_pseudo(ctx, p_asm_type->size, p_asm_type->alignment);
+    }
+    else {
+        THROW_ABORT;
+    }
+}
 
-// static std::shared_ptr<AsmOperand> repl_pseudo_op(Ctx ctx, AsmPseudo* node) {
-//     if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
+static void repl_pseudo_op(Ctx ctx, AsmPseudo* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
 
-//         BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
-//         if (backend_obj->is_static) {
-//             return pseudo_data(node);
-//         }
-//         else {
-//             alloc_offset_pseudo(ctx, backend_obj->asm_type.get());
-//             map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
-//         }
-//     }
+        BackendObj* backend_obj = &map_get(ctx->backend->symbol_table, node->name)->get._BackendObj;
+        if (backend_obj->is_static) {
+            pseudo_data(node, pseudo_op);
+            return;
+        }
+        else {
+            alloc_offset_pseudo(ctx, backend_obj->asm_type);
+            map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
+        }
+    }
 
-//     return pseudo_memory(ctx, node);
-// }
+    pseudo_memory(ctx, node, pseudo_op);
+}
 
-// static std::shared_ptr<AsmOperand> repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* node) {
-//     if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
+static void repl_pseudo_mem_op(Ctx ctx, AsmPseudoMem* node, shared_ptr_t(AsmOperand) * pseudo_op) {
+    if (map_find(ctx->pseudo_stack_map, node->name) == map_end()) {
 
-//         BackendObj* backend_obj = static_cast<BackendObj*>(map_get(ctx->backend->symbol_table, node->name).get());
-//         if (backend_obj->is_static) {
-//             return pseudo_mem_data(node);
-//         }
-//         else {
-//             alloc_offset_pseudo_mem(ctx, backend_obj->asm_type.get());
-//             map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
-//         }
-//     }
+        BackendObj* backend_obj = &map_get(ctx->backend->symbol_table, node->name)->get._BackendObj;
+        if (backend_obj->is_static) {
+            pseudo_mem_data(node, pseudo_op);
+            return;
+        }
+        else {
+            alloc_offset_pseudo_mem(ctx, backend_obj->asm_type);
+            map_add(ctx->pseudo_stack_map, node->name, ctx->stack_bytes);
+        }
+    }
 
-//     return pseudo_mem_memory(ctx, node);
-// }
+    pseudo_mem_memory(ctx, node, pseudo_op);
+}
 
-// static void repl_mov_pseudo(Ctx ctx, AsmMov* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_mov_pseudo(Ctx ctx, AsmMov* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_mov_sx_pseudo(Ctx ctx, AsmMovSx* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_mov_sx_pseudo(Ctx ctx, AsmMovSx* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_zero_extend_pseudo(Ctx ctx, AsmMovZeroExtend* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_zero_extend_pseudo(Ctx ctx, AsmMovZeroExtend* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_lea_pseudo(Ctx ctx, AsmLea* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_lea_pseudo(Ctx ctx, AsmLea* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_cvttsd2si_pseudo(Ctx ctx, AsmCvttsd2si* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_cvttsd2si_pseudo(Ctx ctx, AsmCvttsd2si* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_cvtsi2sd_pseudo(Ctx ctx, AsmCvtsi2sd* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_cvtsi2sd_pseudo(Ctx ctx, AsmCvtsi2sd* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_unary(Ctx ctx, AsmUnary* node) {
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_unary(Ctx ctx, AsmUnary* node) {
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_binary_pseudo(Ctx ctx, AsmBinary* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_binary_pseudo(Ctx ctx, AsmBinary* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_cmp_pseudo(Ctx ctx, AsmCmp* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_cmp_pseudo(Ctx ctx, AsmCmp* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_idiv_pseudo(Ctx ctx, AsmIdiv* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_idiv_pseudo(Ctx ctx, AsmIdiv* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_div_pseudo(Ctx ctx, AsmDiv* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_div_pseudo(Ctx ctx, AsmDiv* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_set_cc_pseudo(Ctx ctx, AsmSetCC* node) {
-//     switch (node->dst->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->dst = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->dst.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->dst = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->dst.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_set_cc_pseudo(Ctx ctx, AsmSetCC* node) {
+    switch (node->dst->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->dst->get._AsmPseudo, &node->dst);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->dst->get._AsmPseudoMem, &node->dst);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_push_pseudo(Ctx ctx, AsmPush* node) {
-//     switch (node->src->type()) {
-//         case AST_AsmPseudo_t: {
-//             node->src = repl_pseudo_op(ctx, static_cast<AsmPseudo*>(node->src.get()));
-//             break;
-//         }
-//         case AST_AsmPseudoMem_t: {
-//             node->src = repl_pseudo_mem_op(ctx, static_cast<AsmPseudoMem*>(node->src.get()));
-//             break;
-//         }
-//         default:
-//             break;
-//     }
-// }
+static void repl_push_pseudo(Ctx ctx, AsmPush* node) {
+    switch (node->src->type) {
+        case AST_AsmPseudo_t:
+            repl_pseudo_op(ctx, &node->src->get._AsmPseudo, &node->src);
+            break;
+        case AST_AsmPseudoMem_t:
+            repl_pseudo_mem_op(ctx, &node->src->get._AsmPseudoMem, &node->src);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void repl_pseudo_regs(Ctx ctx, AsmInstruction* node) {
-//     switch (node->type()) {
-//         case AST_AsmMov_t:
-//             repl_mov_pseudo(ctx, static_cast<AsmMov*>(node));
-//             break;
-//         case AST_AsmMovSx_t:
-//             repl_mov_sx_pseudo(ctx, static_cast<AsmMovSx*>(node));
-//             break;
-//         case AST_AsmMovZeroExtend_t:
-//             repl_zero_extend_pseudo(ctx, static_cast<AsmMovZeroExtend*>(node));
-//             break;
-//         case AST_AsmLea_t:
-//             repl_lea_pseudo(ctx, static_cast<AsmLea*>(node));
-//             break;
-//         case AST_AsmCvttsd2si_t:
-//             repl_cvttsd2si_pseudo(ctx, static_cast<AsmCvttsd2si*>(node));
-//             break;
-//         case AST_AsmCvtsi2sd_t:
-//             repl_cvtsi2sd_pseudo(ctx, static_cast<AsmCvtsi2sd*>(node));
-//             break;
-//         case AST_AsmUnary_t:
-//             repl_unary(ctx, static_cast<AsmUnary*>(node));
-//             break;
-//         case AST_AsmBinary_t:
-//             repl_binary_pseudo(ctx, static_cast<AsmBinary*>(node));
-//             break;
-//         case AST_AsmCmp_t:
-//             repl_cmp_pseudo(ctx, static_cast<AsmCmp*>(node));
-//             break;
-//         case AST_AsmIdiv_t:
-//             repl_idiv_pseudo(ctx, static_cast<AsmIdiv*>(node));
-//             break;
-//         case AST_AsmDiv_t:
-//             repl_div_pseudo(ctx, static_cast<AsmDiv*>(node));
-//             break;
-//         case AST_AsmSetCC_t:
-//             repl_set_cc_pseudo(ctx, static_cast<AsmSetCC*>(node));
-//             break;
-//         case AST_AsmPush_t:
-//             repl_push_pseudo(ctx, static_cast<AsmPush*>(node));
-//             break;
-//         default:
-//             break;
-//     }
-// }
+static void repl_pseudo_regs(Ctx ctx, AsmInstruction* node) {
+    switch (node->type) {
+        case AST_AsmMov_t:
+            repl_mov_pseudo(ctx, &node->get._AsmMov);
+            break;
+        case AST_AsmMovSx_t:
+            repl_mov_sx_pseudo(ctx, &node->get._AsmMovSx);
+            break;
+        case AST_AsmMovZeroExtend_t:
+            repl_zero_extend_pseudo(ctx, &node->get._AsmMovZeroExtend);
+            break;
+        case AST_AsmLea_t:
+            repl_lea_pseudo(ctx, &node->get._AsmLea);
+            break;
+        case AST_AsmCvttsd2si_t:
+            repl_cvttsd2si_pseudo(ctx, &node->get._AsmCvttsd2si);
+            break;
+        case AST_AsmCvtsi2sd_t:
+            repl_cvtsi2sd_pseudo(ctx, &node->get._AsmCvtsi2sd);
+            break;
+        case AST_AsmUnary_t:
+            repl_unary(ctx, &node->get._AsmUnary);
+            break;
+        case AST_AsmBinary_t:
+            repl_binary_pseudo(ctx, &node->get._AsmBinary);
+            break;
+        case AST_AsmCmp_t:
+            repl_cmp_pseudo(ctx, &node->get._AsmCmp);
+            break;
+        case AST_AsmIdiv_t:
+            repl_idiv_pseudo(ctx, &node->get._AsmIdiv);
+            break;
+        case AST_AsmDiv_t:
+            repl_div_pseudo(ctx, &node->get._AsmDiv);
+            break;
+        case AST_AsmSetCC_t:
+            repl_set_cc_pseudo(ctx, &node->get._AsmSetCC);
+            break;
+        case AST_AsmPush_t:
+            repl_push_pseudo(ctx, &node->get._AsmPush);
+            break;
+        default:
+            break;
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
