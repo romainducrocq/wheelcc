@@ -252,7 +252,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
         verbose(ctx, "OK\n-- Level 2 optimization ... ");
         // allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
     }
-    // fix_stack(asm_ast.get(), &backend);
+    fix_stack(asm_ast, &backend);
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 251) {

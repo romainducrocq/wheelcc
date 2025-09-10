@@ -441,596 +441,646 @@ unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte) {
     return make_AsmBinary(&binop, &asm_type, &src, &dst);
 }
 
-// static void push_fix_instr(Ctx ctx, std::unique_ptr<AsmInstruction>&& instr) {
-//     vec_move_back(*ctx->p_fix_instrs, instr);
-// }
+static void push_fix_instr(Ctx ctx, unique_ptr_t(AsmInstruction) instr) { vec_move_back(*ctx->p_fix_instrs, instr); }
 
-// static void swap_fix_instr_back(Ctx ctx) {
-//     std::unique_ptr<AsmInstruction> swap_instr = std::move(vec_back(*ctx->p_fix_instrs));
-//     vec_back(*ctx->p_fix_instrs) = std::move((*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2]);
-//     (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2] = std::move(swap_instr);
-// }
+// TODO see if can factor out instr_back_1 and instr_back_2
+static void swap_fix_instr_back(Ctx ctx) {
+    unique_ptr_t(AsmInstruction) swap_instr = uptr_new();
+    uptr_move(AsmInstruction, vec_back(*ctx->p_fix_instrs), swap_instr);
+    uptr_move(AsmInstruction, (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2], vec_back(*ctx->p_fix_instrs));
+    uptr_move(AsmInstruction, swap_instr, (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2]);
+}
 
-// static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {
-//     TLong callee_saved_bytes = callee_saved_size * 8l;
-//     ctx->stack_bytes += callee_saved_bytes;
-//     if (ctx->stack_bytes > 0l) {
-//         align_offset_stack_bytes(ctx, 16);
-//         ctx->stack_bytes -= callee_saved_bytes;
-//         (*ctx->p_fix_instrs)[0] = alloc_stack_bytes(ctx->stack_bytes);
-//     }
-// }
+static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {
+    TLong callee_saved_bytes = callee_saved_size * 8l;
+    ctx->stack_bytes += callee_saved_bytes;
+    if (ctx->stack_bytes > 0l) {
+        align_offset_stack_bytes(ctx, 16);
+        ctx->stack_bytes -= callee_saved_bytes;
+        (*ctx->p_fix_instrs)[0] = alloc_stack_bytes(ctx->stack_bytes);
+    }
+}
 
-// static void push_callee_saved_regs(Ctx ctx, const vector_t(std::shared_ptr<AsmOperand>) callee_saved_regs) {
-//     for (size_t i = 0; i < vec_size(callee_saved_regs); ++i) {
-//         std::shared_ptr<AsmOperand> src = callee_saved_regs[i];
-//         push_fix_instr(ctx, std::make_unique<AsmPush>(std::move(src)));
-//     }
-// }
+static void push_callee_saved_regs(Ctx ctx, vector_t(shared_ptr_t(AsmOperand)) callee_saved_regs) {
+    for (size_t i = 0; i < vec_size(callee_saved_regs); ++i) {
+        shared_ptr_t(AsmOperand) src = sptr_new();
+        sptr_copy(AsmOperand, callee_saved_regs[i], src);
+        push_fix_instr(ctx, make_AsmPush(&src));
+    }
+}
 
-// static void pop_callee_saved_regs(Ctx ctx, const vector_t(std::shared_ptr<AsmOperand>) callee_saved_regs) {
-//     for (size_t i = vec_size(callee_saved_regs); i-- > 0;) {
-//         THROW_ABORT_IF(callee_saved_regs[i]->type() != AST_AsmRegister_t);
-//         REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(callee_saved_regs[i].get())->reg.get());
-//         std::unique_ptr<AsmReg> reg;
-//         switch (reg_kind) {
-//             case REG_Bx: {
-//                 reg = std::make_unique<AsmBx>();
-//                 break;
-//             }
-//             case REG_R12: {
-//                 reg = std::make_unique<AsmR12>();
-//                 break;
-//             }
-//             case REG_R13: {
-//                 reg = std::make_unique<AsmR13>();
-//                 break;
-//             }
-//             case REG_R14: {
-//                 reg = std::make_unique<AsmR14>();
-//                 break;
-//             }
-//             case REG_R15: {
-//                 reg = std::make_unique<AsmR15>();
-//                 break;
-//             }
-//             default:
-//                 THROW_ABORT;
-//         }
-//         push_fix_instr(ctx, std::make_unique<AsmPop>(std::move(reg)));
-//     }
-// }
+static void pop_callee_saved_regs(Ctx ctx, vector_t(shared_ptr_t(AsmOperand)) callee_saved_regs) {
+    for (size_t i = vec_size(callee_saved_regs); i-- > 0;) {
+        THROW_ABORT_IF(callee_saved_regs[i]->type != AST_AsmRegister_t);
+        REGISTER_KIND reg_kind = register_mask_kind(callee_saved_regs[i]->get._AsmRegister.reg);
+        unique_ptr_t(AsmReg) reg = sptr_new();
+        switch (reg_kind) {
+            case REG_Bx: {
+                reg = make_AsmBx();
+                break;
+            }
+            case REG_R12: {
+                reg = make_AsmR12();
+                break;
+            }
+            case REG_R13: {
+                reg = make_AsmR13();
+                break;
+            }
+            case REG_R14: {
+                reg = make_AsmR14();
+                break;
+            }
+            case REG_R15: {
+                reg = make_AsmR15();
+                break;
+            }
+            default:
+                THROW_ABORT;
+        }
+        push_fix_instr(ctx, make_AsmPop(&reg));
+    }
+}
 
-// static bool is_op_addr(AsmOperand* node) {
-//     switch (node->type()) {
-//         case AST_AsmMemory_t:
-//         case AST_AsmData_t:
-//         case AST_AsmIndexed_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_op_addr(AsmOperand* node) {
+    switch (node->type) {
+        case AST_AsmMemory_t:
+        case AST_AsmData_t:
+        case AST_AsmIndexed_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static void mov_dbl_from_addr_to_addr(Ctx ctx, AsmMov* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm14);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void mov_dbl_from_addr_to_addr(Ctx ctx, AsmMov* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Xmm14);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void mov_from_quad_imm(Ctx ctx, AsmMov* node) {
-//     if (node->dst->type() == AST_AsmRegister_t) {
-//         if (node->asm_type->type() != AST_QuadWord_t) {
-//             node->asm_type = std::make_shared<QuadWord>();
-//         }
-//         return;
-//     }
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void mov_from_quad_imm(Ctx ctx, AsmMov* node) {
+    if (node->dst->type == AST_AsmRegister_t) {
+        if (node->asm_type->type != AST_QuadWord_t) {
+            free_AssemblyType(&node->asm_type);
+            node->asm_type = make_QuadWord();
+        }
+        return;
+    }
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void mov_from_addr_to_addr(Ctx ctx, AsmMov* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void mov_from_addr_to_addr(Ctx ctx, AsmMov* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_mov_instr(Ctx ctx, AsmMov* node) {
-//     if (node->asm_type->type() == AST_BackendDouble_t) {
-//         if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
-//             mov_dbl_from_addr_to_addr(ctx, node);
-//         }
-//     }
-//     else {
-//         if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//             mov_from_quad_imm(ctx, node);
-//         }
-//         if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
-//             mov_from_addr_to_addr(ctx, node);
-//         }
-//     }
-// }
+static void fix_mov_instr(Ctx ctx, AsmMov* node) {
+    if (node->asm_type->type == AST_BackendDouble_t) {
+        if (is_op_addr(node->src) && is_op_addr(node->dst)) {
+            mov_dbl_from_addr_to_addr(ctx, node);
+        }
+    }
+    else {
+        if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+            mov_from_quad_imm(ctx, node);
+        }
+        if (is_op_addr(node->src) && is_op_addr(node->dst)) {
+            mov_from_addr_to_addr(ctx, node);
+        }
+    }
+}
 
-// static void mov_sx_from_imm(Ctx ctx, AsmMovSx* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type_src;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void mov_sx_from_imm(Ctx ctx, AsmMovSx* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type_src, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void mov_sx_to_addr(Ctx ctx, AsmMovSx* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_R11);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type_dst;
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void mov_sx_to_addr(Ctx ctx, AsmMovSx* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_R11);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type_dst, asm_type);
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static void fix_mov_sx_instr(Ctx ctx, AsmMovSx* node) {
-//     if (node->src->type() == AST_AsmImm_t) {
-//         mov_sx_from_imm(ctx, node);
-//     }
-//     if (is_op_addr(node->dst.get())) {
-//         mov_sx_to_addr(ctx, node);
-//     }
-// }
+static void fix_mov_sx_instr(Ctx ctx, AsmMovSx* node) {
+    if (node->src->type == AST_AsmImm_t) {
+        mov_sx_from_imm(ctx, node);
+    }
+    if (is_op_addr(node->dst)) {
+        mov_sx_to_addr(ctx, node);
+    }
+}
 
-// static void byte_zero_extend_from_imm(Ctx ctx, AsmMovZeroExtend* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<Byte>();
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void byte_zero_extend_from_imm(Ctx ctx, AsmMovZeroExtend* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = make_Byte();
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void byte_zero_extend_to_addr(Ctx ctx, AsmMovZeroExtend* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_R11);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type_dst;
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void byte_zero_extend_to_addr(Ctx ctx, AsmMovZeroExtend* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_R11);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type_dst, asm_type);
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static AsmMov* zero_extend_as_mov(Ctx ctx, AsmMovZeroExtend* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<LongWord>();
-//     vec_back(*ctx->p_fix_instrs) = std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst));
-//     return static_cast<AsmMov*>(vec_back(*ctx->p_fix_instrs).get());
-// }
+// TODO see if can factor out instr_back
+static AsmMov* zero_extend_as_mov(Ctx ctx, AsmMovZeroExtend* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = make_LongWord();
+    free_AsmInstruction(&vec_back(*ctx->p_fix_instrs));
+    vec_back(*ctx->p_fix_instrs) = make_AsmMov(&asm_type, &src, &dst);
+    return &vec_back(*ctx->p_fix_instrs)->get._AsmMov;
+}
 
-// static void zero_extend_to_addr(Ctx ctx, AsmMov* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_R11);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void zero_extend_to_addr(Ctx ctx, AsmMov* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_R11);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static void fix_zero_extend_instr(Ctx ctx, AsmMovZeroExtend* node) {
-//     if (node->asm_type_src->type() == AST_Byte_t) {
-//         if (node->src->type() == AST_AsmImm_t) {
-//             byte_zero_extend_from_imm(ctx, node);
-//         }
-//         if (is_op_addr(node->dst.get())) {
-//             byte_zero_extend_to_addr(ctx, node);
-//         }
-//     }
-//     else {
-//         AsmMov* mov = zero_extend_as_mov(ctx, node);
-//         if (is_op_addr(mov->dst.get())) {
-//             zero_extend_to_addr(ctx, mov);
-//         }
-//     }
-// }
+static void fix_zero_extend_instr(Ctx ctx, AsmMovZeroExtend* node) {
+    if (node->asm_type_src->type == AST_Byte_t) {
+        if (node->src->type == AST_AsmImm_t) {
+            byte_zero_extend_from_imm(ctx, node);
+        }
+        if (is_op_addr(node->dst)) {
+            byte_zero_extend_to_addr(ctx, node);
+        }
+    }
+    else {
+        AsmMov* mov = zero_extend_as_mov(ctx, node);
+        if (is_op_addr(mov->dst)) {
+            zero_extend_to_addr(ctx, mov);
+        }
+    }
+}
 
-// static void lea_to_addr(Ctx ctx, AsmLea* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_R11);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void lea_to_addr(Ctx ctx, AsmLea* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_R11);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static void fix_lea_instr(Ctx ctx, AsmLea* node) {
-//     if (is_op_addr(node->dst.get())) {
-//         lea_to_addr(ctx, node);
-//     }
-// }
+static void fix_lea_instr(Ctx ctx, AsmLea* node) {
+    if (is_op_addr(node->dst)) {
+        lea_to_addr(ctx, node);
+    }
+}
 
-// static void cvttsd2si_to_addr(Ctx ctx, AsmCvttsd2si* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_R11);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void cvttsd2si_to_addr(Ctx ctx, AsmCvttsd2si* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_R11);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static void fix_cvttsd2si_instr(Ctx ctx, AsmCvttsd2si* node) {
-//     if (is_op_addr(node->dst.get())) {
-//         cvttsd2si_to_addr(ctx, node);
-//     }
-// }
+static void fix_cvttsd2si_instr(Ctx ctx, AsmCvttsd2si* node) {
+    if (is_op_addr(node->dst)) {
+        cvttsd2si_to_addr(ctx, node);
+    }
+}
 
-// static void cvtsi2sd_from_imm(Ctx ctx, AsmCvtsi2sd* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void cvtsi2sd_from_imm(Ctx ctx, AsmCvtsi2sd* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void cvtsi2sd_to_addr(Ctx ctx, AsmCvtsi2sd* node) {
-//     std::shared_ptr<AsmOperand> src = gen_register(REG_Xmm15);
-//     std::shared_ptr<AsmOperand> dst = std::move(node->dst);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
-//     node->dst = src;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-// }
+static void cvtsi2sd_to_addr(Ctx ctx, AsmCvtsi2sd* node) {
+    shared_ptr_t(AsmOperand) src = gen_register(REG_Xmm15);
+    shared_ptr_t(AsmOperand) dst = sptr_new();
+    sptr_move(AsmOperand, node->dst, dst);
+    shared_ptr_t(AssemblyType) asm_type = make_BackendDouble();
+    sptr_copy(AsmOperand, src, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+}
 
-// static void fix_cvtsi2sd_instr(Ctx ctx, AsmCvtsi2sd* node) {
-//     if (node->src->type() == AST_AsmImm_t) {
-//         cvtsi2sd_from_imm(ctx, node);
-//     }
-//     if (is_op_addr(node->dst.get())) {
-//         cvtsi2sd_to_addr(ctx, node);
-//     }
-// }
+static void fix_cvtsi2sd_instr(Ctx ctx, AsmCvtsi2sd* node) {
+    if (node->src->type == AST_AsmImm_t) {
+        cvtsi2sd_from_imm(ctx, node);
+    }
+    if (is_op_addr(node->dst)) {
+        cvtsi2sd_to_addr(ctx, node);
+    }
+}
 
-// static void binary_dbl_to_addr(Ctx ctx, AsmBinary* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->dst);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm15);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
-//     node->dst = dst;
-//     {
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_cp = asm_type;
-//         push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_cp), std::move(src_cp), std::move(dst_cp)));
-//     }
-//     swap_fix_instr_back(ctx);
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(dst), std::move(src)));
-// }
+static void binary_dbl_to_addr(Ctx ctx, AsmBinary* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->dst, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Xmm15);
+    shared_ptr_t(AssemblyType) asm_type = make_BackendDouble();
+    sptr_copy(AsmOperand, dst, node->dst);
+    {
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type, asm_type_cp);
+        push_fix_instr(ctx, make_AsmMov(&asm_type_cp, &src_cp, &dst_cp));
+    }
+    swap_fix_instr_back(ctx);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &dst, &src));
+}
 
-// static void binary_from_quad_imm(Ctx ctx, AsmBinary* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void binary_from_quad_imm(Ctx ctx, AsmBinary* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void binary_from_addr_to_addr(Ctx ctx, AsmBinary* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void binary_from_addr_to_addr(Ctx ctx, AsmBinary* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void binary_imul_to_addr(Ctx ctx, AsmBinary* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->dst);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R11);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->dst = dst;
-//     {
-//         std::shared_ptr<AsmOperand> src_cp = src;
-//         std::shared_ptr<AsmOperand> dst_cp = dst;
-//         std::shared_ptr<AssemblyType> asm_type_cp = asm_type;
-//         push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_cp), std::move(src_cp), std::move(dst_cp)));
-//     }
-//     swap_fix_instr_back(ctx);
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(dst), std::move(src)));
-// }
+static void binary_imul_to_addr(Ctx ctx, AsmBinary* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->dst, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R11);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->dst);
+    {
+        shared_ptr_t(AsmOperand) src_cp = sptr_new();
+        sptr_copy(AsmOperand, src, src_cp);
+        shared_ptr_t(AsmOperand) dst_cp = sptr_new();
+        sptr_copy(AsmOperand, dst, dst_cp);
+        shared_ptr_t(AssemblyType) asm_type_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type, asm_type_cp);
+        push_fix_instr(ctx, make_AsmMov(&asm_type_cp, &src_cp, &dst_cp));
+    }
+    swap_fix_instr_back(ctx);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &dst, &src));
+}
 
-// static void binary_shx_from_not_imm(Ctx ctx, AsmBinary* node) {
-//     if (node->src->type() == AST_AsmRegister_t
-//         && register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get()) == REG_Cx) {
-//         return;
-//     }
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Cx);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void binary_shx_from_not_imm(Ctx ctx, AsmBinary* node) {
+    if (node->src->type == AST_AsmRegister_t && register_mask_kind(node->src->get._AsmRegister.reg) == REG_Cx) {
+        return;
+    }
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Cx);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_binary_instr(Ctx ctx, AsmBinary* node) {
-//     if (node->asm_type->type() == AST_BackendDouble_t) {
-//         if (is_op_addr(node->dst.get())) {
-//             binary_dbl_to_addr(ctx, node);
-//         }
-//     }
-//     else {
-//         switch (node->binop->type()) {
-//             case AST_AsmAdd_t:
-//             case AST_AsmSub_t:
-//             case AST_AsmBitAnd_t:
-//             case AST_AsmBitOr_t:
-//             case AST_AsmBitXor_t: {
-//                 if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//                     binary_from_quad_imm(ctx, node);
-//                 }
-//                 if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
-//                     binary_from_addr_to_addr(ctx, node);
-//                 }
-//                 break;
-//             }
-//             case AST_AsmMult_t: {
-//                 if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//                     binary_from_quad_imm(ctx, node);
-//                 }
-//                 if (is_op_addr(node->dst.get())) {
-//                     binary_imul_to_addr(ctx, node);
-//                 }
-//                 break;
-//             }
-//             case AST_AsmBitShiftLeft_t:
-//             case AST_AsmBitShiftRight_t:
-//             case AST_AsmBitShrArithmetic_t: {
-//                 if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//                     binary_from_quad_imm(ctx, node);
-//                 }
-//                 if (node->src->type() != AST_AsmImm_t) {
-//                     binary_shx_from_not_imm(ctx, node);
-//                 }
-//                 break;
-//             }
-//             default:
-//                 break;
-//         }
-//     }
-// }
+static void fix_binary_instr(Ctx ctx, AsmBinary* node) {
+    if (node->asm_type->type == AST_BackendDouble_t) {
+        if (is_op_addr(node->dst)) {
+            binary_dbl_to_addr(ctx, node);
+        }
+    }
+    else {
+        switch (node->binop->type) {
+            case AST_AsmAdd_t:
+            case AST_AsmSub_t:
+            case AST_AsmBitAnd_t:
+            case AST_AsmBitOr_t:
+            case AST_AsmBitXor_t: {
+                if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+                    binary_from_quad_imm(ctx, node);
+                }
+                if (is_op_addr(node->src) && is_op_addr(node->dst)) {
+                    binary_from_addr_to_addr(ctx, node);
+                }
+                break;
+            }
+            case AST_AsmMult_t: {
+                if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+                    binary_from_quad_imm(ctx, node);
+                }
+                if (is_op_addr(node->dst)) {
+                    binary_imul_to_addr(ctx, node);
+                }
+                break;
+            }
+            case AST_AsmBitShiftLeft_t:
+            case AST_AsmBitShiftRight_t:
+            case AST_AsmBitShrArithmetic_t: {
+                if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+                    binary_from_quad_imm(ctx, node);
+                }
+                if (node->src->type != AST_AsmImm_t) {
+                    binary_shx_from_not_imm(ctx, node);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
 
-// static void cmp_dbl_to_addr(Ctx ctx, AsmCmp* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->dst);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_Xmm15);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<BackendDouble>();
-//     node->dst = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void cmp_dbl_to_addr(Ctx ctx, AsmCmp* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->dst, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_Xmm15);
+    shared_ptr_t(AssemblyType) asm_type = make_BackendDouble();
+    sptr_copy(AsmOperand, dst, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void cmp_from_quad_imm(Ctx ctx, AsmCmp* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void cmp_from_quad_imm(Ctx ctx, AsmCmp* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void cmp_from_addr_to_addr(Ctx ctx, AsmCmp* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void cmp_from_addr_to_addr(Ctx ctx, AsmCmp* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void cmp_to_imm(Ctx ctx, AsmCmp* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->dst);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R11);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->dst = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void cmp_to_imm(Ctx ctx, AsmCmp* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->dst, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R11);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->dst);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_cmp_instr(Ctx ctx, AsmCmp* node) {
-//     if (node->asm_type->type() == AST_BackendDouble_t) {
-//         if (is_op_addr(node->dst.get())) {
-//             cmp_dbl_to_addr(ctx, node);
-//         }
-//     }
-//     else {
-//         if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//             cmp_from_quad_imm(ctx, node);
-//         }
-//         if (is_op_addr(node->src.get()) && is_op_addr(node->dst.get())) {
-//             cmp_from_addr_to_addr(ctx, node);
-//         }
-//         else if (node->dst->type() == AST_AsmImm_t) {
-//             cmp_to_imm(ctx, node);
-//         }
-//     }
-// }
+static void fix_cmp_instr(Ctx ctx, AsmCmp* node) {
+    if (node->asm_type->type == AST_BackendDouble_t) {
+        if (is_op_addr(node->dst)) {
+            cmp_dbl_to_addr(ctx, node);
+        }
+    }
+    else {
+        if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+            cmp_from_quad_imm(ctx, node);
+        }
+        if (is_op_addr(node->src) && is_op_addr(node->dst)) {
+            cmp_from_addr_to_addr(ctx, node);
+        }
+        else if (node->dst->type == AST_AsmImm_t) {
+            cmp_to_imm(ctx, node);
+        }
+    }
+}
 
-// static void idiv_from_imm(Ctx ctx, AsmIdiv* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void idiv_from_imm(Ctx ctx, AsmIdiv* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_idiv_instr(Ctx ctx, AsmIdiv* node) {
-//     if (node->src->type() == AST_AsmImm_t) {
-//         idiv_from_imm(ctx, node);
-//     }
-// }
+static void fix_idiv_instr(Ctx ctx, AsmIdiv* node) {
+    if (node->src->type == AST_AsmImm_t) {
+        idiv_from_imm(ctx, node);
+    }
+}
 
-// static void div_from_imm(Ctx ctx, AsmDiv* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = node->asm_type;
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void div_from_imm(Ctx ctx, AsmDiv* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = sptr_new();
+    sptr_copy(AssemblyType, node->asm_type, asm_type);
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_div_instr(Ctx ctx, AsmDiv* node) {
-//     if (node->src->type() == AST_AsmImm_t) {
-//         div_from_imm(ctx, node);
-//     }
-// }
+static void fix_div_instr(Ctx ctx, AsmDiv* node) {
+    if (node->src->type == AST_AsmImm_t) {
+        div_from_imm(ctx, node);
+    }
+}
 
-// static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
-//     std::shared_ptr<AsmOperand> src_reg = std::move(node->src);
-//     std::shared_ptr<AssemblyType> asm_type_src = std::make_shared<QuadWord>();
-//     {
-//         std::unique_ptr<AsmBinaryOp> binop = std::make_unique<AsmSub>();
-//         std::shared_ptr<AsmOperand> src = std::make_shared<AsmImm>(8ul, true, false, false);
-//         std::shared_ptr<AsmOperand> dst = gen_register(REG_Sp);
-//         std::shared_ptr<AssemblyType> asm_type_src_cp = asm_type_src;
-//         vec_back(*ctx->p_fix_instrs) =
-//             std::make_unique<AsmBinary>(std::move(binop), std::move(asm_type_src_cp), std::move(src), std::move(dst));
-//     }
-//     {
-//         std::shared_ptr<AsmOperand> dst = gen_memory(REG_Sp, 0l);
-//         push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type_src), std::move(src_reg), std::move(dst)));
-//     }
-// }
+// TODO see if refactor to instr_back
+static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
+    shared_ptr_t(AsmOperand) src_reg = sptr_new();
+    sptr_move(AsmOperand, node->src, src_reg);
+    shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
+    {
+        unique_ptr_t(AsmBinaryOp) binop = make_AsmSub();
+        shared_ptr_t(AsmOperand) src = make_AsmImm(8ul, true, false, false);
+        shared_ptr_t(AsmOperand) dst = gen_register(REG_Sp);
+        shared_ptr_t(AssemblyType) asm_type_src_cp = sptr_new();
+        sptr_copy(AssemblyType, asm_type_src, asm_type_src_cp);
+        free_AsmInstruction(&vec_back(*ctx->p_fix_instrs));
+        vec_back(*ctx->p_fix_instrs) = make_AsmBinary(&binop, &asm_type_src_cp, &src, &dst);
+    }
+    {
+        shared_ptr_t(AsmOperand) dst = gen_memory(REG_Sp, 0l);
+        push_fix_instr(ctx, make_AsmMov(&asm_type_src, &src_reg, &dst));
+    }
+}
 
-// static void push_from_quad_imm(Ctx ctx, AsmPush* node) {
-//     std::shared_ptr<AsmOperand> src = std::move(node->src);
-//     std::shared_ptr<AsmOperand> dst = gen_register(REG_R10);
-//     std::shared_ptr<AssemblyType> asm_type = std::make_shared<QuadWord>();
-//     node->src = dst;
-//     push_fix_instr(ctx, std::make_unique<AsmMov>(std::move(asm_type), std::move(src), std::move(dst)));
-//     swap_fix_instr_back(ctx);
-// }
+static void push_from_quad_imm(Ctx ctx, AsmPush* node) {
+    shared_ptr_t(AsmOperand) src = sptr_new();
+    sptr_move(AsmOperand, node->src, src);
+    shared_ptr_t(AsmOperand) dst = gen_register(REG_R10);
+    shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
+    sptr_copy(AsmOperand, dst, node->src);
+    push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
+    swap_fix_instr_back(ctx);
+}
 
-// static void fix_push_instr(Ctx ctx, AsmPush* node) {
-//     if (node->src->type() == AST_AsmRegister_t) {
-//         REGISTER_KIND reg_kind = register_mask_kind(static_cast<AsmRegister*>(node->src.get())->reg.get());
-//         if (reg_kind != REG_Sp && register_mask_bit(reg_kind) > 11) {
-//             push_dbl_from_xmm_reg(ctx, node);
-//         }
-//     }
-//     else if (node->src->type() == AST_AsmImm_t && static_cast<AsmImm*>(node->src.get())->is_quad) {
-//         push_from_quad_imm(ctx, node);
-//     }
-// }
+static void fix_push_instr(Ctx ctx, AsmPush* node) {
+    if (node->src->type == AST_AsmRegister_t) {
+        REGISTER_KIND reg_kind = register_mask_kind(node->src->get._AsmRegister.reg);
+        if (reg_kind != REG_Sp && register_mask_bit(reg_kind) > 11) {
+            push_dbl_from_xmm_reg(ctx, node);
+        }
+    }
+    else if (node->src->type == AST_AsmImm_t && node->src->get._AsmImm.is_quad) {
+        push_from_quad_imm(ctx, node);
+    }
+}
 
-// static void fix_instr(Ctx ctx, AsmInstruction* node) {
-//     switch (node->type()) {
-//         case AST_AsmMov_t:
-//             fix_mov_instr(ctx, static_cast<AsmMov*>(node));
-//             break;
-//         case AST_AsmMovSx_t:
-//             fix_mov_sx_instr(ctx, static_cast<AsmMovSx*>(node));
-//             break;
-//         case AST_AsmMovZeroExtend_t:
-//             fix_zero_extend_instr(ctx, static_cast<AsmMovZeroExtend*>(node));
-//             break;
-//         case AST_AsmLea_t:
-//             fix_lea_instr(ctx, static_cast<AsmLea*>(node));
-//             break;
-//         case AST_AsmCvttsd2si_t:
-//             fix_cvttsd2si_instr(ctx, static_cast<AsmCvttsd2si*>(node));
-//             break;
-//         case AST_AsmCvtsi2sd_t:
-//             fix_cvtsi2sd_instr(ctx, static_cast<AsmCvtsi2sd*>(node));
-//             break;
-//         case AST_AsmBinary_t:
-//             fix_binary_instr(ctx, static_cast<AsmBinary*>(node));
-//             break;
-//         case AST_AsmCmp_t:
-//             fix_cmp_instr(ctx, static_cast<AsmCmp*>(node));
-//             break;
-//         case AST_AsmIdiv_t:
-//             fix_idiv_instr(ctx, static_cast<AsmIdiv*>(node));
-//             break;
-//         case AST_AsmDiv_t:
-//             fix_div_instr(ctx, static_cast<AsmDiv*>(node));
-//             break;
-//         case AST_AsmPush_t:
-//             fix_push_instr(ctx, static_cast<AsmPush*>(node));
-//             break;
-//         default:
-//             break;
-//     }
-// }
+static void fix_instr(Ctx ctx, AsmInstruction* node) {
+    switch (node->type) {
+        case AST_AsmMov_t:
+            fix_mov_instr(ctx, &node->get._AsmMov);
+            break;
+        case AST_AsmMovSx_t:
+            fix_mov_sx_instr(ctx, &node->get._AsmMovSx);
+            break;
+        case AST_AsmMovZeroExtend_t:
+            fix_zero_extend_instr(ctx, &node->get._AsmMovZeroExtend);
+            break;
+        case AST_AsmLea_t:
+            fix_lea_instr(ctx, &node->get._AsmLea);
+            break;
+        case AST_AsmCvttsd2si_t:
+            fix_cvttsd2si_instr(ctx, &node->get._AsmCvttsd2si);
+            break;
+        case AST_AsmCvtsi2sd_t:
+            fix_cvtsi2sd_instr(ctx, &node->get._AsmCvtsi2sd);
+            break;
+        case AST_AsmBinary_t:
+            fix_binary_instr(ctx, &node->get._AsmBinary);
+            break;
+        case AST_AsmCmp_t:
+            fix_cmp_instr(ctx, &node->get._AsmCmp);
+            break;
+        case AST_AsmIdiv_t:
+            fix_idiv_instr(ctx, &node->get._AsmIdiv);
+            break;
+        case AST_AsmDiv_t:
+            fix_div_instr(ctx, &node->get._AsmDiv);
+            break;
+        case AST_AsmPush_t:
+            fix_push_instr(ctx, &node->get._AsmPush);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
-//     vector_t(std::unique_ptr<AsmInstruction>) instructions = vec_new();
-//     vec_move(node->instructions, instructions);
-//     BackendFun* backend_fun = static_cast<BackendFun*>(map_get(ctx->backend->symbol_table, node->name).get());
+static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
+    vector_t(unique_ptr_t(AsmInstruction)) instructions = vec_new();
+    vec_move(node->instructions, instructions);
+    BackendFun* backend_fun = &map_get(ctx->backend->symbol_table, node->name)->get._BackendFun;
 
-//     vec_clear(node->instructions);
-//     vec_reserve(node->instructions, vec_size(instructions));
+    vec_clear(node->instructions);
+    vec_reserve(node->instructions, vec_size(instructions));
 
-//     ctx->stack_bytes = node->is_ret_memory ? 8l : 0l;
-//     map_clear(ctx->pseudo_stack_map);
-//     ctx->p_fix_instrs = &node->instructions;
-//     // TODO
-//     std::unique_ptr<AsmInstruction> temp(nullptr);
-//     vec_move_back(*ctx->p_fix_instrs, temp);
-//     // vec_push_back(*ctx->p_fix_instrs, uptr_new());
+    ctx->stack_bytes = node->is_ret_memory ? 8l : 0l;
+    map_clear(ctx->pseudo_stack_map);
+    ctx->p_fix_instrs = &node->instructions;
+    vec_push_back(*ctx->p_fix_instrs, uptr_new()); // TODO check this
 
-//     bool is_ret = false;
-//     push_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
-//     for (size_t i = 0; i < vec_size(instructions); ++i) {
-//         if (instructions[i]) {
-//             if (instructions[i]->type() == AST_AsmRet_t) {
-//                 pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
-//                 is_ret = true;
-//             }
-//             push_fix_instr(ctx, std::move(instructions[i]));
+    bool is_ret = false;
+    push_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
+    for (size_t i = 0; i < vec_size(instructions); ++i) {
+        if (instructions[i]) {
+            if (instructions[i]->type == AST_AsmRet_t) {
+                pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
+                is_ret = true;
+            }
+            push_fix_instr(ctx, instructions[i]);
+            instructions[i] = uptr_new(); // TODO check this
 
-//             repl_pseudo_regs(ctx, vec_back(*ctx->p_fix_instrs).get());
-//             fix_instr(ctx, vec_back(*ctx->p_fix_instrs).get());
-//         }
-//     }
-//     if (!is_ret) {
-//         pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
-//     }
-//     {
-//         TLong callee_saved_size = (TLong)vec_size(backend_fun->callee_saved_regs);
-//         fix_alloc_stack_bytes(ctx, callee_saved_size);
-//     }
-//     ctx->p_fix_instrs = NULL;
-//     vec_delete(instructions);
-// }
+            repl_pseudo_regs(ctx, vec_back(*ctx->p_fix_instrs));
+            fix_instr(ctx, vec_back(*ctx->p_fix_instrs));
+        }
+    }
+    if (!is_ret) {
+        pop_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
+    }
+    {
+        TLong callee_saved_size = (TLong)vec_size(backend_fun->callee_saved_regs);
+        fix_alloc_stack_bytes(ctx, callee_saved_size);
+    }
+    ctx->p_fix_instrs = NULL;
+    vec_delete(instructions);
+}
 
-// static void fix_toplvl(Ctx ctx, AsmTopLevel* node) {
-//     switch (node->type()) {
-//         case AST_AsmFunction_t:
-//             fix_fun_toplvl(ctx, static_cast<AsmFunction*>(node));
-//             break;
-//         case AST_AsmStaticVariable_t:
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void fix_toplvl(Ctx ctx, AsmTopLevel* node) {
+    switch (node->type) {
+        case AST_AsmFunction_t:
+            fix_fun_toplvl(ctx, &node->get._AsmFunction);
+            break;
+        case AST_AsmStaticVariable_t:
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void fix_program(Ctx ctx, AsmProgram* node) {
-//     for (size_t i = 0; i < vec_size(node->top_levels); ++i) {
-//         fix_toplvl(ctx, node->top_levels[i].get());
-//     }
-// }
+static void fix_program(Ctx ctx, AsmProgram* node) {
+    for (size_t i = 0; i < vec_size(node->top_levels); ++i) {
+        fix_toplvl(ctx, node->top_levels[i]);
+    }
+}
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void fix_stack(AsmProgram* node, BackEndContext* backend) {
-//     StackFixContext ctx;
-//     {
-//         ctx.backend = backend;
-//         ctx.stack_bytes = 0l;
-//         ctx.pseudo_stack_map = map_new();
-//     }
-//     fix_program(&ctx, node);
+void fix_stack(AsmProgram* node, BackEndContext* backend) {
+    StackFixContext ctx;
+    {
+        ctx.backend = backend;
+        ctx.stack_bytes = 0l;
+        ctx.pseudo_stack_map = map_new();
+    }
+    fix_program(&ctx, node);
 
-//     map_delete(ctx.pseudo_stack_map);
-// }
+    map_delete(ctx.pseudo_stack_map);
+}
