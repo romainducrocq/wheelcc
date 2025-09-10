@@ -473,7 +473,7 @@ static void pop_callee_saved_regs(Ctx ctx, vector_t(shared_ptr_t(AsmOperand)) ca
     for (size_t i = vec_size(callee_saved_regs); i-- > 0;) {
         THROW_ABORT_IF(callee_saved_regs[i]->type != AST_AsmRegister_t);
         REGISTER_KIND reg_kind = register_mask_kind(callee_saved_regs[i]->get._AsmRegister.reg);
-        unique_ptr_t(AsmReg) reg = sptr_new();
+        unique_ptr_t(AsmReg) reg = uptr_new();
         switch (reg_kind) {
             case REG_Bx: {
                 reg = make_AsmBx();
