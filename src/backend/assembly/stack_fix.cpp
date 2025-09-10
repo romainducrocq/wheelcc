@@ -443,12 +443,13 @@ unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte) {
 
 static void push_fix_instr(Ctx ctx, unique_ptr_t(AsmInstruction) instr) { vec_move_back(*ctx->p_fix_instrs, instr); }
 
-// TODO see if can factor out instr_back_1 and instr_back_2
 static void swap_fix_instr_back(Ctx ctx) {
     unique_ptr_t(AsmInstruction) swap_instr = uptr_new();
-    uptr_move(AsmInstruction, vec_back(*ctx->p_fix_instrs), swap_instr);
-    uptr_move(AsmInstruction, (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2], vec_back(*ctx->p_fix_instrs));
-    uptr_move(AsmInstruction, swap_instr, (*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2]);
+    unique_ptr_t(AsmInstruction)* instr_back_1 = &vec_back(*ctx->p_fix_instrs);
+    unique_ptr_t(AsmInstruction)* instr_back_2 = &(*ctx->p_fix_instrs)[vec_size(*ctx->p_fix_instrs) - 2];
+    uptr_move(AsmInstruction, *instr_back_1, swap_instr);
+    uptr_move(AsmInstruction, *instr_back_2, *instr_back_1);
+    uptr_move(AsmInstruction, swap_instr, *instr_back_2);
 }
 
 static void fix_alloc_stack_bytes(Ctx ctx, TLong callee_saved_size) {
@@ -618,16 +619,16 @@ static void byte_zero_extend_to_addr(Ctx ctx, AsmMovZeroExtend* node) {
     push_fix_instr(ctx, make_AsmMov(&asm_type, &src, &dst));
 }
 
-// TODO see if can factor out instr_back
 static AsmMov* zero_extend_as_mov(Ctx ctx, AsmMovZeroExtend* node) {
     shared_ptr_t(AsmOperand) src = sptr_new();
     sptr_move(AsmOperand, node->src, src);
     shared_ptr_t(AsmOperand) dst = sptr_new();
     sptr_move(AsmOperand, node->dst, dst);
     shared_ptr_t(AssemblyType) asm_type = make_LongWord();
-    free_AsmInstruction(&vec_back(*ctx->p_fix_instrs));
-    vec_back(*ctx->p_fix_instrs) = make_AsmMov(&asm_type, &src, &dst);
-    return &vec_back(*ctx->p_fix_instrs)->get._AsmMov;
+    unique_ptr_t(AsmInstruction)* instr_back = &vec_back(*ctx->p_fix_instrs);
+    free_AsmInstruction(instr_back);
+    *instr_back = make_AsmMov(&asm_type, &src, &dst);
+    return &(*instr_back)->get._AsmMov;
 }
 
 static void zero_extend_to_addr(Ctx ctx, AsmMov* node) {
@@ -932,7 +933,6 @@ static void fix_div_instr(Ctx ctx, AsmDiv* node) {
     }
 }
 
-// TODO see if refactor to instr_back
 static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
     shared_ptr_t(AsmOperand) src_reg = sptr_new();
     sptr_move(AsmOperand, node->src, src_reg);
@@ -943,8 +943,9 @@ static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Sp);
         shared_ptr_t(AssemblyType) asm_type_src_cp = sptr_new();
         sptr_copy(AssemblyType, asm_type_src, asm_type_src_cp);
-        free_AsmInstruction(&vec_back(*ctx->p_fix_instrs));
-        vec_back(*ctx->p_fix_instrs) = make_AsmBinary(&binop, &asm_type_src_cp, &src, &dst);
+        unique_ptr_t(AsmInstruction)* instr_back = &vec_back(*ctx->p_fix_instrs);
+        free_AsmInstruction(instr_back);
+        *instr_back = make_AsmBinary(&binop, &asm_type_src_cp, &src, &dst);
     }
     {
         shared_ptr_t(AsmOperand) dst = gen_memory(REG_Sp, 0l);
@@ -1025,7 +1026,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
     ctx->stack_bytes = node->is_ret_memory ? 8l : 0l;
     map_clear(ctx->pseudo_stack_map);
     ctx->p_fix_instrs = &node->instructions;
-    vec_push_back(*ctx->p_fix_instrs, uptr_new()); // TODO check this
+    vec_push_back(*ctx->p_fix_instrs, uptr_new());
 
     bool is_ret = false;
     push_callee_saved_regs(ctx, backend_fun->callee_saved_regs);
@@ -1036,7 +1037,7 @@ static void fix_fun_toplvl(Ctx ctx, AsmFunction* node) {
                 is_ret = true;
             }
             push_fix_instr(ctx, instructions[i]);
-            instructions[i] = uptr_new(); // TODO check this
+            instructions[i] = uptr_new();
 
             repl_pseudo_regs(ctx, vec_back(*ctx->p_fix_instrs));
             fix_instr(ctx, vec_back(*ctx->p_fix_instrs));
