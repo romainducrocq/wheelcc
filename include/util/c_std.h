@@ -15,8 +15,13 @@
 
 // Memory
 
+#define tagged_def_impl(T) T type
+#if 0
+#define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
+#endif
+
 #define unique_ptr_t(T) T*
-#define unique_ptr_impl(T) T type
+#define unique_ptr_impl(T) tagged_def_impl(T)
 #define uptr_new() NULL
 #define uptr_delete(X) \
     if (!X) {          \
@@ -42,18 +47,6 @@
         Y = X;             \
         X = uptr_new();    \
     }
-#define uptr_make(T, X, ...)       \
-    do {                           \
-        free_##T(&X);              \
-        X = make_##T(__VA_ARGS__); \
-    }                              \
-    while (0)
-#define uptr_make_0(T, X) \
-    do {                  \
-        free_##T(&X);     \
-        X = make_##T();   \
-    }                     \
-    while (0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -84,8 +77,6 @@
         Y = X;             \
         (Y)->_ref_count++; \
     }
-#define sptr_make(T, X, ...) uptr_make(T, X, __VA_ARGS__)
-#define sptr_make_0(T, X) uptr_make_0(T, X)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
