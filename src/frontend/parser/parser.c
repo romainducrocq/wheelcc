@@ -422,7 +422,7 @@ static void proc_arr_abstract_decltor(
 }
 
 static void proc_base_abstract_decltor(shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
-    sptr_move(Type, *base_type, abstract_decltor->derived_type);
+    move_Type(base_type, &abstract_decltor->derived_type);
 }
 
 static void proc_abstract_decltor(
@@ -526,7 +526,7 @@ static error_t parse_decltor_cast_factor(Ctx ctx, shared_ptr_t(Type) * target_ty
     CATCH_ENTER;
     TRY(parse_abstract_decltor(ctx, &abstract_decltor_1));
     proc_abstract_decltor(abstract_decltor_1, target_type, &abstract_decltor);
-    sptr_move(Type, abstract_decltor.derived_type, *target_type);
+    move_Type(&abstract_decltor.derived_type, target_type);
     FINALLY;
     free_Type(&abstract_decltor.derived_type);
     free_CAbstractDeclarator(&abstract_decltor_1);
@@ -1928,7 +1928,7 @@ static error_t proc_decltor(Ctx ctx, CDeclarator* node, shared_ptr_t(Type) * bas
 
 static void proc_ident_decltor(CIdent* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     decltor->name = node->name;
-    sptr_move(Type, *base_type, decltor->derived_type);
+    move_Type(base_type, &decltor->derived_type);
 }
 
 static error_t proc_ptr_decltor(
@@ -1958,7 +1958,7 @@ static error_t proc_param_decltor(
     Declarator decltor = {0, sptr_new(), vec_new()};
     shared_ptr_t(Type) param_type = sptr_new();
     CATCH_ENTER;
-    sptr_copy(Type, node->param_type, param_type);
+    copy_Type(&node->param_type, &param_type);
     TRY(proc_decltor(ctx, node->decltor, &param_type, &decltor));
     THROW_ABORT_IF(decltor.derived_type->type == AST_FunType_t);
     vec_push_back(*params, decltor.name);
@@ -1988,7 +1988,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, shared_ptr_t(Type
     name = node->decltor->get._CIdent.name;
     derived_type = make_FunType(&param_types, base_type);
     decltor->name = name;
-    sptr_move(Type, derived_type, decltor->derived_type);
+    move_Type(&derived_type, &decltor->derived_type);
     vec_move(params, decltor->params);
     FINALLY;
     vec_delete(params);

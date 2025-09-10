@@ -87,7 +87,7 @@ static unique_ptr_t(TacBinaryOp) repr_binop(CBinaryOp* node) {
 
 static shared_ptr_t(TacValue) const_value(CConstant* node) {
     shared_ptr_t(CConst) constant = sptr_new();
-    sptr_copy(CConst, node->constant, constant);
+    copy_CConst(&node->constant, &constant);
     return make_TacConstant(&constant);
 }
 
@@ -104,7 +104,7 @@ static shared_ptr_t(TacValue) exp_inner_value(Ctx ctx, CExp* node, bool is_ptr) 
             inner_type = make_Long();
         }
         else {
-            sptr_copy(Type, node->exp_type, inner_type);
+            copy_Type(&node->exp_type, &inner_type);
         }
         unique_ptr_t(IdentifierAttr) inner_attrs = make_LocalAttr();
         unique_ptr_t(Symbol) symbol = make_Symbol(&inner_type, &inner_attrs);
@@ -165,7 +165,7 @@ static unique_ptr_t(TacExpResult) string_res_instr(Ctx ctx, CString* node) {
                 shared_ptr_t(StaticInit) static_init = sptr_new();
                 {
                     shared_ptr_t(CStringLiteral) literal = sptr_new();
-                    sptr_copy(CStringLiteral, node->literal, literal);
+                    copy_CStringLiteral(&node->literal, &literal);
                     static_init = make_StringInit(string_const, true, &literal);
                 }
                 constant_attrs = make_ConstantAttr(&static_init);
@@ -249,7 +249,7 @@ static unique_ptr_t(TacExpResult) cast_complete_res_instr(Ctx ctx, CCast* node) 
 
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     if (node->exp->exp_type->type == AST_Double_t) {
         if (is_type_signed(node->target_type)) {
             push_instr(ctx, make_TacDoubleToInt(&src, &dst_cp));
@@ -304,7 +304,7 @@ static unique_ptr_t(TacExpResult) unary_res_instr(Ctx ctx, CUnary* node) {
     shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     unique_ptr_t(TacUnaryOp) unop = repr_unop(node->unop);
     push_instr(ctx, make_TacUnary(&unop, &src, &dst_cp));
     return make_TacPlainOperand(&dst);
@@ -328,7 +328,7 @@ static unique_ptr_t(TacExpResult) binary_add_ptr_res_instr(Ctx ctx, CBinary* nod
     }
     shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -350,14 +350,14 @@ static unique_ptr_t(TacExpResult) binary_sub_to_ptr_res_instr(Ctx ctx, CBinary* 
         idx = repr_exp_instr(ctx, node->exp_right);
         shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         unique_ptr_t(TacUnaryOp) unop = make_TacNegate();
         push_instr(ctx, make_TacUnary(&unop, &idx, &dst_cp));
-        sptr_move(TacValue, dst, idx);
+        move_TacValue(&dst, &idx);
     }
     shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -369,10 +369,10 @@ static unique_ptr_t(TacExpResult) binary_subtract_ptr_res_instr(Ctx ctx, CBinary
         shared_ptr_t(TacValue) src_2 = repr_exp_instr(ctx, node->exp_right);
         shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         unique_ptr_t(TacBinaryOp) binop = make_TacSubtract();
         push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
-        sptr_move(TacValue, dst, src_1);
+        move_TacValue(&dst, &src_1);
     }
     shared_ptr_t(TacValue) src_2 = sptr_new();
     {
@@ -382,7 +382,7 @@ static unique_ptr_t(TacExpResult) binary_subtract_ptr_res_instr(Ctx ctx, CBinary
     }
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     unique_ptr_t(TacBinaryOp) binop = make_TacDivide();
     push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
     return make_TacPlainOperand(&dst);
@@ -418,7 +418,7 @@ static unique_ptr_t(TacExpResult) binary_and_res_instr(Ctx ctx, CBinary* node) {
         shared_ptr_t(CConst) constant = make_CConstInt(1);
         shared_ptr_t(TacValue) src_true = make_TacConstant(&constant);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_true, &dst_cp));
     }
     push_instr(ctx, make_TacJump(target_true));
@@ -427,7 +427,7 @@ static unique_ptr_t(TacExpResult) binary_and_res_instr(Ctx ctx, CBinary* node) {
         shared_ptr_t(CConst) constant = make_CConstInt(0);
         shared_ptr_t(TacValue) src_false = make_TacConstant(&constant);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_false, &dst_cp));
     }
     push_instr(ctx, make_TacLabel(target_true));
@@ -450,7 +450,7 @@ static unique_ptr_t(TacExpResult) binary_or_res_instr(Ctx ctx, CBinary* node) {
         shared_ptr_t(CConst) constant = make_CConstInt(0);
         shared_ptr_t(TacValue) src_false = make_TacConstant(&constant);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_false, &dst_cp));
     }
     push_instr(ctx, make_TacJump(target_false));
@@ -459,7 +459,7 @@ static unique_ptr_t(TacExpResult) binary_or_res_instr(Ctx ctx, CBinary* node) {
         shared_ptr_t(CConst) constant = make_CConstInt(1);
         shared_ptr_t(TacValue) src_true = make_TacConstant(&constant);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_true, &dst_cp));
     }
     push_instr(ctx, make_TacLabel(target_false));
@@ -471,7 +471,7 @@ static unique_ptr_t(TacExpResult) binary_any_res_instr(Ctx ctx, CBinary* node) {
     shared_ptr_t(TacValue) src2 = repr_exp_instr(ctx, node->exp_right);
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     unique_ptr_t(TacBinaryOp) binop = repr_binop(node->binop);
     push_instr(ctx, make_TacBinary(&binop, &src1, &src2, &dst_cp));
     return make_TacPlainOperand(&dst);
@@ -494,17 +494,17 @@ static unique_ptr_t(TacExpResult) binary_res_instr(Ctx ctx, CBinary* node) {
 
 static void plain_op_postfix_exp_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue) * dst) {
     shared_ptr_t(TacValue) src = sptr_new();
-    sptr_copy(TacValue, res->val, src);
+    copy_TacValue(&res->val, &src);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, *dst, dst_cp);
+    copy_TacValue(dst, &dst_cp);
     push_instr(ctx, make_TacCopy(&src, &dst_cp));
 }
 
 static void deref_ptr_postfix_exp_instr(Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * dst) {
     shared_ptr_t(TacValue) src = sptr_new();
-    sptr_copy(TacValue, res->val, src);
+    copy_TacValue(&res->val, &src);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, *dst, dst_cp);
+    copy_TacValue(dst, &dst_cp);
     push_instr(ctx, make_TacLoad(&src, &dst_cp));
 }
 
@@ -512,22 +512,22 @@ static void sub_obj_postfix_exp_instr(Ctx ctx, TacSubObject* res, shared_ptr_t(T
     TIdentifier src_name = res->base_name;
     TLong offset = res->offset;
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, *dst, dst_cp);
+    copy_TacValue(dst, &dst_cp);
     push_instr(ctx, make_TacCopyFromOffset(src_name, offset, &dst_cp));
 }
 
 static void plain_op_assign_res_instr(Ctx ctx, TacPlainOperand* res, shared_ptr_t(TacValue) * src) {
     shared_ptr_t(TacValue) dst = sptr_new();
-    sptr_copy(TacValue, res->val, dst);
+    copy_TacValue(&res->val, &dst);
     push_instr(ctx, make_TacCopy(src, &dst));
 }
 
 static void deref_ptr_assign_res_instr(
     Ctx ctx, TacDereferencedPointer* res, shared_ptr_t(TacValue) * src, unique_ptr_t(TacExpResult) * exp_res) {
     shared_ptr_t(TacValue) src_cp = sptr_new();
-    sptr_copy(TacValue, *src, src_cp);
+    copy_TacValue(src, &src_cp);
     shared_ptr_t(TacValue) dst = sptr_new();
-    sptr_move(TacValue, res->val, dst);
+    move_TacValue(&res->val, &dst);
     push_instr(ctx, make_TacStore(&src_cp, &dst));
     free_TacExpResult(exp_res);
     *exp_res = make_TacPlainOperand(src);
@@ -538,7 +538,7 @@ static void sub_obj_assign_res_instr(
     TIdentifier dst_name = res->base_name;
     TLong offset = res->offset;
     shared_ptr_t(TacValue) src_cp = sptr_new();
-    sptr_copy(TacValue, *src, src_cp);
+    copy_TacValue(src, &src_cp);
     push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src_cp));
     free_TacExpResult(exp_res);
     *exp_res = make_TacPlainOperand(src);
@@ -645,7 +645,7 @@ static unique_ptr_t(TacExpResult) conditional_complete_res_instr(Ctx ctx, CCondi
     {
         shared_ptr_t(TacValue) src_middle = repr_exp_instr(ctx, node->exp_middle);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_middle, &dst_cp));
     }
     push_instr(ctx, make_TacJump(target_false));
@@ -653,7 +653,7 @@ static unique_ptr_t(TacExpResult) conditional_complete_res_instr(Ctx ctx, CCondi
     {
         shared_ptr_t(TacValue) src_right = repr_exp_instr(ctx, node->exp_right);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacCopy(&src_right, &dst_cp));
     }
     push_instr(ctx, make_TacLabel(target_false));
@@ -700,7 +700,7 @@ static unique_ptr_t(TacExpResult) call_res_instr(Ctx ctx, CFunctionCall* node) {
         dst = plain_inner_value(ctx, node->_base);
     }
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacFunCall(name, &args, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -712,17 +712,17 @@ static unique_ptr_t(TacExpResult) deref_res_instr(Ctx ctx, CDereference* node) {
 
 static void plain_op_addrof_res_instr(Ctx ctx, TacPlainOperand* res, CAddrOf* node) {
     shared_ptr_t(TacValue) src = sptr_new();
-    sptr_move(TacValue, res->val, src);
+    move_TacValue(&res->val, &src);
     shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacGetAddress(&src, &dst_cp));
-    sptr_move(TacValue, dst, res->val);
+    move_TacValue(&dst, &res->val);
 }
 
 static void deref_ptr_addrof_res_instr(TacDereferencedPointer* res, unique_ptr_t(TacExpResult) * exp_res) {
     shared_ptr_t(TacValue) val = sptr_new();
-    sptr_move(TacValue, res->val, val);
+    move_TacValue(&res->val, &val);
     free_TacExpResult(exp_res);
     *exp_res = make_TacPlainOperand(&val);
 }
@@ -733,12 +733,12 @@ static void sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node, 
         TIdentifier name = res->base_name;
         shared_ptr_t(TacValue) src = make_TacVariable(name);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacGetAddress(&src, &dst_cp));
     }
     if (res->offset > 0l) {
         shared_ptr_t(TacValue) src_ptr = sptr_new();
-        sptr_copy(TacValue, dst, src_ptr);
+        copy_TacValue(&dst, &src_ptr);
         shared_ptr_t(TacValue) idx = sptr_new();
         {
             TLong offset = res->offset;
@@ -746,7 +746,7 @@ static void sub_obj_addrof_res_instr(Ctx ctx, TacSubObject* res, CAddrOf* node, 
             idx = make_TacConstant(&constant);
         }
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacAddPtr(1l, &src_ptr, &idx, &dst_cp));
     }
     free_TacExpResult(exp_res);
@@ -787,7 +787,7 @@ static unique_ptr_t(TacExpResult) subscript_res_instr(Ctx ctx, CSubscript* node)
     }
     shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacAddPtr(scale, &src_ptr, &idx, &dst_cp));
     return make_TacDereferencedPointer(&dst);
 }
@@ -823,7 +823,7 @@ static void plain_op_dot_res_instr(TacPlainOperand* res, TLong member_offset, un
 static void deref_ptr_dot_res_instr(Ctx ctx, TacDereferencedPointer* res, CDot* node, TLong member_offset) {
     if (member_offset > 0l) {
         shared_ptr_t(TacValue) src_ptr = sptr_new();
-        sptr_move(TacValue, res->val, src_ptr);
+        move_TacValue(&res->val, &src_ptr);
         shared_ptr_t(TacValue) idx = sptr_new();
         {
             TLong offset = member_offset;
@@ -832,9 +832,9 @@ static void deref_ptr_dot_res_instr(Ctx ctx, TacDereferencedPointer* res, CDot* 
         }
         shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacAddPtr(1l, &src_ptr, &idx, &dst_cp));
-        sptr_move(TacValue, dst, res->val);
+        move_TacValue(&dst, &res->val);
     }
 }
 
@@ -879,9 +879,9 @@ static unique_ptr_t(TacExpResult) arrow_res_instr(Ctx ctx, CArrow* node) {
         }
         shared_ptr_t(TacValue) dst = ptr_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
-        sptr_copy(TacValue, dst, dst_cp);
+        copy_TacValue(&dst, &dst_cp);
         push_instr(ctx, make_TacAddPtr(1l, &val, &idx, &dst_cp));
-        sptr_move(TacValue, dst, val);
+        move_TacValue(&dst, &val);
     }
     return make_TacDereferencedPointer(&val);
 }
@@ -927,16 +927,16 @@ static unique_ptr_t(TacExpResult) repr_res_instr(Ctx ctx, CExp* node) {
 
 static shared_ptr_t(TacValue) plain_op_exp_instr(TacPlainOperand* res) {
     shared_ptr_t(TacValue) dst = sptr_new();
-    sptr_move(TacValue, res->val, dst);
+    move_TacValue(&res->val, &dst);
     return dst;
 }
 
 static shared_ptr_t(TacValue) deref_ptr_exp_instr(Ctx ctx, TacDereferencedPointer* res, CExp* node) {
     shared_ptr_t(TacValue) src = sptr_new();
-    sptr_move(TacValue, res->val, src);
+    move_TacValue(&res->val, &src);
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacLoad(&src, &dst_cp));
     return dst;
 }
@@ -946,7 +946,7 @@ static shared_ptr_t(TacValue) sub_obj_exp_instr(Ctx ctx, TacSubObject* res, CExp
     TLong offset = res->offset;
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
-    sptr_copy(TacValue, dst, dst_cp);
+    copy_TacValue(&dst, &dst_cp);
     push_instr(ctx, make_TacCopyFromOffset(src_name, offset, &dst_cp));
     return dst;
 }
@@ -1117,11 +1117,11 @@ static void switch_statement_instr(Ctx ctx, CSwitch* node) {
             shared_ptr_t(TacValue) case_match = sptr_new();
             {
                 shared_ptr_t(TacValue) match_cp = sptr_new();
-                sptr_copy(TacValue, match, match_cp);
+                copy_TacValue(&match, &match_cp);
                 shared_ptr_t(TacValue) esac = repr_exp_instr(ctx, node->cases[i]);
                 case_match = plain_inner_value(ctx, node->cases[i]);
                 shared_ptr_t(TacValue) case_match_cp = sptr_new();
-                sptr_copy(TacValue, case_match, case_match_cp);
+                copy_TacValue(&case_match, &case_match_cp);
                 unique_ptr_t(TacBinaryOp) binop = make_TacEqual();
                 push_instr(ctx, make_TacBinary(&binop, &match_cp, &esac, &case_match_cp));
             }
@@ -1480,7 +1480,7 @@ static vector_t(shared_ptr_t(StaticInit)) initial_static_toplvl(Initial* node) {
     vec_reserve(static_inits, vec_size(node->static_inits));
     for (size_t i = 0; i < vec_size(node->static_inits); ++i) {
         shared_ptr_t(StaticInit) static_init = sptr_new();
-        sptr_copy(StaticInit, node->static_inits[i], static_init);
+        copy_StaticInit(&node->static_inits[i], &static_init);
         vec_move_back(static_inits, static_init);
     }
     return static_inits;
@@ -1495,7 +1495,7 @@ static void repr_static_var_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
     TIdentifier name = symbol;
     bool is_glob = static_attr->is_glob;
     shared_ptr_t(Type) static_init_type = sptr_new();
-    sptr_copy(Type, node->type_t, static_init_type);
+    copy_Type(&node->type_t, &static_init_type);
     vector_t(shared_ptr_t(StaticInit)) static_inits = vec_new();
     switch (static_attr->init->type) {
         case AST_Tentative_t:
@@ -1518,9 +1518,9 @@ static void push_static_const_toplvl(Ctx ctx, unique_ptr_t(TacTopLevel) static_c
 static void repr_static_const_toplvl(Ctx ctx, Symbol* node, TIdentifier symbol) {
     TIdentifier name = symbol;
     shared_ptr_t(Type) static_init_type = sptr_new();
-    sptr_copy(Type, node->type_t, static_init_type);
+    copy_Type(&node->type_t, &static_init_type);
     shared_ptr_t(StaticInit) static_init = sptr_new();
-    sptr_copy(StaticInit, node->attrs->get._ConstantAttr.static_init, static_init);
+    copy_StaticInit(&node->attrs->get._ConstantAttr.static_init, &static_init);
     push_static_const_toplvl(ctx, make_TacStaticConstant(name, &static_init_type, &static_init));
 }
 
