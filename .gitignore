@@ -45,6 +45,7 @@ format.out.*
 /src/frontend/parser/parser.cpp
 /src/frontend/parser/errors.cpp
 /src/frontend/parser/lexer.cpp
+/src/backend/emitter/gas_code.cpp
 /src/backend/assembly/asm_gen.cpp
 /src/backend/assembly/stack_fix.cpp
 /src/backend/assembly/registers.cpp
