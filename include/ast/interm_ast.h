@@ -56,7 +56,6 @@ unique_ptr_t(TacUnaryOp) make_TacComplement(void);
 unique_ptr_t(TacUnaryOp) make_TacNegate(void);
 unique_ptr_t(TacUnaryOp) make_TacNot(void);
 void free_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self);
-void move_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self, unique_ptr_t(TacUnaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -195,7 +194,6 @@ unique_ptr_t(TacBinaryOp) make_TacLessOrEqual(void);
 unique_ptr_t(TacBinaryOp) make_TacGreaterThan(void);
 unique_ptr_t(TacBinaryOp) make_TacGreaterOrEqual(void);
 void free_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self);
-void move_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self, unique_ptr_t(TacBinaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -229,8 +227,6 @@ shared_ptr_t(TacValue) make_TacValue(void);
 shared_ptr_t(TacValue) make_TacConstant(shared_ptr_t(CConst) * constant);
 shared_ptr_t(TacValue) make_TacVariable(TIdentifier name);
 void free_TacValue(shared_ptr_t(TacValue) * self);
-void move_TacValue(shared_ptr_t(TacValue) * self, shared_ptr_t(TacValue) * other);
-void copy_TacValue(shared_ptr_t(TacValue) * self, shared_ptr_t(TacValue) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -272,7 +268,6 @@ unique_ptr_t(TacExpResult) make_TacPlainOperand(shared_ptr_t(TacValue) * val);
 unique_ptr_t(TacExpResult) make_TacDereferencedPointer(shared_ptr_t(TacValue) * val);
 unique_ptr_t(TacExpResult) make_TacSubObject(TIdentifier base_name, TLong offset);
 void free_TacExpResult(unique_ptr_t(TacExpResult) * self);
-void move_TacExpResult(unique_ptr_t(TacExpResult) * self, unique_ptr_t(TacExpResult) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -477,7 +472,6 @@ unique_ptr_t(TacInstruction) make_TacJumpIfZero(TIdentifier target, shared_ptr_t
 unique_ptr_t(TacInstruction) make_TacJumpIfNotZero(TIdentifier target, shared_ptr_t(TacValue) * condition);
 unique_ptr_t(TacInstruction) make_TacLabel(TIdentifier name);
 void free_TacInstruction(unique_ptr_t(TacInstruction) * self);
-void move_TacInstruction(unique_ptr_t(TacInstruction) * self, unique_ptr_t(TacInstruction) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -529,7 +523,6 @@ unique_ptr_t(TacTopLevel) make_TacStaticVariable(TIdentifier name, bool is_glob,
 unique_ptr_t(TacTopLevel) make_TacStaticConstant(
     TIdentifier name, shared_ptr_t(Type) * static_init_type, shared_ptr_t(StaticInit) * static_init);
 void free_TacTopLevel(unique_ptr_t(TacTopLevel) * self);
-void move_TacTopLevel(unique_ptr_t(TacTopLevel) * self, unique_ptr_t(TacTopLevel) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -552,7 +545,6 @@ extern "C" {
 unique_ptr_t(TacProgram) make_TacProgram(vector_t(unique_ptr_t(TacTopLevel)) * static_const_toplvls,
     vector_t(unique_ptr_t(TacTopLevel)) * static_var_toplvls, vector_t(unique_ptr_t(TacTopLevel)) * fun_toplvls);
 void free_TacProgram(unique_ptr_t(TacProgram) * self);
-void move_TacProgram(unique_ptr_t(TacProgram) * self, unique_ptr_t(TacProgram) * other);
 #ifdef __cplusplus
 }
 #endif

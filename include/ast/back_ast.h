@@ -261,7 +261,6 @@ unique_ptr_t(AsmReg) make_AsmXMM13(void);
 unique_ptr_t(AsmReg) make_AsmXMM14(void);
 unique_ptr_t(AsmReg) make_AsmXMM15(void);
 void free_AsmReg(unique_ptr_t(AsmReg) * self);
-void move_AsmReg(unique_ptr_t(AsmReg) * self, unique_ptr_t(AsmReg) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -358,7 +357,6 @@ unique_ptr_t(AsmCondCode) make_AsmB(void);
 unique_ptr_t(AsmCondCode) make_AsmBE(void);
 unique_ptr_t(AsmCondCode) make_AsmP(void);
 void free_AsmCondCode(unique_ptr_t(AsmCondCode) * self);
-void move_AsmCondCode(unique_ptr_t(AsmCondCode) * self, unique_ptr_t(AsmCondCode) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -436,8 +434,6 @@ shared_ptr_t(AsmOperand) make_AsmPseudoMem(TIdentifier name, TLong offset);
 shared_ptr_t(AsmOperand)
     make_AsmIndexed(TLong scale, unique_ptr_t(AsmReg) * reg_base, unique_ptr_t(AsmReg) * reg_index);
 void free_AsmOperand(shared_ptr_t(AsmOperand) * self);
-void move_AsmOperand(shared_ptr_t(AsmOperand) * self, shared_ptr_t(AsmOperand) * other);
-void copy_AsmOperand(shared_ptr_t(AsmOperand) * self, shared_ptr_t(AsmOperand) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -527,7 +523,6 @@ unique_ptr_t(AsmBinaryOp) make_AsmBitShiftLeft(void);
 unique_ptr_t(AsmBinaryOp) make_AsmBitShiftRight(void);
 unique_ptr_t(AsmBinaryOp) make_AsmBitShrArithmetic(void);
 void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self);
-void move_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self, unique_ptr_t(AsmBinaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -568,7 +563,6 @@ unique_ptr_t(AsmUnaryOp) make_AsmNot(void);
 unique_ptr_t(AsmUnaryOp) make_AsmNeg(void);
 unique_ptr_t(AsmUnaryOp) make_AsmShr(void);
 void free_AsmUnaryOp(unique_ptr_t(AsmUnaryOp) * self);
-void move_AsmUnaryOp(unique_ptr_t(AsmUnaryOp) * self, unique_ptr_t(AsmUnaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -760,7 +754,6 @@ unique_ptr_t(AsmInstruction) make_AsmPop(unique_ptr_t(AsmReg) * reg);
 unique_ptr_t(AsmInstruction) make_AsmCall(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmRet(void);
 void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self);
-void move_AsmInstruction(unique_ptr_t(AsmInstruction) * self, unique_ptr_t(AsmInstruction) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -812,7 +805,6 @@ unique_ptr_t(AsmTopLevel) make_AsmStaticVariable(
 unique_ptr_t(AsmTopLevel)
     make_AsmStaticConstant(TIdentifier name, TInt alignment, shared_ptr_t(StaticInit) * static_init);
 void free_AsmTopLevel(unique_ptr_t(AsmTopLevel) * self);
-void move_AsmTopLevel(unique_ptr_t(AsmTopLevel) * self, unique_ptr_t(AsmTopLevel) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -834,7 +826,6 @@ extern "C" {
 unique_ptr_t(AsmProgram) make_AsmProgram(
     vector_t(unique_ptr_t(AsmTopLevel)) * static_const_toplvls, vector_t(unique_ptr_t(AsmTopLevel)) * top_levels);
 void free_AsmProgram(unique_ptr_t(AsmProgram) * self);
-void move_AsmProgram(unique_ptr_t(AsmProgram) * self, unique_ptr_t(AsmProgram) * other);
 #ifdef __cplusplus
 }
 #endif

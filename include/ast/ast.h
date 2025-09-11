@@ -78,8 +78,6 @@ shared_ptr_t(CConst) make_CConstDouble(TDouble value);
 shared_ptr_t(CConst) make_CConstChar(TChar value);
 shared_ptr_t(CConst) make_CConstUChar(TUChar value);
 void free_CConst(shared_ptr_t(CConst) * self);
-void move_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
-void copy_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -99,8 +97,6 @@ extern "C" {
 #endif
 shared_ptr_t(CStringLiteral) make_CStringLiteral(vector_t(TChar) * value);
 void free_CStringLiteral(shared_ptr_t(CStringLiteral) * self);
-void move_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
-void copy_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other);
 #ifdef __cplusplus
 }
 #endif

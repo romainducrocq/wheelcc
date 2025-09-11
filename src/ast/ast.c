@@ -83,10 +83,6 @@ void free_CConst(shared_ptr_t(CConst) * self) {
     sptr_free(*self);
 }
 
-void move_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other) { sptr_move(CConst, *self, *other); }
-
-void copy_CConst(shared_ptr_t(CConst) * self, shared_ptr_t(CConst) * other) { sptr_copy(CConst, *self, *other); }
-
 shared_ptr_t(CStringLiteral) make_CStringLiteral(vector_t(TChar) * value) {
     shared_ptr_t(CStringLiteral) self = sptr_new();
     sptr_alloc(CStringLiteral, self);
@@ -106,14 +102,6 @@ void free_CStringLiteral(shared_ptr_t(CStringLiteral) * self) {
     }
     vec_delete((*self)->value);
     sptr_free(*self);
-}
-
-void move_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other) {
-    sptr_move(CStringLiteral, *self, *other);
-}
-
-void copy_CStringLiteral(shared_ptr_t(CStringLiteral) * self, shared_ptr_t(CStringLiteral) * other) {
-    sptr_copy(CStringLiteral, *self, *other);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

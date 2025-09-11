@@ -81,7 +81,7 @@ shared_ptr_t(Type) make_FunType(vector_t(shared_ptr_t(Type)) * param_types, shar
     self->get._FunType.param_types = vec_new();
     vec_move(*param_types, self->get._FunType.param_types);
     self->get._FunType.ret_type = sptr_new();
-    move_Type(ret_type, &self->get._FunType.ret_type);
+    sptr_move(Type, *ret_type, self->get._FunType.ret_type);
     self->get._FunType.param_reg_mask = NULL_REGISTER_MASK;
     self->get._FunType.ret_reg_mask = NULL_REGISTER_MASK;
     return self;
@@ -91,7 +91,7 @@ shared_ptr_t(Type) make_Pointer(shared_ptr_t(Type) * ref_type) {
     shared_ptr_t(Type) self = make_Type();
     self->type = AST_Pointer_t;
     self->get._Pointer.ref_type = sptr_new();
-    move_Type(ref_type, &self->get._Pointer.ref_type);
+    sptr_move(Type, *ref_type, self->get._Pointer.ref_type);
     return self;
 }
 
@@ -100,7 +100,7 @@ shared_ptr_t(Type) make_Array(TLong size, shared_ptr_t(Type) * elem_type) {
     self->type = AST_Array_t;
     self->get._Array.size = size;
     self->get._Array.elem_type = sptr_new();
-    move_Type(elem_type, &self->get._Array.elem_type);
+    sptr_move(Type, *elem_type, self->get._Array.elem_type);
     return self;
 }
 
@@ -146,10 +146,6 @@ void free_Type(shared_ptr_t(Type) * self) {
     }
     sptr_free(*self);
 }
-
-void move_Type(shared_ptr_t(Type) * self, shared_ptr_t(Type) * other) { sptr_move(Type, *self, *other); }
-
-void copy_Type(shared_ptr_t(Type) * self, shared_ptr_t(Type) * other) { sptr_copy(Type, *self, *other); }
 
 shared_ptr_t(StaticInit) make_StaticInit(void) {
     shared_ptr_t(StaticInit) self = sptr_new();
@@ -221,7 +217,7 @@ shared_ptr_t(StaticInit)
     self->get._StringInit.string_const = string_const;
     self->get._StringInit.is_null_term = is_null_term;
     self->get._StringInit.literal = sptr_new();
-    move_CStringLiteral(literal, &self->get._StringInit.literal);
+    sptr_move(CStringLiteral, *literal, self->get._StringInit.literal);
     return self;
 }
 
@@ -256,14 +252,6 @@ void free_StaticInit(shared_ptr_t(StaticInit) * self) {
             THROW_ABORT;
     }
     sptr_free(*self);
-}
-
-void move_StaticInit(shared_ptr_t(StaticInit) * self, shared_ptr_t(StaticInit) * other) {
-    sptr_move(StaticInit, *self, *other);
-}
-
-void copy_StaticInit(shared_ptr_t(StaticInit) * self, shared_ptr_t(StaticInit) * other) {
-    sptr_copy(StaticInit, *self, *other);
 }
 
 shared_ptr_t(InitialValue) make_InitialValue(void) {
@@ -313,14 +301,6 @@ void free_InitialValue(shared_ptr_t(InitialValue) * self) {
     sptr_free(*self);
 }
 
-void move_InitialValue(shared_ptr_t(InitialValue) * self, shared_ptr_t(InitialValue) * other) {
-    sptr_move(InitialValue, *self, *other);
-}
-
-void copy_InitialValue(shared_ptr_t(InitialValue) * self, shared_ptr_t(InitialValue) * other) {
-    sptr_copy(InitialValue, *self, *other);
-}
-
 unique_ptr_t(IdentifierAttr) make_IdentifierAttr(void) {
     unique_ptr_t(IdentifierAttr) self = uptr_new();
     uptr_alloc(IdentifierAttr, self);
@@ -341,7 +321,7 @@ unique_ptr_t(IdentifierAttr) make_StaticAttr(bool is_glob, shared_ptr_t(InitialV
     self->type = AST_StaticAttr_t;
     self->get._StaticAttr.is_glob = is_glob;
     self->get._StaticAttr.init = sptr_new();
-    move_InitialValue(init, &self->get._StaticAttr.init);
+    sptr_move(InitialValue, *init, self->get._StaticAttr.init);
     return self;
 }
 
@@ -349,7 +329,7 @@ unique_ptr_t(IdentifierAttr) make_ConstantAttr(shared_ptr_t(StaticInit) * static
     unique_ptr_t(IdentifierAttr) self = make_IdentifierAttr();
     self->type = AST_ConstantAttr_t;
     self->get._ConstantAttr.static_init = sptr_new();
-    move_StaticInit(static_init, &self->get._ConstantAttr.static_init);
+    sptr_move(StaticInit, *static_init, self->get._ConstantAttr.static_init);
     return self;
 }
 
@@ -379,18 +359,14 @@ void free_IdentifierAttr(unique_ptr_t(IdentifierAttr) * self) {
     uptr_free(*self);
 }
 
-void move_IdentifierAttr(unique_ptr_t(IdentifierAttr) * self, unique_ptr_t(IdentifierAttr) * other) {
-    uptr_move(IdentifierAttr, *self, *other);
-}
-
 unique_ptr_t(Symbol) make_Symbol(shared_ptr_t(Type) * type_t, unique_ptr_t(IdentifierAttr) * attrs) {
     unique_ptr_t(Symbol) self = uptr_new();
     uptr_alloc(Symbol, self);
     self->type = AST_Symbol_t;
     self->type_t = sptr_new();
-    move_Type(type_t, &self->type_t);
+    sptr_move(Type, *type_t, self->type_t);
     self->attrs = uptr_new();
-    move_IdentifierAttr(attrs, &self->attrs);
+    uptr_move(IdentifierAttr, *attrs, self->attrs);
     return self;
 }
 
@@ -407,15 +383,13 @@ void free_Symbol(unique_ptr_t(Symbol) * self) {
     uptr_free(*self);
 }
 
-void move_Symbol(unique_ptr_t(Symbol) * self, unique_ptr_t(Symbol) * other) { uptr_move(Symbol, *self, *other); }
-
 unique_ptr_t(StructMember) make_StructMember(TLong offset, shared_ptr_t(Type) * member_type) {
     unique_ptr_t(StructMember) self = uptr_new();
     uptr_alloc(StructMember, self);
     self->type = AST_StructMember_t;
     self->offset = offset;
     self->member_type = sptr_new();
-    move_Type(member_type, &self->member_type);
+    sptr_move(Type, *member_type, self->member_type);
     return self;
 }
 
@@ -429,10 +403,6 @@ void free_StructMember(unique_ptr_t(StructMember) * self) {
     }
     free_Type(&(*self)->member_type);
     uptr_free(*self);
-}
-
-void move_StructMember(unique_ptr_t(StructMember) * self, unique_ptr_t(StructMember) * other) {
-    uptr_move(StructMember, *self, *other);
 }
 
 unique_ptr_t(StructTypedef) make_StructTypedef(TInt alignment, TLong size, vector_t(TIdentifier) * member_names,
@@ -463,10 +433,6 @@ void free_StructTypedef(unique_ptr_t(StructTypedef) * self) {
     }
     map_delete((*self)->members);
     uptr_free(*self);
-}
-
-void move_StructTypedef(unique_ptr_t(StructTypedef) * self, unique_ptr_t(StructTypedef) * other) {
-    uptr_move(StructTypedef, *self, *other);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

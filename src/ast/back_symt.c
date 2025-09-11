@@ -66,14 +66,6 @@ void free_AssemblyType(shared_ptr_t(AssemblyType) * self) {
     sptr_free(*self);
 }
 
-void move_AssemblyType(shared_ptr_t(AssemblyType) * self, shared_ptr_t(AssemblyType) * other) {
-    sptr_move(AssemblyType, *self, *other);
-}
-
-void copy_AssemblyType(shared_ptr_t(AssemblyType) * self, shared_ptr_t(AssemblyType) * other) {
-    sptr_copy(AssemblyType, *self, *other);
-}
-
 unique_ptr_t(BackendSymbol) make_BackendSymbol(void) {
     unique_ptr_t(BackendSymbol) self = uptr_new();
     uptr_alloc(BackendSymbol, self);
@@ -87,7 +79,7 @@ unique_ptr_t(BackendSymbol) make_BackendObj(bool is_static, bool is_const, share
     self->get._BackendObj.is_static = is_static;
     self->get._BackendObj.is_const = is_const;
     self->get._BackendObj.asm_type = sptr_new();
-    move_AssemblyType(asm_type, &self->get._BackendObj.asm_type);
+    sptr_move(AssemblyType, *asm_type, self->get._BackendObj.asm_type);
     return self;
 }
 
@@ -117,8 +109,4 @@ void free_BackendSymbol(unique_ptr_t(BackendSymbol) * self) {
             THROW_ABORT;
     }
     uptr_free(*self);
-}
-
-void move_BackendSymbol(unique_ptr_t(BackendSymbol) * self, unique_ptr_t(BackendSymbol) * other) {
-    uptr_move(BackendSymbol, *self, *other);
 }

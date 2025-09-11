@@ -12,12 +12,12 @@ typedef TULong mask_t;
 typedef TacInstruction AstInstruction;
 typedef OptimTacContext* Ctx;
 #define free_AstInstruction(X) free_TacInstruction(X)
-#define move_AstInstruction(X, Y) move_TacInstruction(X, Y)
+#define uptr_move_AstInstruction(X, Y) uptr_move(TacInstruction, X, Y)
 #elif __OPTIM_LEVEL__ == 2
 typedef AsmInstruction AstInstruction;
 typedef RegAllocContext* Ctx;
 #define free_AstInstruction(X) free_AsmInstruction(X)
-#define move_AstInstruction(X, Y) move_AsmInstruction(X, Y)
+#define uptr_move_AstInstruction(X, Y) uptr_move(AsmInstruction, X, Y)
 #endif
 
 typedef struct ControlFlowBlock {
@@ -66,7 +66,7 @@ typedef struct DataFlowAnalysisO2 {
 
 static void set_instr(Ctx ctx, unique_ptr_t(AstInstruction) instr, size_t instr_idx) {
     if (instr) {
-        move_AstInstruction(&instr, &GET_INSTR(instr_idx));
+        uptr_move_AstInstruction(instr, GET_INSTR(instr_idx));
     }
     else {
         free_AstInstruction(&GET_INSTR(instr_idx));

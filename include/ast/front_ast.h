@@ -81,7 +81,6 @@ unique_ptr_t(CUnaryOp) make_CNot(void);
 unique_ptr_t(CUnaryOp) make_CPrefix(void);
 unique_ptr_t(CUnaryOp) make_CPostfix(void);
 void free_CUnaryOp(unique_ptr_t(CUnaryOp) * self);
-void move_CUnaryOp(unique_ptr_t(CUnaryOp) * self, unique_ptr_t(CUnaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -234,7 +233,6 @@ unique_ptr_t(CBinaryOp) make_CLessOrEqual(void);
 unique_ptr_t(CBinaryOp) make_CGreaterThan(void);
 unique_ptr_t(CBinaryOp) make_CGreaterOrEqual(void);
 void free_CBinaryOp(unique_ptr_t(CBinaryOp) * self);
-void move_CBinaryOp(unique_ptr_t(CBinaryOp) * self, unique_ptr_t(CBinaryOp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -276,7 +274,6 @@ unique_ptr_t(CAbstractDeclarator) make_CAbstractPointer(unique_ptr_t(CAbstractDe
 unique_ptr_t(CAbstractDeclarator) make_CAbstractArray(TLong size, unique_ptr_t(CAbstractDeclarator) * abstract_decltor);
 unique_ptr_t(CAbstractDeclarator) make_CAbstractBase(void);
 void free_CAbstractDeclarator(unique_ptr_t(CAbstractDeclarator) * self);
-void move_CAbstractDeclarator(unique_ptr_t(CAbstractDeclarator) * self, unique_ptr_t(CAbstractDeclarator) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -297,7 +294,6 @@ extern "C" {
 #endif
 unique_ptr_t(CParam) make_CParam(unique_ptr_t(CDeclarator) * decltor, shared_ptr_t(Type) * param_type);
 void free_CParam(unique_ptr_t(CParam) * self);
-void move_CParam(unique_ptr_t(CParam) * self, unique_ptr_t(CParam) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -348,7 +344,6 @@ unique_ptr_t(CDeclarator) make_CArrayDeclarator(TLong size, unique_ptr_t(CDeclar
 unique_ptr_t(CDeclarator)
     make_CFunDeclarator(vector_t(unique_ptr_t(CParam)) * param_list, unique_ptr_t(CDeclarator) * decltor);
 void free_CDeclarator(unique_ptr_t(CDeclarator) * self);
-void move_CDeclarator(unique_ptr_t(CDeclarator) * self, unique_ptr_t(CDeclarator) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -513,7 +508,6 @@ unique_ptr_t(CExp) make_CSizeOfT(shared_ptr_t(Type) * target_type, size_t line);
 unique_ptr_t(CExp) make_CDot(TIdentifier member, unique_ptr_t(CExp) * structure, size_t line);
 unique_ptr_t(CExp) make_CArrow(TIdentifier member, unique_ptr_t(CExp) * pointer, size_t line);
 void free_CExp(unique_ptr_t(CExp) * self);
-void move_CExp(unique_ptr_t(CExp) * self, unique_ptr_t(CExp) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -664,7 +658,6 @@ unique_ptr_t(CStatement) make_CBreak(size_t line);
 unique_ptr_t(CStatement) make_CContinue(size_t line);
 unique_ptr_t(CStatement) make_CNull(void);
 void free_CStatement(unique_ptr_t(CStatement) * self);
-void move_CStatement(unique_ptr_t(CStatement) * self, unique_ptr_t(CStatement) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -698,7 +691,6 @@ unique_ptr_t(CForInit) make_CForInit(void);
 unique_ptr_t(CForInit) make_CInitDecl(unique_ptr_t(CVariableDeclaration) * init);
 unique_ptr_t(CForInit) make_CInitExp(unique_ptr_t(CExp) * init);
 void free_CForInit(unique_ptr_t(CForInit) * self);
-void move_CForInit(unique_ptr_t(CForInit) * self, unique_ptr_t(CForInit) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -725,7 +717,6 @@ extern "C" {
 unique_ptr_t(CBlock) make_CBlock(void);
 unique_ptr_t(CBlock) make_CB(vector_t(unique_ptr_t(CBlockItem)) * block_items);
 void free_CBlock(unique_ptr_t(CBlock) * self);
-void move_CBlock(unique_ptr_t(CBlock) * self, unique_ptr_t(CBlock) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -759,7 +750,6 @@ unique_ptr_t(CBlockItem) make_CBlockItem(void);
 unique_ptr_t(CBlockItem) make_CS(unique_ptr_t(CStatement) * statement);
 unique_ptr_t(CBlockItem) make_CD(unique_ptr_t(CDeclaration) * declaration);
 void free_CBlockItem(unique_ptr_t(CBlockItem) * self);
-void move_CBlockItem(unique_ptr_t(CBlockItem) * self, unique_ptr_t(CBlockItem) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -793,7 +783,6 @@ unique_ptr_t(CStorageClass) make_CStorageClass(void);
 unique_ptr_t(CStorageClass) make_CStatic(void);
 unique_ptr_t(CStorageClass) make_CExtern(void);
 void free_CStorageClass(unique_ptr_t(CStorageClass) * self);
-void move_CStorageClass(unique_ptr_t(CStorageClass) * self, unique_ptr_t(CStorageClass) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -830,7 +819,6 @@ unique_ptr_t(CInitializer) make_CInitializer(void);
 unique_ptr_t(CInitializer) make_CSingleInit(unique_ptr_t(CExp) * exp);
 unique_ptr_t(CInitializer) make_CCompoundInit(vector_t(unique_ptr_t(CInitializer)) * initializers);
 void free_CInitializer(unique_ptr_t(CInitializer) * self);
-void move_CInitializer(unique_ptr_t(CInitializer) * self, unique_ptr_t(CInitializer) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -853,7 +841,6 @@ extern "C" {
 unique_ptr_t(CMemberDeclaration)
     make_CMemberDeclaration(TIdentifier member_name, shared_ptr_t(Type) * member_type, size_t line);
 void free_CMemberDeclaration(unique_ptr_t(CMemberDeclaration) * self);
-void move_CMemberDeclaration(unique_ptr_t(CMemberDeclaration) * self, unique_ptr_t(CMemberDeclaration) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -877,7 +864,6 @@ extern "C" {
 unique_ptr_t(CStructDeclaration) make_CStructDeclaration(
     TIdentifier tag, bool is_union, vector_t(unique_ptr_t(CMemberDeclaration)) * members, size_t line);
 void free_CStructDeclaration(unique_ptr_t(CStructDeclaration) * self);
-void move_CStructDeclaration(unique_ptr_t(CStructDeclaration) * self, unique_ptr_t(CStructDeclaration) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -904,7 +890,6 @@ unique_ptr_t(CFunctionDeclaration)
     make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params, unique_ptr_t(CBlock) * body,
         shared_ptr_t(Type) * fun_type, unique_ptr_t(CStorageClass) * storage_class, size_t line);
 void free_CFunctionDeclaration(unique_ptr_t(CFunctionDeclaration) * self);
-void move_CFunctionDeclaration(unique_ptr_t(CFunctionDeclaration) * self, unique_ptr_t(CFunctionDeclaration) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -929,7 +914,6 @@ extern "C" {
 unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, unique_ptr_t(CInitializer) * init,
     shared_ptr_t(Type) * var_type, unique_ptr_t(CStorageClass) * storage_class, size_t line);
 void free_CVariableDeclaration(unique_ptr_t(CVariableDeclaration) * self);
-void move_CVariableDeclaration(unique_ptr_t(CVariableDeclaration) * self, unique_ptr_t(CVariableDeclaration) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -970,7 +954,6 @@ unique_ptr_t(CDeclaration) make_CFunDecl(unique_ptr_t(CFunctionDeclaration) * fu
 unique_ptr_t(CDeclaration) make_CVarDecl(unique_ptr_t(CVariableDeclaration) * var_decl);
 unique_ptr_t(CDeclaration) make_CStructDecl(unique_ptr_t(CStructDeclaration) * struct_decl);
 void free_CDeclaration(unique_ptr_t(CDeclaration) * self);
-void move_CDeclaration(unique_ptr_t(CDeclaration) * self, unique_ptr_t(CDeclaration) * other);
 #ifdef __cplusplus
 }
 #endif
@@ -990,7 +973,6 @@ extern "C" {
 #endif
 unique_ptr_t(CProgram) make_CProgram(vector_t(unique_ptr_t(CDeclaration)) * declarations);
 void free_CProgram(unique_ptr_t(CProgram) * self);
-void move_CProgram(unique_ptr_t(CProgram) * self, unique_ptr_t(CProgram) * other);
 #ifdef __cplusplus
 }
 #endif
