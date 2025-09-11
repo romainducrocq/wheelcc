@@ -51,7 +51,6 @@ typedef struct RegAllocContext {
     InferenceGraph* p_infer_graph;
     REGISTER_KIND reg_color_map[26];
     InferenceRegister hard_regs[26];
-    // TODO free these at exit
     unique_ptr_t(ControlFlowGraph) cfg;
     unique_ptr_t(DataFlowAnalysis) dfa;
     unique_ptr_t(DataFlowAnalysisO2) dfa_o2;
@@ -942,7 +941,7 @@ static void alloc_color_reg_map(Ctx ctx) {
 
 static shared_ptr_t(AsmOperand) alloc_hard_reg(Ctx ctx, TIdentifier name) {
     if (is_aliased_name(ctx, name)) {
-        return uptr_new();
+        return sptr_new();
     }
     set_p_infer_graph(ctx, map_get(ctx->frontend->symbol_table, name)->type_t->type == AST_Double_t);
     REGISTER_KIND color = map_get(ctx->p_infer_graph->pseudo_reg_map, name).color;
@@ -958,7 +957,7 @@ static shared_ptr_t(AsmOperand) alloc_hard_reg(Ctx ctx, TIdentifier name) {
         return hard_reg;
     }
     else {
-        return uptr_new();
+        return sptr_new();
     }
 }
 
@@ -1869,6 +1868,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     for (size_t i = 0; i < 26; ++i) {
         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
     }
+    
     free_ControlFlowGraph(&ctx.cfg);
     free_DataFlowAnalysis(&ctx.dfa);
     free_DataFlowAnalysisO2(&ctx.dfa_o2);
