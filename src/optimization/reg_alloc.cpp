@@ -12,6 +12,9 @@
 
 #include "optimization/reg_alloc.h"
 
+// TODO return NULL -> return uptr_new()
+// TODO set_instr(_, NULL, _) -> set_instr(_, uptr_new(), _)
+
 typedef TULong mask_t;
 
 typedef struct ControlFlowGraph ControlFlowGraph;

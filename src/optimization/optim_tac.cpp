@@ -1175,7 +1175,7 @@ static void fold_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t instr_idx) 
             set_instr(ctx, make_TacJump(target), instr_idx);
         }
         else {
-            set_instr(ctx, NULL, instr_idx);
+            set_instr(ctx, uptr_new(), instr_idx);
         }
     }
 }
@@ -1183,7 +1183,7 @@ static void fold_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t instr_idx) 
 static void fold_jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node, size_t instr_idx) {
     if (node->condition->type == AST_TacConstant_t) {
         if (is_const_zero(node->condition->get._TacConstant.constant)) {
-            set_instr(ctx, NULL, instr_idx);
+            set_instr(ctx, uptr_new(), instr_idx);
         }
         else {
             TIdentifier target = node->target;
@@ -1267,7 +1267,7 @@ static void unreach_empty_block(Ctx ctx, size_t block_id) {
     for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
          instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
         if (GET_INSTR(instr_idx)) {
-            set_instr(ctx, NULL, instr_idx);
+            set_instr(ctx, uptr_new(), instr_idx);
         }
     }
     GET_CFG_BLOCK(block_id).size = 0;
@@ -2553,7 +2553,7 @@ static void propagate_copies(Ctx ctx) {
 // static void elim_dst_name_instr(Ctx ctx, TIdentifier name, size_t instr_idx) {
 //     size_t i = map_get(ctx->cfg->identifier_id_map, name);
 //     if (!GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//         set_instr(ctx, NULL, instr_idx);
+//         set_instr(ctx, uptr_new(), instr_idx);
 //     }
 // }
 

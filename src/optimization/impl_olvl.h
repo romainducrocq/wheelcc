@@ -266,7 +266,7 @@ static void cfg_rm_empty_block(Ctx ctx, size_t block_id, bool is_reachable) {
 
 static void cfg_rm_block_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
     if (GET_INSTR(instr_idx)) {
-        set_instr(ctx, NULL, instr_idx);
+        set_instr(ctx, uptr_new(), instr_idx);
         GET_CFG_BLOCK(block_id).size--;
         if (GET_CFG_BLOCK(block_id).size == 0) {
             cfg_rm_empty_block(ctx, block_id, true);
