@@ -1244,119 +1244,119 @@ static void fold_constants(Ctx ctx) {
     }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Unreachable code elimination
+// Unreachable code elimination
 
-// static void unreach_reachable_block(Ctx ctx, size_t block_id);
+static void unreach_reachable_block(Ctx ctx, size_t block_id);
 
-// static void unreach_succ_reachable_blocks(Ctx ctx, size_t block_id) {
-//     for (size_t i = 0; i < vec_size(GET_CFG_BLOCK(block_id).succ_ids); ++i) {
-//         unreach_reachable_block(ctx, GET_CFG_BLOCK(block_id).succ_ids[i]);
-//     }
-// }
+static void unreach_succ_reachable_blocks(Ctx ctx, size_t block_id) {
+    for (size_t i = 0; i < vec_size(GET_CFG_BLOCK(block_id).succ_ids); ++i) {
+        unreach_reachable_block(ctx, GET_CFG_BLOCK(block_id).succ_ids[i]);
+    }
+}
 
-// static void unreach_reachable_block(Ctx ctx, size_t block_id) {
-//     if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
-//         ctx->cfg->reaching_code[block_id] = true;
-//         unreach_succ_reachable_blocks(ctx, block_id);
-//     }
-// }
+static void unreach_reachable_block(Ctx ctx, size_t block_id) {
+    if (block_id < ctx->cfg->exit_id && !ctx->cfg->reaching_code[block_id]) {
+        ctx->cfg->reaching_code[block_id] = true;
+        unreach_succ_reachable_blocks(ctx, block_id);
+    }
+}
 
-// static void unreach_empty_block(Ctx ctx, size_t block_id) {
-//     for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
-//          instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
-//         if (GET_INSTR(instr_idx)) {
-//             set_instr(ctx, NULL, instr_idx);
-//         }
-//     }
-//     GET_CFG_BLOCK(block_id).size = 0;
-//     cfg_rm_empty_block(ctx, block_id, false);
-//     vec_clear(GET_CFG_BLOCK(block_id).succ_ids);
-//     vec_clear(GET_CFG_BLOCK(block_id).pred_ids);
-// }
+static void unreach_empty_block(Ctx ctx, size_t block_id) {
+    for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
+         instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
+        if (GET_INSTR(instr_idx)) {
+            set_instr(ctx, NULL, instr_idx);
+        }
+    }
+    GET_CFG_BLOCK(block_id).size = 0;
+    cfg_rm_empty_block(ctx, block_id, false);
+    vec_clear(GET_CFG_BLOCK(block_id).succ_ids);
+    vec_clear(GET_CFG_BLOCK(block_id).pred_ids);
+}
 
-// static void unreach_jump_instr(Ctx ctx, size_t block_id) {
-//     TacInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_back_idx).get();
-//     switch (node->type()) {
-//         case AST_TacJump_t:
-//         case AST_TacJumpIfZero_t:
-//         case AST_TacJumpIfNotZero_t:
-//             cfg_rm_block_instr(ctx, GET_CFG_BLOCK(block_id).instrs_back_idx, block_id);
-//             break;
-//         default:
-//             break;
-//     }
-// }
+static void unreach_jump_instr(Ctx ctx, size_t block_id) {
+    TacInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_back_idx);
+    switch (node->type) {
+        case AST_TacJump_t:
+        case AST_TacJumpIfZero_t:
+        case AST_TacJumpIfNotZero_t:
+            cfg_rm_block_instr(ctx, GET_CFG_BLOCK(block_id).instrs_back_idx, block_id);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void unreach_jump_block(Ctx ctx, size_t block_id, size_t next_block_id) {
-//     if (vec_size(GET_CFG_BLOCK(block_id).succ_ids) == 1 && GET_CFG_BLOCK(block_id).succ_ids[0] == next_block_id) {
-//         unreach_jump_instr(ctx, block_id);
-//     }
-// }
+static void unreach_jump_block(Ctx ctx, size_t block_id, size_t next_block_id) {
+    if (vec_size(GET_CFG_BLOCK(block_id).succ_ids) == 1 && GET_CFG_BLOCK(block_id).succ_ids[0] == next_block_id) {
+        unreach_jump_instr(ctx, block_id);
+    }
+}
 
-// static void unreach_label_instr(Ctx ctx, size_t block_id) {
-//     THROW_ABORT_IF(GET_INSTR(GET_CFG_BLOCK(block_id).instrs_front_idx)->type() != AST_TacLabel_t);
-//     cfg_rm_block_instr(ctx, GET_CFG_BLOCK(block_id).instrs_front_idx, block_id);
-// }
+static void unreach_label_instr(Ctx ctx, size_t block_id) {
+    THROW_ABORT_IF(GET_INSTR(GET_CFG_BLOCK(block_id).instrs_front_idx)->type != AST_TacLabel_t);
+    cfg_rm_block_instr(ctx, GET_CFG_BLOCK(block_id).instrs_front_idx, block_id);
+}
 
-// static void unreach_label_block(Ctx ctx, size_t block_id, size_t prev_block_id) {
-//     if (vec_size(GET_CFG_BLOCK(block_id).pred_ids) == 1 && GET_CFG_BLOCK(block_id).pred_ids[0] == prev_block_id) {
-//         unreach_label_instr(ctx, block_id);
-//     }
-// }
+static void unreach_label_block(Ctx ctx, size_t block_id, size_t prev_block_id) {
+    if (vec_size(GET_CFG_BLOCK(block_id).pred_ids) == 1 && GET_CFG_BLOCK(block_id).pred_ids[0] == prev_block_id) {
+        unreach_label_instr(ctx, block_id);
+    }
+}
 
-// static void eliminate_unreachable_code(Ctx ctx) {
-//     if (vec_empty(ctx->cfg->blocks)) {
-//         return;
-//     }
-//     if (vec_size(ctx->cfg->reaching_code) < vec_size(ctx->cfg->blocks)) {
-//         vec_resize(ctx->cfg->reaching_code, vec_size(ctx->cfg->blocks));
-//     }
-//     memset(ctx->cfg->reaching_code, false, sizeof(bool) * vec_size(ctx->cfg->blocks));
-//     for (size_t i = 0; i < vec_size(ctx->cfg->entry_succ_ids); ++i) {
-//         unreach_reachable_block(ctx, ctx->cfg->entry_succ_ids[i]);
-//     }
+static void eliminate_unreachable_code(Ctx ctx) {
+    if (vec_empty(ctx->cfg->blocks)) {
+        return;
+    }
+    if (vec_size(ctx->cfg->reaching_code) < vec_size(ctx->cfg->blocks)) {
+        vec_resize(ctx->cfg->reaching_code, vec_size(ctx->cfg->blocks));
+    }
+    memset(ctx->cfg->reaching_code, false, sizeof(bool) * vec_size(ctx->cfg->blocks));
+    for (size_t i = 0; i < vec_size(ctx->cfg->entry_succ_ids); ++i) {
+        unreach_reachable_block(ctx, ctx->cfg->entry_succ_ids[i]);
+    }
 
-//     size_t block_id = vec_size(ctx->cfg->blocks);
-//     size_t next_block_id = ctx->cfg->exit_id;
-//     while (block_id-- > 0) {
-//         if (ctx->cfg->reaching_code[block_id]) {
-//             next_block_id = block_id;
-//             break;
-//         }
-//         else {
-//             unreach_empty_block(ctx, block_id);
-//         }
-//     }
-//     while (block_id-- > 0) {
-//         if (ctx->cfg->reaching_code[block_id]) {
-//             unreach_jump_block(ctx, block_id, next_block_id);
-//             next_block_id = block_id;
-//         }
-//         else {
-//             unreach_empty_block(ctx, block_id);
-//         }
-//     }
+    size_t block_id = vec_size(ctx->cfg->blocks);
+    size_t next_block_id = ctx->cfg->exit_id;
+    while (block_id-- > 0) {
+        if (ctx->cfg->reaching_code[block_id]) {
+            next_block_id = block_id;
+            break;
+        }
+        else {
+            unreach_empty_block(ctx, block_id);
+        }
+    }
+    while (block_id-- > 0) {
+        if (ctx->cfg->reaching_code[block_id]) {
+            unreach_jump_block(ctx, block_id, next_block_id);
+            next_block_id = block_id;
+        }
+        else {
+            unreach_empty_block(ctx, block_id);
+        }
+    }
 
-//     for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
-//         size_t label_id = pair_second(ctx->cfg->identifier_id_map[i]);
-//         if (ctx->cfg->reaching_code[label_id]) {
-//             for (block_id = label_id; block_id-- > 0;) {
-//                 if (ctx->cfg->reaching_code[block_id]) {
-//                     next_block_id = block_id;
-//                     goto Lelse;
-//                 }
-//             }
-//             next_block_id = ctx->cfg->entry_id;
-//         Lelse:
-//             unreach_label_block(ctx, label_id, next_block_id);
-//         }
-//         else {
-//             pair_second(ctx->cfg->identifier_id_map[i]) = ctx->cfg->exit_id;
-//         }
-//     }
-// }
+    for (size_t i = 0; i < map_size(ctx->cfg->identifier_id_map); ++i) {
+        size_t label_id = pair_second(ctx->cfg->identifier_id_map[i]);
+        if (ctx->cfg->reaching_code[label_id]) {
+            for (block_id = label_id; block_id-- > 0;) {
+                if (ctx->cfg->reaching_code[block_id]) {
+                    next_block_id = block_id;
+                    goto Lelse;
+                }
+            }
+            next_block_id = ctx->cfg->entry_id;
+        Lelse:
+            unreach_label_block(ctx, label_id, next_block_id);
+        }
+        else {
+            pair_second(ctx->cfg->identifier_id_map[i]) = ctx->cfg->exit_id;
+        }
+    }
+}
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2651,18 +2651,18 @@ static void optim_fun_toplvl(Ctx ctx, TacFunction* node) {
         if (ctx->enabled_optims[CONSTANT_FOLDING]) {
             fold_constants(ctx);
         }
-        // if (ctx->enabled_optims[CONTROL_FLOW_GRAPH]) {
-        //     init_control_flow_graph(ctx);
-            // if (ctx->enabled_optims[UNREACHABLE_CODE_ELIMINATION]) {
-            //     eliminate_unreachable_code(ctx);
-            // }
+        if (ctx->enabled_optims[CONTROL_FLOW_GRAPH]) {
+            init_control_flow_graph(ctx);
+            if (ctx->enabled_optims[UNREACHABLE_CODE_ELIMINATION]) {
+                eliminate_unreachable_code(ctx);
+            }
             // if (ctx->enabled_optims[COPY_PROPAGATION]) {
             //     propagate_copies(ctx);
             // }
             // if (ctx->enabled_optims[DEAD_STORE_ELIMINATION]) {
             //     eliminate_dead_stores(ctx, !ctx->enabled_optims[COPY_PROPAGATION]);
             // }
-        // }
+        }
     }
     while (!ctx->is_fixed_point);
     ctx->p_instrs = NULL;
