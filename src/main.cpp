@@ -232,7 +232,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     tac_ast = represent_three_address_code(&c_ast, &frontend, &identifiers);
     if (ctx->optim_1_mask > 0) {
         verbose(ctx, "OK\n-- Level 1 optimization ... ");
-        // optimize_three_address_code(tac_ast.get(), &frontend, ctx->optim_1_mask);
+        optimize_three_address_code(tac_ast, &frontend, ctx->optim_1_mask);
     }
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
