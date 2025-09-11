@@ -1358,1041 +1358,1038 @@ static void eliminate_unreachable_code(Ctx ctx) {
     }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Copy propagation
+// Copy propagation
 
-// static bool is_aliased_value(Ctx ctx, TacValue* node) {
-//     return node->type() == AST_TacVariable_t && is_aliased_name(ctx, static_cast<TacVariable*>(node)->name);
-// }
+static bool is_aliased_value(Ctx ctx, TacValue* node) {
+    return node->type == AST_TacVariable_t && is_aliased_name(ctx, node->get._TacVariable.name);
+}
 
-// static bool is_const_signed(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstChar_t:
-//         case AST_CConstInt_t:
-//         case AST_CConstLong_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_signed(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstChar_t:
+        case AST_CConstInt_t:
+        case AST_CConstLong_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_var_signed(Ctx ctx, TacVariable* node) {
-//     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type()) {
-//         case AST_Char_t:
-//         case AST_SChar_t:
-//         case AST_Int_t:
-//         case AST_Long_t:
-//             return true;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_var_signed(Ctx ctx, TacVariable* node) {
+    switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
+        case AST_Char_t:
+        case AST_SChar_t:
+        case AST_Int_t:
+        case AST_Long_t:
+            return true;
+        default:
+            return false;
+    }
+}
 
-// static bool is_value_signed(Ctx ctx, TacValue* node) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return is_const_signed(static_cast<TacConstant*>(node));
-//         case AST_TacVariable_t:
-//             return is_var_signed(ctx, static_cast<TacVariable*>(node));
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_value_signed(Ctx ctx, TacValue* node) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return is_const_signed(&node->get._TacConstant);
+        case AST_TacVariable_t:
+            return is_var_signed(ctx, &node->get._TacVariable);
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_const_null_ptr(TacConstant* node) {
-//     switch (node->constant->type()) {
-//         case AST_CConstInt_t:
-//             return static_cast<CConstInt*>(node->constant.get())->value == 0;
-//         case AST_CConstLong_t:
-//             return static_cast<CConstLong*>(node->constant.get())->value == 0l;
-//         case AST_CConstUInt_t:
-//             return static_cast<CConstUInt*>(node->constant.get())->value == 0u;
-//         case AST_CConstULong_t:
-//             return static_cast<CConstULong*>(node->constant.get())->value == 0ul;
-//         default:
-//             return false;
-//     }
-// }
+static bool is_const_null_ptr(TacConstant* node) {
+    switch (node->constant->type) {
+        case AST_CConstInt_t:
+            return node->constant->get._CConstInt.value == 0;
+        case AST_CConstLong_t:
+            return node->constant->get._CConstLong.value == 0l;
+        case AST_CConstUInt_t:
+            return node->constant->get._CConstUInt.value == 0u;
+        case AST_CConstULong_t:
+            return node->constant->get._CConstULong.value == 0ul;
+        default:
+            return false;
+    }
+}
 
-// static bool is_dbl_same_const(CConstDouble* constant_1, CConstDouble* constant_2) {
-//     if (constant_1->value == constant_2->value) {
-//         if (constant_1->value != 0.0) {
-//             return true;
-//         }
-//         else {
-//             return dbl_to_binary(constant_1->value) == dbl_to_binary(constant_2->value);
-//         }
-//     }
-//     else if (constant_1->value != constant_1->value && constant_2->value != constant_2->value) {
-//         return true;
-//     }
-//     else {
-//         return false;
-//     }
-// }
+static bool is_dbl_same_const(CConstDouble* constant_1, CConstDouble* constant_2) {
+    if (constant_1->value == constant_2->value) {
+        if (constant_1->value != 0.0) {
+            return true;
+        }
+        else {
+            return dbl_to_binary(constant_1->value) == dbl_to_binary(constant_2->value);
+        }
+    }
+    else if (constant_1->value != constant_1->value && constant_2->value != constant_2->value) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
-// static bool is_same_const(TacConstant* node_1, TacConstant* node_2) {
-//     if (node_1->constant->type() == node_2->constant->type()) {
-//         switch (node_1->constant->type()) {
-//             case AST_CConstChar_t:
-//                 return static_cast<CConstChar*>(node_1->constant.get())->value
-//                        == static_cast<CConstChar*>(node_2->constant.get())->value;
-//             case AST_CConstInt_t:
-//                 return static_cast<CConstInt*>(node_1->constant.get())->value
-//                        == static_cast<CConstInt*>(node_2->constant.get())->value;
-//             case AST_CConstLong_t:
-//                 return static_cast<CConstLong*>(node_1->constant.get())->value
-//                        == static_cast<CConstLong*>(node_2->constant.get())->value;
-//             case AST_CConstDouble_t:
-//                 return is_dbl_same_const(static_cast<CConstDouble*>(node_1->constant.get()),
-//                     static_cast<CConstDouble*>(node_2->constant.get()));
-//             case AST_CConstUChar_t:
-//                 return static_cast<CConstUChar*>(node_1->constant.get())->value
-//                        == static_cast<CConstUChar*>(node_2->constant.get())->value;
-//             case AST_CConstUInt_t:
-//                 return static_cast<CConstUInt*>(node_1->constant.get())->value
-//                        == static_cast<CConstUInt*>(node_2->constant.get())->value;
-//             case AST_CConstULong_t:
-//                 return static_cast<CConstULong*>(node_1->constant.get())->value
-//                        == static_cast<CConstULong*>(node_2->constant.get())->value;
-//             default:
-//                 THROW_ABORT;
-//         }
-//     }
-//     return false;
-// }
+static bool is_same_const(TacConstant* node_1, TacConstant* node_2) {
+    if (node_1->constant->type == node_2->constant->type) {
+        switch (node_1->constant->type) {
+            case AST_CConstChar_t:
+                return node_1->constant->get._CConstChar.value == node_2->constant->get._CConstChar.value;
+            case AST_CConstInt_t:
+                return node_1->constant->get._CConstInt.value == node_2->constant->get._CConstInt.value;
+            case AST_CConstLong_t:
+                return node_1->constant->get._CConstLong.value == node_2->constant->get._CConstLong.value;
+            case AST_CConstDouble_t:
+                return is_dbl_same_const(&node_1->constant->get._CConstDouble,
+                    &node_2->constant->get._CConstDouble);
+            case AST_CConstUChar_t:
+                return node_1->constant->get._CConstUChar.value == node_2->constant->get._CConstUChar.value;
+            case AST_CConstUInt_t:
+                return node_1->constant->get._CConstUInt.value == node_2->constant->get._CConstUInt.value;
+            case AST_CConstULong_t:
+                return node_1->constant->get._CConstULong.value == node_2->constant->get._CConstULong.value;
+            default:
+                THROW_ABORT;
+        }
+    }
+    return false;
+}
 
-// static bool is_same_var(TacVariable* node_1, TacVariable* node_2) { return node_1->name == node_2->name; }
+static bool is_same_var(TacVariable* node_1, TacVariable* node_2) { return node_1->name == node_2->name; }
 
-// static bool is_same_value(TacValue* node_1, TacValue* node_2) {
-//     if (node_1->type() == node_2->type()) {
-//         switch (node_1->type()) {
-//             case AST_TacConstant_t:
-//                 return is_same_const(static_cast<TacConstant*>(node_1), static_cast<TacConstant*>(node_2));
-//             case AST_TacVariable_t:
-//                 return is_same_var(static_cast<TacVariable*>(node_1), static_cast<TacVariable*>(node_2));
-//             default:
-//                 THROW_ABORT;
-//         }
-//     }
-//     return false;
-// }
+static bool is_same_value(TacValue* node_1, TacValue* node_2) {
+    if (node_1->type == node_2->type) {
+        switch (node_1->type) {
+            case AST_TacConstant_t:
+                return is_same_const(&node_1->get._TacConstant, &node_2->get._TacConstant);
+            case AST_TacVariable_t:
+                return is_same_var(&node_1->get._TacVariable, &node_2->get._TacVariable);
+            default:
+                THROW_ABORT;
+        }
+    }
+    return false;
+}
 
-// static bool is_same_name(TacValue* node, TIdentifier name) {
-//     switch (node->type()) {
-//         case AST_TacConstant_t:
-//             return false;
-//         case AST_TacVariable_t:
-//             return static_cast<TacVariable*>(node)->name == name;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static bool is_same_name(TacValue* node, TIdentifier name) {
+    switch (node->type) {
+        case AST_TacConstant_t:
+            return false;
+        case AST_TacVariable_t:
+            return node->get._TacVariable.name == name;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static bool is_copy_same_signedness(Ctx ctx, TacCopy* node) {
-//     return is_value_signed(ctx, node->src.get()) == is_value_signed(ctx, node->dst.get());
-// }
+static bool is_copy_same_signedness(Ctx ctx, TacCopy* node) {
+    return is_value_signed(ctx, node->src) == is_value_signed(ctx, node->dst);
+}
 
-// static bool is_copy_null_ptr(Ctx ctx, TacCopy* node) {
-//     if (node->src->type() == AST_TacConstant_t && node->dst->type() == AST_TacVariable_t
-//         && map_get(ctx->frontend->symbol_table, static_cast<TacVariable*>(node->dst.get())->name)->type_t->type()
-//                == AST_Pointer_t) {
-//         return is_const_null_ptr(static_cast<TacConstant*>(node->src.get()));
-//     }
-//     else {
-//         return false;
-//     }
-// }
+static bool is_copy_null_ptr(Ctx ctx, TacCopy* node) {
+    if (node->src->type == AST_TacConstant_t && node->dst->type == AST_TacVariable_t
+        && map_get(ctx->frontend->symbol_table, node->dst->get._TacVariable.name)->type_t->type
+               == AST_Pointer_t) {
+        return is_const_null_ptr(&node->src->get._TacConstant);
+    }
+    else {
+        return false;
+    }
+}
 
-// static void prop_transfer_dst_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
-//     THROW_ABORT_IF(node->type() != AST_TacVariable_t);
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
-//                 THROW_ABORT_IF(GET_DFA_INSTR(i)->type() != AST_TacCopy_t);
-//                 TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTR(i).get());
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (is_same_value(node, copy->src.get()) || is_same_value(node, copy->dst.get())) {
-//                     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//                     if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//                         i = mask_set_size;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_transfer_dst_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
+    THROW_ABORT_IF(node->type != AST_TacVariable_t);
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
+                THROW_ABORT_IF(GET_DFA_INSTR(i)->type != AST_TacCopy_t);
+                TacCopy* copy = &GET_DFA_INSTR(i)->get._TacCopy;
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (is_same_value(node, copy->src) || is_same_value(node, copy->dst)) {
+                    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+                    if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+                        i = mask_set_size;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_transfer_call(Ctx ctx, TacFunCall* node, size_t next_instr_idx) {
-//     THROW_ABORT_IF(node->dst && node->dst->type() != AST_TacVariable_t);
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
-//                 THROW_ABORT_IF(GET_DFA_INSTR(i)->type() != AST_TacCopy_t);
-//                 TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTR(i).get());
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (is_aliased_value(ctx, copy->src.get()) || is_aliased_value(ctx, copy->dst.get())
-//                     || (node->dst
-//                         && (is_same_value(node->dst.get(), copy->src.get())
-//                             || is_same_value(node->dst.get(), copy->dst.get())))) {
-//                     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//                     if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//                         i = mask_set_size;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_transfer_call(Ctx ctx, TacFunCall* node, size_t next_instr_idx) {
+    THROW_ABORT_IF(node->dst && node->dst->type != AST_TacVariable_t);
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
+                THROW_ABORT_IF(GET_DFA_INSTR(i)->type != AST_TacCopy_t);
+                TacCopy* copy = &GET_DFA_INSTR(i)->get._TacCopy;
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (is_aliased_value(ctx, copy->src) || is_aliased_value(ctx, copy->dst)
+                    || (node->dst
+                        && (is_same_value(node->dst, copy->src)
+                            || is_same_value(node->dst, copy->dst)))) {
+                    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+                    if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+                        i = mask_set_size;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static bool prop_transfer_copy(Ctx ctx, TacCopy* node, size_t next_instr_idx) {
-//     THROW_ABORT_IF(node->dst->type() != AST_TacVariable_t);
-//     for (size_t i = 0; i < ctx->dfa->set_size; ++i) {
-//         THROW_ABORT_IF(GET_DFA_INSTR(i)->type() != AST_TacCopy_t);
-//         TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTR(i).get());
-//         THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//         if (is_same_value(node->dst.get(), copy->dst.get())) {
-//             if ((is_copy_same_signedness(ctx, copy) || is_copy_null_ptr(ctx, copy))
-//                 && is_same_value(node->src.get(), copy->src.get())) {
-//                 SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
-//             }
-//             else {
-//                 SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//             }
-//         }
-//         else if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
-//             if (is_same_value(node->dst.get(), copy->src.get())) {
-//                 if (is_same_value(node->src.get(), copy->dst.get())) {
-//                     return false;
-//                 }
-//                 else {
-//                     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//                 }
-//             }
-//         }
-//     }
-//     return true;
-// }
+static bool prop_transfer_copy(Ctx ctx, TacCopy* node, size_t next_instr_idx) {
+    THROW_ABORT_IF(node->dst->type != AST_TacVariable_t);
+    for (size_t i = 0; i < ctx->dfa->set_size; ++i) {
+        THROW_ABORT_IF(GET_DFA_INSTR(i)->type != AST_TacCopy_t);
+        TacCopy* copy = &GET_DFA_INSTR(i)->get._TacCopy;
+        THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+        if (is_same_value(node->dst, copy->dst)) {
+            if ((is_copy_same_signedness(ctx, copy) || is_copy_null_ptr(ctx, copy))
+                && is_same_value(node->src, copy->src)) {
+                SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
+            }
+            else {
+                SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+            }
+        }
+        else if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
+            if (is_same_value(node->dst, copy->src)) {
+                if (is_same_value(node->src, copy->dst)) {
+                    return false;
+                }
+                else {
+                    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+                }
+            }
+        }
+    }
+    return true;
+}
 
-// static void prop_transfer_store(Ctx ctx, size_t next_instr_idx) {
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
-//                 THROW_ABORT_IF(GET_DFA_INSTR(i)->type() != AST_TacCopy_t);
-//                 TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTR(i).get());
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (is_aliased_value(ctx, copy->src.get()) || is_aliased_value(ctx, copy->dst.get())) {
-//                     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//                     if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//                         i = mask_set_size;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_transfer_store(Ctx ctx, size_t next_instr_idx) {
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
+                THROW_ABORT_IF(GET_DFA_INSTR(i)->type != AST_TacCopy_t);
+                TacCopy* copy = &GET_DFA_INSTR(i)->get._TacCopy;
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (is_aliased_value(ctx, copy->src) || is_aliased_value(ctx, copy->dst)) {
+                    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+                    if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+                        i = mask_set_size;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_transfer_cp_to_offset(Ctx ctx, TacCopyToOffset* node, size_t next_instr_idx) {
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
-//                 THROW_ABORT_IF(GET_DFA_INSTR(i)->type() != AST_TacCopy_t);
-//                 TacCopy* copy = static_cast<TacCopy*>(GET_DFA_INSTR(i).get());
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (is_same_name(copy->src.get(), node->dst_name) || is_same_name(copy->dst.get(), node->dst_name)) {
-//                     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-//                     if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
-//                         i = mask_set_size;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_transfer_cp_to_offset(Ctx ctx, TacCopyToOffset* node, size_t next_instr_idx) {
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(next_instr_idx, i)) {
+                THROW_ABORT_IF(GET_DFA_INSTR(i)->type != AST_TacCopy_t);
+                TacCopy* copy = &GET_DFA_INSTR(i)->get._TacCopy;
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (is_same_name(copy->src, node->dst_name) || is_same_name(copy->dst, node->dst_name)) {
+                    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+                    if (GET_DFA_INSTR_SET_MASK(next_instr_idx, j) == MASK_FALSE) {
+                        i = mask_set_size;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static bool prop_transfer_reach_copies(Ctx ctx, size_t instr_idx, size_t next_instr_idx) {
-//     TacInstruction* node = GET_INSTR(instr_idx).get();
-//     switch (node->type()) {
-//         case AST_TacSignExtend_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacSignExtend*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacTruncate_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacTruncate*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacZeroExtend_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacZeroExtend*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacDoubleToInt_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacDoubleToInt*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacDoubleToUInt_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacDoubleToUInt*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacIntToDouble_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacIntToDouble*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacUIntToDouble_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacUIntToDouble*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacFunCall_t:
-//             prop_transfer_call(ctx, static_cast<TacFunCall*>(node), next_instr_idx);
-//             break;
-//         case AST_TacUnary_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacUnary*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacBinary_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacBinary*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacCopy_t:
-//             return prop_transfer_copy(ctx, static_cast<TacCopy*>(node), next_instr_idx);
-//         case AST_TacGetAddress_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacGetAddress*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacLoad_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacLoad*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacStore_t:
-//             prop_transfer_store(ctx, next_instr_idx);
-//             break;
-//         case AST_TacAddPtr_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacAddPtr*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacCopyToOffset_t:
-//             prop_transfer_cp_to_offset(ctx, static_cast<TacCopyToOffset*>(node), next_instr_idx);
-//             break;
-//         case AST_TacCopyFromOffset_t:
-//             prop_transfer_dst_value(ctx, static_cast<TacCopyFromOffset*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-//     return true;
-// }
+static bool prop_transfer_reach_copies(Ctx ctx, size_t instr_idx, size_t next_instr_idx) {
+    TacInstruction* node = GET_INSTR(instr_idx);
+    switch (node->type) {
+        case AST_TacSignExtend_t:
+            prop_transfer_dst_value(ctx, node->get._TacSignExtend.dst, next_instr_idx);
+            break;
+        case AST_TacTruncate_t:
+            prop_transfer_dst_value(ctx, node->get._TacTruncate.dst, next_instr_idx);
+            break;
+        case AST_TacZeroExtend_t:
+            prop_transfer_dst_value(ctx, node->get._TacZeroExtend.dst, next_instr_idx);
+            break;
+        case AST_TacDoubleToInt_t:
+            prop_transfer_dst_value(ctx, node->get._TacDoubleToInt.dst, next_instr_idx);
+            break;
+        case AST_TacDoubleToUInt_t:
+            prop_transfer_dst_value(ctx, node->get._TacDoubleToUInt.dst, next_instr_idx);
+            break;
+        case AST_TacIntToDouble_t:
+            prop_transfer_dst_value(ctx, node->get._TacIntToDouble.dst, next_instr_idx);
+            break;
+        case AST_TacUIntToDouble_t:
+            prop_transfer_dst_value(ctx, node->get._TacUIntToDouble.dst, next_instr_idx);
+            break;
+        case AST_TacFunCall_t:
+            prop_transfer_call(ctx, &node->get._TacFunCall, next_instr_idx);
+            break;
+        case AST_TacUnary_t:
+            prop_transfer_dst_value(ctx, node->get._TacUnary.dst, next_instr_idx);
+            break;
+        case AST_TacBinary_t:
+            prop_transfer_dst_value(ctx, node->get._TacBinary.dst, next_instr_idx);
+            break;
+        case AST_TacCopy_t:
+            return prop_transfer_copy(ctx, &node->get._TacCopy, next_instr_idx);
+        case AST_TacGetAddress_t:
+            prop_transfer_dst_value(ctx, node->get._TacGetAddress.dst, next_instr_idx);
+            break;
+        case AST_TacLoad_t:
+            prop_transfer_dst_value(ctx, node->get._TacLoad.dst, next_instr_idx);
+            break;
+        case AST_TacStore_t:
+            prop_transfer_store(ctx, next_instr_idx);
+            break;
+        case AST_TacAddPtr_t:
+            prop_transfer_dst_value(ctx, node->get._TacAddPtr.dst, next_instr_idx);
+            break;
+        case AST_TacCopyToOffset_t:
+            prop_transfer_cp_to_offset(ctx, &node->get._TacCopyToOffset, next_instr_idx);
+            break;
+        case AST_TacCopyFromOffset_t:
+            prop_transfer_dst_value(ctx, node->get._TacCopyFromOffset.dst, next_instr_idx);
+            break;
+        default:
+            THROW_ABORT;
+    }
+    return true;
+}
 
-// static TacCopy* get_dfa_bak_copy_instr(Ctx ctx, size_t i) {
-//     TacInstruction* node = get_dfa_bak_instr(ctx, i);
-//     THROW_ABORT_IF(node->type() != AST_TacCopy_t);
-//     return static_cast<TacCopy*>(node);
-// }
+static TacCopy* get_dfa_bak_copy_instr(Ctx ctx, size_t i) {
+    TacInstruction* node = get_dfa_bak_instr(ctx, i);
+    THROW_ABORT_IF(node->type != AST_TacCopy_t);
+    return &node->get._TacCopy;
+}
 
-// static void set_dfa_bak_copy_instr(Ctx ctx, TacCopy* node, size_t instr_idx) {
-//     size_t i;
-//     if (set_dfa_bak_instr(ctx, instr_idx, &i)) {
-//         std::shared_ptr<TacValue> src = node->src;
-//         std::shared_ptr<TacValue> dst = node->dst;
-//         ctx->dfa_o1->bak_instrs[i] = std::make_unique<TacCopy>(std::move(src), std::move(dst));
-//     }
-// }
+static void set_dfa_bak_copy_instr(Ctx ctx, TacCopy* node, size_t instr_idx) {
+    size_t i;
+    if (set_dfa_bak_instr(ctx, instr_idx, &i)) {
+        shared_ptr_t(TacValue) src = sptr_new();
+        sptr_copy(TacValue, node->src, src);
+        shared_ptr_t(TacValue) dst = sptr_new();
+        sptr_copy(TacValue, node->dst, dst);
+        free_TacInstruction(&ctx->dfa_o1->bak_instrs[i]);
+        ctx->dfa_o1->bak_instrs[i] = make_TacCopy(&src, &dst);
+    }
+}
 
-// static void prop_ret_instr(Ctx ctx, TacReturn* node, size_t incoming_idx, bool exit_block) {
-//     if (node->val && node->val->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
-//                 || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
-//                         || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->val.get(), copy->dst.get())) {
-//                         node->val = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_ret_instr(Ctx ctx, TacReturn* node, size_t incoming_idx, bool exit_block) {
+    if (node->val && node->val->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
+                        || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->val, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->val);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_sign_extend_instr(Ctx ctx, TacSignExtend* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_sign_extend_instr(Ctx ctx, TacSignExtend* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_truncate_instr(Ctx ctx, TacTruncate* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_truncate_instr(Ctx ctx, TacTruncate* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_zero_extend_instr(Ctx ctx, TacZeroExtend* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_zero_extend_instr(Ctx ctx, TacZeroExtend* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_dbl_to_int_instr(Ctx ctx, TacDoubleToInt* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_dbl_to_int_instr(Ctx ctx, TacDoubleToInt* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_int_to_dbl_instr(Ctx ctx, TacIntToDouble* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_int_to_dbl_instr(Ctx ctx, TacIntToDouble* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_call_instr(Ctx ctx, TacFunCall* node, size_t instr_idx) {
-//     for (size_t i = 0; i < vec_size(node->args); ++i) {
-//         if (node->args[i]->type() == AST_TacVariable_t) {
-//             size_t j = 0;
-//             for (size_t k = 0; k < ctx->dfa->mask_size; ++k) {
-//                 if (GET_DFA_INSTR_SET_MASK(instr_idx, k) == MASK_FALSE) {
-//                     j += 64;
-//                     continue;
-//                 }
-//                 size_t mask_set_size = j + 64;
-//                 if (mask_set_size > ctx->dfa->set_size) {
-//                     mask_set_size = ctx->dfa->set_size;
-//                 }
-//                 for (; j < mask_set_size; ++j) {
-//                     if (GET_DFA_INSTR_SET_AT(instr_idx, j)) {
-//                         TacCopy* copy = get_dfa_bak_copy_instr(ctx, j);
-//                         THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                         if (is_same_value(node->args[i].get(), copy->dst.get())) {
-//                             node->args[i] = copy->src;
-//                             ctx->is_fixed_point = false;
-//                             goto Lbreak;
-//                         }
-//                     }
-//                 }
-//             }
-//         Lbreak:;
-//         }
-//     }
-// }
+static void prop_call_instr(Ctx ctx, TacFunCall* node, size_t instr_idx) {
+    for (size_t i = 0; i < vec_size(node->args); ++i) {
+        if (node->args[i]->type == AST_TacVariable_t) {
+            size_t j = 0;
+            for (size_t k = 0; k < ctx->dfa->mask_size; ++k) {
+                if (GET_DFA_INSTR_SET_MASK(instr_idx, k) == MASK_FALSE) {
+                    j += 64;
+                    continue;
+                }
+                size_t mask_set_size = j + 64;
+                if (mask_set_size > ctx->dfa->set_size) {
+                    mask_set_size = ctx->dfa->set_size;
+                }
+                for (; j < mask_set_size; ++j) {
+                    if (GET_DFA_INSTR_SET_AT(instr_idx, j)) {
+                        TacCopy* copy = get_dfa_bak_copy_instr(ctx, j);
+                        THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                        if (is_same_value(node->args[i], copy->dst)) {
+                            sptr_copy(TacValue, copy->src, node->args[i]);
+                            ctx->is_fixed_point = false;
+                            goto Lbreak;
+                        }
+                    }
+                }
+            }
+        Lbreak:;
+        }
+    }
+}
 
-// static void prop_unary_instr(Ctx ctx, TacUnary* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_unary_instr(Ctx ctx, TacUnary* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_binary_instr(Ctx ctx, TacBinary* node, size_t instr_idx) {
-//     bool is_src1 = node->src1->type() == AST_TacVariable_t;
-//     bool is_src2 = node->src2->type() == AST_TacVariable_t;
-//     if (is_src1 || is_src2) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_src1 && is_same_value(node->src1.get(), copy->dst.get())) {
-//                         node->src1 = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         is_src1 = false;
-//                         if (!is_src2) {
-//                             return;
-//                         }
-//                     }
-//                     if (is_src2 && is_same_value(node->src2.get(), copy->dst.get())) {
-//                         node->src2 = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         is_src2 = false;
-//                         if (!is_src1) {
-//                             return;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_binary_instr(Ctx ctx, TacBinary* node, size_t instr_idx) {
+    bool is_src1 = node->src1->type == AST_TacVariable_t;
+    bool is_src2 = node->src2->type == AST_TacVariable_t;
+    if (is_src1 || is_src2) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_src1 && is_same_value(node->src1, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src1);
+                        ctx->is_fixed_point = false;
+                        is_src1 = false;
+                        if (!is_src2) {
+                            return;
+                        }
+                    }
+                    if (is_src2 && is_same_value(node->src2, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src2);
+                        ctx->is_fixed_point = false;
+                        is_src2 = false;
+                        if (!is_src1) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_copy_instr(Ctx ctx, TacCopy* node, size_t instr_idx, size_t block_id) {
-//     THROW_ABORT_IF(node->dst->type() != AST_TacVariable_t);
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                 TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (ctx->dfa_o1->data_idx_map[i] == instr_idx
-//                     || (is_same_value(node->src.get(), copy->dst.get())
-//                         && is_same_value(node->dst.get(), copy->src.get()))) {
-//                     set_dfa_bak_copy_instr(ctx, node, instr_idx);
-//                     cfg_rm_block_instr(ctx, instr_idx, block_id);
-//                     return;
-//                 }
-//                 else if (is_same_value(node->src.get(), copy->dst.get())) {
-//                     set_dfa_bak_copy_instr(ctx, node, instr_idx);
-//                     node->src = copy->src;
-//                     ctx->is_fixed_point = false;
-//                     return;
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_copy_instr(Ctx ctx, TacCopy* node, size_t instr_idx, size_t block_id) {
+    THROW_ABORT_IF(node->dst->type != AST_TacVariable_t);
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (ctx->dfa_o1->data_idx_map[i] == instr_idx
+                    || (is_same_value(node->src, copy->dst)
+                        && is_same_value(node->dst, copy->src))) {
+                    set_dfa_bak_copy_instr(ctx, node, instr_idx);
+                    cfg_rm_block_instr(ctx, instr_idx, block_id);
+                    return;
+                }
+                else if (is_same_value(node->src, copy->dst)) {
+                    set_dfa_bak_copy_instr(ctx, node, instr_idx);
+                    sptr_copy(TacValue, copy->src, node->src);
+                    ctx->is_fixed_point = false;
+                    return;
+                }
+            }
+        }
+    }
+}
 
-// static void prop_load_instr(Ctx ctx, TacLoad* node, size_t instr_idx) {
-//     if (node->src_ptr->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src_ptr.get(), copy->dst.get())) {
-//                         node->src_ptr = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_load_instr(Ctx ctx, TacLoad* node, size_t instr_idx) {
+    if (node->src_ptr->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src_ptr, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src_ptr);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_store_instr(Ctx ctx, TacStore* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_store_instr(Ctx ctx, TacStore* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_add_ptr_instr(Ctx ctx, TacAddPtr* node, size_t instr_idx) {
-//     bool is_src_ptr = node->src_ptr->type() == AST_TacVariable_t;
-//     bool is_idx = node->idx->type() == AST_TacVariable_t;
-//     if (is_src_ptr || is_idx) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_src_ptr && is_same_value(node->src_ptr.get(), copy->dst.get())) {
-//                         node->src_ptr = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         is_src_ptr = false;
-//                         if (!is_idx) {
-//                             return;
-//                         }
-//                     }
-//                     if (is_idx && is_same_value(node->idx.get(), copy->dst.get())) {
-//                         node->idx = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         is_idx = false;
-//                         if (!is_src_ptr) {
-//                             return;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_add_ptr_instr(Ctx ctx, TacAddPtr* node, size_t instr_idx) {
+    bool is_src_ptr = node->src_ptr->type == AST_TacVariable_t;
+    bool is_idx = node->idx->type == AST_TacVariable_t;
+    if (is_src_ptr || is_idx) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_src_ptr && is_same_value(node->src_ptr, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src_ptr);
+                        ctx->is_fixed_point = false;
+                        is_src_ptr = false;
+                        if (!is_idx) {
+                            return;
+                        }
+                    }
+                    if (is_idx && is_same_value(node->idx, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->idx);
+                        ctx->is_fixed_point = false;
+                        is_idx = false;
+                        if (!is_src_ptr) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node, size_t instr_idx) {
-//     if (node->src->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->src.get(), copy->dst.get())) {
-//                         node->src = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node, size_t instr_idx) {
+    if (node->src->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->src, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->src);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_cp_from_offset_instr(Ctx ctx, TacCopyFromOffset* node, size_t instr_idx) {
-//     size_t i = 0;
-//     for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//         if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
-//             i += 64;
-//             continue;
-//         }
-//         size_t mask_set_size = i + 64;
-//         if (mask_set_size > ctx->dfa->set_size) {
-//             mask_set_size = ctx->dfa->set_size;
-//         }
-//         for (; i < mask_set_size; ++i) {
-//             if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//                 TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                 THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                 if (is_same_name(copy->dst.get(), node->src_name)) {
-//                     THROW_ABORT_IF(copy->src->type() != AST_TacVariable_t);
-//                     node->src_name = static_cast<TacVariable*>(copy->src.get())->name;
-//                     ctx->is_fixed_point = false;
-//                     return;
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_cp_from_offset_instr(Ctx ctx, TacCopyFromOffset* node, size_t instr_idx) {
+    size_t i = 0;
+    for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+        if (GET_DFA_INSTR_SET_MASK(instr_idx, j) == MASK_FALSE) {
+            i += 64;
+            continue;
+        }
+        size_t mask_set_size = i + 64;
+        if (mask_set_size > ctx->dfa->set_size) {
+            mask_set_size = ctx->dfa->set_size;
+        }
+        for (; i < mask_set_size; ++i) {
+            if (GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+                TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                if (is_same_name(copy->dst, node->src_name)) {
+                    THROW_ABORT_IF(copy->src->type != AST_TacVariable_t);
+                    node->src_name = copy->src->get._TacVariable.name;
+                    ctx->is_fixed_point = false;
+                    return;
+                }
+            }
+        }
+    }
+}
 
-// static void prop_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t incoming_idx, size_t exit_block) {
-//     if (node->condition->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
-//                 || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
-//                         || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->condition.get(), copy->dst.get())) {
-//                         node->condition = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node, size_t incoming_idx, size_t exit_block) {
+    if (node->condition->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
+                        || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->condition, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->condition);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node, size_t incoming_idx, size_t exit_block) {
-//     if (node->condition->type() == AST_TacVariable_t) {
-//         size_t i = 0;
-//         for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
-//             if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
-//                 || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
-//                 i += 64;
-//                 continue;
-//             }
-//             size_t mask_set_size = i + 64;
-//             if (mask_set_size > ctx->dfa->set_size) {
-//                 mask_set_size = ctx->dfa->set_size;
-//             }
-//             for (; i < mask_set_size; ++i) {
-//                 if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
-//                         || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
-//                     TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
-//                     THROW_ABORT_IF(copy->dst->type() != AST_TacVariable_t);
-//                     if (is_same_value(node->condition.get(), copy->dst.get())) {
-//                         node->condition = copy->src;
-//                         ctx->is_fixed_point = false;
-//                         return;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+static void prop_jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node, size_t incoming_idx, size_t exit_block) {
+    if (node->condition->type == AST_TacVariable_t) {
+        size_t i = 0;
+        for (size_t j = 0; j < ctx->dfa->mask_size; ++j) {
+            if ((exit_block && GET_DFA_BLOCK_SET_MASK(incoming_idx, j) == MASK_FALSE)
+                || (!exit_block && GET_DFA_INSTR_SET_MASK(incoming_idx, j) == MASK_FALSE)) {
+                i += 64;
+                continue;
+            }
+            size_t mask_set_size = i + 64;
+            if (mask_set_size > ctx->dfa->set_size) {
+                mask_set_size = ctx->dfa->set_size;
+            }
+            for (; i < mask_set_size; ++i) {
+                if (((exit_block && GET_DFA_BLOCK_SET_AT(incoming_idx, i))
+                        || (!exit_block && GET_DFA_INSTR_SET_AT(incoming_idx, i)))) {
+                    TacCopy* copy = get_dfa_bak_copy_instr(ctx, i);
+                    THROW_ABORT_IF(copy->dst->type != AST_TacVariable_t);
+                    if (is_same_value(node->condition, copy->dst)) {
+                        sptr_copy(TacValue, copy->src, node->condition);
+                        ctx->is_fixed_point = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
 
-// static void prop_instr(Ctx ctx, size_t instr_idx, size_t copy_instr_idx, size_t block_id) {
-//     TacInstruction* node = GET_INSTR(instr_idx).get();
-//     switch (node->type()) {
-//         case AST_TacReturn_t:
-//             prop_ret_instr(ctx, static_cast<TacReturn*>(node), copy_instr_idx, block_id > 0);
-//             break;
-//         case AST_TacSignExtend_t:
-//             prop_sign_extend_instr(ctx, static_cast<TacSignExtend*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacTruncate_t:
-//             prop_truncate_instr(ctx, static_cast<TacTruncate*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacZeroExtend_t:
-//             prop_zero_extend_instr(ctx, static_cast<TacZeroExtend*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacDoubleToInt_t:
-//             prop_dbl_to_int_instr(ctx, static_cast<TacDoubleToInt*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacDoubleToUInt_t:
-//             prop_dbl_to_uint_instr(ctx, static_cast<TacDoubleToUInt*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacIntToDouble_t:
-//             prop_int_to_dbl_instr(ctx, static_cast<TacIntToDouble*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacUIntToDouble_t:
-//             prop_uint_to_dbl_instr(ctx, static_cast<TacUIntToDouble*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacFunCall_t:
-//             prop_call_instr(ctx, static_cast<TacFunCall*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacUnary_t:
-//             prop_unary_instr(ctx, static_cast<TacUnary*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacBinary_t:
-//             prop_binary_instr(ctx, static_cast<TacBinary*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacCopy_t:
-//             prop_copy_instr(ctx, static_cast<TacCopy*>(node), copy_instr_idx, block_id);
-//             break;
-//         case AST_TacLoad_t:
-//             prop_load_instr(ctx, static_cast<TacLoad*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacStore_t:
-//             prop_store_instr(ctx, static_cast<TacStore*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacAddPtr_t:
-//             prop_add_ptr_instr(ctx, static_cast<TacAddPtr*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacCopyToOffset_t:
-//             prop_cp_to_offset_instr(ctx, static_cast<TacCopyToOffset*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacCopyFromOffset_t:
-//             prop_cp_from_offset_instr(ctx, static_cast<TacCopyFromOffset*>(node), copy_instr_idx);
-//             break;
-//         case AST_TacJumpIfZero_t:
-//             prop_jmp_eq_0_instr(ctx, static_cast<TacJumpIfZero*>(node), copy_instr_idx, block_id > 0);
-//             break;
-//         case AST_TacJumpIfNotZero_t:
-//             prop_jmp_ne_0_instr(ctx, static_cast<TacJumpIfNotZero*>(node), copy_instr_idx, block_id > 0);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void prop_instr(Ctx ctx, size_t instr_idx, size_t copy_instr_idx, size_t block_id) {
+    TacInstruction* node = GET_INSTR(instr_idx);
+    switch (node->type) {
+        case AST_TacReturn_t:
+            prop_ret_instr(ctx, &node->get._TacReturn, copy_instr_idx, block_id > 0);
+            break;
+        case AST_TacSignExtend_t:
+            prop_sign_extend_instr(ctx, &node->get._TacSignExtend, copy_instr_idx);
+            break;
+        case AST_TacTruncate_t:
+            prop_truncate_instr(ctx, &node->get._TacTruncate, copy_instr_idx);
+            break;
+        case AST_TacZeroExtend_t:
+            prop_zero_extend_instr(ctx, &node->get._TacZeroExtend, copy_instr_idx);
+            break;
+        case AST_TacDoubleToInt_t:
+            prop_dbl_to_int_instr(ctx, &node->get._TacDoubleToInt, copy_instr_idx);
+            break;
+        case AST_TacDoubleToUInt_t:
+            prop_dbl_to_uint_instr(ctx, &node->get._TacDoubleToUInt, copy_instr_idx);
+            break;
+        case AST_TacIntToDouble_t:
+            prop_int_to_dbl_instr(ctx, &node->get._TacIntToDouble, copy_instr_idx);
+            break;
+        case AST_TacUIntToDouble_t:
+            prop_uint_to_dbl_instr(ctx, &node->get._TacUIntToDouble, copy_instr_idx);
+            break;
+        case AST_TacFunCall_t:
+            prop_call_instr(ctx, &node->get._TacFunCall, copy_instr_idx);
+            break;
+        case AST_TacUnary_t:
+            prop_unary_instr(ctx, &node->get._TacUnary, copy_instr_idx);
+            break;
+        case AST_TacBinary_t:
+            prop_binary_instr(ctx, &node->get._TacBinary, copy_instr_idx);
+            break;
+        case AST_TacCopy_t:
+            prop_copy_instr(ctx, &node->get._TacCopy, copy_instr_idx, block_id);
+            break;
+        case AST_TacLoad_t:
+            prop_load_instr(ctx, &node->get._TacLoad, copy_instr_idx);
+            break;
+        case AST_TacStore_t:
+            prop_store_instr(ctx, &node->get._TacStore, copy_instr_idx);
+            break;
+        case AST_TacAddPtr_t:
+            prop_add_ptr_instr(ctx, &node->get._TacAddPtr, copy_instr_idx);
+            break;
+        case AST_TacCopyToOffset_t:
+            prop_cp_to_offset_instr(ctx, &node->get._TacCopyToOffset, copy_instr_idx);
+            break;
+        case AST_TacCopyFromOffset_t:
+            prop_cp_from_offset_instr(ctx, &node->get._TacCopyFromOffset, copy_instr_idx);
+            break;
+        case AST_TacJumpIfZero_t:
+            prop_jmp_eq_0_instr(ctx, &node->get._TacJumpIfZero, copy_instr_idx, block_id > 0);
+            break;
+        case AST_TacJumpIfNotZero_t:
+            prop_jmp_ne_0_instr(ctx, &node->get._TacJumpIfNotZero, copy_instr_idx, block_id > 0);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void propagate_copies(Ctx ctx) {
-//     if (!init_data_flow_analysis(ctx, false, true)) {
-//         return;
-//     }
-//     dfa_forward_iter_alg(ctx);
+static void propagate_copies(Ctx ctx) {
+    if (!init_data_flow_analysis(ctx, false, true)) {
+        return;
+    }
+    dfa_forward_iter_alg(ctx);
 
-//     for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
-//         if (GET_CFG_BLOCK(block_id).size > 0) {
-//             size_t incoming_idx = block_id;
-//             size_t exit_block = 1;
-//             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_back_idx + 1;
-//                  instr_idx-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
-//                 if (GET_INSTR(instr_idx)) {
-//                     switch (GET_INSTR(instr_idx)->type()) {
-//                         case AST_TacReturn_t:
-//                         case AST_TacJumpIfZero_t:
-//                         case AST_TacJumpIfNotZero_t:
-//                             prop_instr(ctx, instr_idx, incoming_idx, exit_block);
-//                             break;
-//                         case AST_TacSignExtend_t:
-//                         case AST_TacTruncate_t:
-//                         case AST_TacZeroExtend_t:
-//                         case AST_TacDoubleToInt_t:
-//                         case AST_TacDoubleToUInt_t:
-//                         case AST_TacIntToDouble_t:
-//                         case AST_TacUIntToDouble_t:
-//                         case AST_TacFunCall_t:
-//                         case AST_TacUnary_t:
-//                         case AST_TacBinary_t:
-//                         case AST_TacCopy_t:
-//                         case AST_TacLoad_t:
-//                         case AST_TacStore_t:
-//                         case AST_TacAddPtr_t:
-//                         case AST_TacCopyToOffset_t:
-//                         case AST_TacCopyFromOffset_t: {
-//                             prop_instr(ctx, instr_idx, instr_idx, block_id);
-//                             incoming_idx = instr_idx;
-//                             exit_block = 0;
-//                             break;
-//                         }
-//                         case AST_TacGetAddress_t: {
-//                             incoming_idx = instr_idx;
-//                             exit_block = 0;
-//                             break;
-//                         }
-//                         default:
-//                             break;
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            size_t incoming_idx = block_id;
+            size_t exit_block = 1;
+            for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_back_idx + 1;
+                 instr_idx-- > GET_CFG_BLOCK(block_id).instrs_front_idx;) {
+                if (GET_INSTR(instr_idx)) {
+                    switch (GET_INSTR(instr_idx)->type) {
+                        case AST_TacReturn_t:
+                        case AST_TacJumpIfZero_t:
+                        case AST_TacJumpIfNotZero_t:
+                            prop_instr(ctx, instr_idx, incoming_idx, exit_block);
+                            break;
+                        case AST_TacSignExtend_t:
+                        case AST_TacTruncate_t:
+                        case AST_TacZeroExtend_t:
+                        case AST_TacDoubleToInt_t:
+                        case AST_TacDoubleToUInt_t:
+                        case AST_TacIntToDouble_t:
+                        case AST_TacUIntToDouble_t:
+                        case AST_TacFunCall_t:
+                        case AST_TacUnary_t:
+                        case AST_TacBinary_t:
+                        case AST_TacCopy_t:
+                        case AST_TacLoad_t:
+                        case AST_TacStore_t:
+                        case AST_TacAddPtr_t:
+                        case AST_TacCopyToOffset_t:
+                        case AST_TacCopyFromOffset_t: {
+                            prop_instr(ctx, instr_idx, instr_idx, block_id);
+                            incoming_idx = instr_idx;
+                            exit_block = 0;
+                            break;
+                        }
+                        case AST_TacGetAddress_t: {
+                            incoming_idx = instr_idx;
+                            exit_block = 0;
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2656,9 +2653,9 @@ static void optim_fun_toplvl(Ctx ctx, TacFunction* node) {
             if (ctx->enabled_optims[UNREACHABLE_CODE_ELIMINATION]) {
                 eliminate_unreachable_code(ctx);
             }
-            // if (ctx->enabled_optims[COPY_PROPAGATION]) {
-            //     propagate_copies(ctx);
-            // }
+            if (ctx->enabled_optims[COPY_PROPAGATION]) {
+                propagate_copies(ctx);
+            }
             // if (ctx->enabled_optims[DEAD_STORE_ELIMINATION]) {
             //     eliminate_dead_stores(ctx, !ctx->enabled_optims[COPY_PROPAGATION]);
             // }
