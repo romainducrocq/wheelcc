@@ -23,7 +23,6 @@ typedef struct OptimTacContext {
     // Dead store elimination
     bool is_fixed_point;
     bool enabled_optims[5];
-    // TODO free these at exit
     unique_ptr_t(ControlFlowGraph) cfg;
     unique_ptr_t(DataFlowAnalysis) dfa;
     unique_ptr_t(DataFlowAnalysisO1) dfa_o1;
@@ -2391,247 +2390,247 @@ static void propagate_copies(Ctx ctx) {
     }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Dead store elimination
+// Dead store elimination
 
-// static void elim_transfer_addressed(Ctx ctx, size_t next_instr_idx) {
-//     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-//         GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, i);
-//     }
-// }
+static void elim_transfer_addressed(Ctx ctx, size_t next_instr_idx) {
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+        GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, i);
+    }
+}
 
-// static void elim_transfer_aliased(Ctx ctx, size_t next_instr_idx) {
-//     for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
-//         GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i);
-//         GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, i);
-//     }
-// }
+static void elim_transfer_aliased(Ctx ctx, size_t next_instr_idx) {
+    for (size_t i = 0; i < ctx->dfa->mask_size; ++i) {
+        GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, i);
+        GET_DFA_INSTR_SET_MASK(next_instr_idx, i) |= GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, i);
+    }
+}
 
-// static void elim_transfer_src_name(Ctx ctx, TIdentifier name, size_t next_instr_idx) {
-//     size_t i = map_get(ctx->cfg->identifier_id_map, name);
-//     SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
-// }
+static void elim_transfer_src_name(Ctx ctx, TIdentifier name, size_t next_instr_idx) {
+    size_t i = map_get(ctx->cfg->identifier_id_map, name);
+    SET_DFA_INSTR_SET_AT(next_instr_idx, i, true);
+}
 
-// static void elim_transfer_src_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
-//     if (node->type() == AST_TacVariable_t) {
-//         elim_transfer_src_name(ctx, static_cast<TacVariable*>(node)->name, next_instr_idx);
-//     }
-// }
+static void elim_transfer_src_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
+    if (node->type == AST_TacVariable_t) {
+        elim_transfer_src_name(ctx, node->get._TacVariable.name, next_instr_idx);
+    }
+}
 
-// static void elim_transfer_dst_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
-//     THROW_ABORT_IF(node->type() != AST_TacVariable_t);
-//     size_t i = map_get(ctx->cfg->identifier_id_map, static_cast<TacVariable*>(node)->name);
-//     SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
-// }
+static void elim_transfer_dst_value(Ctx ctx, TacValue* node, size_t next_instr_idx) {
+    THROW_ABORT_IF(node->type != AST_TacVariable_t);
+    size_t i = map_get(ctx->cfg->identifier_id_map, node->get._TacVariable.name);
+    SET_DFA_INSTR_SET_AT(next_instr_idx, i, false);
+}
 
-// static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_instr_idx) {
-//     TacInstruction* node = GET_INSTR(instr_idx).get();
-//     switch (node->type()) {
-//         case AST_TacReturn_t: {
-//             TacReturn* p_node = static_cast<TacReturn*>(node);
-//             if (p_node->val) {
-//                 elim_transfer_src_value(ctx, p_node->val.get(), next_instr_idx);
-//             }
-//             break;
-//         }
-//         case AST_TacSignExtend_t: {
-//             TacSignExtend* p_node = static_cast<TacSignExtend*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacTruncate_t: {
-//             TacTruncate* p_node = static_cast<TacTruncate*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacZeroExtend_t: {
-//             TacZeroExtend* p_node = static_cast<TacZeroExtend*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacDoubleToInt_t: {
-//             TacDoubleToInt* p_node = static_cast<TacDoubleToInt*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacDoubleToUInt_t: {
-//             TacDoubleToUInt* p_node = static_cast<TacDoubleToUInt*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacIntToDouble_t: {
-//             TacIntToDouble* p_node = static_cast<TacIntToDouble*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacUIntToDouble_t: {
-//             TacUIntToDouble* p_node = static_cast<TacUIntToDouble*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacFunCall_t: {
-//             TacFunCall* p_node = static_cast<TacFunCall*>(node);
-//             if (p_node->dst) {
-//                 elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             }
-//             for (size_t i = 0; i < vec_size(p_node->args); ++i) {
-//                 elim_transfer_src_value(ctx, p_node->args[i].get(), next_instr_idx);
-//             }
-//             elim_transfer_aliased(ctx, next_instr_idx);
-//             break;
-//         }
-//         case AST_TacUnary_t: {
-//             TacUnary* p_node = static_cast<TacUnary*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacBinary_t: {
-//             TacBinary* p_node = static_cast<TacBinary*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src1.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src2.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacCopy_t: {
-//             TacCopy* p_node = static_cast<TacCopy*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacGetAddress_t:
-//             elim_transfer_dst_value(ctx, static_cast<TacGetAddress*>(node)->dst.get(), next_instr_idx);
-//             break;
-//         case AST_TacLoad_t: {
-//             TacLoad* p_node = static_cast<TacLoad*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src_ptr.get(), next_instr_idx);
-//             elim_transfer_addressed(ctx, next_instr_idx);
-//             break;
-//         }
-//         case AST_TacStore_t: {
-//             TacStore* p_node = static_cast<TacStore*>(node);
-//             elim_transfer_src_value(ctx, p_node->src.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->dst_ptr.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacAddPtr_t: {
-//             TacAddPtr* p_node = static_cast<TacAddPtr*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->src_ptr.get(), next_instr_idx);
-//             elim_transfer_src_value(ctx, p_node->idx.get(), next_instr_idx);
-//             break;
-//         }
-//         case AST_TacCopyToOffset_t:
-//             elim_transfer_src_value(ctx, static_cast<TacCopyToOffset*>(node)->src.get(), next_instr_idx);
-//             break;
-//         case AST_TacCopyFromOffset_t: {
-//             TacCopyFromOffset* p_node = static_cast<TacCopyFromOffset*>(node);
-//             elim_transfer_dst_value(ctx, p_node->dst.get(), next_instr_idx);
-//             elim_transfer_src_name(ctx, p_node->src_name, next_instr_idx);
-//             break;
-//         }
-//         case AST_TacJumpIfZero_t:
-//             elim_transfer_src_value(ctx, static_cast<TacJumpIfZero*>(node)->condition.get(), next_instr_idx);
-//             break;
-//         case AST_TacJumpIfNotZero_t:
-//             elim_transfer_src_value(ctx, static_cast<TacJumpIfNotZero*>(node)->condition.get(), next_instr_idx);
-//             break;
-//         default:
-//             THROW_ABORT;
-//     }
-// }
+static void elim_transfer_live_values(Ctx ctx, size_t instr_idx, size_t next_instr_idx) {
+    TacInstruction* node = GET_INSTR(instr_idx);
+    switch (node->type) {
+        case AST_TacReturn_t: {
+            TacReturn* p_node = &node->get._TacReturn;
+            if (p_node->val) {
+                elim_transfer_src_value(ctx, p_node->val, next_instr_idx);
+            }
+            break;
+        }
+        case AST_TacSignExtend_t: {
+            TacSignExtend* p_node = &node->get._TacSignExtend;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacTruncate_t: {
+            TacTruncate* p_node = &node->get._TacTruncate;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacZeroExtend_t: {
+            TacZeroExtend* p_node = &node->get._TacZeroExtend;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacDoubleToInt_t: {
+            TacDoubleToInt* p_node = &node->get._TacDoubleToInt;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacDoubleToUInt_t: {
+            TacDoubleToUInt* p_node = &node->get._TacDoubleToUInt;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacIntToDouble_t: {
+            TacIntToDouble* p_node = &node->get._TacIntToDouble;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacUIntToDouble_t: {
+            TacUIntToDouble* p_node = &node->get._TacUIntToDouble;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacFunCall_t: {
+            TacFunCall* p_node = &node->get._TacFunCall;
+            if (p_node->dst) {
+                elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            }
+            for (size_t i = 0; i < vec_size(p_node->args); ++i) {
+                elim_transfer_src_value(ctx, p_node->args[i], next_instr_idx);
+            }
+            elim_transfer_aliased(ctx, next_instr_idx);
+            break;
+        }
+        case AST_TacUnary_t: {
+            TacUnary* p_node = &node->get._TacUnary;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacBinary_t: {
+            TacBinary* p_node = &node->get._TacBinary;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src1, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src2, next_instr_idx);
+            break;
+        }
+        case AST_TacCopy_t: {
+            TacCopy* p_node = &node->get._TacCopy;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            break;
+        }
+        case AST_TacGetAddress_t:
+            elim_transfer_dst_value(ctx, node->get._TacGetAddress.dst, next_instr_idx);
+            break;
+        case AST_TacLoad_t: {
+            TacLoad* p_node = &node->get._TacLoad;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src_ptr, next_instr_idx);
+            elim_transfer_addressed(ctx, next_instr_idx);
+            break;
+        }
+        case AST_TacStore_t: {
+            TacStore* p_node = &node->get._TacStore;
+            elim_transfer_src_value(ctx, p_node->src, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->dst_ptr, next_instr_idx);
+            break;
+        }
+        case AST_TacAddPtr_t: {
+            TacAddPtr* p_node = &node->get._TacAddPtr;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->src_ptr, next_instr_idx);
+            elim_transfer_src_value(ctx, p_node->idx, next_instr_idx);
+            break;
+        }
+        case AST_TacCopyToOffset_t:
+            elim_transfer_src_value(ctx, node->get._TacCopyToOffset.src, next_instr_idx);
+            break;
+        case AST_TacCopyFromOffset_t: {
+            TacCopyFromOffset* p_node = &node->get._TacCopyFromOffset;
+            elim_transfer_dst_value(ctx, p_node->dst, next_instr_idx);
+            elim_transfer_src_name(ctx, p_node->src_name, next_instr_idx);
+            break;
+        }
+        case AST_TacJumpIfZero_t:
+            elim_transfer_src_value(ctx, node->get._TacJumpIfZero.condition, next_instr_idx);
+            break;
+        case AST_TacJumpIfNotZero_t:
+            elim_transfer_src_value(ctx, node->get._TacJumpIfNotZero.condition, next_instr_idx);
+            break;
+        default:
+            THROW_ABORT;
+    }
+}
 
-// static void elim_dst_name_instr(Ctx ctx, TIdentifier name, size_t instr_idx) {
-//     size_t i = map_get(ctx->cfg->identifier_id_map, name);
-//     if (!GET_DFA_INSTR_SET_AT(instr_idx, i)) {
-//         set_instr(ctx, uptr_new(), instr_idx);
-//     }
-// }
+static void elim_dst_name_instr(Ctx ctx, TIdentifier name, size_t instr_idx) {
+    size_t i = map_get(ctx->cfg->identifier_id_map, name);
+    if (!GET_DFA_INSTR_SET_AT(instr_idx, i)) {
+        set_instr(ctx, uptr_new(), instr_idx);
+    }
+}
 
-// static void elim_dst_value_instr(Ctx ctx, TacValue* node, size_t instr_idx) {
-//     THROW_ABORT_IF(node->type() != AST_TacVariable_t);
-//     elim_dst_name_instr(ctx, static_cast<TacVariable*>(node)->name, instr_idx);
-// }
+static void elim_dst_value_instr(Ctx ctx, TacValue* node, size_t instr_idx) {
+    THROW_ABORT_IF(node->type != AST_TacVariable_t);
+    elim_dst_name_instr(ctx, node->get._TacVariable.name, instr_idx);
+}
 
-// static void elim_instr(Ctx ctx, size_t instr_idx) {
-//     TacInstruction* node = GET_INSTR(instr_idx).get();
-//     switch (node->type()) {
-//         case AST_TacSignExtend_t:
-//             elim_dst_value_instr(ctx, static_cast<TacSignExtend*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacTruncate_t:
-//             elim_dst_value_instr(ctx, static_cast<TacTruncate*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacZeroExtend_t:
-//             elim_dst_value_instr(ctx, static_cast<TacZeroExtend*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacDoubleToInt_t:
-//             elim_dst_value_instr(ctx, static_cast<TacDoubleToInt*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacDoubleToUInt_t:
-//             elim_dst_value_instr(ctx, static_cast<TacDoubleToUInt*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacIntToDouble_t:
-//             elim_dst_value_instr(ctx, static_cast<TacIntToDouble*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacUIntToDouble_t:
-//             elim_dst_value_instr(ctx, static_cast<TacUIntToDouble*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacUnary_t:
-//             elim_dst_value_instr(ctx, static_cast<TacUnary*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacBinary_t:
-//             elim_dst_value_instr(ctx, static_cast<TacBinary*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacCopy_t:
-//             elim_dst_value_instr(ctx, static_cast<TacCopy*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacGetAddress_t:
-//             elim_dst_value_instr(ctx, static_cast<TacGetAddress*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacLoad_t:
-//             elim_dst_value_instr(ctx, static_cast<TacLoad*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacAddPtr_t:
-//             elim_dst_value_instr(ctx, static_cast<TacAddPtr*>(node)->dst.get(), instr_idx);
-//             break;
-//         case AST_TacCopyToOffset_t:
-//             elim_dst_name_instr(ctx, static_cast<TacCopyToOffset*>(node)->dst_name, instr_idx);
-//             break;
-//         case AST_TacCopyFromOffset_t:
-//             elim_dst_value_instr(ctx, static_cast<TacCopyFromOffset*>(node)->dst.get(), instr_idx);
-//             break;
-//         default:
-//             break;
-//     }
-// }
+static void elim_instr(Ctx ctx, size_t instr_idx) {
+    TacInstruction* node = GET_INSTR(instr_idx);
+    switch (node->type) {
+        case AST_TacSignExtend_t:
+            elim_dst_value_instr(ctx, node->get._TacSignExtend.dst, instr_idx);
+            break;
+        case AST_TacTruncate_t:
+            elim_dst_value_instr(ctx, node->get._TacTruncate.dst, instr_idx);
+            break;
+        case AST_TacZeroExtend_t:
+            elim_dst_value_instr(ctx, node->get._TacZeroExtend.dst, instr_idx);
+            break;
+        case AST_TacDoubleToInt_t:
+            elim_dst_value_instr(ctx, node->get._TacDoubleToInt.dst, instr_idx);
+            break;
+        case AST_TacDoubleToUInt_t:
+            elim_dst_value_instr(ctx, node->get._TacDoubleToUInt.dst, instr_idx);
+            break;
+        case AST_TacIntToDouble_t:
+            elim_dst_value_instr(ctx, node->get._TacIntToDouble.dst, instr_idx);
+            break;
+        case AST_TacUIntToDouble_t:
+            elim_dst_value_instr(ctx, node->get._TacUIntToDouble.dst, instr_idx);
+            break;
+        case AST_TacUnary_t:
+            elim_dst_value_instr(ctx, node->get._TacUnary.dst, instr_idx);
+            break;
+        case AST_TacBinary_t:
+            elim_dst_value_instr(ctx, node->get._TacBinary.dst, instr_idx);
+            break;
+        case AST_TacCopy_t:
+            elim_dst_value_instr(ctx, node->get._TacCopy.dst, instr_idx);
+            break;
+        case AST_TacGetAddress_t:
+            elim_dst_value_instr(ctx, node->get._TacGetAddress.dst, instr_idx);
+            break;
+        case AST_TacLoad_t:
+            elim_dst_value_instr(ctx, node->get._TacLoad.dst, instr_idx);
+            break;
+        case AST_TacAddPtr_t:
+            elim_dst_value_instr(ctx, node->get._TacAddPtr.dst, instr_idx);
+            break;
+        case AST_TacCopyToOffset_t:
+            elim_dst_name_instr(ctx, node->get._TacCopyToOffset.dst_name, instr_idx);
+            break;
+        case AST_TacCopyFromOffset_t:
+            elim_dst_value_instr(ctx, node->get._TacCopyFromOffset.dst, instr_idx);
+            break;
+        default:
+            break;
+    }
+}
 
-// static void eliminate_dead_stores(Ctx ctx, bool is_addressed_set) {
-//     if (!init_data_flow_analysis(ctx, true, is_addressed_set)) {
-//         return;
-//     }
-//     dfa_iter_alg(ctx);
+static void eliminate_dead_stores(Ctx ctx, bool is_addressed_set) {
+    if (!init_data_flow_analysis(ctx, true, is_addressed_set)) {
+        return;
+    }
+    dfa_iter_alg(ctx);
 
-//     for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
-//         if (GET_CFG_BLOCK(block_id).size > 0) {
-//             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
-//                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
-//                 if (GET_INSTR(instr_idx)) {
-//                     elim_instr(ctx, instr_idx);
-//                 }
-//             }
-//         }
-//     }
-// }
+    for (size_t block_id = 0; block_id < vec_size(ctx->cfg->blocks); ++block_id) {
+        if (GET_CFG_BLOCK(block_id).size > 0) {
+            for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
+                 instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
+                if (GET_INSTR(instr_idx)) {
+                    elim_instr(ctx, instr_idx);
+                }
+            }
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2656,9 +2655,9 @@ static void optim_fun_toplvl(Ctx ctx, TacFunction* node) {
             if (ctx->enabled_optims[COPY_PROPAGATION]) {
                 propagate_copies(ctx);
             }
-            // if (ctx->enabled_optims[DEAD_STORE_ELIMINATION]) {
-            //     eliminate_dead_stores(ctx, !ctx->enabled_optims[COPY_PROPAGATION]);
-            // }
+            if (ctx->enabled_optims[DEAD_STORE_ELIMINATION]) {
+                eliminate_dead_stores(ctx, !ctx->enabled_optims[COPY_PROPAGATION]);
+            }
         }
     }
     while (!ctx->is_fixed_point);
