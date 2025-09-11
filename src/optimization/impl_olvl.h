@@ -64,6 +64,79 @@ typedef struct DataFlowAnalysisO2 {
 } DataFlowAnalysisO2;
 #endif
 
+static void free_ControlFlowGraph(unique_ptr_t(ControlFlowGraph) * self) {
+    uptr_delete(*self);
+    vec_delete((*self)->entry_succ_ids);
+    vec_delete((*self)->exit_pred_ids);
+    vec_delete((*self)->reaching_code);
+    for (size_t i = 0; i < vec_size((*self)->blocks); ++i) {
+        vec_delete((*self)->blocks[i].pred_ids);
+        vec_delete((*self)->blocks[i].succ_ids);
+    }
+    vec_delete((*self)->blocks);
+    map_delete((*self)->identifier_id_map);
+    uptr_free(*self);
+}
+
+static unique_ptr_t(ControlFlowGraph) make_ControlFlowGraph(void) {
+    unique_ptr_t(ControlFlowGraph) self = uptr_new();
+    uptr_alloc(ControlFlowGraph, self);
+    self->entry_id = 0;
+    self->exit_id = 0;
+    self->entry_succ_ids = vec_new();
+    self->exit_pred_ids = vec_new();
+    self->reaching_code = vec_new();
+    self->blocks = vec_new();
+    self->identifier_id_map = map_new();
+    return self;
+}
+
+static void free_DataFlowAnalysis(unique_ptr_t(DataFlowAnalysis) * self) {
+    uptr_delete(*self);
+    vec_delete((*self)->open_data_map);
+    vec_delete((*self)->instr_idx_map);
+    vec_delete((*self)->blocks_mask_sets);
+    vec_delete((*self)->instrs_mask_sets);
+    uptr_free(*self);
+}
+
+static unique_ptr_t(DataFlowAnalysis) make_DataFlowAnalysis(void) {
+    unique_ptr_t(DataFlowAnalysis) self = uptr_new();
+    uptr_alloc(DataFlowAnalysis, self);
+    self->set_size = 0;
+    self->mask_size = 0;
+    self->incoming_idx = 0;
+    self->static_idx = 0;
+    self->open_data_map = vec_new();
+    self->instr_idx_map = vec_new();
+    self->blocks_mask_sets = vec_new();
+    self->instrs_mask_sets = vec_new();
+    return self;
+}
+
+#if __OPTIM_LEVEL__ == 1
+static void free_DataFlowAnalysisO1(unique_ptr_t(DataFlowAnalysisO1) * self) {
+    uptr_delete(*self);
+    vec_delete((*self)->data_idx_map);
+    for (size_t i = 0; i < vec_size((*self)->bak_instrs); ++i) {
+        free_TacInstruction(&(*self)->bak_instrs[i]);
+    }
+    vec_delete((*self)->bak_instrs);
+    uptr_free(*self);
+}
+
+static unique_ptr_t(DataFlowAnalysisO1) make_DataFlowAnalysisO1(void) {
+    unique_ptr_t(DataFlowAnalysisO1) self = uptr_new();
+    uptr_alloc(DataFlowAnalysisO1, self);
+    self->addressed_idx = 0;
+    self->data_idx_map = vec_new();
+    self->bak_instrs = vec_new();
+    return self;
+}
+#elif __OPTIM_LEVEL__ == 2
+// TODO
+#endif
+
 static void set_instr(Ctx ctx, unique_ptr_t(AstInstruction) instr, size_t instr_idx) {
     if (instr) {
         uptr_move_AstInstruction(instr, GET_INSTR(instr_idx));
