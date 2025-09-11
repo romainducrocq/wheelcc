@@ -1218,6 +1218,7 @@ static bool init_data_flow_analysis(Ctx ctx,
             vec_resize(ctx->cfg->reaching_code, ctx->dfa->set_size);
         }
         for (size_t j = vec_size(ctx->dfa_o1->bak_instrs); j <= ctx->dfa->set_size; ++j) {
+            // TODO probably need to free something here
             vec_push_back(ctx->dfa_o1->bak_instrs, uptr_new()); // TODO check this is ok
         }
 
