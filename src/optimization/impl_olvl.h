@@ -390,6 +390,7 @@ static void set_instr(Ctx ctx, unique_ptr_t(AstInstruction) instr, size_t instr_
 //     }
 // }
 
+// // TODO use static functions for some of these macros (not overhead because static, but single eval)
 // #define MASK_FALSE 0ul
 // #if __OPTIM_LEVEL__ == 1
 // #define MASK_TRUE 18446744073709551615ul
