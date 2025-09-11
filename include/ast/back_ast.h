@@ -264,6 +264,39 @@ void free_AsmReg(unique_ptr_t(AsmReg) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_AsmReg() tagged_def_init(AST, AsmReg)
+#define init_AsmAx() tagged_def_init(AST, AsmAx)
+#define init_AsmBx() tagged_def_init(AST, AsmBx)
+#define init_AsmCx() tagged_def_init(AST, AsmCx)
+#define init_AsmDx() tagged_def_init(AST, AsmDx)
+#define init_AsmDi() tagged_def_init(AST, AsmDi)
+#define init_AsmSi() tagged_def_init(AST, AsmSi)
+#define init_AsmR8() tagged_def_init(AST, AsmR8)
+#define init_AsmR9() tagged_def_init(AST, AsmR9)
+#define init_AsmR10() tagged_def_init(AST, AsmR10)
+#define init_AsmR11() tagged_def_init(AST, AsmR11)
+#define init_AsmR12() tagged_def_init(AST, AsmR12)
+#define init_AsmR13() tagged_def_init(AST, AsmR13)
+#define init_AsmR14() tagged_def_init(AST, AsmR14)
+#define init_AsmR15() tagged_def_init(AST, AsmR15)
+#define init_AsmSp() tagged_def_init(AST, AsmSp)
+#define init_AsmBp() tagged_def_init(AST, AsmBp)
+#define init_AsmXMM0() tagged_def_init(AST, AsmXMM0)
+#define init_AsmXMM1() tagged_def_init(AST, AsmXMM1)
+#define init_AsmXMM2() tagged_def_init(AST, AsmXMM2)
+#define init_AsmXMM3() tagged_def_init(AST, AsmXMM3)
+#define init_AsmXMM4() tagged_def_init(AST, AsmXMM4)
+#define init_AsmXMM5() tagged_def_init(AST, AsmXMM5)
+#define init_AsmXMM6() tagged_def_init(AST, AsmXMM6)
+#define init_AsmXMM7() tagged_def_init(AST, AsmXMM7)
+#define init_AsmXMM8() tagged_def_init(AST, AsmXMM8)
+#define init_AsmXMM9() tagged_def_init(AST, AsmXMM9)
+#define init_AsmXMM10() tagged_def_init(AST, AsmXMM10)
+#define init_AsmXMM11() tagged_def_init(AST, AsmXMM11)
+#define init_AsmXMM12() tagged_def_init(AST, AsmXMM12)
+#define init_AsmXMM13() tagged_def_init(AST, AsmXMM13)
+#define init_AsmXMM14() tagged_def_init(AST, AsmXMM14)
+#define init_AsmXMM15() tagged_def_init(AST, AsmXMM15)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -360,6 +393,18 @@ void free_AsmCondCode(unique_ptr_t(AsmCondCode) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_AsmCondCode() tagged_def_init(AST, AsmCondCode)
+#define init_AsmE() tagged_def_init(AST, AsmE)
+#define init_AsmNE() tagged_def_init(AST, AsmNE)
+#define init_AsmG() tagged_def_init(AST, AsmG)
+#define init_AsmGE() tagged_def_init(AST, AsmGE)
+#define init_AsmL() tagged_def_init(AST, AsmL)
+#define init_AsmLE() tagged_def_init(AST, AsmLE)
+#define init_AsmA() tagged_def_init(AST, AsmA)
+#define init_AsmAE() tagged_def_init(AST, AsmAE)
+#define init_AsmB() tagged_def_init(AST, AsmB)
+#define init_AsmBE() tagged_def_init(AST, AsmBE)
+#define init_AsmP() tagged_def_init(AST, AsmP)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -526,6 +571,17 @@ void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_AsmBinaryOp() tagged_def_init(AST, AsmBinaryOp)
+#define init_AsmAdd() tagged_def_init(AST, AsmAdd)
+#define init_AsmSub() tagged_def_init(AST, AsmSub)
+#define init_AsmMult() tagged_def_init(AST, AsmMult)
+#define init_AsmDivDouble() tagged_def_init(AST, AsmDivDouble)
+#define init_AsmBitAnd() tagged_def_init(AST, AsmBitAnd)
+#define init_AsmBitOr() tagged_def_init(AST, AsmBitOr)
+#define init_AsmBitXor() tagged_def_init(AST, AsmBitXor)
+#define init_AsmBitShiftLeft() tagged_def_init(AST, AsmBitShiftLeft)
+#define init_AsmBitShiftRight() tagged_def_init(AST, AsmBitShiftRight)
+#define init_AsmBitShrArithmetic() tagged_def_init(AST, AsmBitShrArithmetic)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -566,6 +622,10 @@ void free_AsmUnaryOp(unique_ptr_t(AsmUnaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_AsmUnaryOp() tagged_def_init(AST, AsmUnaryOp)
+#define init_AsmNot() tagged_def_init(AST, AsmNot)
+#define init_AsmNeg() tagged_def_init(AST, AsmNeg)
+#define init_AsmShr() tagged_def_init(AST, AsmShr)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

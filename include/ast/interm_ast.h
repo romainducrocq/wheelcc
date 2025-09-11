@@ -59,6 +59,10 @@ void free_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_TacUnaryOp() tagged_def_init(AST, TacUnaryOp)
+#define init_TacComplement() tagged_def_init(AST, TacComplement)
+#define init_TacNegate() tagged_def_init(AST, TacNegate)
+#define init_TacNot() tagged_def_init(AST, TacNot)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -197,6 +201,24 @@ void free_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_TacBinaryOp() tagged_def_init(AST, TacBinaryOp)
+#define init_TacAdd() tagged_def_init(AST, TacAdd)
+#define init_TacSubtract() tagged_def_init(AST, TacSubtract)
+#define init_TacMultiply() tagged_def_init(AST, TacMultiply)
+#define init_TacDivide() tagged_def_init(AST, TacDivide)
+#define init_TacRemainder() tagged_def_init(AST, TacRemainder)
+#define init_TacBitAnd() tagged_def_init(AST, TacBitAnd)
+#define init_TacBitOr() tagged_def_init(AST, TacBitOr)
+#define init_TacBitXor() tagged_def_init(AST, TacBitXor)
+#define init_TacBitShiftLeft() tagged_def_init(AST, TacBitShiftLeft)
+#define init_TacBitShiftRight() tagged_def_init(AST, TacBitShiftRight)
+#define init_TacBitShrArithmetic() tagged_def_init(AST, TacBitShrArithmetic)
+#define init_TacEqual() tagged_def_init(AST, TacEqual)
+#define init_TacNotEqual() tagged_def_init(AST, TacNotEqual)
+#define init_TacLessThan() tagged_def_init(AST, TacLessThan)
+#define init_TacLessOrEqual() tagged_def_init(AST, TacLessOrEqual)
+#define init_TacGreaterThan() tagged_def_init(AST, TacGreaterThan)
+#define init_TacGreaterOrEqual() tagged_def_init(AST, TacGreaterOrEqual)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -84,6 +84,12 @@ void free_CUnaryOp(unique_ptr_t(CUnaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_CUnaryOp() tagged_def_init(AST, CUnaryOp)
+#define init_CComplement() tagged_def_init(AST, CComplement)
+#define init_CNegate() tagged_def_init(AST, CNegate)
+#define init_CNot() tagged_def_init(AST, CNot)
+#define init_CPrefix() tagged_def_init(AST, CPrefix)
+#define init_CPostfix() tagged_def_init(AST, CPostfix)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -236,6 +242,26 @@ void free_CBinaryOp(unique_ptr_t(CBinaryOp) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_CBinaryOp() tagged_def_init(AST, CBinaryOp)
+#define init_CAdd() tagged_def_init(AST, CAdd)
+#define init_CSubtract() tagged_def_init(AST, CSubtract)
+#define init_CMultiply() tagged_def_init(AST, CMultiply)
+#define init_CDivide() tagged_def_init(AST, CDivide)
+#define init_CRemainder() tagged_def_init(AST, CRemainder)
+#define init_CBitAnd() tagged_def_init(AST, CBitAnd)
+#define init_CBitOr() tagged_def_init(AST, CBitOr)
+#define init_CBitXor() tagged_def_init(AST, CBitXor)
+#define init_CBitShiftLeft() tagged_def_init(AST, CBitShiftLeft)
+#define init_CBitShiftRight() tagged_def_init(AST, CBitShiftRight)
+#define init_CBitShrArithmetic() tagged_def_init(AST, CBitShrArithmetic)
+#define init_CAnd() tagged_def_init(AST, CAnd)
+#define init_COr() tagged_def_init(AST, COr)
+#define init_CEqual() tagged_def_init(AST, CEqual)
+#define init_CNotEqual() tagged_def_init(AST, CNotEqual)
+#define init_CLessThan() tagged_def_init(AST, CLessThan)
+#define init_CLessOrEqual() tagged_def_init(AST, CLessOrEqual)
+#define init_CGreaterThan() tagged_def_init(AST, CGreaterThan)
+#define init_CGreaterOrEqual() tagged_def_init(AST, CGreaterOrEqual)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -786,6 +812,9 @@ void free_CStorageClass(unique_ptr_t(CStorageClass) * self);
 #ifdef __cplusplus
 }
 #endif
+#define init_CStorageClass() tagged_def_init(AST, CStorageClass)
+#define init_CStatic() tagged_def_init(AST, CStatic)
+#define init_CExtern() tagged_def_init(AST, CExtern)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
