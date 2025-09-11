@@ -134,7 +134,18 @@ static unique_ptr_t(DataFlowAnalysisO1) make_DataFlowAnalysisO1(void) {
     return self;
 }
 #elif __OPTIM_LEVEL__ == 2
-// TODO
+static void free_DataFlowAnalysisO2(unique_ptr_t(DataFlowAnalysisO2) * self) {
+    uptr_delete(*self);
+    vec_delete((*self)->data_name_map);
+    uptr_free(*self);
+}
+
+static unique_ptr_t(DataFlowAnalysisO2) make_DataFlowAnalysisO2(void) {
+    unique_ptr_t(DataFlowAnalysisO2) self = uptr_new();
+    uptr_alloc(DataFlowAnalysisO2, self);
+    self->data_name_map = vec_new();
+    return self;
+}
 #endif
 
 static void set_instr(Ctx ctx, unique_ptr_t(AstInstruction) instr, size_t instr_idx) {

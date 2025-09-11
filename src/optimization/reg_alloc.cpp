@@ -62,6 +62,61 @@ typedef struct RegAllocContext {
     bool is_with_coal;
 } RegAllocContext;
 
+static void free_InferenceGraph(unique_ptr_t(InferenceGraph) * self) {
+    uptr_delete(*self);
+    vec_delete((*self)->unpruned_hard_mask_bits);
+    vec_delete((*self)->unpruned_pseudo_names);
+    for (size_t i = 0; i < map_size((*self)->pseudo_reg_map); ++i) {
+        vec_delete(pair_second((*self)->pseudo_reg_map[i]).linked_pseudo_names);
+    }
+    map_delete((*self)->pseudo_reg_map);
+    uptr_free(*self);
+}
+
+static unique_ptr_t(InferenceGraph) make_InferenceGraph(bool is_sse) {
+    unique_ptr_t(InferenceGraph) self = uptr_new();
+    uptr_alloc(InferenceGraph, self);
+    self->hard_reg_mask = REGISTER_MASK_FALSE;
+    self->unpruned_hard_mask_bits = vec_new();
+    self->unpruned_pseudo_names = vec_new();
+    self->pseudo_reg_map = map_new();
+    if (is_sse) {
+        self->k = 14;
+        self->offset = 12;
+        register_mask_set(&self->hard_reg_mask, REG_Xmm0, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm1, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm2, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm3, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm4, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm5, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm6, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm7, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm8, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm9, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm10, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm11, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm12, true);
+        register_mask_set(&self->hard_reg_mask, REG_Xmm13, true);
+    }
+    else {
+        self->k = 12;
+        self->offset = 0;
+        register_mask_set(&self->hard_reg_mask, REG_Ax, true);
+        register_mask_set(&self->hard_reg_mask, REG_Bx, true);
+        register_mask_set(&self->hard_reg_mask, REG_Cx, true);
+        register_mask_set(&self->hard_reg_mask, REG_Dx, true);
+        register_mask_set(&self->hard_reg_mask, REG_Di, true);
+        register_mask_set(&self->hard_reg_mask, REG_Si, true);
+        register_mask_set(&self->hard_reg_mask, REG_R8, true);
+        register_mask_set(&self->hard_reg_mask, REG_R9, true);
+        register_mask_set(&self->hard_reg_mask, REG_R12, true);
+        register_mask_set(&self->hard_reg_mask, REG_R13, true);
+        register_mask_set(&self->hard_reg_mask, REG_R14, true);
+        register_mask_set(&self->hard_reg_mask, REG_R15, true);
+    }
+    return self;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Register allocation
@@ -1718,7 +1773,7 @@ static void reallocate_registers(Ctx ctx) {
 //     return true;
 // }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void alloc_fun_toplvl(Ctx ctx, AsmFunction* node) {
     ctx->p_instrs = &node->instructions;
@@ -1762,146 +1817,61 @@ static void alloc_program(Ctx ctx, AsmProgram* node) {
     }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend, uint8_t optim_2_code) {
-//     RegAllocContext ctx;
-//     {
-//         ctx.backend = backend;
-//         ctx.frontend = frontend;
-//         ctx.is_with_coal = optim_2_code > 1u;
+void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend, uint8_t optim_2_code) {
+    RegAllocContext ctx;
+    {
+        ctx.backend = backend;
+        ctx.frontend = frontend;
+        ctx.is_with_coal = optim_2_code > 1u;
 
-//         ctx.hard_regs[0].reg_kind = REG_Ax;
-//         ctx.hard_regs[1].reg_kind = REG_Bx;
-//         ctx.hard_regs[2].reg_kind = REG_Cx;
-//         ctx.hard_regs[3].reg_kind = REG_Dx;
-//         ctx.hard_regs[4].reg_kind = REG_Di;
-//         ctx.hard_regs[5].reg_kind = REG_Si;
-//         ctx.hard_regs[6].reg_kind = REG_R8;
-//         ctx.hard_regs[7].reg_kind = REG_R9;
-//         ctx.hard_regs[8].reg_kind = REG_R12;
-//         ctx.hard_regs[9].reg_kind = REG_R13;
-//         ctx.hard_regs[10].reg_kind = REG_R14;
-//         ctx.hard_regs[11].reg_kind = REG_R15;
+        ctx.hard_regs[0].reg_kind = REG_Ax;
+        ctx.hard_regs[1].reg_kind = REG_Bx;
+        ctx.hard_regs[2].reg_kind = REG_Cx;
+        ctx.hard_regs[3].reg_kind = REG_Dx;
+        ctx.hard_regs[4].reg_kind = REG_Di;
+        ctx.hard_regs[5].reg_kind = REG_Si;
+        ctx.hard_regs[6].reg_kind = REG_R8;
+        ctx.hard_regs[7].reg_kind = REG_R9;
+        ctx.hard_regs[8].reg_kind = REG_R12;
+        ctx.hard_regs[9].reg_kind = REG_R13;
+        ctx.hard_regs[10].reg_kind = REG_R14;
+        ctx.hard_regs[11].reg_kind = REG_R15;
 
-//         ctx.hard_regs[12].reg_kind = REG_Xmm0;
-//         ctx.hard_regs[13].reg_kind = REG_Xmm1;
-//         ctx.hard_regs[14].reg_kind = REG_Xmm2;
-//         ctx.hard_regs[15].reg_kind = REG_Xmm3;
-//         ctx.hard_regs[16].reg_kind = REG_Xmm4;
-//         ctx.hard_regs[17].reg_kind = REG_Xmm5;
-//         ctx.hard_regs[18].reg_kind = REG_Xmm6;
-//         ctx.hard_regs[19].reg_kind = REG_Xmm7;
-//         ctx.hard_regs[20].reg_kind = REG_Xmm8;
-//         ctx.hard_regs[21].reg_kind = REG_Xmm9;
-//         ctx.hard_regs[22].reg_kind = REG_Xmm10;
-//         ctx.hard_regs[23].reg_kind = REG_Xmm11;
-//         ctx.hard_regs[24].reg_kind = REG_Xmm12;
-//         ctx.hard_regs[25].reg_kind = REG_Xmm13;
+        ctx.hard_regs[12].reg_kind = REG_Xmm0;
+        ctx.hard_regs[13].reg_kind = REG_Xmm1;
+        ctx.hard_regs[14].reg_kind = REG_Xmm2;
+        ctx.hard_regs[15].reg_kind = REG_Xmm3;
+        ctx.hard_regs[16].reg_kind = REG_Xmm4;
+        ctx.hard_regs[17].reg_kind = REG_Xmm5;
+        ctx.hard_regs[18].reg_kind = REG_Xmm6;
+        ctx.hard_regs[19].reg_kind = REG_Xmm7;
+        ctx.hard_regs[20].reg_kind = REG_Xmm8;
+        ctx.hard_regs[21].reg_kind = REG_Xmm9;
+        ctx.hard_regs[22].reg_kind = REG_Xmm10;
+        ctx.hard_regs[23].reg_kind = REG_Xmm11;
+        ctx.hard_regs[24].reg_kind = REG_Xmm12;
+        ctx.hard_regs[25].reg_kind = REG_Xmm13;
 
-//         for (size_t i = 0; i < 26; ++i) {
-//             ctx.hard_regs[i].linked_pseudo_names = vec_new();
-//         }
+        for (size_t i = 0; i < 26; ++i) {
+            ctx.hard_regs[i].linked_pseudo_names = vec_new();
+        }
 
-//         ctx.cfg = std::make_unique<ControlFlowGraph>();
-//         ctx.cfg->exit_pred_ids = vec_new();
-//         ctx.cfg->entry_succ_ids = vec_new();
-//         ctx.cfg->reaching_code = vec_new();
-//         ctx.cfg->blocks = vec_new();
-//         ctx.cfg->identifier_id_map = map_new();
+        ctx.cfg = make_ControlFlowGraph();
+        ctx.dfa = make_DataFlowAnalysis();
+        ctx.dfa_o2 = make_DataFlowAnalysisO2();
+        ctx.infer_graph = make_InferenceGraph(false);
+        ctx.sse_infer_graph = make_InferenceGraph(true);
+    }
+    alloc_program(&ctx, node);
 
-//         ctx.dfa = std::make_unique<DataFlowAnalysis>();
-//         ctx.dfa->open_data_map = vec_new();
-//         ctx.dfa->instr_idx_map = vec_new();
-//         ctx.dfa->blocks_mask_sets = vec_new();
-//         ctx.dfa->instrs_mask_sets = vec_new();
-
-//         ctx.dfa_o2 = std::make_unique<DataFlowAnalysisO2>();
-//         ctx.dfa_o2->data_name_map = vec_new();
-
-//         ctx.infer_graph = std::make_unique<InferenceGraph>();
-//         {
-//             ctx.infer_graph->k = 12;
-//             ctx.infer_graph->offset = 0;
-
-//             ctx.infer_graph->hard_reg_mask = REGISTER_MASK_FALSE;
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Ax, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Bx, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Cx, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Dx, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Di, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_Si, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R8, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R9, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R12, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R13, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R14, true);
-//             register_mask_set(&ctx.infer_graph->hard_reg_mask, REG_R15, true);
-
-//             ctx.infer_graph->unpruned_hard_mask_bits = vec_new();
-//             ctx.infer_graph->unpruned_pseudo_names = vec_new();
-//             ctx.infer_graph->pseudo_reg_map = map_new();
-//         }
-//         ctx.sse_infer_graph = std::make_unique<InferenceGraph>();
-//         {
-//             ctx.sse_infer_graph->k = 14;
-//             ctx.sse_infer_graph->offset = 12;
-
-//             ctx.sse_infer_graph->hard_reg_mask = REGISTER_MASK_FALSE;
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm0, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm1, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm2, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm3, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm4, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm5, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm6, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm7, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm8, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm9, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm10, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm11, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm12, true);
-//             register_mask_set(&ctx.sse_infer_graph->hard_reg_mask, REG_Xmm13, true);
-
-//             ctx.sse_infer_graph->unpruned_hard_mask_bits = vec_new();
-//             ctx.sse_infer_graph->unpruned_pseudo_names = vec_new();
-//             ctx.sse_infer_graph->pseudo_reg_map = map_new();
-//         }
-//     }
-//     alloc_program(&ctx, node);
-
-//     for (size_t i = 0; i < 26; ++i) {
-//         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
-//     }
-
-//     vec_delete(ctx.cfg->exit_pred_ids);
-//     vec_delete(ctx.cfg->entry_succ_ids);
-//     vec_delete(ctx.cfg->reaching_code);
-//     for (size_t i = 0; i < vec_size(ctx.cfg->blocks); ++i) {
-//         vec_delete(ctx.cfg->blocks[i].pred_ids);
-//         vec_delete(ctx.cfg->blocks[i].succ_ids);
-//     }
-//     vec_delete(ctx.cfg->blocks);
-//     map_delete(ctx.cfg->identifier_id_map);
-
-//     vec_delete(ctx.dfa->open_data_map);
-//     vec_delete(ctx.dfa->instr_idx_map);
-//     vec_delete(ctx.dfa->blocks_mask_sets);
-//     vec_delete(ctx.dfa->instrs_mask_sets);
-
-//     vec_delete(ctx.dfa_o2->data_name_map);
-
-//     vec_delete(ctx.infer_graph->unpruned_hard_mask_bits);
-//     vec_delete(ctx.infer_graph->unpruned_pseudo_names);
-//     for (size_t i = 0; i < map_size(ctx.infer_graph->pseudo_reg_map); ++i) {
-//         vec_delete(pair_second(ctx.infer_graph->pseudo_reg_map[i]).linked_pseudo_names);
-//     }
-//     map_delete(ctx.infer_graph->pseudo_reg_map);
-
-//     vec_delete(ctx.sse_infer_graph->unpruned_hard_mask_bits);
-//     vec_delete(ctx.sse_infer_graph->unpruned_pseudo_names);
-//     for (size_t i = 0; i < map_size(ctx.sse_infer_graph->pseudo_reg_map); ++i) {
-//         vec_delete(pair_second(ctx.sse_infer_graph->pseudo_reg_map[i]).linked_pseudo_names);
-//     }
-//     map_delete(ctx.sse_infer_graph->pseudo_reg_map);
-// }
+    for (size_t i = 0; i < 26; ++i) {
+        vec_delete(ctx.hard_regs[i].linked_pseudo_names);
+    }
+    free_ControlFlowGraph(&ctx.cfg);
+    free_DataFlowAnalysis(&ctx.dfa);
+    free_DataFlowAnalysisO2(&ctx.dfa_o2);
+    free_InferenceGraph(&ctx.infer_graph);
+    free_InferenceGraph(&ctx.sse_infer_graph);
+}

@@ -250,7 +250,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
     convert_symbol_table(asm_ast, &backend, &frontend);
     if (ctx->optim_2_code > 0) {
         verbose(ctx, "OK\n-- Level 2 optimization ... ");
-        // allocate_registers(asm_ast.get(), &backend, &frontend, ctx->optim_2_code);
+        allocate_registers(asm_ast, &backend, &frontend, ctx->optim_2_code);
     }
     fix_stack(asm_ast, &backend);
     verbose(ctx, "OK\n");
