@@ -990,7 +990,7 @@ static shared_ptr_t(CConst) fold_copy_char_const(Ctx ctx, TacVariable* node, CCo
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Char_t:
         case AST_SChar_t:
-            return NULL;
+            return sptr_new();
         case AST_UChar_t: {
             TUChar value = (TUChar)constant->value;
             return make_CConstUChar(value);
@@ -1003,7 +1003,7 @@ static shared_ptr_t(CConst) fold_copy_char_const(Ctx ctx, TacVariable* node, CCo
 static shared_ptr_t(CConst) fold_copy_int_const(Ctx ctx, TacVariable* node, CConstInt* constant) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Int_t:
-            return NULL;
+            return sptr_new();
         case AST_UInt_t: {
             TUInt value = (TUInt)constant->value;
             return make_CConstUInt(value);
@@ -1017,7 +1017,7 @@ static shared_ptr_t(CConst) fold_copy_long_const(Ctx ctx, TacVariable* node, CCo
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Long_t:
         case AST_Pointer_t:
-            return NULL;
+            return sptr_new();
         case AST_Double_t: {
             TDouble value = (TDouble)constant->value;
             return make_CConstDouble(value);
@@ -1038,7 +1038,7 @@ static shared_ptr_t(CConst) fold_copy_dbl_const(Ctx ctx, TacVariable* node, CCon
             return make_CConstLong(value);
         }
         case AST_Double_t:
-            return NULL;
+            return sptr_new();
         case AST_ULong_t: {
             TULong value = (TULong)constant->value;
             return make_CConstULong(value);
@@ -1056,7 +1056,7 @@ static shared_ptr_t(CConst) fold_copy_uchar_const(Ctx ctx, TacVariable* node, CC
             return make_CConstChar(value);
         }
         case AST_UChar_t:
-            return NULL;
+            return sptr_new();
         default:
             THROW_ABORT;
     }
@@ -1069,7 +1069,7 @@ static shared_ptr_t(CConst) fold_copy_uint_const(Ctx ctx, TacVariable* node, CCo
             return make_CConstInt(value);
         }
         case AST_UInt_t:
-            return NULL;
+            return sptr_new();
         default:
             THROW_ABORT;
     }
@@ -1087,7 +1087,7 @@ static shared_ptr_t(CConst) fold_copy_ulong_const(Ctx ctx, TacVariable* node, CC
         }
         case AST_Pointer_t:
         case AST_ULong_t:
-            return NULL;
+            return sptr_new();
         default:
             THROW_ABORT;
     }
@@ -1131,7 +1131,7 @@ static shared_ptr_t(TacValue) fold_copy_const(Ctx ctx, TacVariable* node, CConst
         return make_TacConstant(&fold_constant);
     }
     else {
-        return NULL;
+        return sptr_new();
     }
 }
 
