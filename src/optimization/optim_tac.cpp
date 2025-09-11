@@ -23,6 +23,7 @@ typedef struct OptimTacContext {
     // Dead store elimination
     bool is_fixed_point;
     bool enabled_optims[5];
+    // TODO free these at exit
     unique_ptr_t(ControlFlowGraph) cfg;
     unique_ptr_t(DataFlowAnalysis) dfa;
     unique_ptr_t(DataFlowAnalysisO1) dfa_o1;
