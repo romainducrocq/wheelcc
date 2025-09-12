@@ -6,6 +6,15 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
+#if 0
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifndef __cplusplus
+#include <stdnoreturn.h>
+#endif
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
