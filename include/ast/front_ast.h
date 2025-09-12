@@ -39,57 +39,16 @@ typedef struct CProgram CProgram;
 //                | Prefix
 //                | Postfix
 
-typedef struct CComplement {
-    int8_t _empty;
-} CComplement;
-
-typedef struct CNegate {
-    int8_t _empty;
-} CNegate;
-
-typedef struct CNot {
-    int8_t _empty;
-} CNot;
-
-typedef struct CPrefix {
-    int8_t _empty;
-} CPrefix;
-
-typedef struct CPostfix {
-    int8_t _empty;
-} CPostfix;
-
 typedef struct CUnaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        CComplement _CComplement;
-        CNegate _CNegate;
-        CNot _CNot;
-        CPrefix _CPrefix;
-        CPostfix _CPostfix;
-    } get;
+    tagged_def_impl(AST_T);
 } CUnaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(CUnaryOp) make_CUnaryOp(void);
-unique_ptr_t(CUnaryOp) make_CComplement(void);
-unique_ptr_t(CUnaryOp) make_CNegate(void);
-unique_ptr_t(CUnaryOp) make_CNot(void);
-unique_ptr_t(CUnaryOp) make_CPrefix(void);
-unique_ptr_t(CUnaryOp) make_CPostfix(void);
-void free_CUnaryOp(unique_ptr_t(CUnaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
-#define init_CUnaryOp() tagged_def_init(AST, CUnaryOp)
-#define init_CComplement() tagged_def_init(AST, CComplement)
-#define init_CNegate() tagged_def_init(AST, CNegate)
-#define init_CNot() tagged_def_init(AST, CNot)
-#define init_CPrefix() tagged_def_init(AST, CPrefix)
-#define init_CPostfix() tagged_def_init(AST, CPostfix)
+#define init_CUnaryOp() tagged_def_init(AST, CUnaryOp, CUnaryOp)
+#define init_CComplement() tagged_def_init(AST, CUnaryOp, CComplement)
+#define init_CNegate() tagged_def_init(AST, CUnaryOp, CNegate)
+#define init_CNot() tagged_def_init(AST, CUnaryOp, CNot)
+#define init_CPrefix() tagged_def_init(AST, CUnaryOp, CPrefix)
+#define init_CPostfix() tagged_def_init(AST, CUnaryOp, CPostfix)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -414,7 +373,7 @@ typedef struct CCast {
 } CCast;
 
 typedef struct CUnary {
-    unique_ptr_t(CUnaryOp) unop;
+    CUnaryOp unop;
     unique_ptr_t(CExp) exp;
     CExp* _base;
 } CUnary;
@@ -427,7 +386,7 @@ typedef struct CBinary {
 } CBinary;
 
 typedef struct CAssignment {
-    unique_ptr_t(CUnaryOp) unop;
+    CUnaryOp unop;
     unique_ptr_t(CExp) exp_left;
     unique_ptr_t(CExp) exp_right;
     CExp* _base;
@@ -517,11 +476,11 @@ unique_ptr_t(CExp) make_CConstant(shared_ptr_t(CConst) * constant, size_t line);
 unique_ptr_t(CExp) make_CString(shared_ptr_t(CStringLiteral) * literal, size_t line);
 unique_ptr_t(CExp) make_CVar(TIdentifier name, size_t line);
 unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * target_type, size_t line);
-unique_ptr_t(CExp) make_CUnary(unique_ptr_t(CUnaryOp) * unop, unique_ptr_t(CExp) * exp, size_t line);
+unique_ptr_t(CExp) make_CUnary(CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t line);
 unique_ptr_t(CExp) make_CBinary(
     unique_ptr_t(CBinaryOp) * binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
-unique_ptr_t(CExp) make_CAssignment(
-    unique_ptr_t(CUnaryOp) * unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
+unique_ptr_t(CExp)
+    make_CAssignment(CUnaryOp* unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp) make_CConditional(
     unique_ptr_t(CExp) * condition, unique_ptr_t(CExp) * exp_middle, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp) make_CFunctionCall(TIdentifier name, vector_t(unique_ptr_t(CExp)) * args, size_t line);

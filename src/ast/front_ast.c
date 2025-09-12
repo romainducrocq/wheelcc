@@ -11,59 +11,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(CUnaryOp) make_CUnaryOp(void) {
-    unique_ptr_t(CUnaryOp) self = uptr_new();
-    uptr_alloc(CUnaryOp, self);
-    self->type = AST_CUnaryOp_t;
-    return self;
-}
-
-unique_ptr_t(CUnaryOp) make_CComplement(void) {
-    unique_ptr_t(CUnaryOp) self = make_CUnaryOp();
-    self->type = AST_CComplement_t;
-    return self;
-}
-
-unique_ptr_t(CUnaryOp) make_CNegate(void) {
-    unique_ptr_t(CUnaryOp) self = make_CUnaryOp();
-    self->type = AST_CNegate_t;
-    return self;
-}
-
-unique_ptr_t(CUnaryOp) make_CNot(void) {
-    unique_ptr_t(CUnaryOp) self = make_CUnaryOp();
-    self->type = AST_CNot_t;
-    return self;
-}
-
-unique_ptr_t(CUnaryOp) make_CPrefix(void) {
-    unique_ptr_t(CUnaryOp) self = make_CUnaryOp();
-    self->type = AST_CPrefix_t;
-    return self;
-}
-
-unique_ptr_t(CUnaryOp) make_CPostfix(void) {
-    unique_ptr_t(CUnaryOp) self = make_CUnaryOp();
-    self->type = AST_CPostfix_t;
-    return self;
-}
-
-void free_CUnaryOp(unique_ptr_t(CUnaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_CUnaryOp_t:
-        case AST_CComplement_t:
-        case AST_CNegate_t:
-        case AST_CNot_t:
-        case AST_CPrefix_t:
-        case AST_CPostfix_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(CBinaryOp) make_CBinaryOp(void) {
     unique_ptr_t(CBinaryOp) self = uptr_new();
     uptr_alloc(CBinaryOp, self);
@@ -403,11 +350,10 @@ unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * tar
     return self;
 }
 
-unique_ptr_t(CExp) make_CUnary(unique_ptr_t(CUnaryOp) * unop, unique_ptr_t(CExp) * exp, size_t line) {
+unique_ptr_t(CExp) make_CUnary(CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t line) {
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CUnary_t;
-    self->get._CUnary.unop = uptr_new();
-    uptr_move(CUnaryOp, *unop, self->get._CUnary.unop);
+    self->get._CUnary.unop = *unop;
     self->get._CUnary.exp = uptr_new();
     uptr_move(CExp, *exp, self->get._CUnary.exp);
     self->get._CUnary._base = self;
@@ -428,12 +374,11 @@ unique_ptr_t(CExp) make_CBinary(
     return self;
 }
 
-unique_ptr_t(CExp) make_CAssignment(
-    unique_ptr_t(CUnaryOp) * unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line) {
+unique_ptr_t(CExp)
+    make_CAssignment(CUnaryOp* unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line) {
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CAssignment_t;
-    self->get._CAssignment.unop = uptr_new();
-    uptr_move(CUnaryOp, *unop, self->get._CAssignment.unop);
+    self->get._CAssignment.unop = *unop;
     self->get._CAssignment.exp_left = uptr_new();
     uptr_move(CExp, *exp_left, self->get._CAssignment.exp_left);
     self->get._CAssignment.exp_right = uptr_new();
@@ -551,7 +496,6 @@ void free_CExp(unique_ptr_t(CExp) * self) {
             free_Type(&(*self)->get._CCast.target_type);
             break;
         case AST_CUnary_t:
-            free_CUnaryOp(&(*self)->get._CUnary.unop);
             free_CExp(&(*self)->get._CUnary.exp);
             break;
         case AST_CBinary_t:
@@ -560,7 +504,6 @@ void free_CExp(unique_ptr_t(CExp) * self) {
             free_CExp(&(*self)->get._CBinary.exp_right);
             break;
         case AST_CAssignment_t:
-            free_CUnaryOp(&(*self)->get._CAssignment.unop);
             free_CExp(&(*self)->get._CAssignment.exp_left);
             free_CExp(&(*self)->get._CAssignment.exp_right);
             break;
