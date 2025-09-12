@@ -920,7 +920,7 @@ static void alloc_unprune_infer_graph(Ctx ctx, InferenceRegister* infer, TIdenti
 }
 
 static void alloc_color_infer_graph(Ctx ctx) {
-    TIdentifier pruned_name;
+    TIdentifier pruned_name = 0;
     InferenceRegister* infer = alloc_prune_infer_graph(ctx, &pruned_name);
     alloc_next_color_infer_graph(ctx);
     alloc_unprune_infer_graph(ctx, infer, pruned_name);
