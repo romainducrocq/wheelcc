@@ -340,6 +340,7 @@ static void print_StructTypedef(Ctx ctx, StructTypedef* node, size_t tab) {
 }
 
 static void print_CUnaryOp(CUnaryOp* node, size_t tab) {
+    print_null((node->type != AST_CUnaryOp_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CUnaryOp_t:
