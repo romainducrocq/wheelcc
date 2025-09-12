@@ -1297,13 +1297,14 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
     Structure* struct_type;
     StructTypedef* struct_typedef;
     Type* member_type;
+    ssize_t map_it;
     if (node->structure->exp_type->type != AST_Structure_t) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_dot_not_struct, str_fmt_name(node->member, &name_fmt),
                                              str_fmt_type(node->structure->exp_type, &type_fmt)));
     }
     struct_type = &node->structure->exp_type->get._Structure;
     struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
-    ssize_t map_it = map_find(struct_typedef->members, node->member);
+    map_it = map_find(struct_typedef->members, node->member);
     if (map_it == map_end()) {
         THROW_AT_LINE(
             node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
@@ -1325,6 +1326,7 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
     Structure* struct_type;
     StructTypedef* struct_typedef;
     Type* member_type;
+    ssize_t map_it;
     if (node->pointer->exp_type->type != AST_Pointer_t) {
         THROW_AT_LINE(
             node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_not_struct_ptr, str_fmt_name(node->member, &name_fmt),
@@ -1337,7 +1339,7 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
                                    str_fmt_type(node->pointer->exp_type, &type_fmt)));
     }
     struct_type = &ptr_type->ref_type->get._Structure;
-    ssize_t map_it = map_find(ctx->frontend->struct_typedef_table, struct_type->tag);
+    map_it = map_find(ctx->frontend->struct_typedef_table, struct_type->tag);
     if (map_it == map_end()) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_incomplete, str_fmt_name(node->member, &name_fmt),
                                              str_fmt_struct(struct_type, &type_fmt)));
@@ -2267,6 +2269,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     shared_ptr_t(Type) glob_var_type = sptr_new();
     CATCH_ENTER;
     bool is_glob;
+    ssize_t map_it;
     ctx->errors->linebuf = node->line;
     TRY(reslv_struct_type(ctx, node->var_type));
     if (node->var_type->type == AST_Void_t) {
@@ -2296,7 +2299,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         }
     }
 
-    ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
+    map_it = map_find(ctx->frontend->symbol_table, node->name);
     if (map_it != map_end()) {
         Symbol* var_symbol = pair_second(ctx->frontend->symbol_table[map_it]);
         if (!is_same_type(var_symbol->type_t, node->var_type)) {
@@ -2349,10 +2352,11 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     shared_ptr_t(InitialValue) init_value = sptr_new();
     shared_ptr_t(Type) local_var_type = sptr_new();
     CATCH_ENTER;
+    ssize_t map_it;
     if (node->init) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
     }
-    ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
+    map_it = map_find(ctx->frontend->symbol_table, node->name);
     if (map_it != map_end()) {
         Type* var_type = pair_second(ctx->frontend->symbol_table[map_it])->type_t;
         if (!is_same_type(var_type, node->var_type)) {
@@ -3074,8 +3078,9 @@ static void reslv_goto_statement(Ctx ctx, CGoto* node) {
 
 static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
     CATCH_ENTER;
+    ssize_t map_it;
     TRY(annotate_goto_label(ctx, node));
-    ssize_t map_it = map_find(ctx->goto_map, node->target);
+    map_it = map_find(ctx->goto_map, node->target);
     if (map_it != map_end()) {
         node->target = pair_second(ctx->goto_map[map_it]);
     }
