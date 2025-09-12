@@ -35,6 +35,7 @@ format.out.*
 /src/ast/front_symt.cpp
 /src/ast/ast.cpp
 /src/ast/front_ast.cpp
+/src/optimization/reg_alloc.cpp
 /src/optimization/optim_tac.cpp
 /src/util/str2t.cpp
 /src/util/fileio.cpp
