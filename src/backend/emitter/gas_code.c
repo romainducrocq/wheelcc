@@ -944,10 +944,10 @@ static void static_init_toplvl(Ctx ctx, StaticInit* node) {
         case AST_StringInit_t:
             emit(ctx, TAB TAB ".asci");
             {
-                StringInit* p_node = &node->get._StringInit;
-                emit(ctx, p_node->is_null_term ? "z" : "i");
+                StringInit* string_init = &node->get._StringInit;
+                emit(ctx, string_init->is_null_term ? "z" : "i");
                 emit(ctx, " \"");
-                emit_string(ctx, p_node->string_const);
+                emit_string(ctx, string_init->string_const);
             }
             emit(ctx, "\"" LF);
             break;

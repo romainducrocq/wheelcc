@@ -85,8 +85,8 @@ static void alloc_offset_pseudo(Ctx ctx, AssemblyType* asm_type) {
 
 static void alloc_offset_pseudo_mem(Ctx ctx, AssemblyType* asm_type) {
     if (asm_type->type == AST_ByteArray_t) {
-        ByteArray* p_asm_type = &asm_type->get._ByteArray;
-        align_offset_pseudo(ctx, p_asm_type->size, p_asm_type->alignment);
+        ByteArray* byte_array = &asm_type->get._ByteArray;
+        align_offset_pseudo(ctx, byte_array->size, byte_array->alignment);
     }
     else {
         THROW_ABORT;
