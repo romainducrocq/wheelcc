@@ -283,7 +283,7 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
     if (!node) {
         return "=";
     }
-    else if (unop) {
+    else if (unop->type != AST_CUnaryOp_t) { // TODO
         switch (unop->type) {
             case AST_CPrefix_t: {
                 switch (node->type) {

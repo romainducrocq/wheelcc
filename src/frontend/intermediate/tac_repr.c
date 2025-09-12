@@ -306,7 +306,7 @@ static unique_ptr_t(TacExpResult) unary_res_instr(Ctx ctx, CUnary* node) {
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
     sptr_copy(TacValue, dst, dst_cp);
-    unique_ptr_t(TacUnaryOp) unop = repr_unop(node->unop);
+    unique_ptr_t(TacUnaryOp) unop = repr_unop(&node->unop);
     push_instr(ctx, make_TacUnary(&unop, &src, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -594,7 +594,7 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
             ctx->identifiers->var_count = var_count_2;
             ctx->identifiers->struct_count = struct_count_2;
 
-            if (node->unop && node->unop->type == AST_CPostfix_t) {
+            if (node->unop.type == AST_CPostfix_t) {
                 shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
                 switch (res->type) {
                     case AST_TacPlainOperand_t:
@@ -626,7 +626,7 @@ static unique_ptr_t(TacExpResult) assign_res_instr(Ctx ctx, CAssignment* node) {
         default:
             THROW_ABORT;
     }
-    if (node->unop && node->unop->type == AST_CPostfix_t) {
+    if (node->unop.type == AST_CPostfix_t) {
         free_TacExpResult(&res);
         return res_postfix;
     }

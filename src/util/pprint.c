@@ -503,7 +503,7 @@ static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
             break;
         case AST_CUnary_t:
             print_field(++tab, "CUnary: ");
-            print_CUnaryOp(node->get._CUnary.unop, tab);
+            print_CUnaryOp(&node->get._CUnary.unop, tab);
             print_CExp(ctx, node->get._CUnary.exp, tab);
             break;
         case AST_CBinary_t:
@@ -514,7 +514,7 @@ static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
             break;
         case AST_CAssignment_t:
             print_field(++tab, "CAssignment: ");
-            print_CUnaryOp(node->get._CAssignment.unop, tab);
+            print_CUnaryOp(&node->get._CAssignment.unop, tab);
             print_CExp(ctx, node->get._CAssignment.exp_left, tab);
             print_CExp(ctx, node->get._CAssignment.exp_right, tab);
             break;

@@ -284,20 +284,20 @@ static error_t parse_arr_size(Ctx ctx, TLong* size) {
 
 // <unop> ::= "-" | "~" | "!" | "*" | "&" | "++" | "--"
 // unary_operator = Complement | Negate | Not | Prefix | Postfix
-static error_t parse_unop(Ctx ctx, unique_ptr_t(CUnaryOp) * unop) {
+static error_t parse_unop(Ctx ctx, CUnaryOp* unop) {
     CATCH_ENTER;
     TRY(pop_next(ctx));
     switch (ctx->next_tok->tok_kind) {
         case TOK_unop_complement: {
-            *unop = make_CComplement();
+            *unop = init_CComplement();
             break;
         }
         case TOK_unop_neg: {
-            *unop = make_CNegate();
+            *unop = init_CNegate();
             break;
         }
         case TOK_unop_not: {
-            *unop = make_CNot();
+            *unop = init_CNot();
             break;
         }
         default:
@@ -690,13 +690,12 @@ static error_t parse_arrow_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
 static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
-    unique_ptr_t(CUnaryOp) unop = uptr_new();
     unique_ptr_t(CBinaryOp) binop = uptr_new();
     shared_ptr_t(CConst) constant = sptr_new();
     CATCH_ENTER;
-    void* nullref = uptr_new();
+    void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
-    unop = make_CPostfix();
+    CUnaryOp unop = init_CPostfix();
     TRY(parse_binop(ctx, &binop));
     constant = make_CConstInt(1);
     exp_right = make_CConstant(&constant, line);
@@ -705,7 +704,6 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);
-    free_CUnaryOp(&unop);
     free_CBinaryOp(&binop);
     free_CConst(&constant);
     CATCH_EXIT;
@@ -713,15 +711,14 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
 
 static error_t parse_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) cast_exp = uptr_new();
-    unique_ptr_t(CUnaryOp) unop = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
+    CUnaryOp unop;
     TRY(parse_unop(ctx, &unop));
     TRY(parse_cast_exp_factor(ctx, &cast_exp));
     *exp = make_CUnary(&unop, &cast_exp, line);
     FINALLY;
     free_CExp(&cast_exp);
-    free_CUnaryOp(&unop);
     CATCH_EXIT;
 }
 
@@ -730,12 +727,11 @@ static error_t parse_incr_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_left_1 = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
-    unique_ptr_t(CUnaryOp) unop = uptr_new();
     unique_ptr_t(CBinaryOp) binop = uptr_new();
     shared_ptr_t(CConst) constant = sptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
-    unop = make_CPrefix();
+    CUnaryOp unop = init_CPrefix();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_cast_exp_factor(ctx, &exp_left));
     constant = make_CConstInt(1);
@@ -747,7 +743,6 @@ static error_t parse_incr_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     free_CExp(&exp_right);
     free_CExp(&exp_left_1);
     free_CExp(&exp_right_1);
-    free_CUnaryOp(&unop);
     free_CBinaryOp(&binop);
     free_CConst(&constant);
     CATCH_EXIT;
@@ -1004,15 +999,14 @@ static error_t parse_cast_exp_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
 
 static error_t parse_assign_exp(Ctx ctx, int32_t precedence, unique_ptr_t(CExp) * exp_left) {
     unique_ptr_t(CExp) exp_right = uptr_new();
-    unique_ptr_t(CUnaryOp) unop = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
+    CUnaryOp unop = init_CUnaryOp();
     TRY(pop_next(ctx));
     TRY(parse_exp(ctx, precedence, &exp_right));
     *exp_left = make_CAssignment(&unop, exp_left, &exp_right, line);
     FINALLY;
     free_CExp(&exp_right);
-    free_CUnaryOp(&unop);
     CATCH_EXIT;
 }
 
@@ -1021,12 +1015,13 @@ static error_t parse_assign_compound_exp(Ctx ctx, int32_t precedence, unique_ptr
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
     unique_ptr_t(CBinaryOp) binop = uptr_new();
     CATCH_ENTER;
-    void* nullref = uptr_new();
+    void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
+    CUnaryOp unop = init_CUnaryOp();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence, &exp_right));
     exp_right_1 = make_CBinary(&binop, exp_left, &exp_right, line);
-    *exp_left = make_CAssignment((unique_ptr_t(CUnaryOp)*)&nullref, (unique_ptr_t(CExp)*)&nullref, &exp_right_1, line);
+    *exp_left = make_CAssignment(&unop, (unique_ptr_t(CExp)*)&nullref, &exp_right_1, line);
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);

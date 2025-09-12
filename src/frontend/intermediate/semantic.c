@@ -693,13 +693,13 @@ static error_t check_unary_complement_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(&node->unop),
                                              str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
     switch (node->exp->exp_type->type) {
         case AST_Double_t:
-            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(&node->unop),
                                                  str_fmt_type(node->exp->exp_type, &type_fmt)));
         case AST_Char_t:
         case AST_SChar_t:
@@ -719,7 +719,7 @@ static error_t check_unary_neg_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(&node->unop),
                                              str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
@@ -742,7 +742,7 @@ static error_t check_unary_not_exp(Ctx ctx, CUnary* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_scalar(node->exp->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(node->unop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_unary_op, get_unop_fmt(&node->unop),
                                              str_fmt_type(node->exp->exp_type, &type_fmt)));
     }
 
@@ -754,7 +754,7 @@ static error_t check_unary_not_exp(Ctx ctx, CUnary* node) {
 
 static error_t check_unary_exp(Ctx ctx, CUnary* node) {
     CATCH_ENTER;
-    switch (node->unop->type) {
+    switch (node->unop.type) {
         case AST_CComplement_t:
             TRY(check_unary_complement_exp(ctx, node));
             break;
@@ -1094,7 +1094,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
             THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG_0(MSG_assign_to_void));
         }
         else if (!is_exp_lvalue(node->exp_left)) {
-            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(NULL, node->unop)));
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue, get_assign_fmt(NULL, &node->unop)));
         }
         else if (!is_same_type(node->exp_right->exp_type, node->exp_left->exp_type)) {
             TRY(cast_assign(ctx, &node->exp_left->exp_type, &node->exp_right));
@@ -1109,7 +1109,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
         }
         if (!is_exp_lvalue(exp_left)) {
             THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue,
-                                                 get_assign_fmt(node->exp_right->get._CBinary.binop, node->unop)));
+                                                 get_assign_fmt(node->exp_right->get._CBinary.binop, &node->unop)));
         }
         else if (!is_same_type(node->exp_right->exp_type, exp_left->exp_type)) {
             TRY(cast_assign(ctx, &exp_left->exp_type, &node->exp_right));
