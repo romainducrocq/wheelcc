@@ -558,7 +558,6 @@ typedef struct TacProgram {
     vector_t(unique_ptr_t(TacTopLevel)) static_const_toplvls;
     vector_t(unique_ptr_t(TacTopLevel)) static_var_toplvls;
     vector_t(unique_ptr_t(TacTopLevel)) fun_toplvls;
-
 } TacProgram;
 
 #ifdef __cplusplus

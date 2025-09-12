@@ -877,7 +877,6 @@ typedef struct AsmProgram {
     unique_ptr_impl(AST_T);
     vector_t(unique_ptr_t(AsmTopLevel)) static_const_toplvls;
     vector_t(unique_ptr_t(AsmTopLevel)) top_levels;
-
 } AsmProgram;
 
 #ifdef __cplusplus

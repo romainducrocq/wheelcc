@@ -89,7 +89,6 @@ void free_CConst(shared_ptr_t(CConst) * self);
 typedef struct CStringLiteral {
     shared_ptr_impl(AST_T);
     vector_t(TChar) value;
-
 } CStringLiteral;
 
 #ifdef __cplusplus

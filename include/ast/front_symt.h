@@ -323,7 +323,6 @@ typedef struct Symbol {
     unique_ptr_impl(AST_T);
     shared_ptr_t(Type) type_t;
     unique_ptr_t(IdentifierAttr) attrs;
-
 } Symbol;
 
 #ifdef __cplusplus
@@ -343,7 +342,6 @@ typedef struct StructMember {
     unique_ptr_impl(AST_T);
     TLong offset;
     shared_ptr_t(Type) member_type;
-
 } StructMember;
 
 #ifdef __cplusplus
@@ -368,7 +366,6 @@ typedef struct StructTypedef {
     TLong size;
     vector_t(TIdentifier) member_names;
     hashmap_t(TIdentifier, UPtrStructMember) members;
-
 } StructTypedef;
 
 #ifdef __cplusplus

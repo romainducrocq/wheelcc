@@ -312,7 +312,6 @@ typedef struct CParam {
     unique_ptr_impl(AST_T);
     unique_ptr_t(CDeclarator) decltor;
     shared_ptr_t(Type) param_type;
-
 } CParam;
 
 #ifdef __cplusplus
@@ -861,7 +860,6 @@ typedef struct CMemberDeclaration {
     TIdentifier member_name;
     shared_ptr_t(Type) member_type;
     size_t line;
-
 } CMemberDeclaration;
 
 #ifdef __cplusplus
@@ -884,7 +882,6 @@ typedef struct CStructDeclaration {
     bool is_union;
     vector_t(unique_ptr_t(CMemberDeclaration)) members;
     size_t line;
-
 } CStructDeclaration;
 
 #ifdef __cplusplus
@@ -909,7 +906,6 @@ typedef struct CFunctionDeclaration {
     shared_ptr_t(Type) fun_type;
     unique_ptr_t(CStorageClass) storage_class;
     size_t line;
-
 } CFunctionDeclaration;
 
 #ifdef __cplusplus
@@ -934,7 +930,6 @@ typedef struct CVariableDeclaration {
     shared_ptr_t(Type) var_type;
     unique_ptr_t(CStorageClass) storage_class;
     size_t line;
-
 } CVariableDeclaration;
 
 #ifdef __cplusplus
@@ -994,7 +989,6 @@ void free_CDeclaration(unique_ptr_t(CDeclaration) * self);
 typedef struct CProgram {
     unique_ptr_impl(AST_T);
     vector_t(unique_ptr_t(CDeclaration)) declarations;
-
 } CProgram;
 
 #ifdef __cplusplus
