@@ -2682,6 +2682,7 @@ static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, TacFunction* node) {
     bool is_ret_memory = false;
 
     vector_t(unique_ptr_t(AsmInstruction)) body = vec_new();
+    vec_reserve(body, vec_size(node->body));
     {
         ctx->p_instrs = &body;
 
