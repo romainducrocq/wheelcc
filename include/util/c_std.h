@@ -16,7 +16,8 @@
 // Memory
 
 #define tagged_def_impl(T) T type
-#define tagged_def_init(E, T) { ##E##T_t; }
+#define tagged_def_init(E, T) \
+    { ##E##T_t; }
 #if 0
 #define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
 #endif

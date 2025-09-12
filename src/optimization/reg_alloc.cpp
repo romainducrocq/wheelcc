@@ -12,8 +12,6 @@
 
 #include "optimization/reg_alloc.h"
 
-// TODO check dup map_get
-
 typedef TULong mask_t;
 
 typedef struct ControlFlowGraph ControlFlowGraph;
@@ -987,9 +985,6 @@ static REGISTER_KIND get_op_reg_kind(Ctx ctx, AsmOperand* node) {
 }
 
 static void alloc_mov_instr(Ctx ctx, AsmMov* node, size_t instr_idx) {
-    // TODO what is this
-    // AsmOperand* src_op = static_cast<AsmPseudo*>(node->src.get());
-    // AsmOperand* dst_op = static_cast<AsmPseudo*>(node->dst.get());
     REGISTER_KIND src_reg_kind = get_op_reg_kind(ctx, node->src);
     REGISTER_KIND dst_reg_kind = get_op_reg_kind(ctx, node->dst);
     if (src_reg_kind != REG_Sp && src_reg_kind == dst_reg_kind) {
@@ -1864,7 +1859,7 @@ void allocate_registers(AsmProgram* node, BackEndContext* backend, FrontEndConte
     for (size_t i = 0; i < 26; ++i) {
         vec_delete(ctx.hard_regs[i].linked_pseudo_names);
     }
-    
+
     free_ControlFlowGraph(&ctx.cfg);
     free_DataFlowAnalysis(&ctx.dfa);
     free_DataFlowAnalysisO2(&ctx.dfa_o2);
