@@ -148,8 +148,9 @@ static unique_ptr_t(TacExpResult) string_res_instr(Ctx ctx, CString* node) {
     TIdentifier string_const_label;
     {
         TIdentifier string_const = make_literal_identifier(ctx, node->literal);
-        if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
-            string_const_label = map_get(ctx->frontend->string_const_table, string_const);
+        ssize_t map_it = map_find(ctx->frontend->string_const_table, string_const);
+        if (map_it != map_end()) {
+            string_const_label = pair_second(ctx->frontend->string_const_table[map_it]);
         }
         else {
             string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);

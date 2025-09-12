@@ -138,8 +138,9 @@ static shared_ptr_t(AsmOperand) dbl_static_const_op(Ctx ctx, TULong binary, TInt
     TIdentifier dbl_const_label;
     {
         TIdentifier dbl_const = make_binary_identifier(ctx, binary);
-        if (map_find(ctx->dbl_const_table, dbl_const) != map_end()) {
-            dbl_const_label = map_get(ctx->dbl_const_table, dbl_const);
+        ssize_t map_it = map_find(ctx->dbl_const_table, dbl_const);
+        if (map_it != map_end()) {
+            dbl_const_label = pair_second(ctx->dbl_const_table[map_it]);
         }
         else {
             dbl_const_label = repr_asm_label(ctx, LBL_Ldouble);
@@ -2003,8 +2004,9 @@ static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
         if (node->src->type == AST_TacVariable_t) {
             TIdentifier name = node->src->get._TacVariable.name;
             set_insert(ctx->frontend->addressed_set, name);
-            if (map_find(ctx->frontend->symbol_table, name) != map_end()
-                && map_get(ctx->frontend->symbol_table, name)->attrs->type == AST_ConstantAttr_t) {
+            ssize_t map_it = map_find(ctx->frontend->symbol_table, name);
+            if (map_it != map_end()
+                && pair_second(ctx->frontend->symbol_table[map_it])->attrs->type == AST_ConstantAttr_t) {
                 src = make_AsmData(name, 0l);
                 goto Lpass;
             }

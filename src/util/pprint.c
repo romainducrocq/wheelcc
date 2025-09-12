@@ -1667,10 +1667,9 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
     for (size_t i = 0; i < map_size(frontend->string_const_table); ++i) {
         const pair_t(TIdentifier, TIdentifier)* static_const = &frontend->string_const_table[i];
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*static_const)));
-        if (map_find(frontend->symbol_table, pair_second(*static_const)) != map_end()
-            && map_get(frontend->symbol_table, pair_second(*static_const))->attrs->type == AST_ConstantAttr_t) {
-            ConstantAttr* constant_attr =
-                &map_get(frontend->symbol_table, pair_second(*static_const))->attrs->get._ConstantAttr;
+        ssize_t map_it = map_find(frontend->symbol_table, pair_second(*static_const));
+        if (map_it != map_end() && pair_second(frontend->symbol_table[map_it])->attrs->type == AST_ConstantAttr_t) {
+            ConstantAttr* constant_attr = &pair_second(frontend->symbol_table[map_it])->attrs->get._ConstantAttr;
             if (constant_attr->static_init->type == AST_StringInit_t) {
                 printf("\n    String: \"");
                 StringInit* string_init = &constant_attr->static_init->get._StringInit;

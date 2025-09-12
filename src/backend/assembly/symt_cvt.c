@@ -87,8 +87,9 @@ static shared_ptr_t(AssemblyType) arr_asm_type(FrontEndContext* ctx, Array* arr_
 static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, Structure* struct_type) {
     TLong size;
     TInt alignment;
-    if (map_find(ctx->struct_typedef_table, struct_type->tag) != map_end()) {
-        StructTypedef* struct_typedef = map_get(ctx->struct_typedef_table, struct_type->tag);
+    ssize_t map_it = map_find(ctx->struct_typedef_table, struct_type->tag);
+    if (map_it != map_end()) {
+        StructTypedef* struct_typedef = pair_second(ctx->struct_typedef_table[map_it]);
         size = struct_typedef->size;
         alignment = struct_typedef->alignment;
     }
