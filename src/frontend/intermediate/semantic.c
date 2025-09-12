@@ -1303,12 +1303,13 @@ static error_t check_dot_exp(Ctx ctx, CDot* node) {
     }
     struct_type = &node->structure->exp_type->get._Structure;
     struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
-    if (map_find(struct_typedef->members, node->member) == map_end()) {
+    ssize_t map_it = map_find(struct_typedef->members, node->member);
+    if (map_it == map_end()) {
         THROW_AT_LINE(
             node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
                                    str_fmt_name(node->member, &name_fmt)));
     }
-    member_type = map_get(struct_typedef->members, node->member)->member_type;
+    member_type = pair_second(struct_typedef->members[map_it])->member_type;
     sptr_copy(Type, member_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
@@ -1336,17 +1337,19 @@ static error_t check_arrow_exp(Ctx ctx, CArrow* node) {
                                    str_fmt_type(node->pointer->exp_type, &type_fmt)));
     }
     struct_type = &ptr_type->ref_type->get._Structure;
-    if (map_find(ctx->frontend->struct_typedef_table, struct_type->tag) == map_end()) {
+    ssize_t map_it = map_find(ctx->frontend->struct_typedef_table, struct_type->tag);
+    if (map_it == map_end()) {
         THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_arrow_incomplete, str_fmt_name(node->member, &name_fmt),
                                              str_fmt_struct(struct_type, &type_fmt)));
     }
-    struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
-    if (map_find(struct_typedef->members, node->member) == map_end()) {
+    struct_typedef = pair_second(ctx->frontend->struct_typedef_table[map_it]);
+    map_it = map_find(struct_typedef->members, node->member);
+    if (map_it == map_end()) {
         THROW_AT_LINE(
             node->_base->line, GET_SEMANTIC_MSG(MSG_member_not_in_struct, str_fmt_struct(struct_type, &type_fmt),
                                    str_fmt_name(node->member, &name_fmt)));
     }
-    member_type = map_get(struct_typedef->members, node->member)->member_type;
+    member_type = pair_second(struct_typedef->members[map_it])->member_type;
     sptr_copy(Type, member_type, node->_base->exp_type);
     FINALLY;
     str_delete(name_fmt);
@@ -1870,8 +1873,9 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
     bool is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
 
-    if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        Symbol* fun_symbol = map_get(ctx->frontend->symbol_table, node->name);
+    ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
+    if (map_it != map_end()) {
+        Symbol* fun_symbol = pair_second(ctx->frontend->symbol_table[map_it]);
         FunType* fun_type = &fun_symbol->type_t->get._FunType;
         if (!(fun_symbol->type_t->type == AST_FunType_t && vec_size(fun_type->param_types) == vec_size(node->params)
                 && is_same_fun_type(&node->fun_type->get._FunType, fun_type))) {
@@ -2077,8 +2081,9 @@ static void check_static_ptr_string_init(Ctx ctx, CString* node) {
     TIdentifier string_const_label;
     {
         TIdentifier string_const = make_literal_identifier(ctx, node->literal);
-        if (map_find(ctx->frontend->string_const_table, string_const) != map_end()) {
-            string_const_label = map_get(ctx->frontend->string_const_table, string_const);
+        ssize_t map_it = map_find(ctx->frontend->string_const_table, string_const);
+        if (map_it != map_end()) {
+            string_const_label = pair_second(ctx->frontend->string_const_table[map_it]);
         }
         else {
             string_const_label = repr_label_identifier(ctx->identifiers, LBL_Lstring);
@@ -2291,8 +2296,9 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         }
     }
 
-    if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        Symbol* var_symbol = map_get(ctx->frontend->symbol_table, node->name);
+    ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
+    if (map_it != map_end()) {
+        Symbol* var_symbol = pair_second(ctx->frontend->symbol_table[map_it]);
         if (!is_same_type(var_symbol->type_t, node->var_type)) {
             THROW_AT_LINE(node->line,
                 GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
@@ -2346,8 +2352,9 @@ static error_t check_extern_block_var_decl(Ctx ctx, CVariableDeclaration* node) 
     if (node->init) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redef_extern_var, str_fmt_name(node->name, &name_fmt)));
     }
-    else if (map_find(ctx->frontend->symbol_table, node->name) != map_end()) {
-        Type* var_type = map_get(ctx->frontend->symbol_table, node->name)->type_t;
+    ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
+    if (map_it != map_end()) {
+        Type* var_type = pair_second(ctx->frontend->symbol_table[map_it])->type_t;
         if (!is_same_type(var_type, node->var_type)) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_redecl_var_conflict, str_fmt_name(node->name, &name_fmt),
@@ -2664,8 +2671,9 @@ static void enter_scope(Ctx ctx) {
 static void exit_scope(Ctx ctx) {
     for (size_t i = 0; i < map_size(vec_back(ctx->scoped_identifier_maps)); ++i) {
         TIdentifier identifier = pair_first(vec_back(ctx->scoped_identifier_maps)[i]);
-        if (map_find(ctx->extern_scope_map, identifier) != map_end()
-            && map_get(ctx->extern_scope_map, identifier) == vec_size(ctx->scoped_identifier_maps)) {
+        ssize_t map_it = map_find(ctx->extern_scope_map, identifier);
+        if (map_it != map_end()
+            && pair_second(ctx->extern_scope_map[map_it]) == vec_size(ctx->scoped_identifier_maps)) {
             map_erase(ctx->extern_scope_map, identifier);
         }
     }
@@ -2719,8 +2727,9 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
         EARLY_EXIT;
     }
     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-        if (map_find(ctx->scoped_struct_maps[i], struct_type->tag) != map_end()) {
-            Structure* structure = &map_get(ctx->scoped_struct_maps[i], struct_type->tag);
+        ssize_t map_it = map_find(ctx->scoped_struct_maps[i], struct_type->tag);
+        if (map_it != map_end()) {
+            Structure* structure = &pair_second(ctx->scoped_struct_maps[i][map_it]);
             if (structure->is_union != struct_type->is_union) {
                 THROW_AT_LINE(ctx->errors->linebuf,
                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_struct(struct_type, &type_fmt),
@@ -2770,8 +2779,9 @@ static error_t reslv_var_exp(Ctx ctx, CVar* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-        if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
-            node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
+        ssize_t map_it = map_find(ctx->scoped_identifier_maps[i], node->name);
+        if (map_it != map_end()) {
+            node->name = pair_second(ctx->scoped_identifier_maps[i][map_it]);
             goto Lelse;
         }
     }
@@ -2834,8 +2844,9 @@ static error_t reslv_call_exp(Ctx ctx, CFunctionCall* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
     for (size_t i = vec_size(ctx->scoped_identifier_maps); i-- > 0;) {
-        if (map_find(ctx->scoped_identifier_maps[i], node->name) != map_end()) {
-            node->name = map_get(ctx->scoped_identifier_maps[i], node->name);
+        ssize_t map_it = map_find(ctx->scoped_identifier_maps[i], node->name);
+        if (map_it != map_end()) {
+            node->name = pair_second(ctx->scoped_identifier_maps[i][map_it]);
             goto Lelse;
         }
     }
@@ -3048,8 +3059,9 @@ static error_t reslv_if_statement(Ctx ctx, CIf* node) {
 }
 
 static void reslv_goto_statement(Ctx ctx, CGoto* node) {
-    if (map_find(ctx->goto_map, node->target) != map_end()) {
-        node->target = map_get(ctx->goto_map, node->target);
+    ssize_t map_it = map_find(ctx->goto_map, node->target);
+    if (map_it != map_end()) {
+        node->target = pair_second(ctx->goto_map[map_it]);
         map_add(ctx->errors->linebuf_map, node->target, node->line);
     }
     else {
@@ -3063,8 +3075,9 @@ static void reslv_goto_statement(Ctx ctx, CGoto* node) {
 static error_t reslv_label_statement(Ctx ctx, CLabel* node) {
     CATCH_ENTER;
     TRY(annotate_goto_label(ctx, node));
-    if (map_find(ctx->goto_map, node->target) != map_end()) {
-        node->target = map_get(ctx->goto_map, node->target);
+    ssize_t map_it = map_find(ctx->goto_map, node->target);
+    if (map_it != map_end()) {
+        node->target = pair_second(ctx->goto_map[map_it]);
     }
     else {
         TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
@@ -3446,8 +3459,9 @@ static error_t reslv_struct_declaration(Ctx ctx, CStructDeclaration* node) {
     string_t struct_fmt_1 = str_new(NULL);
     string_t struct_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    if (map_find(vec_back(ctx->scoped_struct_maps), node->tag) != map_end()) {
-        node->tag = map_get(vec_back(ctx->scoped_struct_maps), node->tag).tag;
+    ssize_t map_it = map_find(vec_back(ctx->scoped_struct_maps), node->tag);
+    if (map_it != map_end()) {
+        node->tag = pair_second(vec_back(ctx->scoped_struct_maps)[map_it]).tag;
         if (node->is_union) {
             if (set_find(ctx->union_def_set, node->tag) == set_end()) {
                 THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_struct_conflict,
