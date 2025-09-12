@@ -283,59 +283,57 @@ const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
     if (!node) {
         return "=";
     }
-    else if (unop->type != AST_CUnaryOp_t) { // TODO
-        switch (unop->type) {
-            case AST_CPrefix_t: {
-                switch (node->type) {
-                    case AST_CAdd_t:
-                        return "prefix ++";
-                    case AST_CSubtract_t:
-                        return "prefix --";
-                    default:
-                        THROW_ABORT;
-                }
+    switch (unop->type) {
+        case AST_CUnaryOp_t:
+            break;
+        case AST_CPrefix_t: {
+            switch (node->type) {
+                case AST_CAdd_t:
+                    return "prefix ++";
+                case AST_CSubtract_t:
+                    return "prefix --";
+                default:
+                    THROW_ABORT;
             }
-            case AST_CPostfix_t: {
-                switch (node->type) {
-                    case AST_CAdd_t:
-                        return "postfix ++";
-                    case AST_CSubtract_t:
-                        return "postfix --";
-                    default:
-                        THROW_ABORT;
-                }
-            }
-            default:
-                THROW_ABORT;
         }
+        case AST_CPostfix_t: {
+            switch (node->type) {
+                case AST_CAdd_t:
+                    return "postfix ++";
+                case AST_CSubtract_t:
+                    return "postfix --";
+                default:
+                    THROW_ABORT;
+            }
+        }
+        default:
+            THROW_ABORT;
     }
-    else {
-        switch (node->type) {
-            case AST_CAdd_t:
-                return "+=";
-            case AST_CSubtract_t:
-                return "-=";
-            case AST_CMultiply_t:
-                return "*=";
-            case AST_CDivide_t:
-                return "/=";
-            case AST_CRemainder_t:
-                return "%=";
-            case AST_CBitAnd_t:
-                return "&=";
-            case AST_CBitOr_t:
-                return "|=";
-            case AST_CBitXor_t:
-                return "^=";
-            case AST_CBitShiftLeft_t:
-                return "<<=";
-            case AST_CBitShiftRight_t:
-                return ">>=";
-            case AST_CBitShrArithmetic_t:
-                return ">>=";
-            default:
-                THROW_ABORT;
-        }
+    switch (node->type) {
+        case AST_CAdd_t:
+            return "+=";
+        case AST_CSubtract_t:
+            return "-=";
+        case AST_CMultiply_t:
+            return "*=";
+        case AST_CDivide_t:
+            return "/=";
+        case AST_CRemainder_t:
+            return "%=";
+        case AST_CBitAnd_t:
+            return "&=";
+        case AST_CBitOr_t:
+            return "|=";
+        case AST_CBitXor_t:
+            return "^=";
+        case AST_CBitShiftLeft_t:
+            return "<<=";
+        case AST_CBitShiftRight_t:
+            return ">>=";
+        case AST_CBitShrArithmetic_t:
+            return ">>=";
+        default:
+            THROW_ABORT;
     }
 }
 
