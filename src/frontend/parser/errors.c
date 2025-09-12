@@ -503,22 +503,38 @@ const char* get_fatal_msg(MESSAGE_FATAL msg) {
 
 const char* get_arg_msg(MESSAGE_ARG msg) {
     switch (msg) {
+        case MSG_print_help:
+            RET_ERRNO "Usage: %s [--help] Debug OptimL1 OptimL2 FILE SourceDir [IncludeDir...]\n"
+                      "    [--help]:         print help and exit\n"
+                      "    Debug:            print debug info (0..1"
+#ifndef __NDEBUG__
+                      "|251..255"
+#endif
+                      ")\n"
+                      "    OptimL1:          optimization level 1 mask (0..15)\n"
+                      "    OptimL2:          optimization level 2 enum (0..2)\n"
+                      "    FILE:             source file to compile\n"
+                      "    SourceDir:        source file include path\n"
+                      "    [IncludeDir...]:  add a list of paths to include path\n"
+                      "see \033[1m‘driver.sh’\033[0m";
         case MSG_no_debug_arg:
-            RET_ERRNO "no debug code passed in first argument";
+            RET_ERRNO "no debug code passed in first argument, see \033[1m‘--help’\033[0m";
         case MSG_invalid_debug_arg:
-            RET_ERRNO "invalid debug code " EM_VARG " passed in first argument";
+            RET_ERRNO "invalid debug code " EM_VARG " passed in first argument, see \033[1m‘--help’\033[0m";
         case MSG_no_optim_1_arg:
-            RET_ERRNO "no level 1 optimization mask passed in second argument";
+            RET_ERRNO "no level 1 optimization mask passed in second argument, see \033[1m‘--help’\033[0m";
         case MSG_invalid_optim_1_arg:
-            RET_ERRNO "invalid level 1 optimization mask " EM_VARG " passed in second argument";
+            RET_ERRNO "invalid level 1 optimization mask " EM_VARG
+                      " passed in second argument, see \033[1m‘--help’\033[0m";
         case MSG_no_optim_2_arg:
-            RET_ERRNO "no level 2 optimization code passed in third argument";
+            RET_ERRNO "no level 2 optimization code passed in third argument, see \033[1m‘--help’\033[0m";
         case MSG_invalid_optim_2_arg:
-            RET_ERRNO "invalid level 2 optimization code " EM_VARG " passed in third argument";
+            RET_ERRNO "invalid level 2 optimization code " EM_VARG
+                      " passed in third argument, see \033[1m‘--help’\033[0m";
         case MSG_no_input_files_arg:
-            RET_ERRNO "no input file passed in fourth argument";
+            RET_ERRNO "no input file passed in fourth argument, see \033[1m‘--help’\033[0m";
         case MSG_no_include_dir_arg:
-            RET_ERRNO "no include directories passed in fifth argument";
+            RET_ERRNO "no include directories passed in fifth argument, see \033[1m‘--help’\033[0m";
         default:
             THROW_ABORT;
     }

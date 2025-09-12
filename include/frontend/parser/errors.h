@@ -38,6 +38,7 @@ typedef enum MESSAGE_FATAL {
 
 typedef enum MESSAGE_ARG {
     MSG_unhandled_arg_error = 100,
+    MSG_print_help,
     MSG_no_debug_arg,
     MSG_invalid_debug_arg,
     MSG_no_optim_1_arg,

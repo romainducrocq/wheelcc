@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "util/c_std.h"
 #include "util/fileio.h"
@@ -308,9 +309,13 @@ static bool arg_parse_uint8(const char* arg, uint8_t* value) {
     return end_ptr == arg;
 }
 
-static error_t arg_parse(Ctx ctx, char** argv) {
+static error_t arg_parse(Ctx ctx, int argc, char** argv) {
     CATCH_ENTER;
     size_t i = 0;
+
+    if (argc == 2 && strcmp(argv[1], "--help") == 0) {
+        THROW_INIT(GET_ARG_MSG(MSG_print_help, argv[0]));
+    }
 
     if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_debug_arg));
@@ -351,7 +356,7 @@ static error_t arg_parse(Ctx ctx, char** argv) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-error_t main(int, char** argv) {
+error_t main(int argc, char** argv) {
     ErrorsContext errors;
     FileIoContext fileio;
     MainContext ctx;
@@ -374,7 +379,7 @@ error_t main(int, char** argv) {
         ctx.includedirs = vec_new();
     }
     CATCH_ENTER;
-    TRY(arg_parse(&ctx, argv));
+    TRY(arg_parse(&ctx, argc, argv));
     TRY(compile(&ctx, &errors, &fileio));
 
     FINALLY;
