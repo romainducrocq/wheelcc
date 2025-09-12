@@ -22,7 +22,7 @@ list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/backend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/frontend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/lib/")
 
-list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/main.cpp")
+list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/main.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/ast/ast.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/ast/back_ast.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/ast/back_symt.c")
