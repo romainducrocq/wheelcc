@@ -24,9 +24,15 @@
 
 // Memory
 
+#define tagged_def_t(E, T) E##_##T##_t
 #define tagged_def_impl(T) T type
+#ifdef __cplusplus
 #define tagged_def_init(E, T1, T2) \
-    (T1) { E##_##T2##_t }
+    T1 { tagged_def_t(E, T2) }
+#else
+#define tagged_def_init(E, T1, T2) \
+    (T1) { tagged_def_t(E, T2) }
+#endif
 #if 0
 #define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
 #endif
