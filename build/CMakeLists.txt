@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 file(READ "../bin/package_name.txt" PACKAGE_NAME)
 project("${PACKAGE_NAME}")
@@ -48,6 +48,9 @@ list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/util/str2t.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/util/throw.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/lib/sds/sds.c")
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/lib/stb_ds/stb_ds.c")
+if(BUILD_CPP)
+set_source_files_properties(${SOURCE_FILES} PROPERTIES LANGUAGE CXX)
+endif(BUILD_CPP)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
