@@ -692,7 +692,7 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
     shared_ptr_t(CConst) constant = sptr_new();
     CATCH_ENTER;
-    void* nullref = uptr_new(); // TODO
+    unique_ptr_t(CExp) exp_null = uptr_new();
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CPostfix();
     CBinaryOp binop = init_CBinaryOp();
@@ -700,7 +700,7 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     constant = make_CConstInt(1);
     exp_right = make_CConstant(&constant, line);
     exp_right_1 = make_CBinary(&binop, exp, &exp_right, line);
-    *exp = make_CAssignment(&unop, (unique_ptr_t(CExp)*)&nullref, &exp_right_1, line);
+    *exp = make_CAssignment(&unop, &exp_null, &exp_right_1, line);
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);
@@ -1012,14 +1012,14 @@ static error_t parse_assign_compound_exp(Ctx ctx, int32_t precedence, unique_ptr
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
     CATCH_ENTER;
-    void* nullref = uptr_new(); // TODO
+    unique_ptr_t(CExp) exp_null = uptr_new();
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CUnaryOp();
     CBinaryOp binop = init_CBinaryOp();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence, &exp_right));
     exp_right_1 = make_CBinary(&binop, exp_left, &exp_right, line);
-    *exp_left = make_CAssignment(&unop, (unique_ptr_t(CExp)*)&nullref, &exp_right_1, line);
+    *exp_left = make_CAssignment(&unop, &exp_null, &exp_right_1, line);
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);
