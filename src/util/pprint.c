@@ -1516,7 +1516,7 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
             break;
         case AST_AsmBinary_t:
             print_field(++tab, "AsmBinary: ");
-            print_AsmBinaryOp(node->get._AsmBinary.binop, tab);
+            print_AsmBinaryOp(&node->get._AsmBinary.binop, tab);
             print_AssemblyType(node->get._AsmBinary.asm_type, tab);
             print_AsmOperand(ctx, node->get._AsmBinary.src, tab);
             print_AsmOperand(ctx, node->get._AsmBinary.dst, tab);

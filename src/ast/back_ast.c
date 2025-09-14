@@ -100,94 +100,6 @@ void free_AsmOperand(shared_ptr_t(AsmOperand) * self) {
     sptr_free(*self);
 }
 
-unique_ptr_t(AsmBinaryOp) make_AsmBinaryOp(void) {
-    unique_ptr_t(AsmBinaryOp) self = uptr_new();
-    uptr_alloc(AsmBinaryOp, self);
-    self->type = AST_AsmBinaryOp_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmAdd(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmAdd_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmSub(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmSub_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmMult(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmMult_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmDivDouble(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmDivDouble_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitAnd(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitAnd_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitOr(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitOr_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitXor(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitXor_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitShiftLeft(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitShiftLeft_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitShiftRight(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitShiftRight_t;
-    return self;
-}
-
-unique_ptr_t(AsmBinaryOp) make_AsmBitShrArithmetic(void) {
-    unique_ptr_t(AsmBinaryOp) self = make_AsmBinaryOp();
-    self->type = AST_AsmBitShrArithmetic_t;
-    return self;
-}
-
-void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_AsmBinaryOp_t:
-        case AST_AsmAdd_t:
-        case AST_AsmSub_t:
-        case AST_AsmMult_t:
-        case AST_AsmDivDouble_t:
-        case AST_AsmBitAnd_t:
-        case AST_AsmBitOr_t:
-        case AST_AsmBitXor_t:
-        case AST_AsmBitShiftLeft_t:
-        case AST_AsmBitShiftRight_t:
-        case AST_AsmBitShrArithmetic_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(AsmInstruction) make_AsmInstruction(void) {
     unique_ptr_t(AsmInstruction) self = uptr_new();
     uptr_alloc(AsmInstruction, self);
@@ -286,12 +198,11 @@ unique_ptr_t(AsmInstruction)
     return self;
 }
 
-unique_ptr_t(AsmInstruction) make_AsmBinary(unique_ptr_t(AsmBinaryOp) * binop, shared_ptr_t(AssemblyType) * asm_type,
+unique_ptr_t(AsmInstruction) make_AsmBinary(AsmBinaryOp* binop, shared_ptr_t(AssemblyType) * asm_type,
     shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst) {
     unique_ptr_t(AsmInstruction) self = make_AsmInstruction();
     self->type = AST_AsmBinary_t;
-    self->get._AsmBinary.binop = uptr_new();
-    uptr_move(AsmBinaryOp, *binop, self->get._AsmBinary.binop);
+    self->get._AsmBinary.binop = *binop;
     self->get._AsmBinary.asm_type = sptr_new();
     sptr_move(AssemblyType, *asm_type, self->get._AsmBinary.asm_type);
     self->get._AsmBinary.src = sptr_new();
@@ -442,7 +353,6 @@ void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self) {
             free_AsmOperand(&(*self)->get._AsmUnary.dst);
             break;
         case AST_AsmBinary_t:
-            free_AsmBinaryOp(&(*self)->get._AsmBinary.binop);
             free_AssemblyType(&(*self)->get._AsmBinary.asm_type);
             free_AsmOperand(&(*self)->get._AsmBinary.src);
             free_AsmOperand(&(*self)->get._AsmBinary.dst);

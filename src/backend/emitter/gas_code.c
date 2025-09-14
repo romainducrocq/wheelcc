@@ -618,14 +618,14 @@ static void binary_instr(Ctx ctx, AsmBinary* node) {
     emit(ctx, TAB TAB);
     {
         bool is_dbl = node->asm_type->type == AST_BackendDouble_t;
-        emit(ctx, get_binop(node->binop, is_dbl));
-        bool is_packed = node->binop->type == AST_AsmBitXor_t && is_dbl;
+        emit(ctx, get_binop(&node->binop, is_dbl));
+        bool is_packed = node->binop.type == AST_AsmBitXor_t && is_dbl;
         emit(ctx, get_type_suffix(node->asm_type, is_packed));
     }
     emit(ctx, " ");
     {
         TInt byte = type_align_bytes(node->asm_type);
-        switch (node->binop->type) {
+        switch (node->binop.type) {
             case AST_AsmBitShiftLeft_t:
             case AST_AsmBitShiftRight_t:
             case AST_AsmBitShrArithmetic_t:

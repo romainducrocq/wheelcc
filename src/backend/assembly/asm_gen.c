@@ -265,28 +265,28 @@ static AsmUnaryOp gen_unop(TacUnaryOp* node) {
 
 // binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight |
 //                 BitShrArithmetic
-static unique_ptr_t(AsmBinaryOp) gen_binop(TacBinaryOp* node) {
+static AsmBinaryOp gen_binop(TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacAdd_t:
-            return make_AsmAdd();
+            return init_AsmAdd();
         case AST_TacSubtract_t:
-            return make_AsmSub();
+            return init_AsmSub();
         case AST_TacMultiply_t:
-            return make_AsmMult();
+            return init_AsmMult();
         case AST_TacDivide_t:
-            return make_AsmDivDouble();
+            return init_AsmDivDouble();
         case AST_TacBitAnd_t:
-            return make_AsmBitAnd();
+            return init_AsmBitAnd();
         case AST_TacBitOr_t:
-            return make_AsmBitOr();
+            return init_AsmBitOr();
         case AST_TacBitXor_t:
-            return make_AsmBitXor();
+            return init_AsmBitXor();
         case AST_TacBitShiftLeft_t:
-            return make_AsmBitShiftLeft();
+            return init_AsmBitShiftLeft();
         case AST_TacBitShiftRight_t:
-            return make_AsmBitShiftRight();
+            return init_AsmBitShiftRight();
         case AST_TacBitShrArithmetic_t:
-            return make_AsmBitShrArithmetic();
+            return init_AsmBitShrArithmetic();
         default:
             THROW_ABORT;
     }
@@ -671,7 +671,7 @@ static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* str
                 push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &dst_cp));
             }
             {
-                unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftLeft();
+                AsmBinaryOp binop = init_AsmBitShiftLeft();
                 shared_ptr_t(AssemblyType) asm_type_shl_cp = sptr_new();
                 sptr_copy(AssemblyType, asm_type_shl, asm_type_shl_cp);
                 shared_ptr_t(AsmOperand) src_shl_cp = sptr_new();
@@ -691,7 +691,7 @@ static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* str
             push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &dst_cp));
         }
         {
-            unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftLeft();
+            AsmBinaryOp binop = init_AsmBitShiftLeft();
             shared_ptr_t(AsmOperand) dst_cp = sptr_new();
             sptr_copy(AsmOperand, dst, dst_cp);
             push_instr(ctx, make_AsmBinary(&binop, &asm_type_shl, &src_shl, &dst_cp));
@@ -969,7 +969,7 @@ static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
         push_instr(ctx, make_AsmMov(&asm_type_sd_cp, &src, &dst_out_of_range_sd_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop_out_of_range_sd_sub = make_AsmSub();
+        AsmBinaryOp binop_out_of_range_sd_sub = init_AsmSub();
         shared_ptr_t(AsmOperand) dst_out_of_range_sd_cp = sptr_new();
         sptr_copy(AsmOperand, dst_out_of_range_sd, dst_out_of_range_sd_cp);
         push_instr(
@@ -983,7 +983,7 @@ static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
         push_instr(ctx, make_AsmCvttsd2si(&asm_type_si_cp, &dst_out_of_range_sd, &dst_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_add = make_AsmAdd();
+        AsmBinaryOp binop_out_of_range_si_add = init_AsmAdd();
         shared_ptr_t(AsmOperand) upper_bound_si = make_AsmImm(9223372036854775808ul, false, true, false);
         push_instr(ctx, make_AsmBinary(&binop_out_of_range_si_add, &asm_type_si, &upper_bound_si, &dst));
     }
@@ -1128,7 +1128,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         push_instr(ctx, make_AsmUnary(&unop_out_of_range_si_shr, &asm_type_si_cp, &dst_out_of_range_si_shr_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_and = make_AsmBitAnd();
+        AsmBinaryOp binop_out_of_range_si_and = init_AsmBitAnd();
         shared_ptr_t(AsmOperand) set_bit_si = make_AsmImm(1ul, true, false, false);
         shared_ptr_t(AsmOperand) dst_out_of_range_si_cp = sptr_new();
         sptr_copy(AsmOperand, dst_out_of_range_si, dst_out_of_range_si_cp);
@@ -1138,7 +1138,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
             ctx, make_AsmBinary(&binop_out_of_range_si_and, &asm_type_si_cp, &set_bit_si, &dst_out_of_range_si_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop_out_of_range_si_or = make_AsmBitOr();
+        AsmBinaryOp binop_out_of_range_si_or = init_AsmBitOr();
         shared_ptr_t(AsmOperand) dst_out_of_range_si_shr_cp = sptr_new();
         sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
         shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
@@ -1152,7 +1152,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         push_instr(ctx, make_AsmCvtsi2sd(&asm_type_si, &dst_out_of_range_si_shr, &dst_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop_out_of_range_sq_add = make_AsmAdd();
+        AsmBinaryOp binop_out_of_range_sq_add = init_AsmAdd();
         shared_ptr_t(AsmOperand) dst_cp = sptr_new();
         sptr_copy(AsmOperand, dst, dst_cp);
         shared_ptr_t(AssemblyType) asm_type_sq = make_BackendDouble();
@@ -1176,7 +1176,7 @@ static void unsigned_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
 static void alloc_stack_instr(Ctx ctx, TLong byte) { push_instr(ctx, alloc_stack_bytes(byte)); }
 
 static void dealloc_stack_instr(Ctx ctx, TLong byte) {
-    unique_ptr_t(AsmBinaryOp) binop = make_AsmAdd();
+    AsmBinaryOp binop = init_AsmAdd();
     shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
     shared_ptr_t(AsmOperand) src = sptr_new();
     {
@@ -1293,7 +1293,7 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
         vec_delete(byte_instrs);
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop = make_AsmSub();
+        AsmBinaryOp binop = init_AsmSub();
         shared_ptr_t(AsmOperand) src = make_AsmImm(8ul, true, false, false);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Sp);
         shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
@@ -1436,7 +1436,7 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
                 push_instr(ctx, make_AsmMov(&asm_type_dst_cp, &src_cp, &dst));
             }
             {
-                unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftRight();
+                AsmBinaryOp binop = init_AsmBitShiftRight();
                 shared_ptr_t(AsmOperand) src_shr2op_cp = sptr_new();
                 sptr_copy(AsmOperand, src_shr2op, src_shr2op_cp);
                 shared_ptr_t(AsmOperand) src_cp = sptr_new();
@@ -1456,7 +1456,7 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
             push_instr(ctx, make_AsmMov(&asm_type_dst_cp, &src_cp, &dst));
         }
         {
-            unique_ptr_t(AsmBinaryOp) binop = make_AsmBitShiftRight();
+            AsmBinaryOp binop = init_AsmBitShiftRight();
             shared_ptr_t(AsmOperand) src_cp = sptr_new();
             sptr_copy(AsmOperand, src, src_cp);
             push_instr(ctx, make_AsmBinary(&binop, &asm_type_shr2op, &src_shr2op, &src_cp));
@@ -1560,7 +1560,7 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
 }
 
 static void zero_xmm_reg_instr(Ctx ctx) {
-    unique_ptr_t(AsmBinaryOp) binop = make_AsmBitXor();
+    AsmBinaryOp binop = init_AsmBitXor();
     shared_ptr_t(AsmOperand) src = gen_register(REG_Xmm0);
     shared_ptr_t(AsmOperand) src_cp = sptr_new();
     sptr_copy(AsmOperand, src, src_cp);
@@ -1597,7 +1597,7 @@ static void unop_dbl_neg_instr(Ctx ctx, TacUnary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop = make_AsmBitXor();
+        AsmBinaryOp binop = init_AsmBitXor();
         shared_ptr_t(AsmOperand) src2 = dbl_static_const_op(ctx, 9223372036854775808ul, 16);
         push_instr(ctx, make_AsmBinary(&binop, &asm_type_src1, &src2, &src1_dst));
     }
@@ -1699,7 +1699,7 @@ static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop = gen_binop(&node->binop);
+        AsmBinaryOp binop = gen_binop(&node->binop);
         shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
         push_instr(ctx, make_AsmBinary(&binop, &asm_type_src1, &src2, &src1_dst));
     }
@@ -2205,7 +2205,7 @@ static void aggr_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
             bool is_neg = node->scale < 0l;
             src = make_AsmImm(value, is_byte, is_quad, is_neg);
         }
-        unique_ptr_t(AsmBinaryOp) binop = make_AsmMult();
+        AsmBinaryOp binop = init_AsmMult();
         push_instr(ctx, make_AsmBinary(&binop, &asm_type_src, &src, &src_dst));
     }
     {

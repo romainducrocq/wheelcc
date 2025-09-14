@@ -128,7 +128,7 @@ static unique_ptr_t(InferenceGraph) make_InferenceGraph(bool is_sse) {
 // Inference graph
 
 static bool is_bitshift_cl(AsmBinary* node) {
-    switch (node->binop->type) {
+    switch (node->binop.type) {
         case AST_AsmBitShiftLeft_t:
         case AST_AsmBitShiftRight_t:
         case AST_AsmBitShrArithmetic_t:

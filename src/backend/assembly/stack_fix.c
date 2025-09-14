@@ -427,7 +427,7 @@ static void repl_pseudo_regs(Ctx ctx, AsmInstruction* node) {
 // Instruction fix up
 
 unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte) {
-    unique_ptr_t(AsmBinaryOp) binop = make_AsmSub();
+    AsmBinaryOp binop = init_AsmSub();
     shared_ptr_t(AssemblyType) asm_type = make_QuadWord();
     shared_ptr_t(AsmOperand) src = sptr_new();
     {
@@ -798,7 +798,7 @@ static void fix_binary_instr(Ctx ctx, AsmBinary* node) {
         }
     }
     else {
-        switch (node->binop->type) {
+        switch (node->binop.type) {
             case AST_AsmAdd_t:
             case AST_AsmSub_t:
             case AST_AsmBitAnd_t:
@@ -938,7 +938,7 @@ static void push_dbl_from_xmm_reg(Ctx ctx, AsmPush* node) {
     sptr_move(AsmOperand, node->src, src_reg);
     shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
     {
-        unique_ptr_t(AsmBinaryOp) binop = make_AsmSub();
+        AsmBinaryOp binop = init_AsmSub();
         shared_ptr_t(AsmOperand) src = make_AsmImm(8ul, true, false, false);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Sp);
         shared_ptr_t(AssemblyType) asm_type_src_cp = sptr_new();

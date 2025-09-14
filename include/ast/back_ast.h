@@ -215,81 +215,21 @@ void free_AsmOperand(shared_ptr_t(AsmOperand) * self);
 //                 | BitShiftRight
 //                 | BitShrArithmetic
 
-typedef struct AsmAdd {
-    int8_t _empty;
-} AsmAdd;
-
-typedef struct AsmSub {
-    int8_t _empty;
-} AsmSub;
-
-typedef struct AsmMult {
-    int8_t _empty;
-} AsmMult;
-
-typedef struct AsmDivDouble {
-    int8_t _empty;
-} AsmDivDouble;
-
-typedef struct AsmBitAnd {
-    int8_t _empty;
-} AsmBitAnd;
-
-typedef struct AsmBitOr {
-    int8_t _empty;
-} AsmBitOr;
-
-typedef struct AsmBitXor {
-    int8_t _empty;
-} AsmBitXor;
-
-typedef struct AsmBitShiftLeft {
-    int8_t _empty;
-} AsmBitShiftLeft;
-
-typedef struct AsmBitShiftRight {
-    int8_t _empty;
-} AsmBitShiftRight;
-
-typedef struct AsmBitShrArithmetic {
-    int8_t _empty;
-} AsmBitShrArithmetic;
-
 typedef struct AsmBinaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        AsmAdd _AsmAdd;
-        AsmSub _AsmSub;
-        AsmMult _AsmMult;
-        AsmDivDouble _AsmDivDouble;
-        AsmBitAnd _AsmBitAnd;
-        AsmBitOr _AsmBitOr;
-        AsmBitXor _AsmBitXor;
-        AsmBitShiftLeft _AsmBitShiftLeft;
-        AsmBitShiftRight _AsmBitShiftRight;
-        AsmBitShrArithmetic _AsmBitShrArithmetic;
-    } get;
+    tagged_def_impl(AST_T);
 } AsmBinaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(AsmBinaryOp) make_AsmBinaryOp(void);
-unique_ptr_t(AsmBinaryOp) make_AsmAdd(void);
-unique_ptr_t(AsmBinaryOp) make_AsmSub(void);
-unique_ptr_t(AsmBinaryOp) make_AsmMult(void);
-unique_ptr_t(AsmBinaryOp) make_AsmDivDouble(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitAnd(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitOr(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitXor(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitShiftLeft(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitShiftRight(void);
-unique_ptr_t(AsmBinaryOp) make_AsmBitShrArithmetic(void);
-void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_AsmBinaryOp() tagged_def_init(AST, AsmBinaryOp, AsmBinaryOp)
+#define init_AsmAdd() tagged_def_init(AST, AsmBinaryOp, AsmAdd)
+#define init_AsmSub() tagged_def_init(AST, AsmBinaryOp, AsmSub)
+#define init_AsmMult() tagged_def_init(AST, AsmBinaryOp, AsmMult)
+#define init_AsmDivDouble() tagged_def_init(AST, AsmBinaryOp, AsmDivDouble)
+#define init_AsmBitAnd() tagged_def_init(AST, AsmBinaryOp, AsmBitAnd)
+#define init_AsmBitOr() tagged_def_init(AST, AsmBinaryOp, AsmBitOr)
+#define init_AsmBitXor() tagged_def_init(AST, AsmBinaryOp, AsmBitXor)
+#define init_AsmBitShiftLeft() tagged_def_init(AST, AsmBinaryOp, AsmBitShiftLeft)
+#define init_AsmBitShiftRight() tagged_def_init(AST, AsmBinaryOp, AsmBitShiftRight)
+#define init_AsmBitShrArithmetic() tagged_def_init(AST, AsmBinaryOp, AsmBitShrArithmetic)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -373,7 +313,7 @@ typedef struct AsmUnary {
 } AsmUnary;
 
 typedef struct AsmBinary {
-    unique_ptr_t(AsmBinaryOp) binop;
+    AsmBinaryOp binop;
     shared_ptr_t(AssemblyType) asm_type;
     shared_ptr_t(AsmOperand) src;
     shared_ptr_t(AsmOperand) dst;
@@ -477,7 +417,7 @@ unique_ptr_t(AsmInstruction) make_AsmCvtsi2sd(
     shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction)
     make_AsmUnary(AsmUnaryOp* unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst);
-unique_ptr_t(AsmInstruction) make_AsmBinary(unique_ptr_t(AsmBinaryOp) * binop, shared_ptr_t(AssemblyType) * asm_type,
+unique_ptr_t(AsmInstruction) make_AsmBinary(AsmBinaryOp* binop, shared_ptr_t(AssemblyType) * asm_type,
     shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction)
     make_AsmCmp(shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
