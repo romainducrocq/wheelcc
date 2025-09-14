@@ -473,27 +473,27 @@ static void push_callee_saved_regs(Ctx ctx, vector_t(shared_ptr_t(AsmOperand)) c
 static void pop_callee_saved_regs(Ctx ctx, vector_t(shared_ptr_t(AsmOperand)) callee_saved_regs) {
     for (size_t i = vec_size(callee_saved_regs); i-- > 0;) {
         THROW_ABORT_IF(callee_saved_regs[i]->type != AST_AsmRegister_t);
-        REGISTER_KIND reg_kind = register_mask_kind(callee_saved_regs[i]->get._AsmRegister.reg);
-        unique_ptr_t(AsmReg) reg = uptr_new();
+        REGISTER_KIND reg_kind = register_mask_kind(&callee_saved_regs[i]->get._AsmRegister.reg);
+        AsmReg reg = init_AsmReg();
         switch (reg_kind) {
             case REG_Bx: {
-                reg = make_AsmBx();
+                reg = init_AsmBx();
                 break;
             }
             case REG_R12: {
-                reg = make_AsmR12();
+                reg = init_AsmR12();
                 break;
             }
             case REG_R13: {
-                reg = make_AsmR13();
+                reg = init_AsmR13();
                 break;
             }
             case REG_R14: {
-                reg = make_AsmR14();
+                reg = init_AsmR14();
                 break;
             }
             case REG_R15: {
-                reg = make_AsmR15();
+                reg = init_AsmR15();
                 break;
             }
             default:
@@ -778,7 +778,7 @@ static void binary_imul_to_addr(Ctx ctx, AsmBinary* node) {
 }
 
 static void binary_shx_from_not_imm(Ctx ctx, AsmBinary* node) {
-    if (node->src->type == AST_AsmRegister_t && register_mask_kind(node->src->get._AsmRegister.reg) == REG_Cx) {
+    if (node->src->type == AST_AsmRegister_t && register_mask_kind(&node->src->get._AsmRegister.reg) == REG_Cx) {
         return;
     }
     shared_ptr_t(AsmOperand) src = sptr_new();
@@ -965,7 +965,7 @@ static void push_from_quad_imm(Ctx ctx, AsmPush* node) {
 
 static void fix_push_instr(Ctx ctx, AsmPush* node) {
     if (node->src->type == AST_AsmRegister_t) {
-        REGISTER_KIND reg_kind = register_mask_kind(node->src->get._AsmRegister.reg);
+        REGISTER_KIND reg_kind = register_mask_kind(&node->src->get._AsmRegister.reg);
         if (reg_kind != REG_Sp && register_mask_bit(reg_kind) > 11) {
             push_dbl_from_xmm_reg(ctx, node);
         }

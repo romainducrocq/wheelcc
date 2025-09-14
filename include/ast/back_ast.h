@@ -57,213 +57,43 @@ typedef struct AsmProgram AsmProgram;
 //     | XMM14
 //     | XMM15
 
-typedef struct AsmAx {
-    int8_t _empty;
-} AsmAx;
-
-typedef struct AsmBx {
-    int8_t _empty;
-} AsmBx;
-
-typedef struct AsmCx {
-    int8_t _empty;
-} AsmCx;
-
-typedef struct AsmDx {
-    int8_t _empty;
-} AsmDx;
-
-typedef struct AsmDi {
-    int8_t _empty;
-} AsmDi;
-
-typedef struct AsmSi {
-    int8_t _empty;
-} AsmSi;
-
-typedef struct AsmR8 {
-    int8_t _empty;
-} AsmR8;
-
-typedef struct AsmR9 {
-    int8_t _empty;
-} AsmR9;
-
-typedef struct AsmR10 {
-    int8_t _empty;
-} AsmR10;
-
-typedef struct AsmR11 {
-    int8_t _empty;
-} AsmR11;
-
-typedef struct AsmR12 {
-    int8_t _empty;
-} AsmR12;
-
-typedef struct AsmR13 {
-    int8_t _empty;
-} AsmR13;
-
-typedef struct AsmR14 {
-    int8_t _empty;
-} AsmR14;
-
-typedef struct AsmR15 {
-    int8_t _empty;
-} AsmR15;
-
-typedef struct AsmSp {
-    int8_t _empty;
-} AsmSp;
-
-typedef struct AsmBp {
-    int8_t _empty;
-} AsmBp;
-
-typedef struct AsmXMM0 {
-    int8_t _empty;
-} AsmXMM0;
-
-typedef struct AsmXMM1 {
-    int8_t _empty;
-} AsmXMM1;
-
-typedef struct AsmXMM2 {
-    int8_t _empty;
-} AsmXMM2;
-
-typedef struct AsmXMM3 {
-    int8_t _empty;
-} AsmXMM3;
-
-typedef struct AsmXMM4 {
-    int8_t _empty;
-} AsmXMM4;
-
-typedef struct AsmXMM5 {
-    int8_t _empty;
-} AsmXMM5;
-
-typedef struct AsmXMM6 {
-    int8_t _empty;
-} AsmXMM6;
-
-typedef struct AsmXMM7 {
-    int8_t _empty;
-} AsmXMM7;
-
-typedef struct AsmXMM8 {
-    int8_t _empty;
-} AsmXMM8;
-
-typedef struct AsmXMM9 {
-    int8_t _empty;
-} AsmXMM9;
-
-typedef struct AsmXMM10 {
-    int8_t _empty;
-} AsmXMM10;
-
-typedef struct AsmXMM11 {
-    int8_t _empty;
-} AsmXMM11;
-
-typedef struct AsmXMM12 {
-    int8_t _empty;
-} AsmXMM12;
-
-typedef struct AsmXMM13 {
-    int8_t _empty;
-} AsmXMM13;
-
-typedef struct AsmXMM14 {
-    int8_t _empty;
-} AsmXMM14;
-
-typedef struct AsmXMM15 {
-    int8_t _empty;
-} AsmXMM15;
-
 typedef struct AsmReg {
-    unique_ptr_impl(AST_T);
-
-    union {
-        AsmAx _AsmAx;
-        AsmBx _AsmBx;
-        AsmCx _AsmCx;
-        AsmDx _AsmDx;
-        AsmDi _AsmDi;
-        AsmSi _AsmSi;
-        AsmR8 _AsmR8;
-        AsmR9 _AsmR9;
-        AsmR10 _AsmR10;
-        AsmR11 _AsmR11;
-        AsmR12 _AsmR12;
-        AsmR13 _AsmR13;
-        AsmR14 _AsmR14;
-        AsmR15 _AsmR15;
-        AsmSp _AsmSp;
-        AsmBp _AsmBp;
-        AsmXMM0 _AsmXMM0;
-        AsmXMM1 _AsmXMM1;
-        AsmXMM2 _AsmXMM2;
-        AsmXMM3 _AsmXMM3;
-        AsmXMM4 _AsmXMM4;
-        AsmXMM5 _AsmXMM5;
-        AsmXMM6 _AsmXMM6;
-        AsmXMM7 _AsmXMM7;
-        AsmXMM8 _AsmXMM8;
-        AsmXMM9 _AsmXMM9;
-        AsmXMM10 _AsmXMM10;
-        AsmXMM11 _AsmXMM11;
-        AsmXMM12 _AsmXMM12;
-        AsmXMM13 _AsmXMM13;
-        AsmXMM14 _AsmXMM14;
-        AsmXMM15 _AsmXMM15;
-    } get;
+    tagged_def_impl(AST_T);
 } AsmReg;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(AsmReg) make_AsmReg(void);
-unique_ptr_t(AsmReg) make_AsmAx(void);
-unique_ptr_t(AsmReg) make_AsmBx(void);
-unique_ptr_t(AsmReg) make_AsmCx(void);
-unique_ptr_t(AsmReg) make_AsmDx(void);
-unique_ptr_t(AsmReg) make_AsmDi(void);
-unique_ptr_t(AsmReg) make_AsmSi(void);
-unique_ptr_t(AsmReg) make_AsmR8(void);
-unique_ptr_t(AsmReg) make_AsmR9(void);
-unique_ptr_t(AsmReg) make_AsmR10(void);
-unique_ptr_t(AsmReg) make_AsmR11(void);
-unique_ptr_t(AsmReg) make_AsmR12(void);
-unique_ptr_t(AsmReg) make_AsmR13(void);
-unique_ptr_t(AsmReg) make_AsmR14(void);
-unique_ptr_t(AsmReg) make_AsmR15(void);
-unique_ptr_t(AsmReg) make_AsmSp(void);
-unique_ptr_t(AsmReg) make_AsmBp(void);
-unique_ptr_t(AsmReg) make_AsmXMM0(void);
-unique_ptr_t(AsmReg) make_AsmXMM1(void);
-unique_ptr_t(AsmReg) make_AsmXMM2(void);
-unique_ptr_t(AsmReg) make_AsmXMM3(void);
-unique_ptr_t(AsmReg) make_AsmXMM4(void);
-unique_ptr_t(AsmReg) make_AsmXMM5(void);
-unique_ptr_t(AsmReg) make_AsmXMM6(void);
-unique_ptr_t(AsmReg) make_AsmXMM7(void);
-unique_ptr_t(AsmReg) make_AsmXMM8(void);
-unique_ptr_t(AsmReg) make_AsmXMM9(void);
-unique_ptr_t(AsmReg) make_AsmXMM10(void);
-unique_ptr_t(AsmReg) make_AsmXMM11(void);
-unique_ptr_t(AsmReg) make_AsmXMM12(void);
-unique_ptr_t(AsmReg) make_AsmXMM13(void);
-unique_ptr_t(AsmReg) make_AsmXMM14(void);
-unique_ptr_t(AsmReg) make_AsmXMM15(void);
-void free_AsmReg(unique_ptr_t(AsmReg) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_AsmReg() tagged_def_init(AST, AsmReg, AsmReg)
+#define init_AsmAx() tagged_def_init(AST, AsmReg, AsmAx)
+#define init_AsmBx() tagged_def_init(AST, AsmReg, AsmBx)
+#define init_AsmCx() tagged_def_init(AST, AsmReg, AsmCx)
+#define init_AsmDx() tagged_def_init(AST, AsmReg, AsmDx)
+#define init_AsmDi() tagged_def_init(AST, AsmReg, AsmDi)
+#define init_AsmSi() tagged_def_init(AST, AsmReg, AsmSi)
+#define init_AsmR8() tagged_def_init(AST, AsmReg, AsmR8)
+#define init_AsmR9() tagged_def_init(AST, AsmReg, AsmR9)
+#define init_AsmR10() tagged_def_init(AST, AsmReg, AsmR10)
+#define init_AsmR11() tagged_def_init(AST, AsmReg, AsmR11)
+#define init_AsmR12() tagged_def_init(AST, AsmReg, AsmR12)
+#define init_AsmR13() tagged_def_init(AST, AsmReg, AsmR13)
+#define init_AsmR14() tagged_def_init(AST, AsmReg, AsmR14)
+#define init_AsmR15() tagged_def_init(AST, AsmReg, AsmR15)
+#define init_AsmSp() tagged_def_init(AST, AsmReg, AsmSp)
+#define init_AsmBp() tagged_def_init(AST, AsmReg, AsmBp)
+#define init_AsmXMM0() tagged_def_init(AST, AsmReg, AsmXMM0)
+#define init_AsmXMM1() tagged_def_init(AST, AsmReg, AsmXMM1)
+#define init_AsmXMM2() tagged_def_init(AST, AsmReg, AsmXMM2)
+#define init_AsmXMM3() tagged_def_init(AST, AsmReg, AsmXMM3)
+#define init_AsmXMM4() tagged_def_init(AST, AsmReg, AsmXMM4)
+#define init_AsmXMM5() tagged_def_init(AST, AsmReg, AsmXMM5)
+#define init_AsmXMM6() tagged_def_init(AST, AsmReg, AsmXMM6)
+#define init_AsmXMM7() tagged_def_init(AST, AsmReg, AsmXMM7)
+#define init_AsmXMM8() tagged_def_init(AST, AsmReg, AsmXMM8)
+#define init_AsmXMM9() tagged_def_init(AST, AsmReg, AsmXMM9)
+#define init_AsmXMM10() tagged_def_init(AST, AsmReg, AsmXMM10)
+#define init_AsmXMM11() tagged_def_init(AST, AsmReg, AsmXMM11)
+#define init_AsmXMM12() tagged_def_init(AST, AsmReg, AsmXMM12)
+#define init_AsmXMM13() tagged_def_init(AST, AsmReg, AsmXMM13)
+#define init_AsmXMM14() tagged_def_init(AST, AsmReg, AsmXMM14)
+#define init_AsmXMM15() tagged_def_init(AST, AsmReg, AsmXMM15)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -379,7 +209,7 @@ typedef struct AsmImm {
 } AsmImm;
 
 typedef struct AsmRegister {
-    unique_ptr_t(AsmReg) reg;
+    AsmReg reg;
 } AsmRegister;
 
 typedef struct AsmPseudo {
@@ -388,7 +218,7 @@ typedef struct AsmPseudo {
 
 typedef struct AsmMemory {
     TLong value;
-    unique_ptr_t(AsmReg) reg;
+    AsmReg reg;
 } AsmMemory;
 
 typedef struct AsmData {
@@ -403,8 +233,8 @@ typedef struct AsmPseudoMem {
 
 typedef struct AsmIndexed {
     TLong scale;
-    unique_ptr_t(AsmReg) reg_base;
-    unique_ptr_t(AsmReg) reg_index;
+    AsmReg reg_base;
+    AsmReg reg_index;
 } AsmIndexed;
 
 typedef struct AsmOperand {
@@ -426,13 +256,12 @@ extern "C" {
 #endif
 shared_ptr_t(AsmOperand) make_AsmOperand(void);
 shared_ptr_t(AsmOperand) make_AsmImm(TULong value, bool is_byte, bool is_quad, bool is_neg);
-shared_ptr_t(AsmOperand) make_AsmRegister(unique_ptr_t(AsmReg) * reg);
+shared_ptr_t(AsmOperand) make_AsmRegister(AsmReg* reg);
 shared_ptr_t(AsmOperand) make_AsmPseudo(TIdentifier name);
-shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, unique_ptr_t(AsmReg) * reg);
+shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, AsmReg* reg);
 shared_ptr_t(AsmOperand) make_AsmData(TIdentifier name, TLong offset);
 shared_ptr_t(AsmOperand) make_AsmPseudoMem(TIdentifier name, TLong offset);
-shared_ptr_t(AsmOperand)
-    make_AsmIndexed(TLong scale, unique_ptr_t(AsmReg) * reg_base, unique_ptr_t(AsmReg) * reg_index);
+shared_ptr_t(AsmOperand) make_AsmIndexed(TLong scale, AsmReg* reg_base, AsmReg* reg_index);
 void free_AsmOperand(shared_ptr_t(AsmOperand) * self);
 #ifdef __cplusplus
 }
@@ -683,7 +512,7 @@ typedef struct AsmPush {
 } AsmPush;
 
 typedef struct AsmPop {
-    unique_ptr_t(AsmReg) reg;
+    AsmReg reg;
 } AsmPop;
 
 typedef struct AsmCall {
@@ -750,7 +579,7 @@ unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, unique_ptr_t(AsmC
 unique_ptr_t(AsmInstruction) make_AsmSetCC(unique_ptr_t(AsmCondCode) * cond_code, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction) make_AsmLabel(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmPush(shared_ptr_t(AsmOperand) * src);
-unique_ptr_t(AsmInstruction) make_AsmPop(unique_ptr_t(AsmReg) * reg);
+unique_ptr_t(AsmInstruction) make_AsmPop(AsmReg* reg);
 unique_ptr_t(AsmInstruction) make_AsmCall(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmRet(void);
 void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self);

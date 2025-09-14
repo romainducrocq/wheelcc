@@ -12,248 +12,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(AsmReg) make_AsmReg(void) {
-    unique_ptr_t(AsmReg) self = uptr_new();
-    uptr_alloc(AsmReg, self);
-    self->type = AST_AsmReg_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmAx(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmAx_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmBx(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmBx_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmCx(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmCx_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmDx(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmDx_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmDi(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmDi_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmSi(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmSi_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR8(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR8_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR9(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR9_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR10(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR10_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR11(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR11_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR12(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR12_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR13(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR13_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR14(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR14_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmR15(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmR15_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmSp(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmSp_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmBp(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmBp_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM0(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM0_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM1(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM1_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM2(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM2_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM3(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM3_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM4(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM4_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM5(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM5_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM6(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM6_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM7(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM7_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM8(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM8_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM9(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM9_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM10(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM10_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM11(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM11_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM12(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM12_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM13(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM13_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM14(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM14_t;
-    return self;
-}
-
-unique_ptr_t(AsmReg) make_AsmXMM15(void) {
-    unique_ptr_t(AsmReg) self = make_AsmReg();
-    self->type = AST_AsmXMM15_t;
-    return self;
-}
-
-void free_AsmReg(unique_ptr_t(AsmReg) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_AsmReg_t:
-        case AST_AsmAx_t:
-        case AST_AsmBx_t:
-        case AST_AsmCx_t:
-        case AST_AsmDx_t:
-        case AST_AsmDi_t:
-        case AST_AsmSi_t:
-        case AST_AsmR8_t:
-        case AST_AsmR9_t:
-        case AST_AsmR10_t:
-        case AST_AsmR11_t:
-        case AST_AsmR12_t:
-        case AST_AsmR13_t:
-        case AST_AsmR14_t:
-        case AST_AsmR15_t:
-        case AST_AsmSp_t:
-        case AST_AsmBp_t:
-        case AST_AsmXMM0_t:
-        case AST_AsmXMM1_t:
-        case AST_AsmXMM2_t:
-        case AST_AsmXMM3_t:
-        case AST_AsmXMM4_t:
-        case AST_AsmXMM5_t:
-        case AST_AsmXMM6_t:
-        case AST_AsmXMM7_t:
-        case AST_AsmXMM8_t:
-        case AST_AsmXMM9_t:
-        case AST_AsmXMM10_t:
-        case AST_AsmXMM11_t:
-        case AST_AsmXMM12_t:
-        case AST_AsmXMM13_t:
-        case AST_AsmXMM14_t:
-        case AST_AsmXMM15_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(AsmCondCode) make_AsmCondCode(void) {
     unique_ptr_t(AsmCondCode) self = uptr_new();
     uptr_alloc(AsmCondCode, self);
@@ -366,11 +124,10 @@ shared_ptr_t(AsmOperand) make_AsmImm(TULong value, bool is_byte, bool is_quad, b
     return self;
 }
 
-shared_ptr_t(AsmOperand) make_AsmRegister(unique_ptr_t(AsmReg) * reg) {
+shared_ptr_t(AsmOperand) make_AsmRegister(AsmReg* reg) {
     shared_ptr_t(AsmOperand) self = make_AsmOperand();
     self->type = AST_AsmRegister_t;
-    self->get._AsmRegister.reg = uptr_new();
-    uptr_move(AsmReg, *reg, self->get._AsmRegister.reg);
+    self->get._AsmRegister.reg = *reg;
     return self;
 }
 
@@ -381,12 +138,11 @@ shared_ptr_t(AsmOperand) make_AsmPseudo(TIdentifier name) {
     return self;
 }
 
-shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, unique_ptr_t(AsmReg) * reg) {
+shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, AsmReg* reg) {
     shared_ptr_t(AsmOperand) self = make_AsmOperand();
     self->type = AST_AsmMemory_t;
     self->get._AsmMemory.value = value;
-    self->get._AsmMemory.reg = uptr_new();
-    uptr_move(AsmReg, *reg, self->get._AsmMemory.reg);
+    self->get._AsmMemory.reg = *reg;
     return self;
 }
 
@@ -406,15 +162,12 @@ shared_ptr_t(AsmOperand) make_AsmPseudoMem(TIdentifier name, TLong offset) {
     return self;
 }
 
-shared_ptr_t(AsmOperand)
-    make_AsmIndexed(TLong scale, unique_ptr_t(AsmReg) * reg_base, unique_ptr_t(AsmReg) * reg_index) {
+shared_ptr_t(AsmOperand) make_AsmIndexed(TLong scale, AsmReg* reg_base, AsmReg* reg_index) {
     shared_ptr_t(AsmOperand) self = make_AsmOperand();
     self->type = AST_AsmIndexed_t;
     self->get._AsmIndexed.scale = scale;
-    self->get._AsmIndexed.reg_base = uptr_new();
-    uptr_move(AsmReg, *reg_base, self->get._AsmIndexed.reg_base);
-    self->get._AsmIndexed.reg_index = uptr_new();
-    uptr_move(AsmReg, *reg_index, self->get._AsmIndexed.reg_index);
+    self->get._AsmIndexed.reg_base = *reg_base;
+    self->get._AsmIndexed.reg_index = *reg_index;
     return self;
 }
 
@@ -425,20 +178,16 @@ void free_AsmOperand(shared_ptr_t(AsmOperand) * self) {
         case AST_AsmImm_t:
             break;
         case AST_AsmRegister_t:
-            free_AsmReg(&(*self)->get._AsmRegister.reg);
             break;
         case AST_AsmPseudo_t:
             break;
         case AST_AsmMemory_t:
-            free_AsmReg(&(*self)->get._AsmMemory.reg);
             break;
         case AST_AsmData_t:
             break;
         case AST_AsmPseudoMem_t:
             break;
         case AST_AsmIndexed_t:
-            free_AsmReg(&(*self)->get._AsmIndexed.reg_base);
-            free_AsmReg(&(*self)->get._AsmIndexed.reg_index);
             break;
         default:
             THROW_ABORT;
@@ -769,11 +518,10 @@ unique_ptr_t(AsmInstruction) make_AsmPush(shared_ptr_t(AsmOperand) * src) {
     return self;
 }
 
-unique_ptr_t(AsmInstruction) make_AsmPop(unique_ptr_t(AsmReg) * reg) {
+unique_ptr_t(AsmInstruction) make_AsmPop(AsmReg* reg) {
     unique_ptr_t(AsmInstruction) self = make_AsmInstruction();
     self->type = AST_AsmPop_t;
-    self->get._AsmPop.reg = uptr_new();
-    uptr_move(AsmReg, *reg, self->get._AsmPop.reg);
+    self->get._AsmPop.reg = *reg;
     return self;
 }
 
@@ -868,7 +616,6 @@ void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self) {
             free_AsmOperand(&(*self)->get._AsmPush.src);
             break;
         case AST_AsmPop_t:
-            free_AsmReg(&(*self)->get._AsmPop.reg);
             break;
         case AST_AsmCall_t:
             break;

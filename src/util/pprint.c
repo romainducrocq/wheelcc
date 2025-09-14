@@ -1372,7 +1372,7 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
             break;
         case AST_AsmRegister_t:
             print_field(++tab, "AsmRegister: ");
-            print_AsmReg(node->get._AsmRegister.reg, tab);
+            print_AsmReg(&node->get._AsmRegister.reg, tab);
             break;
         case AST_AsmPseudo_t:
             print_field(++tab, "AsmPseudo: ");
@@ -1381,7 +1381,7 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
         case AST_AsmMemory_t:
             print_field(++tab, "AsmMemory: ");
             print_field(tab + 1, "TLong: %zi", (ssize_t)node->get._AsmMemory.value);
-            print_AsmReg(node->get._AsmMemory.reg, tab);
+            print_AsmReg(&node->get._AsmMemory.reg, tab);
             break;
         case AST_AsmData_t:
             print_field(++tab, "AsmData: ");
@@ -1396,8 +1396,8 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
         case AST_AsmIndexed_t:
             print_field(++tab, "AsmIndexed: ");
             print_field(tab + 1, "TLong: %zi", (ssize_t)node->get._AsmIndexed.scale);
-            print_AsmReg(node->get._AsmIndexed.reg_base, tab);
-            print_AsmReg(node->get._AsmIndexed.reg_index, tab);
+            print_AsmReg(&node->get._AsmIndexed.reg_base, tab);
+            print_AsmReg(&node->get._AsmIndexed.reg_index, tab);
             break;
         default:
             THROW_ABORT;
@@ -1565,7 +1565,7 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
             break;
         case AST_AsmPop_t:
             print_field(++tab, "AsmPop: ");
-            print_AsmReg(node->get._AsmPop.reg, tab);
+            print_AsmReg(&node->get._AsmPop.reg, tab);
             break;
         case AST_AsmCall_t:
             print_field(++tab, "AsmCall: ");

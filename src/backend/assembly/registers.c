@@ -11,90 +11,90 @@
 
 // reg = AX | BX | CX | DX | DI | SI | R8 | R9 | R10 | R11 | R12 | R13 | R14 | R15 | SP | XMM0 | XMM1 | XMM2 | XMM3
 //     | XMM4 | XMM5 | XMM6 | XMM7 | XMM8 | XMM9 | XMM10 | XMM11 | XMM12 | XMM13 | XMM14 | XMM15
-static unique_ptr_t(AsmReg) gen_reg(REGISTER_KIND reg_kind) {
+static AsmReg gen_reg(REGISTER_KIND reg_kind) {
     switch (reg_kind) {
         case REG_Ax:
-            return make_AsmAx();
+            return init_AsmAx();
         case REG_Bx:
-            return make_AsmBx();
+            return init_AsmBx();
         case REG_Cx:
-            return make_AsmCx();
+            return init_AsmCx();
         case REG_Dx:
-            return make_AsmDx();
+            return init_AsmDx();
         case REG_Di:
-            return make_AsmDi();
+            return init_AsmDi();
         case REG_Si:
-            return make_AsmSi();
+            return init_AsmSi();
         case REG_R8:
-            return make_AsmR8();
+            return init_AsmR8();
         case REG_R9:
-            return make_AsmR9();
+            return init_AsmR9();
         case REG_R10:
-            return make_AsmR10();
+            return init_AsmR10();
         case REG_R11:
-            return make_AsmR11();
+            return init_AsmR11();
         case REG_R12:
-            return make_AsmR12();
+            return init_AsmR12();
         case REG_R13:
-            return make_AsmR13();
+            return init_AsmR13();
         case REG_R14:
-            return make_AsmR14();
+            return init_AsmR14();
         case REG_R15:
-            return make_AsmR15();
+            return init_AsmR15();
         case REG_Sp:
-            return make_AsmSp();
+            return init_AsmSp();
         case REG_Bp:
-            return make_AsmBp();
+            return init_AsmBp();
         case REG_Xmm0:
-            return make_AsmXMM0();
+            return init_AsmXMM0();
         case REG_Xmm1:
-            return make_AsmXMM1();
+            return init_AsmXMM1();
         case REG_Xmm2:
-            return make_AsmXMM2();
+            return init_AsmXMM2();
         case REG_Xmm3:
-            return make_AsmXMM3();
+            return init_AsmXMM3();
         case REG_Xmm4:
-            return make_AsmXMM4();
+            return init_AsmXMM4();
         case REG_Xmm5:
-            return make_AsmXMM5();
+            return init_AsmXMM5();
         case REG_Xmm6:
-            return make_AsmXMM6();
+            return init_AsmXMM6();
         case REG_Xmm7:
-            return make_AsmXMM7();
+            return init_AsmXMM7();
         case REG_Xmm8:
-            return make_AsmXMM8();
+            return init_AsmXMM8();
         case REG_Xmm9:
-            return make_AsmXMM9();
+            return init_AsmXMM9();
         case REG_Xmm10:
-            return make_AsmXMM10();
+            return init_AsmXMM10();
         case REG_Xmm11:
-            return make_AsmXMM11();
+            return init_AsmXMM11();
         case REG_Xmm12:
-            return make_AsmXMM12();
+            return init_AsmXMM12();
         case REG_Xmm13:
-            return make_AsmXMM13();
+            return init_AsmXMM13();
         case REG_Xmm14:
-            return make_AsmXMM14();
+            return init_AsmXMM14();
         case REG_Xmm15:
-            return make_AsmXMM15();
+            return init_AsmXMM15();
         default:
             THROW_ABORT;
     }
 }
 
 shared_ptr_t(AsmOperand) gen_register(REGISTER_KIND reg_kind) {
-    unique_ptr_t(AsmReg) reg = gen_reg(reg_kind);
+    AsmReg reg = gen_reg(reg_kind);
     return make_AsmRegister(&reg);
 }
 
 shared_ptr_t(AsmOperand) gen_memory(REGISTER_KIND reg_kind, TLong value) {
-    unique_ptr_t(AsmReg) reg = gen_reg(reg_kind);
+    AsmReg reg = gen_reg(reg_kind);
     return make_AsmMemory(value, &reg);
 }
 
 shared_ptr_t(AsmOperand) gen_indexed(REGISTER_KIND reg_kind_base, REGISTER_KIND reg_kind_idx, TLong scale) {
-    unique_ptr_t(AsmReg) reg_base = gen_reg(reg_kind_base);
-    unique_ptr_t(AsmReg) reg_index = gen_reg(reg_kind_idx);
+    AsmReg reg_base = gen_reg(reg_kind_base);
+    AsmReg reg_index = gen_reg(reg_kind_idx);
     return make_AsmIndexed(scale, &reg_base, &reg_index);
 }
 

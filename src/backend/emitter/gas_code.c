@@ -396,13 +396,13 @@ static void imm_op(Ctx ctx, AsmImm* node) {
 static void reg_op(Ctx ctx, AsmRegister* node, TInt byte) {
     switch (byte) {
         case 1:
-            emit(ctx, get_reg_1b(node->reg));
+            emit(ctx, get_reg_1b(&node->reg));
             break;
         case 4:
-            emit(ctx, get_reg_4b(node->reg));
+            emit(ctx, get_reg_4b(&node->reg));
             break;
         case 8:
-            emit(ctx, get_reg_8b(node->reg));
+            emit(ctx, get_reg_8b(&node->reg));
             break;
         default:
             THROW_ABORT;
@@ -414,7 +414,7 @@ static void memory_op(Ctx ctx, AsmMemory* node) {
         emit_long(ctx, node->value);
     }
     emit(ctx, "(");
-    emit(ctx, get_reg_8b(node->reg));
+    emit(ctx, get_reg_8b(&node->reg));
     emit(ctx, ")");
 }
 
@@ -436,9 +436,9 @@ static void data_op(Ctx ctx, AsmData* node) {
 
 static void indexed_op(Ctx ctx, AsmIndexed* node) {
     emit(ctx, "(");
-    emit(ctx, get_reg_8b(node->reg_base));
+    emit(ctx, get_reg_8b(&node->reg_base));
     emit(ctx, ", ");
-    emit(ctx, get_reg_8b(node->reg_index));
+    emit(ctx, get_reg_8b(&node->reg_index));
     emit(ctx, ", ");
     emit_long(ctx, node->scale);
     emit(ctx, ")");
@@ -730,7 +730,7 @@ static void push_instr(Ctx ctx, AsmPush* node) {
 
 static void pop_instr(Ctx ctx, AsmPop* node) {
     emit(ctx, TAB TAB "popq ");
-    emit(ctx, get_reg_8b(node->reg));
+    emit(ctx, get_reg_8b(&node->reg));
     emit(ctx, LF);
 }
 

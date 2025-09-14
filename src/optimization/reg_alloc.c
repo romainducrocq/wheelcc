@@ -161,7 +161,7 @@ static void infer_transfer_used_name(Ctx ctx, TIdentifier name, size_t next_inst
 static void infer_transfer_used_op(Ctx ctx, AsmOperand* node, size_t next_instr_idx) {
     switch (node->type) {
         case AST_AsmRegister_t: {
-            REGISTER_KIND reg_kind = register_mask_kind(node->get._AsmRegister.reg);
+            REGISTER_KIND reg_kind = register_mask_kind(&node->get._AsmRegister.reg);
             if (reg_kind != REG_Sp) {
                 infer_transfer_used_reg(ctx, reg_kind, next_instr_idx);
             }
@@ -171,7 +171,7 @@ static void infer_transfer_used_op(Ctx ctx, AsmOperand* node, size_t next_instr_
             infer_transfer_used_name(ctx, node->get._AsmPseudo.name, next_instr_idx);
             break;
         case AST_AsmMemory_t: {
-            REGISTER_KIND reg_kind = register_mask_kind(node->get._AsmMemory.reg);
+            REGISTER_KIND reg_kind = register_mask_kind(&node->get._AsmMemory.reg);
             if (reg_kind != REG_Sp) {
                 infer_transfer_used_reg(ctx, reg_kind, next_instr_idx);
             }
@@ -180,11 +180,11 @@ static void infer_transfer_used_op(Ctx ctx, AsmOperand* node, size_t next_instr_
         case AST_AsmIndexed_t: {
             AsmIndexed* p_node = &node->get._AsmIndexed;
             {
-                REGISTER_KIND reg_kind = register_mask_kind(p_node->reg_base);
+                REGISTER_KIND reg_kind = register_mask_kind(&p_node->reg_base);
                 infer_transfer_used_reg(ctx, reg_kind, next_instr_idx);
             }
             {
-                REGISTER_KIND reg_kind = register_mask_kind(p_node->reg_index);
+                REGISTER_KIND reg_kind = register_mask_kind(&p_node->reg_index);
                 infer_transfer_used_reg(ctx, reg_kind, next_instr_idx);
             }
             break;
@@ -213,7 +213,7 @@ static void infer_transfer_updated_name(Ctx ctx, TIdentifier name, size_t next_i
 static void infer_transfer_updated_op(Ctx ctx, AsmOperand* node, size_t next_instr_idx) {
     switch (node->type) {
         case AST_AsmRegister_t: {
-            REGISTER_KIND reg_kind = register_mask_kind(node->get._AsmRegister.reg);
+            REGISTER_KIND reg_kind = register_mask_kind(&node->get._AsmRegister.reg);
             if (reg_kind != REG_Sp) {
                 infer_transfer_updated_reg(ctx, reg_kind, next_instr_idx);
             }
@@ -223,7 +223,7 @@ static void infer_transfer_updated_op(Ctx ctx, AsmOperand* node, size_t next_ins
             infer_transfer_updated_name(ctx, node->get._AsmPseudo.name, next_instr_idx);
             break;
         case AST_AsmMemory_t: {
-            REGISTER_KIND reg_kind = register_mask_kind(node->get._AsmMemory.reg);
+            REGISTER_KIND reg_kind = register_mask_kind(&node->get._AsmMemory.reg);
             if (reg_kind != REG_Sp) {
                 infer_transfer_used_reg(ctx, reg_kind, next_instr_idx);
             }
@@ -486,7 +486,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
         AsmMov* mov = &GET_INSTR(instr_idx)->get._AsmMov;
         switch (mov->src->type) {
             case AST_AsmRegister_t: {
-                REGISTER_KIND src_reg_kind = register_mask_kind(mov->src->get._AsmRegister.reg);
+                REGISTER_KIND src_reg_kind = register_mask_kind(&mov->src->get._AsmRegister.reg);
                 if (src_reg_kind == REG_Sp) {
                     is_mov = false;
                 }
@@ -511,7 +511,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
                 break;
             }
             case AST_AsmMemory_t: {
-                REGISTER_KIND src_reg_kind = register_mask_kind(mov->src->get._AsmMemory.reg);
+                REGISTER_KIND src_reg_kind = register_mask_kind(&mov->src->get._AsmMemory.reg);
                 if (src_reg_kind == REG_Sp) {
                     is_mov = false;
                 }
@@ -578,7 +578,7 @@ static void infer_init_updated_name_edges(Ctx ctx, TIdentifier name, size_t inst
 static void infer_init_updated_op_edges(Ctx ctx, AsmOperand* node, size_t instr_idx) {
     switch (node->type) {
         case AST_AsmRegister_t: {
-            REGISTER_KIND reg_kinds[1] = {register_mask_kind(node->get._AsmRegister.reg)};
+            REGISTER_KIND reg_kinds[1] = {register_mask_kind(&node->get._AsmRegister.reg)};
             if (reg_kinds[0] != REG_Sp) {
                 bool is_dbl = register_mask_bit(reg_kinds[0]) > 11;
                 infer_init_updated_regs_edges(ctx, reg_kinds, instr_idx, 1, is_dbl);
@@ -960,7 +960,7 @@ static shared_ptr_t(AsmOperand) alloc_hard_reg(Ctx ctx, TIdentifier name) {
 static REGISTER_KIND get_op_reg_kind(Ctx ctx, AsmOperand* node) {
     switch (node->type) {
         case AST_AsmRegister_t:
-            return register_mask_kind(node->get._AsmRegister.reg);
+            return register_mask_kind(&node->get._AsmRegister.reg);
         case AST_AsmPseudo_t: {
             TIdentifier name = node->get._AsmPseudo.name;
             if (is_aliased_name(ctx, name)) {
@@ -1251,7 +1251,7 @@ static size_t get_coalesced_idx(Ctx ctx, AsmOperand* node) {
     size_t coalesced_idx = ctx->dfa->set_size;
     switch (node->type) {
         case AST_AsmRegister_t: {
-            REGISTER_KIND reg_kind = register_mask_kind(node->get._AsmRegister.reg);
+            REGISTER_KIND reg_kind = register_mask_kind(&node->get._AsmRegister.reg);
             if (reg_kind != REG_Sp) {
                 coalesced_idx = register_mask_bit(reg_kind);
             }
