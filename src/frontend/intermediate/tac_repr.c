@@ -473,13 +473,13 @@ static unique_ptr_t(TacExpResult) binary_any_res_instr(Ctx ctx, CBinary* node) {
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
     sptr_copy(TacValue, dst, dst_cp);
-    unique_ptr_t(TacBinaryOp) binop = repr_binop(node->binop);
+    unique_ptr_t(TacBinaryOp) binop = repr_binop(&node->binop);
     push_instr(ctx, make_TacBinary(&binop, &src1, &src2, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
 
 static unique_ptr_t(TacExpResult) binary_res_instr(Ctx ctx, CBinary* node) {
-    switch (node->binop->type) {
+    switch (node->binop.type) {
         case AST_CAdd_t:
             return binary_add_res_instr(ctx, node);
         case AST_CSubtract_t:

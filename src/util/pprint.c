@@ -509,7 +509,7 @@ static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
             break;
         case AST_CBinary_t:
             print_field(++tab, "CBinary: ");
-            print_CBinaryOp(node->get._CBinary.binop, tab);
+            print_CBinaryOp(&node->get._CBinary.binop, tab);
             print_CExp(ctx, node->get._CBinary.exp_left, tab);
             print_CExp(ctx, node->get._CBinary.exp_right, tab);
             break;

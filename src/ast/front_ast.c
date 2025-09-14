@@ -11,157 +11,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(CBinaryOp) make_CBinaryOp(void) {
-    unique_ptr_t(CBinaryOp) self = uptr_new();
-    uptr_alloc(CBinaryOp, self);
-    self->type = AST_CBinaryOp_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CAdd(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CAdd_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CSubtract(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CSubtract_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CMultiply(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CMultiply_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CDivide(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CDivide_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CRemainder(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CRemainder_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitAnd(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitAnd_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitOr(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitOr_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitXor(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitXor_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitShiftLeft(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitShiftLeft_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitShiftRight(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitShiftRight_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CBitShrArithmetic(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CBitShrArithmetic_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CAnd(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CAnd_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_COr(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_COr_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CEqual(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CEqual_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CNotEqual(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CNotEqual_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CLessThan(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CLessThan_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CLessOrEqual(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CLessOrEqual_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CGreaterThan(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CGreaterThan_t;
-    return self;
-}
-
-unique_ptr_t(CBinaryOp) make_CGreaterOrEqual(void) {
-    unique_ptr_t(CBinaryOp) self = make_CBinaryOp();
-    self->type = AST_CGreaterOrEqual_t;
-    return self;
-}
-
-void free_CBinaryOp(unique_ptr_t(CBinaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_CBinaryOp_t:
-        case AST_CAdd_t:
-        case AST_CSubtract_t:
-        case AST_CMultiply_t:
-        case AST_CDivide_t:
-        case AST_CRemainder_t:
-        case AST_CBitAnd_t:
-        case AST_CBitOr_t:
-        case AST_CBitXor_t:
-        case AST_CBitShiftLeft_t:
-        case AST_CBitShiftRight_t:
-        case AST_CBitShrArithmetic_t:
-        case AST_CAnd_t:
-        case AST_COr_t:
-        case AST_CEqual_t:
-        case AST_CNotEqual_t:
-        case AST_CLessThan_t:
-        case AST_CLessOrEqual_t:
-        case AST_CGreaterThan_t:
-        case AST_CGreaterOrEqual_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(CAbstractDeclarator) make_CAbstractDeclarator(void) {
     unique_ptr_t(CAbstractDeclarator) self = uptr_new();
     uptr_alloc(CAbstractDeclarator, self);
@@ -360,12 +209,11 @@ unique_ptr_t(CExp) make_CUnary(CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t 
     return self;
 }
 
-unique_ptr_t(CExp) make_CBinary(
-    unique_ptr_t(CBinaryOp) * binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line) {
+unique_ptr_t(CExp)
+    make_CBinary(CBinaryOp* binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line) {
     unique_ptr_t(CExp) self = make_CExp(line);
     self->type = AST_CBinary_t;
-    self->get._CBinary.binop = uptr_new();
-    uptr_move(CBinaryOp, *binop, self->get._CBinary.binop);
+    self->get._CBinary.binop = *binop;
     self->get._CBinary.exp_left = uptr_new();
     uptr_move(CExp, *exp_left, self->get._CBinary.exp_left);
     self->get._CBinary.exp_right = uptr_new();
@@ -499,7 +347,6 @@ void free_CExp(unique_ptr_t(CExp) * self) {
             free_CExp(&(*self)->get._CUnary.exp);
             break;
         case AST_CBinary_t:
-            free_CBinaryOp(&(*self)->get._CBinary.binop);
             free_CExp(&(*self)->get._CBinary.exp_left);
             free_CExp(&(*self)->get._CBinary.exp_right);
             break;

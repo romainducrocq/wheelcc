@@ -799,7 +799,7 @@ static error_t check_binary_add_exp(Ctx ctx, CBinary* node) {
         EARLY_EXIT;
     }
     else {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -843,13 +843,13 @@ static error_t check_binary_subtract_exp(Ctx ctx, CBinary* node) {
             EARLY_EXIT;
         }
         else {
-            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+            THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                                  str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                                  str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
         }
     }
     else {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -874,7 +874,7 @@ static error_t check_multiply_divide_exp(Ctx ctx, CBinary* node) {
     shared_ptr_t(Type) common_type = sptr_new();
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_arithmetic(node->exp_right->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -900,7 +900,7 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     shared_ptr_t(Type) common_type = sptr_new();
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_arithmetic(node->exp_right->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -914,7 +914,7 @@ static error_t check_remainder_bitwise_exp(Ctx ctx, CBinary* node) {
     }
     sptr_move(Type, common_type, node->_base->exp_type);
     if (node->_base->exp_type->type == AST_Double_t) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->_base->exp_type, &type_fmt_1)));
     }
     FINALLY;
@@ -929,7 +929,7 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_arithmetic(node->exp_left->exp_type) || !is_type_int(node->exp_right->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -942,7 +942,7 @@ static error_t check_binary_bitshift_exp(Ctx ctx, CBinary* node) {
     }
     sptr_copy(Type, node->exp_left->exp_type, node->_base->exp_type);
     if (node->_base->exp_type->type == AST_Double_t) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_op, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->_base->exp_type, &type_fmt_1)));
     }
     FINALLY;
@@ -955,8 +955,7 @@ static error_t check_bitshift_right_exp(Ctx ctx, CBinary* node) {
     CATCH_ENTER;
     TRY(check_binary_bitshift_exp(ctx, node));
     if (is_type_signed(node->exp_left->exp_type)) {
-        free_CBinaryOp(&node->binop);
-        node->binop = make_CBitShrArithmetic();
+        node->binop = init_CBitShrArithmetic();
     }
     FINALLY;
     CATCH_EXIT;
@@ -967,7 +966,7 @@ static error_t check_binary_logical_exp(Ctx ctx, CBinary* node) {
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_scalar(node->exp_left->exp_type) || !is_type_scalar(node->exp_right->exp_type)) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -991,7 +990,7 @@ static error_t check_binary_equality_exp(Ctx ctx, CBinary* node) {
         common_type = get_joint_type(node->exp_left, node->exp_right);
     }
     else {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -1021,7 +1020,7 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
                 || (node->exp_left->type == AST_CConstant_t && is_const_null_ptr(&node->exp_left->get._CConstant))
                 || (node->exp_right->type == AST_CConstant_t
                     && is_const_null_ptr(&node->exp_right->get._CConstant))))) {
-        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(node->binop),
+        THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_invalid_binary_ops, get_binop_fmt(&node->binop),
                                              str_fmt_type(node->exp_left->exp_type, &type_fmt_1),
                                              str_fmt_type(node->exp_right->exp_type, &type_fmt_2)));
     }
@@ -1043,7 +1042,7 @@ static error_t check_binary_relational_exp(Ctx ctx, CBinary* node) {
 
 static error_t check_binary_exp(Ctx ctx, CBinary* node) {
     CATCH_ENTER;
-    switch (node->binop->type) {
+    switch (node->binop.type) {
         case AST_CAdd_t:
             TRY(check_binary_add_exp(ctx, node));
             break;
@@ -1109,7 +1108,7 @@ static error_t check_assign_exp(Ctx ctx, CAssignment* node) {
         }
         if (!is_exp_lvalue(exp_left)) {
             THROW_AT_LINE(node->_base->line, GET_SEMANTIC_MSG(MSG_assign_to_rvalue,
-                                                 get_assign_fmt(node->exp_right->get._CBinary.binop, &node->unop)));
+                                                 get_assign_fmt(&node->exp_right->get._CBinary.binop, &node->unop)));
         }
         else if (!is_same_type(node->exp_right->exp_type, exp_left->exp_type)) {
             TRY(cast_assign(ctx, &exp_left->exp_type, &node->exp_right));

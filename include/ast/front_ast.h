@@ -72,135 +72,30 @@ typedef struct CUnaryOp {
 //                 | GreaterThan
 //                 | GreaterOrEqual
 
-typedef struct CAdd {
-    int8_t _empty;
-} CAdd;
-
-typedef struct CSubtract {
-    int8_t _empty;
-} CSubtract;
-
-typedef struct CMultiply {
-    int8_t _empty;
-} CMultiply;
-
-typedef struct CDivide {
-    int8_t _empty;
-} CDivide;
-
-typedef struct CRemainder {
-    int8_t _empty;
-} CRemainder;
-
-typedef struct CBitAnd {
-    int8_t _empty;
-} CBitAnd;
-
-typedef struct CBitOr {
-    int8_t _empty;
-} CBitOr;
-
-typedef struct CBitXor {
-    int8_t _empty;
-} CBitXor;
-
-typedef struct CBitShiftLeft {
-    int8_t _empty;
-} CBitShiftLeft;
-
-typedef struct CBitShiftRight {
-    int8_t _empty;
-} CBitShiftRight;
-
-typedef struct CBitShrArithmetic {
-    int8_t _empty;
-} CBitShrArithmetic;
-
-typedef struct CAnd {
-    int8_t _empty;
-} CAnd;
-
-typedef struct COr {
-    int8_t _empty;
-} COr;
-
-typedef struct CEqual {
-    int8_t _empty;
-} CEqual;
-
-typedef struct CNotEqual {
-    int8_t _empty;
-} CNotEqual;
-
-typedef struct CLessThan {
-    int8_t _empty;
-} CLessThan;
-
-typedef struct CLessOrEqual {
-    int8_t _empty;
-} CLessOrEqual;
-
-typedef struct CGreaterThan {
-    int8_t _empty;
-} CGreaterThan;
-
-typedef struct CGreaterOrEqual {
-    int8_t _empty;
-} CGreaterOrEqual;
-
 typedef struct CBinaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        CAdd _CAdd;
-        CSubtract _CSubtract;
-        CMultiply _CMultiply;
-        CDivide _CDivide;
-        CRemainder _CRemainder;
-        CBitAnd _CBitAnd;
-        CBitOr _CBitOr;
-        CBitXor _CBitXor;
-        CBitShiftLeft _CBitShiftLeft;
-        CBitShiftRight _CBitShiftRight;
-        CBitShrArithmetic _CBitShrArithmetic;
-        CAnd _CAnd;
-        COr _COr;
-        CEqual _CEqual;
-        CNotEqual _CNotEqual;
-        CLessThan _CLessThan;
-        CLessOrEqual _CLessOrEqual;
-        CGreaterThan _CGreaterThan;
-        CGreaterOrEqual _CGreaterOrEqual;
-    } get;
+    tagged_def_impl(AST_T);
 } CBinaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(CBinaryOp) make_CBinaryOp(void);
-unique_ptr_t(CBinaryOp) make_CAdd(void);
-unique_ptr_t(CBinaryOp) make_CSubtract(void);
-unique_ptr_t(CBinaryOp) make_CMultiply(void);
-unique_ptr_t(CBinaryOp) make_CDivide(void);
-unique_ptr_t(CBinaryOp) make_CRemainder(void);
-unique_ptr_t(CBinaryOp) make_CBitAnd(void);
-unique_ptr_t(CBinaryOp) make_CBitOr(void);
-unique_ptr_t(CBinaryOp) make_CBitXor(void);
-unique_ptr_t(CBinaryOp) make_CBitShiftLeft(void);
-unique_ptr_t(CBinaryOp) make_CBitShiftRight(void);
-unique_ptr_t(CBinaryOp) make_CBitShrArithmetic(void);
-unique_ptr_t(CBinaryOp) make_CAnd(void);
-unique_ptr_t(CBinaryOp) make_COr(void);
-unique_ptr_t(CBinaryOp) make_CEqual(void);
-unique_ptr_t(CBinaryOp) make_CNotEqual(void);
-unique_ptr_t(CBinaryOp) make_CLessThan(void);
-unique_ptr_t(CBinaryOp) make_CLessOrEqual(void);
-unique_ptr_t(CBinaryOp) make_CGreaterThan(void);
-unique_ptr_t(CBinaryOp) make_CGreaterOrEqual(void);
-void free_CBinaryOp(unique_ptr_t(CBinaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_CBinaryOp() tagged_def_init(AST, CBinaryOp, CBinaryOp)
+#define init_CAdd() tagged_def_init(AST, CBinaryOp, CAdd)
+#define init_CSubtract() tagged_def_init(AST, CBinaryOp, CSubtract)
+#define init_CMultiply() tagged_def_init(AST, CBinaryOp, CMultiply)
+#define init_CDivide() tagged_def_init(AST, CBinaryOp, CDivide)
+#define init_CRemainder() tagged_def_init(AST, CBinaryOp, CRemainder)
+#define init_CBitAnd() tagged_def_init(AST, CBinaryOp, CBitAnd)
+#define init_CBitOr() tagged_def_init(AST, CBinaryOp, CBitOr)
+#define init_CBitXor() tagged_def_init(AST, CBinaryOp, CBitXor)
+#define init_CBitShiftLeft() tagged_def_init(AST, CBinaryOp, CBitShiftLeft)
+#define init_CBitShiftRight() tagged_def_init(AST, CBinaryOp, CBitShiftRight)
+#define init_CBitShrArithmetic() tagged_def_init(AST, CBinaryOp, CBitShrArithmetic)
+#define init_CAnd() tagged_def_init(AST, CBinaryOp, CAnd)
+#define init_COr() tagged_def_init(AST, CBinaryOp, COr)
+#define init_CEqual() tagged_def_init(AST, CBinaryOp, CEqual)
+#define init_CNotEqual() tagged_def_init(AST, CBinaryOp, CNotEqual)
+#define init_CLessThan() tagged_def_init(AST, CBinaryOp, CLessThan)
+#define init_CLessOrEqual() tagged_def_init(AST, CBinaryOp, CLessOrEqual)
+#define init_CGreaterThan() tagged_def_init(AST, CBinaryOp, CGreaterThan)
+#define init_CGreaterOrEqual() tagged_def_init(AST, CBinaryOp, CGreaterOrEqual)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -359,7 +254,7 @@ typedef struct CUnary {
 } CUnary;
 
 typedef struct CBinary {
-    unique_ptr_t(CBinaryOp) binop;
+    CBinaryOp binop;
     unique_ptr_t(CExp) exp_left;
     unique_ptr_t(CExp) exp_right;
     CExp* _base;
@@ -457,8 +352,8 @@ unique_ptr_t(CExp) make_CString(shared_ptr_t(CStringLiteral) * literal, size_t l
 unique_ptr_t(CExp) make_CVar(TIdentifier name, size_t line);
 unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * target_type, size_t line);
 unique_ptr_t(CExp) make_CUnary(CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t line);
-unique_ptr_t(CExp) make_CBinary(
-    unique_ptr_t(CBinaryOp) * binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
+unique_ptr_t(CExp)
+    make_CBinary(CBinaryOp* binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp)
     make_CAssignment(CUnaryOp* unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp) make_CConditional(

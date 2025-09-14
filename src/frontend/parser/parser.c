@@ -312,92 +312,92 @@ static error_t parse_unop(Ctx ctx, CUnaryOp* unop) {
 // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
 //                 | BitShiftRight | BitShrArithmetic | And | Or | Equal | NotEqual | LessThan | LessOrEqual
 //                 | GreaterThan | GreaterOrEqual
-static error_t parse_binop(Ctx ctx, unique_ptr_t(CBinaryOp) * binop) {
+static error_t parse_binop(Ctx ctx, CBinaryOp* binop) {
     CATCH_ENTER;
     TRY(pop_next(ctx));
     switch (ctx->next_tok->tok_kind) {
         case TOK_binop_add:
         case TOK_assign_add:
         case TOK_unop_incr: {
-            *binop = make_CAdd();
+            *binop = init_CAdd();
             break;
         }
         case TOK_unop_neg:
         case TOK_assign_subtract:
         case TOK_unop_decr: {
-            *binop = make_CSubtract();
+            *binop = init_CSubtract();
             break;
         }
         case TOK_binop_multiply:
         case TOK_assign_multiply: {
-            *binop = make_CMultiply();
+            *binop = init_CMultiply();
             break;
         }
         case TOK_binop_divide:
         case TOK_assign_divide: {
-            *binop = make_CDivide();
+            *binop = init_CDivide();
             break;
         }
         case TOK_binop_remainder:
         case TOK_assign_remainder: {
-            *binop = make_CRemainder();
+            *binop = init_CRemainder();
             break;
         }
         case TOK_binop_bitand:
         case TOK_assign_bitand: {
-            *binop = make_CBitAnd();
+            *binop = init_CBitAnd();
             break;
         }
         case TOK_binop_bitor:
         case TOK_assign_bitor: {
-            *binop = make_CBitOr();
+            *binop = init_CBitOr();
             break;
         }
         case TOK_binop_xor:
         case TOK_assign_xor: {
-            *binop = make_CBitXor();
+            *binop = init_CBitXor();
             break;
         }
         case TOK_binop_shiftleft:
         case TOK_assign_shiftleft: {
-            *binop = make_CBitShiftLeft();
+            *binop = init_CBitShiftLeft();
             break;
         }
         case TOK_binop_shiftright:
         case TOK_assign_shiftright: {
-            *binop = make_CBitShiftRight();
+            *binop = init_CBitShiftRight();
             break;
         }
         case TOK_binop_and: {
-            *binop = make_CAnd();
+            *binop = init_CAnd();
             break;
         }
         case TOK_binop_or: {
-            *binop = make_COr();
+            *binop = init_COr();
             break;
         }
         case TOK_binop_eq: {
-            *binop = make_CEqual();
+            *binop = init_CEqual();
             break;
         }
         case TOK_binop_ne: {
-            *binop = make_CNotEqual();
+            *binop = init_CNotEqual();
             break;
         }
         case TOK_binop_lt: {
-            *binop = make_CLessThan();
+            *binop = init_CLessThan();
             break;
         }
         case TOK_binop_le: {
-            *binop = make_CLessOrEqual();
+            *binop = init_CLessOrEqual();
             break;
         }
         case TOK_binop_gt: {
-            *binop = make_CGreaterThan();
+            *binop = init_CGreaterThan();
             break;
         }
         case TOK_binop_ge: {
-            *binop = make_CGreaterOrEqual();
+            *binop = init_CGreaterOrEqual();
             break;
         }
         default:
@@ -690,12 +690,12 @@ static error_t parse_arrow_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
 static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
-    unique_ptr_t(CBinaryOp) binop = uptr_new();
     shared_ptr_t(CConst) constant = sptr_new();
     CATCH_ENTER;
     void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CPostfix();
+    CBinaryOp binop;
     TRY(parse_binop(ctx, &binop));
     constant = make_CConstInt(1);
     exp_right = make_CConstant(&constant, line);
@@ -704,7 +704,6 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);
-    free_CBinaryOp(&binop);
     free_CConst(&constant);
     CATCH_EXIT;
 }
@@ -727,11 +726,11 @@ static error_t parse_incr_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_left_1 = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
-    unique_ptr_t(CBinaryOp) binop = uptr_new();
     shared_ptr_t(CConst) constant = sptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CPrefix();
+    CBinaryOp binop;
     TRY(parse_binop(ctx, &binop));
     TRY(parse_cast_exp_factor(ctx, &exp_left));
     constant = make_CConstInt(1);
@@ -743,7 +742,6 @@ static error_t parse_incr_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     free_CExp(&exp_right);
     free_CExp(&exp_left_1);
     free_CExp(&exp_right_1);
-    free_CBinaryOp(&binop);
     free_CConst(&constant);
     CATCH_EXIT;
 }
@@ -1013,11 +1011,11 @@ static error_t parse_assign_exp(Ctx ctx, int32_t precedence, unique_ptr_t(CExp) 
 static error_t parse_assign_compound_exp(Ctx ctx, int32_t precedence, unique_ptr_t(CExp) * exp_left) {
     unique_ptr_t(CExp) exp_right = uptr_new();
     unique_ptr_t(CExp) exp_right_1 = uptr_new();
-    unique_ptr_t(CBinaryOp) binop = uptr_new();
     CATCH_ENTER;
     void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CUnaryOp();
+    CBinaryOp binop;
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence, &exp_right));
     exp_right_1 = make_CBinary(&binop, exp_left, &exp_right, line);
@@ -1025,21 +1023,19 @@ static error_t parse_assign_compound_exp(Ctx ctx, int32_t precedence, unique_ptr
     FINALLY;
     free_CExp(&exp_right);
     free_CExp(&exp_right_1);
-    free_CBinaryOp(&binop);
     CATCH_EXIT;
 }
 
 static error_t parse_binary_exp(Ctx ctx, int32_t precedence, unique_ptr_t(CExp) * exp_left) {
     unique_ptr_t(CExp) exp_right = uptr_new();
-    unique_ptr_t(CBinaryOp) binop = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
+    CBinaryOp binop;
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence + 1, &exp_right));
     *exp_left = make_CBinary(&binop, exp_left, &exp_right, line);
     FINALLY;
     free_CExp(&exp_right);
-    free_CBinaryOp(&binop);
     CATCH_EXIT;
 }
 
