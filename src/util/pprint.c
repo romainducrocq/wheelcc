@@ -1023,7 +1023,7 @@ static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
             break;
         case AST_TacBinary_t:
             print_field(++tab, "TacBinary: ");
-            print_TacBinaryOp(node->get._TacBinary.binop, tab);
+            print_TacBinaryOp(&node->get._TacBinary.binop, tab);
             print_TacValue(ctx, node->get._TacBinary.src1, tab);
             print_TacValue(ctx, node->get._TacBinary.src2, tab);
             print_TacValue(ctx, node->get._TacBinary.dst, tab);

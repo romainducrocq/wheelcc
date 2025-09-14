@@ -11,143 +11,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(TacBinaryOp) make_TacBinaryOp(void) {
-    unique_ptr_t(TacBinaryOp) self = uptr_new();
-    uptr_alloc(TacBinaryOp, self);
-    self->type = AST_TacBinaryOp_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacAdd(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacAdd_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacSubtract(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacSubtract_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacMultiply(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacMultiply_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacDivide(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacDivide_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacRemainder(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacRemainder_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitAnd(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitAnd_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitOr(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitOr_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitXor(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitXor_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitShiftLeft(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitShiftLeft_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitShiftRight(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitShiftRight_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacBitShrArithmetic(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacBitShrArithmetic_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacEqual(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacEqual_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacNotEqual(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacNotEqual_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacLessThan(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacLessThan_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacLessOrEqual(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacLessOrEqual_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacGreaterThan(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacGreaterThan_t;
-    return self;
-}
-
-unique_ptr_t(TacBinaryOp) make_TacGreaterOrEqual(void) {
-    unique_ptr_t(TacBinaryOp) self = make_TacBinaryOp();
-    self->type = AST_TacGreaterOrEqual_t;
-    return self;
-}
-
-void free_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_TacBinaryOp_t:
-        case AST_TacAdd_t:
-        case AST_TacSubtract_t:
-        case AST_TacMultiply_t:
-        case AST_TacDivide_t:
-        case AST_TacRemainder_t:
-        case AST_TacBitAnd_t:
-        case AST_TacBitOr_t:
-        case AST_TacBitXor_t:
-        case AST_TacBitShiftLeft_t:
-        case AST_TacBitShiftRight_t:
-        case AST_TacBitShrArithmetic_t:
-        case AST_TacEqual_t:
-        case AST_TacNotEqual_t:
-        case AST_TacLessThan_t:
-        case AST_TacLessOrEqual_t:
-        case AST_TacGreaterThan_t:
-        case AST_TacGreaterOrEqual_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 shared_ptr_t(TacValue) make_TacValue(void) {
     shared_ptr_t(TacValue) self = sptr_new();
     sptr_alloc(TacValue, self);
@@ -345,12 +208,11 @@ unique_ptr_t(TacInstruction)
     return self;
 }
 
-unique_ptr_t(TacInstruction) make_TacBinary(unique_ptr_t(TacBinaryOp) * binop, shared_ptr_t(TacValue) * src1,
-    shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst) {
+unique_ptr_t(TacInstruction) make_TacBinary(
+    TacBinaryOp* binop, shared_ptr_t(TacValue) * src1, shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst) {
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacBinary_t;
-    self->get._TacBinary.binop = uptr_new();
-    uptr_move(TacBinaryOp, *binop, self->get._TacBinary.binop);
+    self->get._TacBinary.binop = *binop;
     self->get._TacBinary.src1 = sptr_new();
     sptr_move(TacValue, *src1, self->get._TacBinary.src1);
     self->get._TacBinary.src2 = sptr_new();
@@ -514,7 +376,6 @@ void free_TacInstruction(unique_ptr_t(TacInstruction) * self) {
             free_TacValue(&(*self)->get._TacUnary.dst);
             break;
         case AST_TacBinary_t:
-            free_TacBinaryOp(&(*self)->get._TacBinary.binop);
             free_TacValue(&(*self)->get._TacBinary.src1);
             free_TacValue(&(*self)->get._TacBinary.src2);
             free_TacValue(&(*self)->get._TacBinary.dst);

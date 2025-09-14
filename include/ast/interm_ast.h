@@ -55,123 +55,28 @@ typedef struct TacUnaryOp {
 //                 | GreaterThan
 //                 | GreaterOrEqual
 
-typedef struct TacAdd {
-    int8_t _empty;
-} TacAdd;
-
-typedef struct TacSubtract {
-    int8_t _empty;
-} TacSubtract;
-
-typedef struct TacMultiply {
-    int8_t _empty;
-} TacMultiply;
-
-typedef struct TacDivide {
-    int8_t _empty;
-} TacDivide;
-
-typedef struct TacRemainder {
-    int8_t _empty;
-} TacRemainder;
-
-typedef struct TacBitAnd {
-    int8_t _empty;
-} TacBitAnd;
-
-typedef struct TacBitOr {
-    int8_t _empty;
-} TacBitOr;
-
-typedef struct TacBitXor {
-    int8_t _empty;
-} TacBitXor;
-
-typedef struct TacBitShiftLeft {
-    int8_t _empty;
-} TacBitShiftLeft;
-
-typedef struct TacBitShiftRight {
-    int8_t _empty;
-} TacBitShiftRight;
-
-typedef struct TacBitShrArithmetic {
-    int8_t _empty;
-} TacBitShrArithmetic;
-
-typedef struct TacEqual {
-    int8_t _empty;
-} TacEqual;
-
-typedef struct TacNotEqual {
-    int8_t _empty;
-} TacNotEqual;
-
-typedef struct TacLessThan {
-    int8_t _empty;
-} TacLessThan;
-
-typedef struct TacLessOrEqual {
-    int8_t _empty;
-} TacLessOrEqual;
-
-typedef struct TacGreaterThan {
-    int8_t _empty;
-} TacGreaterThan;
-
-typedef struct TacGreaterOrEqual {
-    int8_t _empty;
-} TacGreaterOrEqual;
-
 typedef struct TacBinaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        TacAdd _TacAdd;
-        TacSubtract _TacSubtract;
-        TacMultiply _TacMultiply;
-        TacDivide _TacDivide;
-        TacRemainder _TacRemainder;
-        TacBitAnd _TacBitAnd;
-        TacBitOr _TacBitOr;
-        TacBitXor _TacBitXor;
-        TacBitShiftLeft _TacBitShiftLeft;
-        TacBitShiftRight _TacBitShiftRight;
-        TacBitShrArithmetic _TacBitShrArithmetic;
-        TacEqual _TacEqual;
-        TacNotEqual _TacNotEqual;
-        TacLessThan _TacLessThan;
-        TacLessOrEqual _TacLessOrEqual;
-        TacGreaterThan _TacGreaterThan;
-        TacGreaterOrEqual _TacGreaterOrEqual;
-    } get;
+    tagged_def_impl(AST_T);
 } TacBinaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(TacBinaryOp) make_TacBinaryOp(void);
-unique_ptr_t(TacBinaryOp) make_TacAdd(void);
-unique_ptr_t(TacBinaryOp) make_TacSubtract(void);
-unique_ptr_t(TacBinaryOp) make_TacMultiply(void);
-unique_ptr_t(TacBinaryOp) make_TacDivide(void);
-unique_ptr_t(TacBinaryOp) make_TacRemainder(void);
-unique_ptr_t(TacBinaryOp) make_TacBitAnd(void);
-unique_ptr_t(TacBinaryOp) make_TacBitOr(void);
-unique_ptr_t(TacBinaryOp) make_TacBitXor(void);
-unique_ptr_t(TacBinaryOp) make_TacBitShiftLeft(void);
-unique_ptr_t(TacBinaryOp) make_TacBitShiftRight(void);
-unique_ptr_t(TacBinaryOp) make_TacBitShrArithmetic(void);
-unique_ptr_t(TacBinaryOp) make_TacEqual(void);
-unique_ptr_t(TacBinaryOp) make_TacNotEqual(void);
-unique_ptr_t(TacBinaryOp) make_TacLessThan(void);
-unique_ptr_t(TacBinaryOp) make_TacLessOrEqual(void);
-unique_ptr_t(TacBinaryOp) make_TacGreaterThan(void);
-unique_ptr_t(TacBinaryOp) make_TacGreaterOrEqual(void);
-void free_TacBinaryOp(unique_ptr_t(TacBinaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_TacBinaryOp() tagged_def_init(AST, TacBinaryOp, TacBinaryOp)
+#define init_TacAdd() tagged_def_init(AST, TacBinaryOp, TacAdd)
+#define init_TacSubtract() tagged_def_init(AST, TacBinaryOp, TacSubtract)
+#define init_TacMultiply() tagged_def_init(AST, TacBinaryOp, TacMultiply)
+#define init_TacDivide() tagged_def_init(AST, TacBinaryOp, TacDivide)
+#define init_TacRemainder() tagged_def_init(AST, TacBinaryOp, TacRemainder)
+#define init_TacBitAnd() tagged_def_init(AST, TacBinaryOp, TacBitAnd)
+#define init_TacBitOr() tagged_def_init(AST, TacBinaryOp, TacBitOr)
+#define init_TacBitXor() tagged_def_init(AST, TacBinaryOp, TacBitXor)
+#define init_TacBitShiftLeft() tagged_def_init(AST, TacBinaryOp, TacBitShiftLeft)
+#define init_TacBitShiftRight() tagged_def_init(AST, TacBinaryOp, TacBitShiftRight)
+#define init_TacBitShrArithmetic() tagged_def_init(AST, TacBinaryOp, TacBitShrArithmetic)
+#define init_TacEqual() tagged_def_init(AST, TacBinaryOp, TacEqual)
+#define init_TacNotEqual() tagged_def_init(AST, TacBinaryOp, TacNotEqual)
+#define init_TacLessThan() tagged_def_init(AST, TacBinaryOp, TacLessThan)
+#define init_TacLessOrEqual() tagged_def_init(AST, TacBinaryOp, TacLessOrEqual)
+#define init_TacGreaterThan() tagged_def_init(AST, TacBinaryOp, TacGreaterThan)
+#define init_TacGreaterOrEqual() tagged_def_init(AST, TacBinaryOp, TacGreaterOrEqual)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -324,7 +229,7 @@ typedef struct TacUnary {
 } TacUnary;
 
 typedef struct TacBinary {
-    unique_ptr_t(TacBinaryOp) binop;
+    TacBinaryOp binop;
     shared_ptr_t(TacValue) src1;
     shared_ptr_t(TacValue) src2;
     shared_ptr_t(TacValue) dst;
@@ -432,8 +337,8 @@ unique_ptr_t(TacInstruction)
     make_TacFunCall(TIdentifier name, vector_t(shared_ptr_t(TacValue)) * args, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction)
     make_TacUnary(TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
-unique_ptr_t(TacInstruction) make_TacBinary(unique_ptr_t(TacBinaryOp) * binop, shared_ptr_t(TacValue) * src1,
-    shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacBinary(
+    TacBinaryOp* binop, shared_ptr_t(TacValue) * src1, shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacCopy(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacGetAddress(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacLoad(shared_ptr_t(TacValue) * src_ptr, shared_ptr_t(TacValue) * dst);

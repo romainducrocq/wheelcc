@@ -968,7 +968,7 @@ static shared_ptr_t(TacValue) fold_binary_const(TacBinaryOp* node, CConst* const
 static void fold_binary_instr(Ctx ctx, TacBinary* node, size_t instr_idx) {
     if (node->src1->type == AST_TacConstant_t && node->src2->type == AST_TacConstant_t) {
         shared_ptr_t(TacValue) src = fold_binary_const(
-            node->binop, node->src1->get._TacConstant.constant, node->src2->get._TacConstant.constant);
+            &node->binop, node->src1->get._TacConstant.constant, node->src2->get._TacConstant.constant);
         shared_ptr_t(TacValue) dst = sptr_new();
         sptr_copy(TacValue, node->dst, dst);
         set_instr(ctx, make_TacCopy(&src, &dst), instr_idx);

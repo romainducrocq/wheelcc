@@ -44,42 +44,42 @@ static TacUnaryOp repr_unop(CUnaryOp* node) {
 // binary_operator = Add | Subtract | Multiply | Divide | Remainder | BitAnd | BitOr | BitXor | BitShiftLeft
 //                 | BitShiftRight | BitShrArithmetic | Equal | NotEqual | LessThan | LessOrEqual | GreaterThan |
 //                 GreaterOrEqual
-static unique_ptr_t(TacBinaryOp) repr_binop(CBinaryOp* node) {
+static TacBinaryOp repr_binop(CBinaryOp* node) {
     switch (node->type) {
         case AST_CAdd_t:
-            return make_TacAdd();
+            return init_TacAdd();
         case AST_CSubtract_t:
-            return make_TacSubtract();
+            return init_TacSubtract();
         case AST_CMultiply_t:
-            return make_TacMultiply();
+            return init_TacMultiply();
         case AST_CDivide_t:
-            return make_TacDivide();
+            return init_TacDivide();
         case AST_CRemainder_t:
-            return make_TacRemainder();
+            return init_TacRemainder();
         case AST_CBitAnd_t:
-            return make_TacBitAnd();
+            return init_TacBitAnd();
         case AST_CBitOr_t:
-            return make_TacBitOr();
+            return init_TacBitOr();
         case AST_CBitXor_t:
-            return make_TacBitXor();
+            return init_TacBitXor();
         case AST_CBitShiftLeft_t:
-            return make_TacBitShiftLeft();
+            return init_TacBitShiftLeft();
         case AST_CBitShiftRight_t:
-            return make_TacBitShiftRight();
+            return init_TacBitShiftRight();
         case AST_CBitShrArithmetic_t:
-            return make_TacBitShrArithmetic();
+            return init_TacBitShrArithmetic();
         case AST_CEqual_t:
-            return make_TacEqual();
+            return init_TacEqual();
         case AST_CNotEqual_t:
-            return make_TacNotEqual();
+            return init_TacNotEqual();
         case AST_CLessThan_t:
-            return make_TacLessThan();
+            return init_TacLessThan();
         case AST_CLessOrEqual_t:
-            return make_TacLessOrEqual();
+            return init_TacLessOrEqual();
         case AST_CGreaterThan_t:
-            return make_TacGreaterThan();
+            return init_TacGreaterThan();
         case AST_CGreaterOrEqual_t:
-            return make_TacGreaterOrEqual();
+            return init_TacGreaterOrEqual();
         default:
             THROW_ABORT;
     }
@@ -371,7 +371,7 @@ static unique_ptr_t(TacExpResult) binary_subtract_ptr_res_instr(Ctx ctx, CBinary
         shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
         sptr_copy(TacValue, dst, dst_cp);
-        unique_ptr_t(TacBinaryOp) binop = make_TacSubtract();
+        TacBinaryOp binop = init_TacSubtract();
         push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
         sptr_move(TacValue, dst, src_1);
     }
@@ -384,7 +384,7 @@ static unique_ptr_t(TacExpResult) binary_subtract_ptr_res_instr(Ctx ctx, CBinary
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
     sptr_copy(TacValue, dst, dst_cp);
-    unique_ptr_t(TacBinaryOp) binop = make_TacDivide();
+    TacBinaryOp binop = init_TacDivide();
     push_instr(ctx, make_TacBinary(&binop, &src_1, &src_2, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -473,7 +473,7 @@ static unique_ptr_t(TacExpResult) binary_any_res_instr(Ctx ctx, CBinary* node) {
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
     sptr_copy(TacValue, dst, dst_cp);
-    unique_ptr_t(TacBinaryOp) binop = repr_binop(&node->binop);
+    TacBinaryOp binop = repr_binop(&node->binop);
     push_instr(ctx, make_TacBinary(&binop, &src1, &src2, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -1123,7 +1123,7 @@ static void switch_statement_instr(Ctx ctx, CSwitch* node) {
                 case_match = plain_inner_value(ctx, node->cases[i]);
                 shared_ptr_t(TacValue) case_match_cp = sptr_new();
                 sptr_copy(TacValue, case_match, case_match_cp);
-                unique_ptr_t(TacBinaryOp) binop = make_TacEqual();
+                TacBinaryOp binop = init_TacEqual();
                 push_instr(ctx, make_TacBinary(&binop, &match_cp, &esac, &case_match_cp));
             }
             push_instr(ctx, make_TacJumpIfNotZero(target_case, &case_match));

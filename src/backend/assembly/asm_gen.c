@@ -1699,7 +1699,7 @@ static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_src1_cp, &src1, &src1_dst_cp));
     }
     {
-        unique_ptr_t(AsmBinaryOp) binop = gen_binop(node->binop);
+        unique_ptr_t(AsmBinaryOp) binop = gen_binop(&node->binop);
         shared_ptr_t(AsmOperand) src2 = gen_op(ctx, node->src2);
         push_instr(ctx, make_AsmBinary(&binop, &asm_type_src1, &src2, &src1_dst));
     }
@@ -1859,10 +1859,10 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
     {
         unique_ptr_t(AsmCondCode) cond_code = uptr_new();
         if (is_value_signed(ctx, node->src1)) {
-            cond_code = gen_signed_cond_code(node->binop);
+            cond_code = gen_signed_cond_code(&node->binop);
         }
         else {
-            cond_code = gen_unsigned_cond_code(node->binop);
+            cond_code = gen_unsigned_cond_code(&node->binop);
         }
         push_instr(ctx, make_AsmSetCC(&cond_code, &cmp_dst));
     }
@@ -1889,7 +1889,7 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code = gen_unsigned_cond_code(node->binop);
+        unique_ptr_t(AsmCondCode) cond_code = gen_unsigned_cond_code(&node->binop);
         if (cond_code->type == AST_AsmNE_t) {
             TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
             {
@@ -1922,7 +1922,7 @@ static void binop_conditional_instr(Ctx ctx, TacBinary* node) {
 }
 
 static void binary_instr(Ctx ctx, TacBinary* node) {
-    switch (node->binop->type) {
+    switch (node->binop.type) {
         case AST_TacAdd_t:
         case AST_TacSubtract_t:
         case AST_TacMultiply_t:
