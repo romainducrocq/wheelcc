@@ -252,12 +252,12 @@ static AsmCondCode gen_unsigned_cond_code(TacBinaryOp* node) {
 }
 
 // unary_operator = Not | Neg | Shr
-static unique_ptr_t(AsmUnaryOp) gen_unop(TacUnaryOp* node) {
+static AsmUnaryOp gen_unop(TacUnaryOp* node) {
     switch (node->type) {
         case AST_TacComplement_t:
-            return make_AsmNot();
+            return init_AsmNot();
         case AST_TacNegate_t:
-            return make_AsmNeg();
+            return init_AsmNeg();
         default:
             THROW_ABORT;
     }
@@ -1120,7 +1120,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         push_instr(ctx, make_AsmMov(&asm_type_si_cp, &dst_out_of_range_si_cp, &dst_out_of_range_si_shr_cp));
     }
     {
-        unique_ptr_t(AsmUnaryOp) unop_out_of_range_si_shr = make_AsmShr();
+        AsmUnaryOp unop_out_of_range_si_shr = init_AsmShr();
         shared_ptr_t(AsmOperand) dst_out_of_range_si_shr_cp = sptr_new();
         sptr_copy(AsmOperand, dst_out_of_range_si_shr, dst_out_of_range_si_shr_cp);
         shared_ptr_t(AssemblyType) asm_type_si_cp = sptr_new();
@@ -1580,7 +1580,7 @@ static void unop_int_arithmetic_instr(Ctx ctx, TacUnary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &src_dst_cp));
     }
     {
-        unique_ptr_t(AsmUnaryOp) unop = gen_unop(&node->unop);
+        AsmUnaryOp unop = gen_unop(&node->unop);
         push_instr(ctx, make_AsmUnary(&unop, &asm_type_src, &src_dst));
     }
 }

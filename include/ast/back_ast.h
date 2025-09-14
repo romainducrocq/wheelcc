@@ -297,39 +297,14 @@ void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self);
 //                | Neg
 //                | Shr
 
-typedef struct AsmNot {
-    int8_t _empty;
-} AsmNot;
-
-typedef struct AsmNeg {
-    int8_t _empty;
-} AsmNeg;
-
-typedef struct AsmShr {
-    int8_t _empty;
-} AsmShr;
-
 typedef struct AsmUnaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        AsmNot _AsmNot;
-        AsmNeg _AsmNeg;
-        AsmShr _AsmShr;
-    } get;
+    tagged_def_impl(AST_T);
 } AsmUnaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(AsmUnaryOp) make_AsmUnaryOp(void);
-unique_ptr_t(AsmUnaryOp) make_AsmNot(void);
-unique_ptr_t(AsmUnaryOp) make_AsmNeg(void);
-unique_ptr_t(AsmUnaryOp) make_AsmShr(void);
-void free_AsmUnaryOp(unique_ptr_t(AsmUnaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_AsmUnaryOp() tagged_def_init(AST, AsmUnaryOp, AsmUnaryOp)
+#define init_AsmNot() tagged_def_init(AST, AsmUnaryOp, AsmNot)
+#define init_AsmNeg() tagged_def_init(AST, AsmUnaryOp, AsmNeg)
+#define init_AsmShr() tagged_def_init(AST, AsmUnaryOp, AsmShr)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -392,7 +367,7 @@ typedef struct AsmCvtsi2sd {
 } AsmCvtsi2sd;
 
 typedef struct AsmUnary {
-    unique_ptr_t(AsmUnaryOp) unop;
+    AsmUnaryOp unop;
     shared_ptr_t(AssemblyType) asm_type;
     shared_ptr_t(AsmOperand) dst;
 } AsmUnary;
@@ -500,8 +475,8 @@ unique_ptr_t(AsmInstruction) make_AsmCvttsd2si(
     shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction) make_AsmCvtsi2sd(
     shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
-unique_ptr_t(AsmInstruction) make_AsmUnary(
-    unique_ptr_t(AsmUnaryOp) * unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst);
+unique_ptr_t(AsmInstruction)
+    make_AsmUnary(AsmUnaryOp* unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction) make_AsmBinary(unique_ptr_t(AsmBinaryOp) * binop, shared_ptr_t(AssemblyType) * asm_type,
     shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction)

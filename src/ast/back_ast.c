@@ -188,45 +188,6 @@ void free_AsmBinaryOp(unique_ptr_t(AsmBinaryOp) * self) {
     uptr_free(*self);
 }
 
-unique_ptr_t(AsmUnaryOp) make_AsmUnaryOp(void) {
-    unique_ptr_t(AsmUnaryOp) self = uptr_new();
-    uptr_alloc(AsmUnaryOp, self);
-    self->type = AST_AsmUnaryOp_t;
-    return self;
-}
-
-unique_ptr_t(AsmUnaryOp) make_AsmNot(void) {
-    unique_ptr_t(AsmUnaryOp) self = make_AsmUnaryOp();
-    self->type = AST_AsmNot_t;
-    return self;
-}
-
-unique_ptr_t(AsmUnaryOp) make_AsmNeg(void) {
-    unique_ptr_t(AsmUnaryOp) self = make_AsmUnaryOp();
-    self->type = AST_AsmNeg_t;
-    return self;
-}
-
-unique_ptr_t(AsmUnaryOp) make_AsmShr(void) {
-    unique_ptr_t(AsmUnaryOp) self = make_AsmUnaryOp();
-    self->type = AST_AsmShr_t;
-    return self;
-}
-
-void free_AsmUnaryOp(unique_ptr_t(AsmUnaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_AsmUnaryOp_t:
-        case AST_AsmNot_t:
-        case AST_AsmNeg_t:
-        case AST_AsmShr_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(AsmInstruction) make_AsmInstruction(void) {
     unique_ptr_t(AsmInstruction) self = uptr_new();
     uptr_alloc(AsmInstruction, self);
@@ -313,12 +274,11 @@ unique_ptr_t(AsmInstruction) make_AsmCvtsi2sd(
     return self;
 }
 
-unique_ptr_t(AsmInstruction) make_AsmUnary(
-    unique_ptr_t(AsmUnaryOp) * unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst) {
+unique_ptr_t(AsmInstruction)
+    make_AsmUnary(AsmUnaryOp* unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst) {
     unique_ptr_t(AsmInstruction) self = make_AsmInstruction();
     self->type = AST_AsmUnary_t;
-    self->get._AsmUnary.unop = uptr_new();
-    uptr_move(AsmUnaryOp, *unop, self->get._AsmUnary.unop);
+    self->get._AsmUnary.unop = *unop;
     self->get._AsmUnary.asm_type = sptr_new();
     sptr_move(AssemblyType, *asm_type, self->get._AsmUnary.asm_type);
     self->get._AsmUnary.dst = sptr_new();
@@ -478,7 +438,6 @@ void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self) {
             free_AsmOperand(&(*self)->get._AsmCvtsi2sd.dst);
             break;
         case AST_AsmUnary_t:
-            free_AsmUnaryOp(&(*self)->get._AsmUnary.unop);
             free_AssemblyType(&(*self)->get._AsmUnary.asm_type);
             free_AsmOperand(&(*self)->get._AsmUnary.dst);
             break;

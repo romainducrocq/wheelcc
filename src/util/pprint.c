@@ -1510,7 +1510,7 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
             break;
         case AST_AsmUnary_t:
             print_field(++tab, "AsmUnary: ");
-            print_AsmUnaryOp(node->get._AsmUnary.unop, tab);
+            print_AsmUnaryOp(&node->get._AsmUnary.unop, tab);
             print_AssemblyType(node->get._AsmUnary.asm_type, tab);
             print_AsmOperand(ctx, node->get._AsmUnary.dst, tab);
             break;

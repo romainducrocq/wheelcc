@@ -604,7 +604,7 @@ static void cvtsi2sd_instr(Ctx ctx, AsmCvtsi2sd* node) {
 
 static void unary_instr(Ctx ctx, AsmUnary* node) {
     emit(ctx, TAB TAB);
-    emit(ctx, get_unop(node->unop));
+    emit(ctx, get_unop(&node->unop));
     emit(ctx, get_type_suffix(node->asm_type, false));
     emit(ctx, " ");
     {
