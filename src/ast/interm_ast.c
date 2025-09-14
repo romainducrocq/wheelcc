@@ -11,45 +11,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(TacUnaryOp) make_TacUnaryOp(void) {
-    unique_ptr_t(TacUnaryOp) self = uptr_new();
-    uptr_alloc(TacUnaryOp, self);
-    self->type = AST_TacUnaryOp_t;
-    return self;
-}
-
-unique_ptr_t(TacUnaryOp) make_TacComplement(void) {
-    unique_ptr_t(TacUnaryOp) self = make_TacUnaryOp();
-    self->type = AST_TacComplement_t;
-    return self;
-}
-
-unique_ptr_t(TacUnaryOp) make_TacNegate(void) {
-    unique_ptr_t(TacUnaryOp) self = make_TacUnaryOp();
-    self->type = AST_TacNegate_t;
-    return self;
-}
-
-unique_ptr_t(TacUnaryOp) make_TacNot(void) {
-    unique_ptr_t(TacUnaryOp) self = make_TacUnaryOp();
-    self->type = AST_TacNot_t;
-    return self;
-}
-
-void free_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_TacUnaryOp_t:
-        case AST_TacComplement_t:
-        case AST_TacNegate_t:
-        case AST_TacNot_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(TacBinaryOp) make_TacBinaryOp(void) {
     unique_ptr_t(TacBinaryOp) self = uptr_new();
     uptr_alloc(TacBinaryOp, self);
@@ -373,11 +334,10 @@ unique_ptr_t(TacInstruction)
 }
 
 unique_ptr_t(TacInstruction)
-    make_TacUnary(unique_ptr_t(TacUnaryOp) * unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst) {
+    make_TacUnary(TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst) {
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacUnary_t;
-    self->get._TacUnary.unop = uptr_new();
-    uptr_move(TacUnaryOp, *unop, self->get._TacUnary.unop);
+    self->get._TacUnary.unop = *unop;
     self->get._TacUnary.src = sptr_new();
     sptr_move(TacValue, *src, self->get._TacUnary.src);
     self->get._TacUnary.dst = sptr_new();
@@ -550,7 +510,6 @@ void free_TacInstruction(unique_ptr_t(TacInstruction) * self) {
             free_TacValue(&(*self)->get._TacFunCall.dst);
             break;
         case AST_TacUnary_t:
-            free_TacUnaryOp(&(*self)->get._TacUnary.unop);
             free_TacValue(&(*self)->get._TacUnary.src);
             free_TacValue(&(*self)->get._TacUnary.dst);
             break;

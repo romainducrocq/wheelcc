@@ -1017,7 +1017,7 @@ static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
             break;
         case AST_TacUnary_t:
             print_field(++tab, "TacUnary: ");
-            print_TacUnaryOp(node->get._TacUnary.unop, tab);
+            print_TacUnaryOp(&node->get._TacUnary.unop, tab);
             print_TacValue(ctx, node->get._TacUnary.src, tab);
             print_TacValue(ctx, node->get._TacUnary.dst, tab);
             break;

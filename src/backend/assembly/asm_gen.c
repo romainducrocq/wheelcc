@@ -1580,7 +1580,7 @@ static void unop_int_arithmetic_instr(Ctx ctx, TacUnary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_src_cp, &src, &src_dst_cp));
     }
     {
-        unique_ptr_t(AsmUnaryOp) unop = gen_unop(node->unop);
+        unique_ptr_t(AsmUnaryOp) unop = gen_unop(&node->unop);
         push_instr(ctx, make_AsmUnary(&unop, &asm_type_src, &src_dst));
     }
 }
@@ -1672,7 +1672,7 @@ static void unop_conditional_instr(Ctx ctx, TacUnary* node) {
 }
 
 static void unary_instr(Ctx ctx, TacUnary* node) {
-    switch (node->unop->type) {
+    switch (node->unop.type) {
         case AST_TacComplement_t:
             unop_int_arithmetic_instr(ctx, node);
             break;

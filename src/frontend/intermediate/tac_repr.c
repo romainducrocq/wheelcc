@@ -28,14 +28,14 @@ typedef struct TacReprContext {
 typedef TacReprContext* Ctx;
 
 // unary_operator = Complement | Negate | Not
-static unique_ptr_t(TacUnaryOp) repr_unop(CUnaryOp* node) {
+static TacUnaryOp repr_unop(CUnaryOp* node) {
     switch (node->type) {
         case AST_CComplement_t:
-            return make_TacComplement();
+            return init_TacComplement();
         case AST_CNegate_t:
-            return make_TacNegate();
+            return init_TacNegate();
         case AST_CNot_t:
-            return make_TacNot();
+            return init_TacNot();
         default:
             THROW_ABORT;
     }
@@ -306,7 +306,7 @@ static unique_ptr_t(TacExpResult) unary_res_instr(Ctx ctx, CUnary* node) {
     shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
     shared_ptr_t(TacValue) dst_cp = sptr_new();
     sptr_copy(TacValue, dst, dst_cp);
-    unique_ptr_t(TacUnaryOp) unop = repr_unop(&node->unop);
+    TacUnaryOp unop = repr_unop(&node->unop);
     push_instr(ctx, make_TacUnary(&unop, &src, &dst_cp));
     return make_TacPlainOperand(&dst);
 }
@@ -352,7 +352,7 @@ static unique_ptr_t(TacExpResult) binary_sub_to_ptr_res_instr(Ctx ctx, CBinary* 
         shared_ptr_t(TacValue) dst = plain_inner_value(ctx, node->_base);
         shared_ptr_t(TacValue) dst_cp = sptr_new();
         sptr_copy(TacValue, dst, dst_cp);
-        unique_ptr_t(TacUnaryOp) unop = make_TacNegate();
+        TacUnaryOp unop = init_TacNegate();
         push_instr(ctx, make_TacUnary(&unop, &idx, &dst_cp));
         sptr_move(TacValue, dst, idx);
     }

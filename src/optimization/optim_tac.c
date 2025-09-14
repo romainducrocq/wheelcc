@@ -591,7 +591,7 @@ static shared_ptr_t(TacValue) fold_unary_const(TacUnaryOp* node, CConst* constan
 
 static void fold_unary_instr(Ctx ctx, TacUnary* node, size_t instr_idx) {
     if (node->src->type == AST_TacConstant_t) {
-        shared_ptr_t(TacValue) src = fold_unary_const(node->unop, node->src->get._TacConstant.constant);
+        shared_ptr_t(TacValue) src = fold_unary_const(&node->unop, node->src->get._TacConstant.constant);
         shared_ptr_t(TacValue) dst = sptr_new();
         sptr_copy(TacValue, node->dst, dst);
         set_instr(ctx, make_TacCopy(&src, &dst), instr_idx);

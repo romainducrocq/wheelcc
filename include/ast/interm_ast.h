@@ -26,39 +26,14 @@ typedef struct TacProgram TacProgram;
 //                | Negate
 //                | Not
 
-typedef struct TacComplement {
-    int8_t _empty;
-} TacComplement;
-
-typedef struct TacNegate {
-    int8_t _empty;
-} TacNegate;
-
-typedef struct TacNot {
-    int8_t _empty;
-} TacNot;
-
 typedef struct TacUnaryOp {
-    unique_ptr_impl(AST_T);
-
-    union {
-        TacComplement _TacComplement;
-        TacNegate _TacNegate;
-        TacNot _TacNot;
-    } get;
+    tagged_def_impl(AST_T);
 } TacUnaryOp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(TacUnaryOp) make_TacUnaryOp(void);
-unique_ptr_t(TacUnaryOp) make_TacComplement(void);
-unique_ptr_t(TacUnaryOp) make_TacNegate(void);
-unique_ptr_t(TacUnaryOp) make_TacNot(void);
-void free_TacUnaryOp(unique_ptr_t(TacUnaryOp) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_TacUnaryOp() tagged_def_init(AST, TacUnaryOp, TacUnaryOp)
+#define init_TacComplement() tagged_def_init(AST, TacUnaryOp, TacComplement)
+#define init_TacNegate() tagged_def_init(AST, TacUnaryOp, TacNegate)
+#define init_TacNot() tagged_def_init(AST, TacUnaryOp, TacNot)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -343,7 +318,7 @@ typedef struct TacFunCall {
 } TacFunCall;
 
 typedef struct TacUnary {
-    unique_ptr_t(TacUnaryOp) unop;
+    TacUnaryOp unop;
     shared_ptr_t(TacValue) src;
     shared_ptr_t(TacValue) dst;
 } TacUnary;
@@ -456,7 +431,7 @@ unique_ptr_t(TacInstruction) make_TacUIntToDouble(shared_ptr_t(TacValue) * src, 
 unique_ptr_t(TacInstruction)
     make_TacFunCall(TIdentifier name, vector_t(shared_ptr_t(TacValue)) * args, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction)
-    make_TacUnary(unique_ptr_t(TacUnaryOp) * unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+    make_TacUnary(TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacBinary(unique_ptr_t(TacBinaryOp) * binop, shared_ptr_t(TacValue) * src1,
     shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacCopy(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
