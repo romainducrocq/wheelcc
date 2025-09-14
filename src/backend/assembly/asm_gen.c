@@ -212,40 +212,40 @@ static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, TacValue* node) {
 }
 
 // (signed) cond_code = E | NE | L | LE | G | GE
-static unique_ptr_t(AsmCondCode) gen_signed_cond_code(TacBinaryOp* node) {
+static AsmCondCode gen_signed_cond_code(TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacEqual_t:
-            return make_AsmE();
+            return init_AsmE();
         case AST_TacNotEqual_t:
-            return make_AsmNE();
+            return init_AsmNE();
         case AST_TacLessThan_t:
-            return make_AsmL();
+            return init_AsmL();
         case AST_TacLessOrEqual_t:
-            return make_AsmLE();
+            return init_AsmLE();
         case AST_TacGreaterThan_t:
-            return make_AsmG();
+            return init_AsmG();
         case AST_TacGreaterOrEqual_t:
-            return make_AsmGE();
+            return init_AsmGE();
         default:
             THROW_ABORT;
     }
 }
 
 // (unsigned) cond_code = E | NE | B | BE | A | AE
-static unique_ptr_t(AsmCondCode) gen_unsigned_cond_code(TacBinaryOp* node) {
+static AsmCondCode gen_unsigned_cond_code(TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacEqual_t:
-            return make_AsmE();
+            return init_AsmE();
         case AST_TacNotEqual_t:
-            return make_AsmNE();
+            return init_AsmNE();
         case AST_TacLessThan_t:
-            return make_AsmB();
+            return init_AsmB();
         case AST_TacLessOrEqual_t:
-            return make_AsmBE();
+            return init_AsmBE();
         case AST_TacGreaterThan_t:
-            return make_AsmA();
+            return init_AsmA();
         case AST_TacGreaterOrEqual_t:
-            return make_AsmAE();
+            return init_AsmAE();
         default:
             THROW_ABORT;
     }
@@ -947,7 +947,7 @@ static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
         push_instr(ctx, make_AsmCmp(&asm_type_sd_cp, &upper_bound_sd_cp, &src_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_ae = make_AsmAE();
+        AsmCondCode cond_code_ae = init_AsmAE();
         push_instr(ctx, make_AsmJmpCC(target_out_of_range, &cond_code_ae));
     }
     {
@@ -1089,7 +1089,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
         push_instr(ctx, make_AsmCmp(&asm_type_si_cp, &lower_bound_si, &src_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_l = make_AsmL();
+        AsmCondCode cond_code_l = init_AsmL();
         push_instr(ctx, make_AsmJmpCC(target_out_of_range, &cond_code_l));
     }
     {
@@ -1629,7 +1629,7 @@ static void unop_int_conditional_instr(Ctx ctx, TacUnary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+        AsmCondCode cond_code_e = init_AsmE();
         push_instr(ctx, make_AsmSetCC(&cond_code_e, &cmp_dst));
     }
 }
@@ -1652,11 +1652,11 @@ static void unop_dbl_conditional_instr(Ctx ctx, TacUnary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_p = make_AsmP();
+        AsmCondCode cond_code_p = init_AsmP();
         push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+        AsmCondCode cond_code_e = init_AsmE();
         push_instr(ctx, make_AsmSetCC(&cond_code_e, &cmp_dst));
     }
     push_instr(ctx, make_AsmLabel(target_nan));
@@ -1857,7 +1857,7 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code = uptr_new();
+        AsmCondCode cond_code = init_AsmCondCode();
         if (is_value_signed(ctx, node->src1)) {
             cond_code = gen_signed_cond_code(&node->binop);
         }
@@ -1885,12 +1885,12 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
         push_instr(ctx, make_AsmMov(&asm_type_dst, &imm_zero, &cmp_dst_cp));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_p = make_AsmP();
+        AsmCondCode cond_code_p = init_AsmP();
         push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code = gen_unsigned_cond_code(&node->binop);
-        if (cond_code->type == AST_AsmNE_t) {
+        AsmCondCode cond_code = gen_unsigned_cond_code(&node->binop);
+        if (cond_code.type == AST_AsmNE_t) {
             TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
             {
                 shared_ptr_t(AsmOperand) cmp_dst_cp = sptr_new();
@@ -1900,7 +1900,7 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
             push_instr(ctx, make_AsmJmp(target_nan_ne));
             push_instr(ctx, make_AsmLabel(target_nan));
             {
-                unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+                AsmCondCode cond_code_e = init_AsmE();
                 push_instr(ctx, make_AsmSetCC(&cond_code_e, &cmp_dst));
             }
             push_instr(ctx, make_AsmLabel(target_nan_ne));
@@ -2364,7 +2364,7 @@ static void jmp_eq_0_int_instr(Ctx ctx, TacJumpIfZero* node) {
     }
     {
         TIdentifier target = node->target;
-        unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+        AsmCondCode cond_code_e = init_AsmE();
         push_instr(ctx, make_AsmJmpCC(target, &cond_code_e));
     }
 }
@@ -2379,12 +2379,12 @@ static void jmp_eq_0_dbl_instr(Ctx ctx, TacJumpIfZero* node) {
         push_instr(ctx, make_AsmCmp(&asm_type_cond, &condition, &reg_zero));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_p = make_AsmP();
+        AsmCondCode cond_code_p = init_AsmP();
         push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
     }
     {
         TIdentifier target = node->target;
-        unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+        AsmCondCode cond_code_e = init_AsmE();
         push_instr(ctx, make_AsmJmpCC(target, &cond_code_e));
     }
     push_instr(ctx, make_AsmLabel(target_nan));
@@ -2408,7 +2408,7 @@ static void jmp_ne_0_int_instr(Ctx ctx, TacJumpIfNotZero* node) {
     }
     {
         TIdentifier target = node->target;
-        unique_ptr_t(AsmCondCode) cond_code_ne = make_AsmNE();
+        AsmCondCode cond_code_ne = init_AsmNE();
         push_instr(ctx, make_AsmJmpCC(target, &cond_code_ne));
     }
 }
@@ -2425,17 +2425,17 @@ static void jmp_ne_0_dbl_instr(Ctx ctx, TacJumpIfNotZero* node) {
         push_instr(ctx, make_AsmCmp(&asm_type_cond, &condition, &reg_zero));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_p = make_AsmP();
+        AsmCondCode cond_code_p = init_AsmP();
         push_instr(ctx, make_AsmJmpCC(target_nan, &cond_code_p));
     }
     {
-        unique_ptr_t(AsmCondCode) cond_code_ne = make_AsmNE();
+        AsmCondCode cond_code_ne = init_AsmNE();
         push_instr(ctx, make_AsmJmpCC(target, &cond_code_ne));
     }
     push_instr(ctx, make_AsmJmp(target_nan_ne));
     push_instr(ctx, make_AsmLabel(target_nan));
     {
-        unique_ptr_t(AsmCondCode) cond_code_e = make_AsmE();
+        AsmCondCode cond_code_e = init_AsmE();
         push_instr(ctx, make_AsmJmpCC(target, &cond_code_e));
     }
     push_instr(ctx, make_AsmLabel(target_nan_ne));

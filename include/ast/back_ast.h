@@ -109,87 +109,22 @@ typedef struct AsmReg {
 //           | BE
 //           | P
 
-typedef struct AsmE {
-    int8_t _empty;
-} AsmE;
-
-typedef struct AsmNE {
-    int8_t _empty;
-} AsmNE;
-
-typedef struct AsmG {
-    int8_t _empty;
-} AsmG;
-
-typedef struct AsmGE {
-    int8_t _empty;
-} AsmGE;
-
-typedef struct AsmL {
-    int8_t _empty;
-} AsmL;
-
-typedef struct AsmLE {
-    int8_t _empty;
-} AsmLE;
-
-typedef struct AsmA {
-    int8_t _empty;
-} AsmA;
-
-typedef struct AsmAE {
-    int8_t _empty;
-} AsmAE;
-
-typedef struct AsmB {
-    int8_t _empty;
-} AsmB;
-
-typedef struct AsmBE {
-    int8_t _empty;
-} AsmBE;
-
-typedef struct AsmP {
-    int8_t _empty;
-} AsmP;
-
 typedef struct AsmCondCode {
-    unique_ptr_impl(AST_T);
-
-    union {
-        AsmE _AsmE;
-        AsmNE _AsmNE;
-        AsmG _AsmG;
-        AsmGE _AsmGE;
-        AsmL _AsmL;
-        AsmLE _AsmLE;
-        AsmA _AsmA;
-        AsmAE _AsmAE;
-        AsmB _AsmB;
-        AsmBE _AsmBE;
-        AsmP _AsmP;
-    } get;
+    tagged_def_impl(AST_T);
 } AsmCondCode;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(AsmCondCode) make_AsmCondCode(void);
-unique_ptr_t(AsmCondCode) make_AsmE(void);
-unique_ptr_t(AsmCondCode) make_AsmNE(void);
-unique_ptr_t(AsmCondCode) make_AsmG(void);
-unique_ptr_t(AsmCondCode) make_AsmGE(void);
-unique_ptr_t(AsmCondCode) make_AsmL(void);
-unique_ptr_t(AsmCondCode) make_AsmLE(void);
-unique_ptr_t(AsmCondCode) make_AsmA(void);
-unique_ptr_t(AsmCondCode) make_AsmAE(void);
-unique_ptr_t(AsmCondCode) make_AsmB(void);
-unique_ptr_t(AsmCondCode) make_AsmBE(void);
-unique_ptr_t(AsmCondCode) make_AsmP(void);
-void free_AsmCondCode(unique_ptr_t(AsmCondCode) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_AsmCondCode() tagged_def_init(AST, AsmCondCode, AsmCondCode)
+#define init_AsmE() tagged_def_init(AST, AsmCondCode, AsmE)
+#define init_AsmNE() tagged_def_init(AST, AsmCondCode, AsmNE)
+#define init_AsmG() tagged_def_init(AST, AsmCondCode, AsmG)
+#define init_AsmGE() tagged_def_init(AST, AsmCondCode, AsmGE)
+#define init_AsmL() tagged_def_init(AST, AsmCondCode, AsmL)
+#define init_AsmLE() tagged_def_init(AST, AsmCondCode, AsmLE)
+#define init_AsmA() tagged_def_init(AST, AsmCondCode, AsmA)
+#define init_AsmAE() tagged_def_init(AST, AsmCondCode, AsmAE)
+#define init_AsmB() tagged_def_init(AST, AsmCondCode, AsmB)
+#define init_AsmBE() tagged_def_init(AST, AsmCondCode, AsmBE)
+#define init_AsmP() tagged_def_init(AST, AsmCondCode, AsmP)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -495,11 +430,11 @@ typedef struct AsmJmp {
 
 typedef struct AsmJmpCC {
     TIdentifier target;
-    unique_ptr_t(AsmCondCode) cond_code;
+    AsmCondCode cond_code;
 } AsmJmpCC;
 
 typedef struct AsmSetCC {
-    unique_ptr_t(AsmCondCode) cond_code;
+    AsmCondCode cond_code;
     shared_ptr_t(AsmOperand) dst;
 } AsmSetCC;
 
@@ -575,8 +510,8 @@ unique_ptr_t(AsmInstruction) make_AsmIdiv(shared_ptr_t(AssemblyType) * asm_type,
 unique_ptr_t(AsmInstruction) make_AsmDiv(shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src);
 unique_ptr_t(AsmInstruction) make_AsmCdq(shared_ptr_t(AssemblyType) * asm_type);
 unique_ptr_t(AsmInstruction) make_AsmJmp(TIdentifier target);
-unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, unique_ptr_t(AsmCondCode) * cond_code);
-unique_ptr_t(AsmInstruction) make_AsmSetCC(unique_ptr_t(AsmCondCode) * cond_code, shared_ptr_t(AsmOperand) * dst);
+unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, AsmCondCode* cond_code);
+unique_ptr_t(AsmInstruction) make_AsmSetCC(AsmCondCode* cond_code, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction) make_AsmLabel(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmPush(shared_ptr_t(AsmOperand) * src);
 unique_ptr_t(AsmInstruction) make_AsmPop(AsmReg* reg);

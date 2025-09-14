@@ -1548,11 +1548,11 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
         case AST_AsmJmpCC_t:
             print_field(++tab, "AsmJmpCC: ");
             print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, node->get._AsmJmpCC.target));
-            print_AsmCondCode(node->get._AsmJmpCC.cond_code, tab);
+            print_AsmCondCode(&node->get._AsmJmpCC.cond_code, tab);
             break;
         case AST_AsmSetCC_t:
             print_field(++tab, "AsmSetCC: ");
-            print_AsmCondCode(node->get._AsmSetCC.cond_code, tab);
+            print_AsmCondCode(&node->get._AsmSetCC.cond_code, tab);
             print_AsmOperand(ctx, node->get._AsmSetCC.dst, tab);
             break;
         case AST_AsmLabel_t:

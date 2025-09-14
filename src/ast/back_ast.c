@@ -12,101 +12,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-unique_ptr_t(AsmCondCode) make_AsmCondCode(void) {
-    unique_ptr_t(AsmCondCode) self = uptr_new();
-    uptr_alloc(AsmCondCode, self);
-    self->type = AST_AsmCondCode_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmNE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmNE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmG(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmG_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmGE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmGE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmL(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmL_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmLE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmLE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmA(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmA_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmAE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmAE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmB(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmB_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmBE(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmBE_t;
-    return self;
-}
-
-unique_ptr_t(AsmCondCode) make_AsmP(void) {
-    unique_ptr_t(AsmCondCode) self = make_AsmCondCode();
-    self->type = AST_AsmP_t;
-    return self;
-}
-
-void free_AsmCondCode(unique_ptr_t(AsmCondCode) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_AsmCondCode_t:
-        case AST_AsmE_t:
-        case AST_AsmNE_t:
-        case AST_AsmG_t:
-        case AST_AsmGE_t:
-        case AST_AsmL_t:
-        case AST_AsmLE_t:
-        case AST_AsmA_t:
-        case AST_AsmAE_t:
-        case AST_AsmB_t:
-        case AST_AsmBE_t:
-        case AST_AsmP_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 shared_ptr_t(AsmOperand) make_AsmOperand(void) {
     shared_ptr_t(AsmOperand) self = sptr_new();
     sptr_alloc(AsmOperand, self);
@@ -484,20 +389,18 @@ unique_ptr_t(AsmInstruction) make_AsmJmp(TIdentifier target) {
     return self;
 }
 
-unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, unique_ptr_t(AsmCondCode) * cond_code) {
+unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, AsmCondCode* cond_code) {
     unique_ptr_t(AsmInstruction) self = make_AsmInstruction();
     self->type = AST_AsmJmpCC_t;
     self->get._AsmJmpCC.target = target;
-    self->get._AsmJmpCC.cond_code = uptr_new();
-    uptr_move(AsmCondCode, *cond_code, self->get._AsmJmpCC.cond_code);
+    self->get._AsmJmpCC.cond_code = *cond_code;
     return self;
 }
 
-unique_ptr_t(AsmInstruction) make_AsmSetCC(unique_ptr_t(AsmCondCode) * cond_code, shared_ptr_t(AsmOperand) * dst) {
+unique_ptr_t(AsmInstruction) make_AsmSetCC(AsmCondCode* cond_code, shared_ptr_t(AsmOperand) * dst) {
     unique_ptr_t(AsmInstruction) self = make_AsmInstruction();
     self->type = AST_AsmSetCC_t;
-    self->get._AsmSetCC.cond_code = uptr_new();
-    uptr_move(AsmCondCode, *cond_code, self->get._AsmSetCC.cond_code);
+    self->get._AsmSetCC.cond_code = *cond_code;
     self->get._AsmSetCC.dst = sptr_new();
     sptr_move(AsmOperand, *dst, self->get._AsmSetCC.dst);
     return self;
@@ -604,10 +507,8 @@ void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self) {
         case AST_AsmJmp_t:
             break;
         case AST_AsmJmpCC_t:
-            free_AsmCondCode(&(*self)->get._AsmJmpCC.cond_code);
             break;
         case AST_AsmSetCC_t:
-            free_AsmCondCode(&(*self)->get._AsmSetCC.cond_code);
             free_AsmOperand(&(*self)->get._AsmSetCC.dst);
             break;
         case AST_AsmLabel_t:

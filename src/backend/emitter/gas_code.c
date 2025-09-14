@@ -702,7 +702,7 @@ static void jmp_instr(Ctx ctx, AsmJmp* node) {
 
 static void jmp_cc_instr(Ctx ctx, AsmJmpCC* node) {
     emit(ctx, TAB TAB "j");
-    emit(ctx, get_cond_code(node->cond_code));
+    emit(ctx, get_cond_code(&node->cond_code));
     emit(ctx, " " LBL);
     emit_identifier(ctx, node->target);
     emit(ctx, LF);
@@ -710,7 +710,7 @@ static void jmp_cc_instr(Ctx ctx, AsmJmpCC* node) {
 
 static void set_cc_instr(Ctx ctx, AsmSetCC* node) {
     emit(ctx, TAB TAB "set");
-    emit(ctx, get_cond_code(node->cond_code));
+    emit(ctx, get_cond_code(&node->cond_code));
     emit(ctx, " ");
     emit_op(ctx, node->dst, 1);
     emit(ctx, LF);
