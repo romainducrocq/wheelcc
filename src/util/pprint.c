@@ -718,6 +718,7 @@ static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab) {
 }
 
 static void print_CStorageClass(CStorageClass* node, size_t tab) {
+    print_null((node->type != AST_CStorageClass_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CStorageClass_t:
@@ -803,7 +804,7 @@ static void print_CFunctionDeclaration(Ctx ctx, CFunctionDeclaration* node, size
     }
     print_CBlock(ctx, node->body, tab);
     print_Type(ctx, node->fun_type, tab);
-    print_CStorageClass(node->storage_class, tab);
+    print_CStorageClass(&node->storage_class, tab);
 }
 
 static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size_t tab) {
@@ -818,7 +819,7 @@ static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size
     print_field(tab + 1, "TIdentifier: %s", map_get(ctx->hash_table, node->name));
     print_CInitializer(ctx, node->init, tab);
     print_Type(ctx, node->var_type, tab);
-    print_CStorageClass(node->storage_class, tab);
+    print_CStorageClass(&node->storage_class, tab);
 }
 
 static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab) {

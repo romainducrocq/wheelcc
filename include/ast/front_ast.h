@@ -618,33 +618,13 @@ void free_CBlockItem(unique_ptr_t(CBlockItem) * self);
 // storage_class = Static
 //               | Extern
 
-typedef struct CStatic {
-    int8_t _empty;
-} CStatic;
-
-typedef struct CExtern {
-    int8_t _empty;
-} CExtern;
-
 typedef struct CStorageClass {
-    unique_ptr_impl(AST_T);
-
-    union {
-        CStatic _CStatic;
-        CExtern _CExtern;
-    } get;
+    tagged_def_impl(AST_T);
 } CStorageClass;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-unique_ptr_t(CStorageClass) make_CStorageClass(void);
-unique_ptr_t(CStorageClass) make_CStatic(void);
-unique_ptr_t(CStorageClass) make_CExtern(void);
-void free_CStorageClass(unique_ptr_t(CStorageClass) * self);
-#ifdef __cplusplus
-}
-#endif
+#define init_CStorageClass() tagged_def_init(AST, CStorageClass, CStorageClass)
+#define init_CStatic() tagged_def_init(AST, CStorageClass, CStatic)
+#define init_CExtern() tagged_def_init(AST, CStorageClass, CExtern)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -735,16 +715,15 @@ typedef struct CFunctionDeclaration {
     vector_t(TIdentifier) params;
     unique_ptr_t(CBlock) body;
     shared_ptr_t(Type) fun_type;
-    unique_ptr_t(CStorageClass) storage_class;
+    CStorageClass storage_class;
     size_t line;
 } CFunctionDeclaration;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-unique_ptr_t(CFunctionDeclaration)
-    make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params, unique_ptr_t(CBlock) * body,
-        shared_ptr_t(Type) * fun_type, unique_ptr_t(CStorageClass) * storage_class, size_t line);
+unique_ptr_t(CFunctionDeclaration) make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params,
+    unique_ptr_t(CBlock) * body, shared_ptr_t(Type) * fun_type, CStorageClass* storage_class, size_t line);
 void free_CFunctionDeclaration(unique_ptr_t(CFunctionDeclaration) * self);
 #ifdef __cplusplus
 }
@@ -759,7 +738,7 @@ typedef struct CVariableDeclaration {
     TIdentifier name;
     unique_ptr_t(CInitializer) init;
     shared_ptr_t(Type) var_type;
-    unique_ptr_t(CStorageClass) storage_class;
+    CStorageClass storage_class;
     size_t line;
 } CVariableDeclaration;
 
@@ -767,7 +746,7 @@ typedef struct CVariableDeclaration {
 extern "C" {
 #endif
 unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, unique_ptr_t(CInitializer) * init,
-    shared_ptr_t(Type) * var_type, unique_ptr_t(CStorageClass) * storage_class, size_t line);
+    shared_ptr_t(Type) * var_type, CStorageClass* storage_class, size_t line);
 void free_CVariableDeclaration(unique_ptr_t(CVariableDeclaration) * self);
 #ifdef __cplusplus
 }

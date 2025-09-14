@@ -1872,7 +1872,7 @@ static error_t check_fun_decl(Ctx ctx, CFunctionDeclaration* node) {
     THROW_ABORT_IF(node->fun_type->type == AST_Void_t);
 
     bool is_def = set_find(ctx->fun_def_set, node->name) != set_end();
-    bool is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
+    bool is_glob = node->storage_class.type != AST_CStatic_t;
 
     ssize_t map_it = map_find(ctx->frontend->symbol_table, node->name);
     if (map_it != map_end()) {
@@ -2276,7 +2276,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
     TRY(is_valid_type(ctx, node->var_type));
 
-    is_glob = !(node->storage_class && node->storage_class->type == AST_CStatic_t);
+    is_glob = node->storage_class.type != AST_CStatic_t;
 
     if (node->init) {
         if (node->var_type->type == AST_Structure_t && !is_struct_complete(ctx, &node->var_type->get._Structure)) {
@@ -2286,7 +2286,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         TRY(check_initializer(ctx, node->init, node->var_type, &init_value));
     }
     else {
-        if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+        if (node->storage_class.type == AST_CExtern_t) {
             init_value = make_NoInitializer();
         }
         else {
@@ -2308,7 +2308,7 @@ static error_t check_file_var_decl(Ctx ctx, CVariableDeclaration* node) {
         }
 
         StaticAttr* var_attrs = &var_symbol->attrs->get._StaticAttr;
-        if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+        if (node->storage_class.type == AST_CExtern_t) {
             is_glob = var_attrs->is_glob;
         }
         else if (is_glob != var_attrs->is_glob) {
@@ -2447,20 +2447,18 @@ static error_t check_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
     TRY(is_valid_type(ctx, node->var_type));
 
-    if (node->storage_class) {
-        switch (node->storage_class->type) {
-            case AST_CExtern_t:
-                TRY(check_extern_block_var_decl(ctx, node));
-                break;
-            case AST_CStatic_t:
-                TRY(check_static_block_var_decl(ctx, node));
-                break;
-            default:
-                THROW_ABORT;
-        }
-    }
-    else {
-        TRY(check_auto_block_var_decl(ctx, node));
+    switch (node->storage_class.type) {
+        case AST_CStorageClass_t:
+            TRY(check_auto_block_var_decl(ctx, node));
+            break;
+        case AST_CExtern_t:
+            TRY(check_extern_block_var_decl(ctx, node));
+            break;
+        case AST_CStatic_t:
+            TRY(check_static_block_var_decl(ctx, node));
+            break;
+        default:
+            THROW_ABORT;
     }
     FINALLY;
     str_delete(name_fmt);
@@ -2995,10 +2993,10 @@ static error_t reslv_statement(Ctx ctx, CStatement* node);
 static error_t reslv_for_init_decl(Ctx ctx, CInitDecl* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    if (node->init->storage_class) {
+    if (node->init->storage_class.type != AST_CStorageClass_t) {
         THROW_AT_LINE(
             node->init->line, GET_SEMANTIC_MSG(MSG_for_init_decl_not_auto, str_fmt_name(node->init->name, &name_fmt),
-                                  get_storage_class_fmt(node->init->storage_class)));
+                                  get_storage_class_fmt(&node->init->storage_class)));
     }
     TRY(reslv_block_var_decl(ctx, node->init));
     FINALLY;
@@ -3376,7 +3374,7 @@ static error_t reslv_fun_declaration(Ctx ctx, CFunctionDeclaration* node) {
         if (node->body) {
             THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_def_nested_fun, str_fmt_name(node->name, &name_fmt)));
         }
-        else if (node->storage_class && node->storage_class->type == AST_CStatic_t) {
+        else if (node->storage_class.type == AST_CStatic_t) {
             THROW_AT_LINE(
                 node->line, GET_SEMANTIC_MSG(MSG_decl_nested_static_fun, str_fmt_name(node->name, &name_fmt)));
         }
@@ -3428,11 +3426,10 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
     if (map_find(vec_back(ctx->scoped_identifier_maps), node->name) != map_end()
-        && !(map_find(ctx->extern_scope_map, node->name) != map_end()
-             && (node->storage_class && node->storage_class->type == AST_CExtern_t))) {
+        && !(map_find(ctx->extern_scope_map, node->name) != map_end() && node->storage_class.type == AST_CExtern_t)) {
         THROW_AT_LINE(node->line, GET_SEMANTIC_MSG(MSG_redecl_var_in_scope, str_fmt_name(node->name, &name_fmt)));
     }
-    else if (node->storage_class && node->storage_class->type == AST_CExtern_t) {
+    else if (node->storage_class.type == AST_CExtern_t) {
         TRY(reslv_file_var_decl(ctx, node));
         EARLY_EXIT;
     }
@@ -3444,7 +3441,7 @@ static error_t reslv_block_var_decl(Ctx ctx, CVariableDeclaration* node) {
     }
     TRY(check_block_var_decl(ctx, node));
 
-    if (node->init && !node->storage_class) {
+    if (node->init && node->storage_class.type == AST_CStorageClass_t) {
         TRY(reslv_initializer(ctx, node->init, &node->var_type));
     }
     FINALLY;

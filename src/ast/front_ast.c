@@ -728,38 +728,6 @@ void free_CBlockItem(unique_ptr_t(CBlockItem) * self) {
     uptr_free(*self);
 }
 
-unique_ptr_t(CStorageClass) make_CStorageClass(void) {
-    unique_ptr_t(CStorageClass) self = uptr_new();
-    uptr_alloc(CStorageClass, self);
-    self->type = AST_CStorageClass_t;
-    return self;
-}
-
-unique_ptr_t(CStorageClass) make_CStatic(void) {
-    unique_ptr_t(CStorageClass) self = make_CStorageClass();
-    self->type = AST_CStatic_t;
-    return self;
-}
-
-unique_ptr_t(CStorageClass) make_CExtern(void) {
-    unique_ptr_t(CStorageClass) self = make_CStorageClass();
-    self->type = AST_CExtern_t;
-    return self;
-}
-
-void free_CStorageClass(unique_ptr_t(CStorageClass) * self) {
-    uptr_delete(*self);
-    switch ((*self)->type) {
-        case AST_CStorageClass_t:
-        case AST_CStatic_t:
-        case AST_CExtern_t:
-            break;
-        default:
-            THROW_ABORT;
-    }
-    uptr_free(*self);
-}
-
 unique_ptr_t(CInitializer) make_CInitializer(void) {
     unique_ptr_t(CInitializer) self = uptr_new();
     uptr_alloc(CInitializer, self);
@@ -859,9 +827,8 @@ void free_CStructDeclaration(unique_ptr_t(CStructDeclaration) * self) {
     uptr_free(*self);
 }
 
-unique_ptr_t(CFunctionDeclaration)
-    make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params, unique_ptr_t(CBlock) * body,
-        shared_ptr_t(Type) * fun_type, unique_ptr_t(CStorageClass) * storage_class, size_t line) {
+unique_ptr_t(CFunctionDeclaration) make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params,
+    unique_ptr_t(CBlock) * body, shared_ptr_t(Type) * fun_type, CStorageClass* storage_class, size_t line) {
     unique_ptr_t(CFunctionDeclaration) self = uptr_new();
     uptr_alloc(CFunctionDeclaration, self);
     self->type = AST_CFunctionDeclaration_t;
@@ -872,8 +839,7 @@ unique_ptr_t(CFunctionDeclaration)
     uptr_move(CBlock, *body, self->body);
     self->fun_type = sptr_new();
     sptr_move(Type, *fun_type, self->fun_type);
-    self->storage_class = uptr_new();
-    uptr_move(CStorageClass, *storage_class, self->storage_class);
+    self->storage_class = *storage_class;
     self->line = line;
     return self;
 }
@@ -889,12 +855,11 @@ void free_CFunctionDeclaration(unique_ptr_t(CFunctionDeclaration) * self) {
     vec_delete((*self)->params);
     free_CBlock(&(*self)->body);
     free_Type(&(*self)->fun_type);
-    free_CStorageClass(&(*self)->storage_class);
     uptr_free(*self);
 }
 
 unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, unique_ptr_t(CInitializer) * init,
-    shared_ptr_t(Type) * var_type, unique_ptr_t(CStorageClass) * storage_class, size_t line) {
+    shared_ptr_t(Type) * var_type, CStorageClass* storage_class, size_t line) {
     unique_ptr_t(CVariableDeclaration) self = uptr_new();
     uptr_alloc(CVariableDeclaration, self);
     self->type = AST_CVariableDeclaration_t;
@@ -903,8 +868,7 @@ unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, u
     uptr_move(CInitializer, *init, self->init);
     self->var_type = sptr_new();
     sptr_move(Type, *var_type, self->var_type);
-    self->storage_class = uptr_new();
-    uptr_move(CStorageClass, *storage_class, self->storage_class);
+    self->storage_class = *storage_class;
     self->line = line;
     return self;
 }
@@ -919,7 +883,6 @@ void free_CVariableDeclaration(unique_ptr_t(CVariableDeclaration) * self) {
     }
     free_CInitializer(&(*self)->init);
     free_Type(&(*self)->var_type);
-    free_CStorageClass(&(*self)->storage_class);
     uptr_free(*self);
 }
 

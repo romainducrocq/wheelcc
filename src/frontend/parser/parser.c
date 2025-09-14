@@ -695,7 +695,7 @@ static error_t parse_postfix_incr_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CPostfix();
-    CBinaryOp binop;
+    CBinaryOp binop = init_CBinaryOp();
     TRY(parse_binop(ctx, &binop));
     constant = make_CConstInt(1);
     exp_right = make_CConstant(&constant, line);
@@ -712,7 +712,7 @@ static error_t parse_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     unique_ptr_t(CExp) cast_exp = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
-    CUnaryOp unop;
+    CUnaryOp unop = init_CUnaryOp();
     TRY(parse_unop(ctx, &unop));
     TRY(parse_cast_exp_factor(ctx, &cast_exp));
     *exp = make_CUnary(&unop, &cast_exp, line);
@@ -730,7 +730,7 @@ static error_t parse_incr_unary_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CPrefix();
-    CBinaryOp binop;
+    CBinaryOp binop = init_CBinaryOp();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_cast_exp_factor(ctx, &exp_left));
     constant = make_CConstInt(1);
@@ -1015,7 +1015,7 @@ static error_t parse_assign_compound_exp(Ctx ctx, int32_t precedence, unique_ptr
     void* nullref = uptr_new(); // TODO
     size_t line = ctx->peek_tok->line;
     CUnaryOp unop = init_CUnaryOp();
-    CBinaryOp binop;
+    CBinaryOp binop = init_CBinaryOp();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence, &exp_right));
     exp_right_1 = make_CBinary(&binop, exp_left, &exp_right, line);
@@ -1030,7 +1030,7 @@ static error_t parse_binary_exp(Ctx ctx, int32_t precedence, unique_ptr_t(CExp) 
     unique_ptr_t(CExp) exp_right = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->peek_tok->line;
-    CBinaryOp binop;
+    CBinaryOp binop = init_CBinaryOp();
     TRY(parse_binop(ctx, &binop));
     TRY(parse_exp(ctx, precedence + 1, &exp_right));
     *exp_left = make_CBinary(&binop, exp_left, &exp_right, line);
@@ -1511,15 +1511,15 @@ static error_t parse_statement(Ctx ctx, unique_ptr_t(CStatement) * statement) {
     CATCH_EXIT;
 }
 
-static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, unique_ptr_t(CStorageClass) * storage_class);
-static error_t parse_var_declaration(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class, Declarator* decltor,
-    unique_ptr_t(CVariableDeclaration) * var_decl);
+static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, CStorageClass* storage_class);
+static error_t parse_var_declaration(
+    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl);
 
 static error_t parse_for_init_decl(Ctx ctx, unique_ptr_t(CForInit) * for_init) {
     Declarator decltor = {0, sptr_new(), vec_new()};
-    unique_ptr_t(CStorageClass) storage_class = uptr_new();
     unique_ptr_t(CVariableDeclaration) var_decl = uptr_new();
     CATCH_ENTER;
+    CStorageClass storage_class = init_CStorageClass();
     TRY(parse_decltor_decl(ctx, &decltor, &storage_class));
     if (decltor.derived_type->type == AST_FunType_t) {
         THROW_AT_LINE(ctx->next_tok->line,
@@ -1530,7 +1530,6 @@ static error_t parse_for_init_decl(Ctx ctx, unique_ptr_t(CForInit) * for_init) {
     FINALLY;
     free_Type(&decltor.derived_type);
     vec_delete(decltor.params);
-    free_CStorageClass(&storage_class);
     free_CVariableDeclaration(&var_decl);
     CATCH_EXIT;
 }
@@ -1839,16 +1838,16 @@ Lbreak:
 
 // <specifier> ::= <type-specifier> | "static" | "extern"
 // storage_class = Static | Extern
-static error_t parse_storage_class(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class) {
+static error_t parse_storage_class(Ctx ctx, CStorageClass* storage_class) {
     CATCH_ENTER;
     TRY(pop_next(ctx));
     switch (ctx->next_tok->tok_kind) {
         case TOK_key_static: {
-            *storage_class = make_CStatic();
+            *storage_class = init_CStatic();
             break;
         }
         case TOK_key_extern: {
-            *storage_class = make_CExtern();
+            *storage_class = init_CExtern();
             break;
         }
         default:
@@ -2200,8 +2199,8 @@ static error_t parse_decltor(Ctx ctx, unique_ptr_t(CDeclarator) * decltor) {
 
 // <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
-static error_t parse_fun_declaration(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class, Declarator* decltor,
-    unique_ptr_t(CFunctionDeclaration) * fun_decl) {
+static error_t parse_fun_declaration(
+    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CFunctionDeclaration) * fun_decl) {
     unique_ptr_t(CBlock) body = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->next_tok->line;
@@ -2222,8 +2221,8 @@ static error_t parse_fun_declaration(Ctx ctx, unique_ptr_t(CStorageClass) * stor
 
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
-static error_t parse_var_declaration(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class, Declarator* decltor,
-    unique_ptr_t(CVariableDeclaration) * var_decl) {
+static error_t parse_var_declaration(
+    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl) {
     unique_ptr_t(CInitializer) initializer = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->next_tok->line;
@@ -2244,14 +2243,14 @@ static error_t parse_var_declaration(Ctx ctx, unique_ptr_t(CStorageClass) * stor
 // member_declaration = MemberDeclaration(identifier, type)
 static error_t parse_member_declaration(Ctx ctx, unique_ptr_t(CMemberDeclaration) * member_decl) {
     Declarator decltor = {0, sptr_new(), vec_new()};
-    unique_ptr_t(CStorageClass) storage_class = uptr_new();
     CATCH_ENTER;
     size_t line;
+    CStorageClass storage_class = init_CStorageClass();
     TRY(parse_decltor_decl(ctx, &decltor, &storage_class));
-    if (storage_class) {
+    if (storage_class.type != AST_CStorageClass_t) {
         THROW_AT_LINE(ctx->next_tok->line,
             GET_PARSER_MSG(MSG_member_decl_not_auto, map_get(ctx->identifiers->hash_table, decltor.name),
-                get_storage_class_fmt(storage_class)));
+                get_storage_class_fmt(&storage_class)));
     }
     if (decltor.derived_type->type == AST_FunType_t) {
         THROW_AT_LINE(ctx->next_tok->line,
@@ -2264,7 +2263,6 @@ static error_t parse_member_declaration(Ctx ctx, unique_ptr_t(CMemberDeclaration
     FINALLY;
     free_Type(&decltor.derived_type);
     vec_delete(decltor.params);
-    free_CStorageClass(&storage_class);
     CATCH_EXIT;
 }
 
@@ -2304,8 +2302,8 @@ static error_t parse_struct_declaration(Ctx ctx, unique_ptr_t(CStructDeclaration
     CATCH_EXIT;
 }
 
-static error_t parse_fun_decl(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class, Declarator* decltor,
-    unique_ptr_t(CDeclaration) * declaration) {
+static error_t parse_fun_decl(
+    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
     unique_ptr_t(CFunctionDeclaration) fun_decl = uptr_new();
     CATCH_ENTER;
     TRY(parse_fun_declaration(ctx, storage_class, decltor, &fun_decl));
@@ -2315,8 +2313,8 @@ static error_t parse_fun_decl(Ctx ctx, unique_ptr_t(CStorageClass) * storage_cla
     CATCH_EXIT;
 }
 
-static error_t parse_var_decl(Ctx ctx, unique_ptr_t(CStorageClass) * storage_class, Declarator* decltor,
-    unique_ptr_t(CDeclaration) * declaration) {
+static error_t parse_var_decl(
+    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
     unique_ptr_t(CVariableDeclaration) var_decl = uptr_new();
     CATCH_ENTER;
     TRY(parse_var_declaration(ctx, storage_class, decltor, &var_decl));
@@ -2336,7 +2334,7 @@ static error_t parse_struct_decl(Ctx ctx, unique_ptr_t(CDeclaration) * declarati
     CATCH_EXIT;
 }
 
-static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, unique_ptr_t(CStorageClass) * storage_class) {
+static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, CStorageClass* storage_class) {
     unique_ptr_t(CDeclarator) decltor_1 = uptr_new();
     shared_ptr_t(Type) type_specifier = sptr_new();
     CATCH_ENTER;
@@ -2363,8 +2361,8 @@ static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, unique_ptr_t(CSt
 // declaration = FunDecl(function_declaration) | VarDecl(variable_declaration) | StructDecl(struct_declaration)
 static error_t parse_declaration(Ctx ctx, unique_ptr_t(CDeclaration) * declaration) {
     Declarator decltor = {0, sptr_new(), vec_new()};
-    unique_ptr_t(CStorageClass) storage_class = uptr_new();
     CATCH_ENTER;
+    CStorageClass storage_class = init_CStorageClass();
     TRY(peek_next(ctx));
     switch (ctx->peek_tok->tok_kind) {
         case TOK_key_struct:
@@ -2392,7 +2390,6 @@ static error_t parse_declaration(Ctx ctx, unique_ptr_t(CDeclaration) * declarati
     FINALLY;
     free_Type(&decltor.derived_type);
     vec_delete(decltor.params);
-    free_CStorageClass(&storage_class);
     CATCH_EXIT;
 }
 
