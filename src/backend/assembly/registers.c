@@ -98,7 +98,7 @@ shared_ptr_t(AsmOperand) gen_indexed(REGISTER_KIND reg_kind_base, REGISTER_KIND 
     return make_AsmIndexed(scale, &reg_base, &reg_index);
 }
 
-REGISTER_KIND register_mask_kind(AsmReg* node) {
+REGISTER_KIND register_mask_kind(const AsmReg* node) {
     switch (node->type) {
         case AST_AsmAx_t:
             return REG_Ax;
