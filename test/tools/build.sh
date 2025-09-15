@@ -1,8 +1,7 @@
 #!/bin/bash
 
 cd ../
-./build.sh
+./build.sh ${@}
 cd tools/
 
 exit 0
-
