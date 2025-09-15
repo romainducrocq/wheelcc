@@ -27,10 +27,10 @@ typedef struct ParserContext {
     IdentifierContext* identifiers;
     // Parser
     size_t pop_idx;
-    Token* next_tok;
-    Token* peek_tok;
-    Token* next_tok_i;
-    Token* peek_tok_i;
+    const Token* next_tok;
+    const Token* peek_tok;
+    const Token* next_tok_i;
+    const Token* peek_tok_i;
     vector_t(Token) * p_toks;
 } ParserContext;
 
@@ -40,7 +40,7 @@ typedef struct ParserContext {
 
 typedef ParserContext* Ctx;
 
-static error_t expect_next(Ctx ctx, Token* next_tok, TOKEN_KIND expect_tok) {
+static error_t expect_next(Ctx ctx, const Token* next_tok, TOKEN_KIND expect_tok) {
     CATCH_ENTER;
     if (next_tok->tok_kind != expect_tok) {
         THROW_AT_LINE(next_tok->line,
@@ -185,7 +185,7 @@ static shared_ptr_t(CConst) parse_ulong_const(uintmax_t uintmax) {
 static error_t parse_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_ENTER;
     intmax_t value;
-    char* strto_value;
+    const char* strto_value;
     TRY(pop_next(ctx));
     switch (ctx->next_tok->tok_kind) {
         case TOK_char_const: {
@@ -219,7 +219,7 @@ static error_t parse_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
 static error_t parse_unsigned_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_ENTER;
     uintmax_t value;
-    char* strto_value;
+    const char* strto_value;
     TRY(pop_next(ctx));
 
     strto_value = map_get(ctx->identifiers->hash_table, ctx->next_tok->tok);
@@ -408,16 +408,16 @@ static error_t parse_binop(Ctx ctx, CBinaryOp* binop) {
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor);
+    const CAbstractDeclarator* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor);
 
 static void proc_ptr_abstract_decltor(
-    CAbstractPointer* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
+    const CAbstractPointer* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
     shared_ptr_t(Type) derived_type = make_Pointer(base_type);
     proc_abstract_decltor(node->abstract_decltor, &derived_type, abstract_decltor);
 }
 
 static void proc_arr_abstract_decltor(
-    CAbstractArray* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
+    const CAbstractArray* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
     TLong size = node->size;
     shared_ptr_t(Type) derived_type = make_Array(size, base_type);
     proc_abstract_decltor(node->abstract_decltor, &derived_type, abstract_decltor);
@@ -428,7 +428,7 @@ static void proc_base_abstract_decltor(shared_ptr_t(Type) * base_type, AbstractD
 }
 
 static void proc_abstract_decltor(
-    CAbstractDeclarator* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
+    const CAbstractDeclarator* node, shared_ptr_t(Type) * base_type, AbstractDeclarator* abstract_decltor) {
     switch (node->type) {
         case AST_CAbstractPointer_t:
             proc_ptr_abstract_decltor(&node->get._CAbstractPointer, base_type, abstract_decltor);
@@ -1513,7 +1513,7 @@ static error_t parse_statement(Ctx ctx, unique_ptr_t(CStatement) * statement) {
 
 static error_t parse_decltor_decl(Ctx ctx, Declarator* decltor, CStorageClass* storage_class);
 static error_t parse_var_declaration(
-    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl);
+    Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl);
 
 static error_t parse_for_init_decl(Ctx ctx, unique_ptr_t(CForInit) * for_init) {
     Declarator decltor = {0, sptr_new(), vec_new()};
@@ -1916,15 +1916,15 @@ static error_t parse_initializer(Ctx ctx, unique_ptr_t(CInitializer) * initializ
 }
 
 static error_t parse_decltor(Ctx ctx, unique_ptr_t(CDeclarator) * decltor);
-static error_t proc_decltor(Ctx ctx, CDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor);
+static error_t proc_decltor(Ctx ctx, const CDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor);
 
-static void proc_ident_decltor(CIdent* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
+static void proc_ident_decltor(const CIdent* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     decltor->name = node->name;
     sptr_move(Type, *base_type, decltor->derived_type);
 }
 
 static error_t proc_ptr_decltor(
-    Ctx ctx, CPointerDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
+    Ctx ctx, const CPointerDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     shared_ptr_t(Type) derived_type = sptr_new();
     CATCH_ENTER;
     derived_type = make_Pointer(base_type);
@@ -1934,7 +1934,8 @@ static error_t proc_ptr_decltor(
     CATCH_EXIT;
 }
 
-static error_t proc_arr_decltor(Ctx ctx, CArrayDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
+static error_t proc_arr_decltor(
+    Ctx ctx, const CArrayDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     shared_ptr_t(Type) derived_type = sptr_new();
     CATCH_ENTER;
     TLong size = node->size;
@@ -1946,7 +1947,7 @@ static error_t proc_arr_decltor(Ctx ctx, CArrayDeclarator* node, shared_ptr_t(Ty
 }
 
 static error_t proc_param_decltor(
-    Ctx ctx, CParam* node, vector_t(TIdentifier) * params, vector_t(shared_ptr_t(Type)) * param_types) {
+    Ctx ctx, const CParam* node, vector_t(TIdentifier) * params, vector_t(shared_ptr_t(Type)) * param_types) {
     Declarator decltor = {0, sptr_new(), vec_new()};
     shared_ptr_t(Type) param_type = sptr_new();
     CATCH_ENTER;
@@ -1962,7 +1963,8 @@ static error_t proc_param_decltor(
     CATCH_EXIT;
 }
 
-static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
+static error_t proc_fun_decltor(
+    Ctx ctx, const CFunDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     shared_ptr_t(Type) derived_type = sptr_new();
     vector_t(TIdentifier) params = vec_new();
     vector_t(shared_ptr_t(Type)) param_types = vec_new();
@@ -1992,7 +1994,7 @@ static error_t proc_fun_decltor(Ctx ctx, CFunDeclarator* node, shared_ptr_t(Type
     CATCH_EXIT;
 }
 
-static error_t proc_decltor(Ctx ctx, CDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
+static error_t proc_decltor(Ctx ctx, const CDeclarator* node, shared_ptr_t(Type) * base_type, Declarator* decltor) {
     CATCH_ENTER;
     switch (node->type) {
         case AST_CIdent_t:
@@ -2200,7 +2202,7 @@ static error_t parse_decltor(Ctx ctx, unique_ptr_t(CDeclarator) * decltor) {
 // <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 static error_t parse_fun_declaration(
-    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CFunctionDeclaration) * fun_decl) {
+    Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CFunctionDeclaration) * fun_decl) {
     unique_ptr_t(CBlock) body = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->next_tok->line;
@@ -2222,7 +2224,7 @@ static error_t parse_fun_declaration(
 // <variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
 // variable_declaration = VariableDeclaration(identifier, initializer?, type, storage_class?)
 static error_t parse_var_declaration(
-    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl) {
+    Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CVariableDeclaration) * var_decl) {
     unique_ptr_t(CInitializer) initializer = uptr_new();
     CATCH_ENTER;
     size_t line = ctx->next_tok->line;
@@ -2303,7 +2305,7 @@ static error_t parse_struct_declaration(Ctx ctx, unique_ptr_t(CStructDeclaration
 }
 
 static error_t parse_fun_decl(
-    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
+    Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
     unique_ptr_t(CFunctionDeclaration) fun_decl = uptr_new();
     CATCH_ENTER;
     TRY(parse_fun_declaration(ctx, storage_class, decltor, &fun_decl));
@@ -2314,7 +2316,7 @@ static error_t parse_fun_decl(
 }
 
 static error_t parse_var_decl(
-    Ctx ctx, CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
+    Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CDeclaration) * declaration) {
     unique_ptr_t(CVariableDeclaration) var_decl = uptr_new();
     CATCH_ENTER;
     TRY(parse_var_declaration(ctx, storage_class, decltor, &var_decl));
