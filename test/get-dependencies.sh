@@ -5,13 +5,16 @@ if [[ "$(uname -s)" = "Darwin"* ]]; then
     cmake --help > /dev/null 2>&1
     if [ ${?} -ne 0 ]; then
         echo -e -n "install missing dependencies \033[1m‘cmake’\033[0m? [y/n]: "
-        read -p "" INSTALL_Y
-        if [ "${INSTALL_Y}" = "y" ]; then
+        read -p "" INSTALL_CMAKE
+        if [ "${INSTALL_CMAKE}" = "y" ]; then
             brew install cmake
             if [ ${?} -ne 0 ]; then
                 echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘cmake’\033[0m"
-                echo -e "\033[1;34mwarning:\033[0m install the missing dependencies before testing"
+                INSTALL_CMAKE="n"
             fi
+        fi
+        if [ ! "${INSTALL_CMAKE}" = "y" ]; then
+            echo -e "\033[1;34mwarning:\033[0m install the missing dependencies before testing"
         fi
     fi
 

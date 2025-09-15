@@ -23,6 +23,11 @@ if [[ "$(uname -s)" = "Darwin"* ]]; then
         fi
     fi
 
+    clang++ --help > /dev/null 2>&1
+    if [ ${?} -ne 0 ]; then
+        INSTALL_CC=1
+    fi
+
     if [ ${INSTALL_CC} -ne 0 ]; then
         echo -e "\033[1;34mwarning:\033[0m install \033[1m‘clang’\033[0m >= 5.0.0 before building"
     fi
