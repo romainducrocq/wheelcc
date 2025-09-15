@@ -1302,13 +1302,13 @@ static void single_init_instr(Ctx ctx, const CSingleInit* node, const Type* init
 }
 
 static void scalar_compound_init_instr(
-    Ctx ctx, const CSingleInit* node, const Type* init_type, TIdentifier symbol, TLong* size) {
+    Ctx ctx, const CSingleInit* node, const Type* init_type, TIdentifier symbol, TLong size) {
     if (node->exp->type == AST_CString_t && init_type->type == AST_Array_t) {
-        string_single_init_instr(ctx, &node->exp->get._CString, &init_type->get._Array, symbol, *size);
+        string_single_init_instr(ctx, &node->exp->get._CString, &init_type->get._Array, symbol, size);
     }
     else {
         TIdentifier dst_name = symbol;
-        TLong offset = *size;
+        TLong offset = size;
         shared_ptr_t(TacValue) src = repr_exp_instr(ctx, node->exp);
         push_instr(ctx, make_TacCopyToOffset(dst_name, offset, &src));
     }
@@ -1352,7 +1352,7 @@ static void compound_init_instr(
     Ctx ctx, const CInitializer* node, const Type* init_type, TIdentifier symbol, TLong* size) {
     switch (node->type) {
         case AST_CSingleInit_t:
-            scalar_compound_init_instr(ctx, &node->get._CSingleInit, init_type, symbol, size);
+            scalar_compound_init_instr(ctx, &node->get._CSingleInit, init_type, symbol, *size);
             break;
         case AST_CCompoundInit_t:
             aggr_compound_init_instr(ctx, &node->get._CCompoundInit, init_type, symbol, size);
