@@ -13,7 +13,7 @@
         {
             "label": "Configure",
             "type": "shell",
-            "command": "cmake -G \"Unix Makefiles\" -S . -B debug/ -DCMAKE_BUILD_TYPE=Debug",
+            "command": "cmake -G \"Unix Makefiles\" -S . -B debug/ -DCMAKE_BUILD_TYPE=Debug -D__NDEBUG__=OFF -DBUILD_CPP=OFF",
             "options": {
                 "cwd": "${workspaceFolder}/build"
             },
