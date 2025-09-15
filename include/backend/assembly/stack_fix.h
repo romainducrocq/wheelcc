@@ -22,7 +22,7 @@ typedef struct BackEndContext BackEndContext;
 extern "C" {
 #endif
 unique_ptr_t(AsmInstruction) alloc_stack_bytes(TLong byte);
-void fix_stack(AsmProgram* node, BackEndContext* backend);
+void fix_stack(const AsmProgram* node, BackEndContext* backend);
 #ifdef __cplusplus
 }
 #endif
