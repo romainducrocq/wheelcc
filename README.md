@@ -58,7 +58,7 @@ $ ./configure.sh
 - Build the compiler in Release mode  
     > - GNU/Linux: requires `$ gcc -dumpfullversion` >= 8.1.0
     > - MacOS: requires `$ clang -dumpversion` >= 5.0.0
-    > By default in C from command line, optionally with Cmake and C++
+    > - By default in C from command line, optionally with Cmake and C++
 ```
 $ ./make.sh [--cmake | --cmake-cpp]
 ```
