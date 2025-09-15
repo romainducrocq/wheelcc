@@ -18,9 +18,9 @@ typedef struct FrontEndContext FrontEndContext;
 #ifdef __cplusplus
 extern "C" {
 #endif
-TInt gen_type_alignment(FrontEndContext* ctx, Type* type);
+TInt gen_type_alignment(FrontEndContext* ctx, const Type* type);
 shared_ptr_t(AssemblyType) cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name);
-void convert_symbol_table(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend);
+void convert_symbol_table(const AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend);
 #ifdef __cplusplus
 }
 #endif

@@ -22,7 +22,7 @@ typedef struct SymtCvtContext {
 
 typedef SymtCvtContext* Ctx;
 
-static TInt get_scalar_alignment(Type* type) {
+static TInt get_scalar_alignment(const Type* type) {
     switch (type->type) {
         case AST_Char_t:
         case AST_SChar_t:
@@ -41,7 +41,7 @@ static TInt get_scalar_alignment(Type* type) {
     }
 }
 
-static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong* size) {
+static TInt get_arr_alignment(FrontEndContext* ctx, const Array* arr_type, TLong* size) {
     *size = arr_type->size;
     while (arr_type->elem_type->type == AST_Array_t) {
         arr_type = &arr_type->elem_type->get._Array;
@@ -49,7 +49,7 @@ static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong* size
     }
     TInt alignment = gen_type_alignment(ctx, arr_type->elem_type);
     if (arr_type->elem_type->type == AST_Structure_t) {
-        Structure* struct_type = &arr_type->elem_type->get._Structure;
+        const Structure* struct_type = &arr_type->elem_type->get._Structure;
         *size *= map_get(ctx->struct_typedef_table, struct_type->tag)->size;
     }
     else {
@@ -61,11 +61,11 @@ static TInt get_arr_alignment(FrontEndContext* ctx, Array* arr_type, TLong* size
     return alignment;
 }
 
-static TInt get_struct_alignment(FrontEndContext* ctx, Structure* struct_type) {
+static TInt get_struct_alignment(FrontEndContext* ctx, const Structure* struct_type) {
     return map_get(ctx->struct_typedef_table, struct_type->tag)->alignment;
 }
 
-TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
+TInt gen_type_alignment(FrontEndContext* ctx, const Type* type) {
     switch (type->type) {
         case AST_Array_t: {
             TLong size;
@@ -78,18 +78,18 @@ TInt gen_type_alignment(FrontEndContext* ctx, Type* type) {
     }
 }
 
-static shared_ptr_t(AssemblyType) arr_asm_type(FrontEndContext* ctx, Array* arr_type) {
+static shared_ptr_t(AssemblyType) arr_asm_type(FrontEndContext* ctx, const Array* arr_type) {
     TLong size;
     TInt alignment = get_arr_alignment(ctx, arr_type, &size);
     return make_ByteArray(size, alignment);
 }
 
-static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, Structure* struct_type) {
+static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, const Structure* struct_type) {
     TLong size;
     TInt alignment;
     ssize_t map_it = map_find(ctx->struct_typedef_table, struct_type->tag);
     if (map_it != map_end()) {
-        StructTypedef* struct_typedef = pair_second(ctx->struct_typedef_table[map_it]);
+        const StructTypedef* struct_typedef = pair_second(ctx->struct_typedef_table[map_it]);
         size = struct_typedef->size;
         alignment = struct_typedef->alignment;
     }
@@ -101,7 +101,7 @@ static shared_ptr_t(AssemblyType) struct_asm_type(FrontEndContext* ctx, Structur
 }
 
 shared_ptr_t(AssemblyType) cvt_backend_asm_type(FrontEndContext* ctx, TIdentifier name) {
-    Type* symbol_type = map_get(ctx->symbol_table, name)->type_t;
+    const Type* symbol_type = map_get(ctx->symbol_table, name)->type_t;
     switch (symbol_type->type) {
         case AST_Char_t:
         case AST_SChar_t:
@@ -134,12 +134,12 @@ static void dbl_static_const(Ctx ctx) {
     cvt_backend_symbol(ctx, make_BackendObj(true, true, &asm_type));
 }
 
-static void string_static_const(Ctx ctx, Array* arr_type) {
+static void string_static_const(Ctx ctx, const Array* arr_type) {
     shared_ptr_t(AssemblyType) asm_type = arr_asm_type(ctx->frontend, arr_type);
     cvt_backend_symbol(ctx, make_BackendObj(true, true, &asm_type));
 }
 
-static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
+static void cvt_static_const_toplvl(Ctx ctx, const AsmStaticConstant* node) {
     ctx->symbol = node->name;
     switch (node->static_init->type) {
         case AST_DoubleInit_t:
@@ -153,7 +153,7 @@ static void cvt_static_const_toplvl(Ctx ctx, AsmStaticConstant* node) {
     }
 }
 
-static void cvt_toplvl(Ctx ctx, AsmTopLevel* node) {
+static void cvt_toplvl(Ctx ctx, const AsmTopLevel* node) {
     if (node->type == AST_AsmStaticConstant_t) {
         cvt_static_const_toplvl(ctx, &node->get._AsmStaticConstant);
     }
@@ -162,7 +162,7 @@ static void cvt_toplvl(Ctx ctx, AsmTopLevel* node) {
     }
 }
 
-static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
+static void cvt_fun_type(Ctx ctx, const FunAttr* node, FunType* fun_type) {
     if (fun_type->param_reg_mask == NULL_REGISTER_MASK) {
         THROW_ABORT_IF(node->is_def);
         fun_type->param_reg_mask = REGISTER_MASK_FALSE;
@@ -174,7 +174,7 @@ static void cvt_fun_type(Ctx ctx, FunAttr* node, FunType* fun_type) {
     cvt_backend_symbol(ctx, make_BackendFun(is_def));
 }
 
-static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
+static void cvt_obj_type(Ctx ctx, const IdentifierAttr* node) {
     if (node->type != AST_ConstantAttr_t) {
         shared_ptr_t(AssemblyType) asm_type = cvt_backend_asm_type(ctx->frontend, ctx->symbol);
         bool is_static = node->type == AST_StaticAttr_t;
@@ -182,7 +182,7 @@ static void cvt_obj_type(Ctx ctx, IdentifierAttr* node) {
     }
 }
 
-static void cvt_program(Ctx ctx, AsmProgram* node) {
+static void cvt_program(Ctx ctx, const AsmProgram* node) {
     for (size_t i = 0; i < map_size(ctx->frontend->symbol_table); ++i) {
         const pair_t(TIdentifier, UPtrSymbol)* symbol = &ctx->frontend->symbol_table[i];
         ctx->symbol = pair_first(*symbol);
@@ -201,7 +201,7 @@ static void cvt_program(Ctx ctx, AsmProgram* node) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void convert_symbol_table(AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend) {
+void convert_symbol_table(const AsmProgram* node, BackEndContext* backend, FrontEndContext* frontend) {
     SymtCvtContext ctx;
     {
         ctx.backend = backend;
