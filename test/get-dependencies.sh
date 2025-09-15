@@ -1,6 +1,20 @@
 #!/bin/bash
 
+# Check for MacOS first, as it supports only bash <= 3.2
 if [[ "$(uname -s)" = "Darwin"* ]]; then
+    cmake --help > /dev/null 2>&1
+    if [ ${?} -ne 0 ]; then
+        echo -e -n "install missing dependencies \033[1m‘cmake’\033[0m? [y/n]: "
+        read -p "" INSTALL_Y
+        if [ "${INSTALL_Y}" = "y" ]; then
+            brew install cmake
+            if [ ${?} -ne 0 ]; then
+                echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘cmake’\033[0m"
+                echo -e "\033[1;34mwarning:\033[0m install the missing dependencies before testing"
+            fi
+        fi
+    fi
+
     exit 0
 fi
 
@@ -78,7 +92,7 @@ if [ "${INSTALL_Y}" = "y" ]; then
                 for i in $(seq 1 ${#INSTALL_PKGS[@]}); do
                     if [ ${INSTALL_PKGS[$((i-1))]} -ne 0 ]; then
                         DEP="$(echo "${INSTALL_DEPS}" | cut -d" " -f${i})"
-                        sudo pacman -Syu ${DEP}
+                        yes | sudo pacman -S ${DEP}
                         INSTALL_PKGS[$((i-1))]=${?}
                     fi
                 done
