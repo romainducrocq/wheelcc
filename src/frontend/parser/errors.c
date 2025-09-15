@@ -173,7 +173,7 @@ const char* get_tok_kind_fmt(TOKEN_KIND tok_kind) {
     }
 }
 
-const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
+const char* get_tok_fmt(IdentifierContext* ctx, const Token* token) {
     switch (token->tok_kind) {
         case TOK_identifier:
         case TOK_string_literal:
@@ -189,7 +189,7 @@ const char* get_tok_fmt(IdentifierContext* ctx, Token* token) {
     }
 }
 
-const char* get_const_fmt(CConst* node) {
+const char* get_const_fmt(const CConst* node) {
     switch (node->type) {
         case AST_CConstInt_t:
             return "int";
@@ -210,7 +210,7 @@ const char* get_const_fmt(CConst* node) {
     }
 }
 
-const char* get_storage_class_fmt(CStorageClass* node) {
+const char* get_storage_class_fmt(const CStorageClass* node) {
     switch (node->type) {
         case AST_CStatic_t:
             return "static";
@@ -221,7 +221,7 @@ const char* get_storage_class_fmt(CStorageClass* node) {
     }
 }
 
-const char* get_unop_fmt(CUnaryOp* node) {
+const char* get_unop_fmt(const CUnaryOp* node) {
     switch (node->type) {
         case AST_CComplement_t:
             return "~";
@@ -234,7 +234,7 @@ const char* get_unop_fmt(CUnaryOp* node) {
     }
 }
 
-const char* get_binop_fmt(CBinaryOp* node) {
+const char* get_binop_fmt(const CBinaryOp* node) {
     switch (node->type) {
         case AST_CAdd_t:
             return "+";
@@ -279,7 +279,7 @@ const char* get_binop_fmt(CBinaryOp* node) {
     }
 }
 
-const char* get_assign_fmt(CBinaryOp* node, CUnaryOp* unop) {
+const char* get_assign_fmt(const CBinaryOp* node, const CUnaryOp* unop) {
     if (!node) {
         return "=";
     }
@@ -359,7 +359,7 @@ const char* get_struct_name_fmt(IdentifierContext* ctx, TIdentifier name, bool i
     return *struct_fmt;
 }
 
-const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string_t* fun_fmt) {
+const char* get_fun_fmt(IdentifierContext* ctx, const FunType* fun_type, string_t* fun_fmt) {
     *fun_fmt = str_new("(");
     {
         string_t type_fmt = str_new(NULL);
@@ -383,7 +383,7 @@ const char* get_fun_fmt(IdentifierContext* ctx, FunType* fun_type, string_t* fun
     return *fun_fmt;
 }
 
-const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr_fmt) {
+const char* get_ptr_fmt(IdentifierContext* ctx, const Pointer* ptr_type, string_t* ptr_fmt) {
     *ptr_fmt = str_new("");
     string_t decltor_fmt = str_new("*");
     while (ptr_type->ref_type->type == AST_Pointer_t) {
@@ -400,7 +400,7 @@ const char* get_ptr_fmt(IdentifierContext* ctx, Pointer* ptr_type, string_t* ptr
     return *ptr_fmt;
 }
 
-const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_fmt) {
+const char* get_arr_fmt(IdentifierContext* ctx, const Array* arr_type, string_t* arr_fmt) {
     *arr_fmt = str_new("");
     string_t decltor_fmt = str_new("[");
     {
@@ -429,11 +429,11 @@ const char* get_arr_fmt(IdentifierContext* ctx, Array* arr_type, string_t* arr_f
     return *arr_fmt;
 }
 
-const char* get_struct_fmt(IdentifierContext* ctx, Structure* struct_type, string_t* struct_fmt) {
+const char* get_struct_fmt(IdentifierContext* ctx, const Structure* struct_type, string_t* struct_fmt) {
     return get_struct_name_fmt(ctx, struct_type->tag, struct_type->is_union, struct_fmt);
 }
 
-const char* get_type_fmt(IdentifierContext* ctx, Type* type, string_t* type_fmt) {
+const char* get_type_fmt(IdentifierContext* ctx, const Type* type, string_t* type_fmt) {
     switch (type->type) {
         case AST_Char_t:
             return "char";
