@@ -336,9 +336,9 @@ unique_ptr_t(TacInstruction) make_TacUIntToDouble(shared_ptr_t(TacValue) * src, 
 unique_ptr_t(TacInstruction)
     make_TacFunCall(TIdentifier name, vector_t(shared_ptr_t(TacValue)) * args, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction)
-    make_TacUnary(TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
-unique_ptr_t(TacInstruction) make_TacBinary(
-    TacBinaryOp* binop, shared_ptr_t(TacValue) * src1, shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
+    make_TacUnary(const TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
+unique_ptr_t(TacInstruction) make_TacBinary(const TacBinaryOp* binop, shared_ptr_t(TacValue) * src1,
+    shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacCopy(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacGetAddress(shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst);
 unique_ptr_t(TacInstruction) make_TacLoad(shared_ptr_t(TacValue) * src_ptr, shared_ptr_t(TacValue) * dst);

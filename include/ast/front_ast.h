@@ -351,11 +351,11 @@ unique_ptr_t(CExp) make_CConstant(shared_ptr_t(CConst) * constant, size_t line);
 unique_ptr_t(CExp) make_CString(shared_ptr_t(CStringLiteral) * literal, size_t line);
 unique_ptr_t(CExp) make_CVar(TIdentifier name, size_t line);
 unique_ptr_t(CExp) make_CCast(unique_ptr_t(CExp) * exp, shared_ptr_t(Type) * target_type, size_t line);
-unique_ptr_t(CExp) make_CUnary(CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t line);
+unique_ptr_t(CExp) make_CUnary(const CUnaryOp* unop, unique_ptr_t(CExp) * exp, size_t line);
 unique_ptr_t(CExp)
-    make_CBinary(CBinaryOp* binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
+    make_CBinary(const CBinaryOp* binop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp)
-    make_CAssignment(CUnaryOp* unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
+    make_CAssignment(const CUnaryOp* unop, unique_ptr_t(CExp) * exp_left, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp) make_CConditional(
     unique_ptr_t(CExp) * condition, unique_ptr_t(CExp) * exp_middle, unique_ptr_t(CExp) * exp_right, size_t line);
 unique_ptr_t(CExp) make_CFunctionCall(TIdentifier name, vector_t(unique_ptr_t(CExp)) * args, size_t line);
@@ -723,7 +723,7 @@ typedef struct CFunctionDeclaration {
 extern "C" {
 #endif
 unique_ptr_t(CFunctionDeclaration) make_CFunctionDeclaration(TIdentifier name, vector_t(TIdentifier) * params,
-    unique_ptr_t(CBlock) * body, shared_ptr_t(Type) * fun_type, CStorageClass* storage_class, size_t line);
+    unique_ptr_t(CBlock) * body, shared_ptr_t(Type) * fun_type, const CStorageClass* storage_class, size_t line);
 void free_CFunctionDeclaration(unique_ptr_t(CFunctionDeclaration) * self);
 #ifdef __cplusplus
 }
@@ -746,7 +746,7 @@ typedef struct CVariableDeclaration {
 extern "C" {
 #endif
 unique_ptr_t(CVariableDeclaration) make_CVariableDeclaration(TIdentifier name, unique_ptr_t(CInitializer) * init,
-    shared_ptr_t(Type) * var_type, CStorageClass* storage_class, size_t line);
+    shared_ptr_t(Type) * var_type, const CStorageClass* storage_class, size_t line);
 void free_CVariableDeclaration(unique_ptr_t(CVariableDeclaration) * self);
 #ifdef __cplusplus
 }

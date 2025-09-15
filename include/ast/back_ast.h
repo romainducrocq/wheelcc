@@ -191,12 +191,12 @@ extern "C" {
 #endif
 shared_ptr_t(AsmOperand) make_AsmOperand(void);
 shared_ptr_t(AsmOperand) make_AsmImm(TULong value, bool is_byte, bool is_quad, bool is_neg);
-shared_ptr_t(AsmOperand) make_AsmRegister(AsmReg* reg);
+shared_ptr_t(AsmOperand) make_AsmRegister(const AsmReg* reg);
 shared_ptr_t(AsmOperand) make_AsmPseudo(TIdentifier name);
-shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, AsmReg* reg);
+shared_ptr_t(AsmOperand) make_AsmMemory(TLong value, const AsmReg* reg);
 shared_ptr_t(AsmOperand) make_AsmData(TIdentifier name, TLong offset);
 shared_ptr_t(AsmOperand) make_AsmPseudoMem(TIdentifier name, TLong offset);
-shared_ptr_t(AsmOperand) make_AsmIndexed(TLong scale, AsmReg* reg_base, AsmReg* reg_index);
+shared_ptr_t(AsmOperand) make_AsmIndexed(TLong scale, const AsmReg* reg_base, const AsmReg* reg_index);
 void free_AsmOperand(shared_ptr_t(AsmOperand) * self);
 #ifdef __cplusplus
 }
@@ -416,8 +416,8 @@ unique_ptr_t(AsmInstruction) make_AsmCvttsd2si(
 unique_ptr_t(AsmInstruction) make_AsmCvtsi2sd(
     shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction)
-    make_AsmUnary(AsmUnaryOp* unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst);
-unique_ptr_t(AsmInstruction) make_AsmBinary(AsmBinaryOp* binop, shared_ptr_t(AssemblyType) * asm_type,
+    make_AsmUnary(const AsmUnaryOp* unop, shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * dst);
+unique_ptr_t(AsmInstruction) make_AsmBinary(const AsmBinaryOp* binop, shared_ptr_t(AssemblyType) * asm_type,
     shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction)
     make_AsmCmp(shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src, shared_ptr_t(AsmOperand) * dst);
@@ -425,11 +425,11 @@ unique_ptr_t(AsmInstruction) make_AsmIdiv(shared_ptr_t(AssemblyType) * asm_type,
 unique_ptr_t(AsmInstruction) make_AsmDiv(shared_ptr_t(AssemblyType) * asm_type, shared_ptr_t(AsmOperand) * src);
 unique_ptr_t(AsmInstruction) make_AsmCdq(shared_ptr_t(AssemblyType) * asm_type);
 unique_ptr_t(AsmInstruction) make_AsmJmp(TIdentifier target);
-unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, AsmCondCode* cond_code);
-unique_ptr_t(AsmInstruction) make_AsmSetCC(AsmCondCode* cond_code, shared_ptr_t(AsmOperand) * dst);
+unique_ptr_t(AsmInstruction) make_AsmJmpCC(TIdentifier target, const AsmCondCode* cond_code);
+unique_ptr_t(AsmInstruction) make_AsmSetCC(const AsmCondCode* cond_code, shared_ptr_t(AsmOperand) * dst);
 unique_ptr_t(AsmInstruction) make_AsmLabel(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmPush(shared_ptr_t(AsmOperand) * src);
-unique_ptr_t(AsmInstruction) make_AsmPop(AsmReg* reg);
+unique_ptr_t(AsmInstruction) make_AsmPop(const AsmReg* reg);
 unique_ptr_t(AsmInstruction) make_AsmCall(TIdentifier name);
 unique_ptr_t(AsmInstruction) make_AsmRet(void);
 void free_AsmInstruction(unique_ptr_t(AsmInstruction) * self);

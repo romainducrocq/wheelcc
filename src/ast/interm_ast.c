@@ -197,7 +197,7 @@ unique_ptr_t(TacInstruction)
 }
 
 unique_ptr_t(TacInstruction)
-    make_TacUnary(TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst) {
+    make_TacUnary(const TacUnaryOp* unop, shared_ptr_t(TacValue) * src, shared_ptr_t(TacValue) * dst) {
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacUnary_t;
     self->get._TacUnary.unop = *unop;
@@ -208,8 +208,8 @@ unique_ptr_t(TacInstruction)
     return self;
 }
 
-unique_ptr_t(TacInstruction) make_TacBinary(
-    TacBinaryOp* binop, shared_ptr_t(TacValue) * src1, shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst) {
+unique_ptr_t(TacInstruction) make_TacBinary(const TacBinaryOp* binop, shared_ptr_t(TacValue) * src1,
+    shared_ptr_t(TacValue) * src2, shared_ptr_t(TacValue) * dst) {
     unique_ptr_t(TacInstruction) self = make_TacInstruction();
     self->type = AST_TacBinary_t;
     self->get._TacBinary.binop = *binop;
