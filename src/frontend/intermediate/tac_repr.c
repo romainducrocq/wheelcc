@@ -1405,7 +1405,7 @@ static void declaration_instr(Ctx ctx, const CDeclaration* node) {
 //             | Store(val, val) | AddPtr(int, val, val, val) | CopyToOffset(identifier, int, val)
 //             | CopyFromOffset(identifier, int, val) | Jump(identifier) | JumpIfZero(val, identifier)
 //             | JumpIfNotZero(val, identifier) | Label(identifier)
-static void repr_instr_list(Ctx ctx, const vector_t(unique_ptr_t(CBlockItem)) node_list) {
+static void repr_instr_list(Ctx ctx, vector_t(unique_ptr_t(CBlockItem)) node_list) {
     for (size_t i = 0; i < vec_size(node_list); ++i) {
         switch (node_list[i]->type) {
             case AST_CS_t:
@@ -1420,10 +1420,9 @@ static void repr_instr_list(Ctx ctx, const vector_t(unique_ptr_t(CBlockItem)) no
     }
 }
 
-// TODO see about const vector_t here
 static void repr_block(Ctx ctx, const CBlock* node) {
     if (node->type == AST_CB_t) {
-        repr_instr_list(ctx, (const vector_t(unique_ptr_t(CBlockItem)))node->get._CB.block_items);
+        repr_instr_list(ctx, node->get._CB.block_items);
     }
     else {
         THROW_ABORT;
