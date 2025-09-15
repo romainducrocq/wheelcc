@@ -13,11 +13,11 @@
 
 *__<ins>Reinventing the wheel</ins>__ (idiom): "Waste a great deal of time or effort in creating something that already exists."*
 <!---->
-A small, self-contained C compiler written from scratch in C++ for x86-64 GNU/Linux and MacOS.
+A small, self-contained C compiler written from scratch in C for x86-64 GNU/Linux and MacOS.
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C++, and builds to a standalone executable + a bash driver.
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
 
 ## Migrating to C (work in progress)
 
@@ -25,8 +25,8 @@ wheelcc is implemented in C++, but wouldn't it be nice if it was written in plai
 - [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
 - [x] Replace throwing exceptions in user error handling with progragating error codes
 - [x] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
-- [ ] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
-- [ ] Replace smart pointers with manual memory management for runtime polymorphism
+- [x] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
+- [x] Replace smart pointers with manual memory management for runtime polymorphism
 
 ## Usage
 
@@ -58,8 +58,9 @@ $ ./configure.sh
 - Build the compiler in Release mode  
     > - GNU/Linux: requires `$ gcc -dumpfullversion` >= 8.1.0
     > - MacOS: requires `$ clang -dumpversion` >= 5.0.0
+    > By default in C from command line, optionally with Cmake and C++
 ```
-$ ./make.sh
+$ ./make.sh [--cmake | --cmake-cpp]
 ```
 - Install the `wheelcc` command system-wide (creates a symlink to the driver in `/usr/local/bin/`)  
     > or, do not install system-wide and use `bin/driver.sh` directly instead  
@@ -169,10 +170,10 @@ wheelcc: error: compilation failed
 
 - cd to the test directory, get the testtime dependencies
     > - GNU/Linux: `make cmake diffutils valgrind`
-    > - MacOS: none
+    > - MacOS: `cmake` (optional)
 ```
 $ cd test/
-$ ./get-dependencies.sh # GNU/Linux only
+$ ./get-dependencies.sh # Optional on MacOS
 ```
 
 - Test the compiler  
@@ -235,7 +236,7 @@ There is no built-in linker, the compiler outputs assembly that is then assemble
 
 > **TL;DR** No dependencies are required other than the system tools already installed.
 
-wheelcc aims to be self-contained and avoid bloat when possible. It only depends on the C and C++ standard libraries and a few header-only dependencies included in the sources ([sds](https://github.com/antirez/sds), [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h) and [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
+wheelcc aims to be small and self-contained. It only depends on the C standard library and three patched source-only dependencies ([sds](https://github.com/antirez/sds), [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h) and [tinydir](https://github.com/cxong/tinydir)). The build+runtime only requires Glibc, POSIX, bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS, which makes the compiler easy to build and use on any x86-64 GNU/Linux distribution or MacOS.
 
 ### Limitations
 
