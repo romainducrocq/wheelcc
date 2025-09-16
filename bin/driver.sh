@@ -23,6 +23,9 @@ function verbose () {
 function usage () {
     echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
+    echo -e "\033[1;34mwarning:\033[0m 1. optional arguments must be passed in this order only"
+    echo -e "\033[1;34mwarning:\033[0m 2. whitespaces are not supported in paths and file names"
+    echo ""
     echo "[Help]:"
     echo "    --help  print help and exit"
     echo ""

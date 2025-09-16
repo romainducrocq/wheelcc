@@ -97,6 +97,9 @@ $ wheelcc --help
 Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
  [Linkdir...] [Linklib...] [Output] FILES
 
+warning: 1. optional arguments must be passed in this order only
+warning: 2. whitespaces are not supported in paths and file names
+
 [Help]:
     --help  print help and exit
 
