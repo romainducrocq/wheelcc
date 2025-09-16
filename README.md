@@ -19,15 +19,6 @@ A small, self-contained C compiler written from scratch in C for x86-64 GNU/Linu
 
 The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
 
-## Migrating to C (work in progress)
-
-wheelcc is implemented in C++, but wouldn't it be nice if it was written in plain C? So let's try to do that, and migrate the codebase to C! As of now, the project has already been cleaned up a lot to reduce the usage of C++ features and keep the project close to a C-style implementation. The rest of the migration will happen on branch `cpp2c/develop` until complete. Here is the planned roadmap:  
-- [x] Clean up all easely removable C++ features (classes, templates, overloads, namespaces, ...)
-- [x] Replace throwing exceptions in user error handling with progragating error codes
-- [x] Replace C++ strings and std collections with C alternatives ([sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h))
-- [x] Replace single inheritance data structures with tagged unions for AST algebraic datatypes
-- [x] Replace smart pointers with manual memory management for runtime polymorphism
-
 ## Usage
 
 ### Distros
@@ -233,7 +224,7 @@ wheelcc can perform multiple compiler performance optimizations for smaller and 
 
 > **TL;DR** No built-in linker. The compiled assembly is assembled and linked with system tools.
 
-There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output assembly follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang (or other compilers) with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link and call the C standard library APIs that are compatible with the current implementation of wheelcc.
+There is no built-in linker, the compiler outputs assembly that is then assembled with as and linked with ld. That output assembly follows the System-V ABI, which allows to link other libraries pre-compiled with gcc/clang with the `-L` and `-l` command-line options and use them at runtime in a program compiled by wheelcc. This also allows to link and call the C standard library APIs that are compatible with the current implementation of wheelcc.
 
 ### Dependencies
 
@@ -245,7 +236,7 @@ wheelcc aims to be small and self-contained. It only depends on the C standard l
 
 > **TL;DR** This is a work in progress, it is not intended to be used as a production compiler.
 
-The compiler supports a large subset of the C17 language, but many features of the language are still not implemented. Some these are: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
+The compiler supports a large subset of the C17 language, but many features of the language are still not implemented. Some of these are: enum data structures, variable-length arrays, const types, typedefs, function pointers, non-ascii characters, and float, short, auto, volatile, inline, register and restrict keywords. Any of these may or may not be implemented in the future. As such, wheelcc can not compile the C standard library and is not intended to be used as a production C compiler.
 
 ## Implementation reference
 
