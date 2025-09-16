@@ -36,13 +36,13 @@ static void emit_identifier(Ctx ctx, TIdentifier identifier) {
 #ifdef __APPLE__
     emit(ctx, "_");
 #endif
-    string_t value = map_get(ctx->identifiers->hash_table, identifier);
+    const char* value = map_get(ctx->identifiers->hash_table, identifier);
     emit(ctx, value);
 }
 
 // string -> $ string
 static void emit_string(Ctx ctx, TIdentifier string_const) {
-    string_t value = map_get(ctx->identifiers->hash_table, string_const);
+    const char* value = map_get(ctx->identifiers->hash_table, string_const);
     emit(ctx, value);
 }
 
@@ -69,7 +69,7 @@ static void emit_long(Ctx ctx, TLong value) {
 
 // double -> $ double
 static void emit_dbl(Ctx ctx, TIdentifier dbl_const) {
-    string_t value = map_get(ctx->identifiers->hash_table, dbl_const);
+    const char* value = map_get(ctx->identifiers->hash_table, dbl_const);
     emit(ctx, value);
 }
 

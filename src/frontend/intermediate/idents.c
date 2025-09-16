@@ -14,21 +14,21 @@ typedef IdentifierContext* Ctx;
 
 TIdentifier rslv_label_identifier(Ctx ctx, TIdentifier label) {
     string_t name = str_new(NULL);
-    string_t value = map_get(ctx->hash_table, label);
+    const string_t value = map_get(ctx->hash_table, label);
     str_copy(value, name);
     return make_label_identifier(ctx, &name);
 }
 
 TIdentifier rslv_var_identifier(Ctx ctx, TIdentifier variable) {
     string_t name = str_new(NULL);
-    string_t value = map_get(ctx->hash_table, variable);
+    const string_t value = map_get(ctx->hash_table, variable);
     str_copy(value, name);
     return make_var_identifier(ctx, &name);
 }
 
 TIdentifier rslv_struct_tag(Ctx ctx, TIdentifier structure) {
     string_t name = str_new(NULL);
-    string_t value = map_get(ctx->hash_table, structure);
+    const string_t value = map_get(ctx->hash_table, structure);
     str_copy(value, name);
     return make_struct_identifier(ctx, &name);
 }

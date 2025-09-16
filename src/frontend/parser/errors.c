@@ -338,7 +338,7 @@ const char* get_assign_fmt(const CBinaryOp* node, const CUnaryOp* unop) {
 }
 
 const char* get_name_fmt(IdentifierContext* ctx, TIdentifier name, string_t* name_fmt) {
-    string_t value = map_get(ctx->hash_table, name);
+    const string_t value = map_get(ctx->hash_table, name);
     str_copy(value, *name_fmt);
     for (size_t i = str_size(*name_fmt); i-- > 0;) {
         if ((*name_fmt)[i] == UID_SEPARATOR[0]) {
