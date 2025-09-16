@@ -48,13 +48,13 @@ void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
 
 typedef IdentifierContext* Ctx;
 
-static void print_CDeclarator(Ctx ctx, CDeclarator* node, size_t tab);
-static void print_CForInit(Ctx ctx, CForInit* node, size_t tab);
-static void print_CBlock(Ctx ctx, CBlock* node, size_t tab);
-static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab);
-static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size_t tab);
-static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab);
-static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab);
+static void print_CDeclarator(Ctx ctx, const CDeclarator* node, size_t tab);
+static void print_CForInit(Ctx ctx, const CForInit* node, size_t tab);
+static void print_CBlock(Ctx ctx, const CBlock* node, size_t tab);
+static void print_CBlockItem(Ctx ctx, const CBlockItem* node, size_t tab);
+static void print_CVariableDeclaration(Ctx ctx, const CVariableDeclaration* node, size_t tab);
+static void print_CDeclaration(Ctx ctx, const CDeclaration* node, size_t tab);
+static void print_AsmOperand(Ctx ctx, const AsmOperand* node, size_t tab);
 
 #define TAB_SIZE 2
 #define print_field(X, ...)                             \
@@ -70,7 +70,7 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab);
         return;                   \
     }
 
-static void print_CConst(CConst* node, size_t tab) {
+static void print_CConst(const CConst* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CConst_t:
@@ -109,7 +109,7 @@ static void print_CConst(CConst* node, size_t tab) {
     }
 }
 
-static void print_CStringLiteral(CStringLiteral* node, size_t tab) {
+static void print_CStringLiteral(const CStringLiteral* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CStringLiteral_t:
@@ -124,7 +124,7 @@ static void print_CStringLiteral(CStringLiteral* node, size_t tab) {
     }
 }
 
-static void print_Type(Ctx ctx, Type* node, size_t tab) {
+static void print_Type(Ctx ctx, const Type* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_Type_t:
@@ -186,7 +186,7 @@ static void print_Type(Ctx ctx, Type* node, size_t tab) {
     }
 }
 
-static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
+static void print_StaticInit(Ctx ctx, const StaticInit* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_StaticInit_t:
@@ -239,7 +239,7 @@ static void print_StaticInit(Ctx ctx, StaticInit* node, size_t tab) {
     }
 }
 
-static void print_InitialValue(Ctx ctx, InitialValue* node, size_t tab) {
+static void print_InitialValue(Ctx ctx, const InitialValue* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_InitialValue_t:
@@ -263,7 +263,7 @@ static void print_InitialValue(Ctx ctx, InitialValue* node, size_t tab) {
     }
 }
 
-static void print_IdentifierAttr(Ctx ctx, IdentifierAttr* node, size_t tab) {
+static void print_IdentifierAttr(Ctx ctx, const IdentifierAttr* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_IdentifierAttr_t:
@@ -291,7 +291,7 @@ static void print_IdentifierAttr(Ctx ctx, IdentifierAttr* node, size_t tab) {
     }
 }
 
-static void print_Symbol(Ctx ctx, Symbol* node, size_t tab) {
+static void print_Symbol(Ctx ctx, const Symbol* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_Symbol_t:
@@ -304,7 +304,7 @@ static void print_Symbol(Ctx ctx, Symbol* node, size_t tab) {
     print_IdentifierAttr(ctx, node->attrs, tab);
 }
 
-static void print_StructMember(Ctx ctx, StructMember* node, size_t tab) {
+static void print_StructMember(Ctx ctx, const StructMember* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_StructMember_t:
@@ -317,7 +317,7 @@ static void print_StructMember(Ctx ctx, StructMember* node, size_t tab) {
     print_Type(ctx, node->member_type, tab);
 }
 
-static void print_StructTypedef(Ctx ctx, StructTypedef* node, size_t tab) {
+static void print_StructTypedef(Ctx ctx, const StructTypedef* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_StructTypedef_t:
@@ -339,7 +339,7 @@ static void print_StructTypedef(Ctx ctx, StructTypedef* node, size_t tab) {
     }
 }
 
-static void print_CUnaryOp(CUnaryOp* node, size_t tab) {
+static void print_CUnaryOp(const CUnaryOp* node, size_t tab) {
     print_null((node->type != AST_CUnaryOp_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
@@ -366,7 +366,7 @@ static void print_CUnaryOp(CUnaryOp* node, size_t tab) {
     }
 }
 
-static void print_CBinaryOp(CBinaryOp* node, size_t tab) {
+static void print_CBinaryOp(const CBinaryOp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CBinaryOp_t:
@@ -434,7 +434,7 @@ static void print_CBinaryOp(CBinaryOp* node, size_t tab) {
     }
 }
 
-static void print_CParam(Ctx ctx, CParam* node, size_t tab) {
+static void print_CParam(Ctx ctx, const CParam* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CParam_t:
@@ -447,7 +447,7 @@ static void print_CParam(Ctx ctx, CParam* node, size_t tab) {
     print_Type(ctx, node->param_type, tab);
 }
 
-static void print_CDeclarator(Ctx ctx, CDeclarator* node, size_t tab) {
+static void print_CDeclarator(Ctx ctx, const CDeclarator* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CDeclarator_t:
@@ -479,7 +479,7 @@ static void print_CDeclarator(Ctx ctx, CDeclarator* node, size_t tab) {
     }
 }
 
-static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
+static void print_CExp(Ctx ctx, const CExp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CExp_t:
@@ -570,7 +570,7 @@ static void print_CExp(Ctx ctx, CExp* node, size_t tab) {
     print_Type(ctx, node->exp_type, tab);
 }
 
-static void print_CStatement(Ctx ctx, CStatement* node, size_t tab) {
+static void print_CStatement(Ctx ctx, const CStatement* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CStatement_t:
@@ -661,7 +661,7 @@ static void print_CStatement(Ctx ctx, CStatement* node, size_t tab) {
     }
 }
 
-static void print_CForInit(Ctx ctx, CForInit* node, size_t tab) {
+static void print_CForInit(Ctx ctx, const CForInit* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CForInit_t:
@@ -680,7 +680,7 @@ static void print_CForInit(Ctx ctx, CForInit* node, size_t tab) {
     }
 }
 
-static void print_CBlock(Ctx ctx, CBlock* node, size_t tab) {
+static void print_CBlock(Ctx ctx, const CBlock* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CBlock_t:
@@ -698,7 +698,7 @@ static void print_CBlock(Ctx ctx, CBlock* node, size_t tab) {
     }
 }
 
-static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab) {
+static void print_CBlockItem(Ctx ctx, const CBlockItem* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CBlockItem_t:
@@ -717,7 +717,7 @@ static void print_CBlockItem(Ctx ctx, CBlockItem* node, size_t tab) {
     }
 }
 
-static void print_CStorageClass(CStorageClass* node, size_t tab) {
+static void print_CStorageClass(const CStorageClass* node, size_t tab) {
     print_null((node->type != AST_CStorageClass_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
@@ -735,7 +735,7 @@ static void print_CStorageClass(CStorageClass* node, size_t tab) {
     }
 }
 
-static void print_CInitializer(Ctx ctx, CInitializer* node, size_t tab) {
+static void print_CInitializer(Ctx ctx, const CInitializer* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CInitializer_t:
@@ -758,7 +758,7 @@ static void print_CInitializer(Ctx ctx, CInitializer* node, size_t tab) {
     print_Type(ctx, node->init_type, tab);
 }
 
-static void print_CMemberDeclaration(Ctx ctx, CMemberDeclaration* node, size_t tab) {
+static void print_CMemberDeclaration(Ctx ctx, const CMemberDeclaration* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CMemberDeclaration_t:
@@ -771,7 +771,7 @@ static void print_CMemberDeclaration(Ctx ctx, CMemberDeclaration* node, size_t t
     print_Type(ctx, node->member_type, tab);
 }
 
-static void print_CStructDeclaration(Ctx ctx, CStructDeclaration* node, size_t tab) {
+static void print_CStructDeclaration(Ctx ctx, const CStructDeclaration* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CStructDeclaration_t:
@@ -788,7 +788,7 @@ static void print_CStructDeclaration(Ctx ctx, CStructDeclaration* node, size_t t
     }
 }
 
-static void print_CFunctionDeclaration(Ctx ctx, CFunctionDeclaration* node, size_t tab) {
+static void print_CFunctionDeclaration(Ctx ctx, const CFunctionDeclaration* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CFunctionDeclaration_t:
@@ -807,7 +807,7 @@ static void print_CFunctionDeclaration(Ctx ctx, CFunctionDeclaration* node, size
     print_CStorageClass(&node->storage_class, tab);
 }
 
-static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size_t tab) {
+static void print_CVariableDeclaration(Ctx ctx, const CVariableDeclaration* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CVariableDeclaration_t:
@@ -822,7 +822,7 @@ static void print_CVariableDeclaration(Ctx ctx, CVariableDeclaration* node, size
     print_CStorageClass(&node->storage_class, tab);
 }
 
-static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab) {
+static void print_CDeclaration(Ctx ctx, const CDeclaration* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CDeclaration_t:
@@ -845,7 +845,7 @@ static void print_CDeclaration(Ctx ctx, CDeclaration* node, size_t tab) {
     }
 }
 
-static void print_CProgram(Ctx ctx, CProgram* node, size_t tab) {
+static void print_CProgram(Ctx ctx, const CProgram* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CProgram_t:
@@ -860,7 +860,7 @@ static void print_CProgram(Ctx ctx, CProgram* node, size_t tab) {
     }
 }
 
-static void print_TacUnaryOp(TacUnaryOp* node, size_t tab) {
+static void print_TacUnaryOp(const TacUnaryOp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacUnaryOp_t:
@@ -880,7 +880,7 @@ static void print_TacUnaryOp(TacUnaryOp* node, size_t tab) {
     }
 }
 
-static void print_TacBinaryOp(TacBinaryOp* node, size_t tab) {
+static void print_TacBinaryOp(const TacBinaryOp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacBinaryOp_t:
@@ -942,7 +942,7 @@ static void print_TacBinaryOp(TacBinaryOp* node, size_t tab) {
     }
 }
 
-static void print_TacValue(Ctx ctx, TacValue* node, size_t tab) {
+static void print_TacValue(Ctx ctx, const TacValue* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacValue_t:
@@ -961,7 +961,7 @@ static void print_TacValue(Ctx ctx, TacValue* node, size_t tab) {
     }
 }
 
-static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
+static void print_TacInstruction(Ctx ctx, const TacInstruction* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacInstruction_t:
@@ -1090,7 +1090,7 @@ static void print_TacInstruction(Ctx ctx, TacInstruction* node, size_t tab) {
     }
 }
 
-static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
+static void print_TacTopLevel(Ctx ctx, const TacTopLevel* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacTopLevel_t:
@@ -1130,7 +1130,7 @@ static void print_TacTopLevel(Ctx ctx, TacTopLevel* node, size_t tab) {
     }
 }
 
-static void print_TacProgram(Ctx ctx, TacProgram* node, size_t tab) {
+static void print_TacProgram(Ctx ctx, const TacProgram* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_TacProgram_t:
@@ -1153,7 +1153,7 @@ static void print_TacProgram(Ctx ctx, TacProgram* node, size_t tab) {
     }
 }
 
-static void print_AssemblyType(AssemblyType* node, size_t tab) {
+static void print_AssemblyType(const AssemblyType* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AssemblyType_t:
@@ -1181,7 +1181,7 @@ static void print_AssemblyType(AssemblyType* node, size_t tab) {
     }
 }
 
-static void print_BackendSymbol(Ctx ctx, BackendSymbol* node, size_t tab) {
+static void print_BackendSymbol(Ctx ctx, const BackendSymbol* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_BackendSymbol_t:
@@ -1206,7 +1206,7 @@ static void print_BackendSymbol(Ctx ctx, BackendSymbol* node, size_t tab) {
     }
 }
 
-static void print_AsmReg(AsmReg* node, size_t tab) {
+static void print_AsmReg(const AsmReg* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmReg_t:
@@ -1313,7 +1313,7 @@ static void print_AsmReg(AsmReg* node, size_t tab) {
     }
 }
 
-static void print_AsmCondCode(AsmCondCode* node, size_t tab) {
+static void print_AsmCondCode(const AsmCondCode* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmCondCode_t:
@@ -1357,7 +1357,7 @@ static void print_AsmCondCode(AsmCondCode* node, size_t tab) {
     }
 }
 
-static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
+static void print_AsmOperand(Ctx ctx, const AsmOperand* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmOperand_t:
@@ -1404,7 +1404,7 @@ static void print_AsmOperand(Ctx ctx, AsmOperand* node, size_t tab) {
     }
 }
 
-static void print_AsmBinaryOp(AsmBinaryOp* node, size_t tab) {
+static void print_AsmBinaryOp(const AsmBinaryOp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmBinaryOp_t:
@@ -1445,7 +1445,7 @@ static void print_AsmBinaryOp(AsmBinaryOp* node, size_t tab) {
     }
 }
 
-static void print_AsmUnaryOp(AsmUnaryOp* node, size_t tab) {
+static void print_AsmUnaryOp(const AsmUnaryOp* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmUnaryOp_t:
@@ -1465,7 +1465,7 @@ static void print_AsmUnaryOp(AsmUnaryOp* node, size_t tab) {
     }
 }
 
-static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
+static void print_AsmInstruction(Ctx ctx, const AsmInstruction* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmInstruction_t:
@@ -1579,7 +1579,7 @@ static void print_AsmInstruction(Ctx ctx, AsmInstruction* node, size_t tab) {
     }
 }
 
-static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
+static void print_AsmTopLevel(Ctx ctx, const AsmTopLevel* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmTopLevel_t:
@@ -1616,7 +1616,7 @@ static void print_AsmTopLevel(Ctx ctx, AsmTopLevel* node, size_t tab) {
     }
 }
 
-static void print_AsmProgram(Ctx ctx, AsmProgram* node, size_t tab) {
+static void print_AsmProgram(Ctx ctx, const AsmProgram* node, size_t tab) {
     print_null(node, ++tab);
     switch (node->type) {
         case AST_AsmProgram_t:
