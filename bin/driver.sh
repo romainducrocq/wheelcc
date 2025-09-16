@@ -113,7 +113,7 @@ function em() {
 
 function raise_error () {
     ERROR_MESSAGE="${1}"
-    echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
+    echo -e "${PACKAGE_NAME}: \033[0;31merror:\033[0m ${ERROR_MESSAGE}, see $(em "--help")" 1>&2
     clean_exit 1
 }
 
