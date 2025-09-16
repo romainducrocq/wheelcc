@@ -303,17 +303,17 @@ static void cfg_rm_block_instr(Ctx ctx, size_t instr_idx, size_t block_id) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void cfg_init_label_block(Ctx ctx, TacLabel* node) {
+static void cfg_init_label_block(Ctx ctx, const TacLabel* node) {
     map_add(ctx->cfg->identifier_id_map, node->name, vec_size(ctx->cfg->blocks) - 1);
 }
 #elif __OPTIM_LEVEL__ == 2
-static void cfg_init_label_block(Ctx ctx, AsmLabel* node) {
+static void cfg_init_label_block(Ctx ctx, const AsmLabel* node) {
     map_add(ctx->cfg->identifier_id_map, node->name, vec_size(ctx->cfg->blocks) - 1);
 }
 #endif
 
 static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t* instrs_back_idx) {
-    AstInstruction* node = GET_INSTR(instr_idx);
+    const AstInstruction* node = GET_INSTR(instr_idx);
     switch (node->type) {
 #if __OPTIM_LEVEL__ == 1
         case AST_TacLabel_t:
@@ -357,32 +357,32 @@ static void cfg_init_block(Ctx ctx, size_t instr_idx, size_t* instrs_back_idx) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void cfg_init_jump_edges(Ctx ctx, TacJump* node, size_t block_id) {
+static void cfg_init_jump_edges(Ctx ctx, const TacJump* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
 }
 
-static void cfg_init_jmp_eq_0_edges(Ctx ctx, TacJumpIfZero* node, size_t block_id) {
+static void cfg_init_jmp_eq_0_edges(Ctx ctx, const TacJumpIfZero* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 
-static void cfg_init_jmp_ne_0_edges(Ctx ctx, TacJumpIfNotZero* node, size_t block_id) {
+static void cfg_init_jmp_ne_0_edges(Ctx ctx, const TacJumpIfNotZero* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 #elif __OPTIM_LEVEL__ == 2
-static void cfg_init_jmp_edges(Ctx ctx, AsmJmp* node, size_t block_id) {
+static void cfg_init_jmp_edges(Ctx ctx, const AsmJmp* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
 }
 
-static void cfg_init_jmp_cc_edges(Ctx ctx, AsmJmpCC* node, size_t block_id) {
+static void cfg_init_jmp_cc_edges(Ctx ctx, const AsmJmpCC* node, size_t block_id) {
     cfg_add_succ_edge(ctx, block_id, map_get(ctx->cfg->identifier_id_map, node->target));
     cfg_add_succ_edge(ctx, block_id, block_id + 1);
 }
 #endif
 
 static void cfg_init_edges(Ctx ctx, size_t block_id) {
-    AstInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_back_idx);
+    const AstInstruction* node = GET_INSTR(GET_CFG_BLOCK(block_id).instrs_back_idx);
     switch (node->type) {
 #if __OPTIM_LEVEL__ == 1
         case AST_TacReturn_t:
@@ -558,7 +558,7 @@ static size_t get_dfa_data_idx(Ctx ctx, size_t instr_idx) {
     THROW_ABORT;
 }
 
-static TacInstruction* get_dfa_bak_instr(Ctx ctx, size_t i) {
+static const TacInstruction* get_dfa_bak_instr(Ctx ctx, size_t i) {
     if (ctx->cfg->reaching_code[i]) {
         if (ctx->dfa_o1->bak_instrs[i]) {
             return ctx->dfa_o1->bak_instrs[i];
@@ -881,15 +881,15 @@ static bool is_aliased_name(Ctx ctx, TIdentifier name) {
 }
 
 #if __OPTIM_LEVEL__ == 1
-static void dfa_add_aliased_value(Ctx ctx, TacValue* node) {
+static void dfa_add_aliased_value(Ctx ctx, const TacValue* node) {
     if (node->type == AST_TacVariable_t) {
         set_insert(ctx->frontend->addressed_set, node->get._TacVariable.name);
     }
 }
 
-static bool is_same_value(TacValue* node_1, TacValue* node_2);
+static bool is_same_value(const TacValue* node_1, const TacValue* node_2);
 
-static bool prop_add_data_idx(Ctx ctx, TacCopy* node, size_t instr_idx, size_t block_id) {
+static bool prop_add_data_idx(Ctx ctx, const TacCopy* node, size_t instr_idx, size_t block_id) {
     THROW_ABORT_IF(node->dst->type != AST_TacVariable_t);
     if (is_same_value(node->src, node->dst)) {
         cfg_rm_block_instr(ctx, instr_idx, block_id);
@@ -914,7 +914,7 @@ static void elim_add_data_name(Ctx ctx, TIdentifier name) {
     }
 }
 
-static void elim_add_data_value(Ctx ctx, TacValue* node) {
+static void elim_add_data_value(Ctx ctx, const TacValue* node) {
     if (node->type == AST_TacVariable_t) {
         elim_add_data_name(ctx, node->get._TacVariable.name);
     }
@@ -927,7 +927,7 @@ static void infer_add_data_name(Ctx ctx, TIdentifier name) {
     }
 }
 
-static void infer_add_data_op(Ctx ctx, AsmOperand* node) {
+static void infer_add_data_op(Ctx ctx, const AsmOperand* node) {
     if (node->type == AST_AsmPseudo_t) {
         infer_add_data_name(ctx, node->get._AsmPseudo.name);
     }
@@ -982,14 +982,14 @@ static bool init_data_flow_analysis(Ctx ctx,
             for (size_t instr_idx = GET_CFG_BLOCK(block_id).instrs_front_idx;
                  instr_idx <= GET_CFG_BLOCK(block_id).instrs_back_idx; ++instr_idx) {
                 if (GET_INSTR(instr_idx)) {
-                    AstInstruction* node = GET_INSTR(instr_idx);
+                    const AstInstruction* node = GET_INSTR(instr_idx);
                     switch (node->type) {
 #if __OPTIM_LEVEL__ == 1
                         case AST_TacReturn_t: {
                             if (is_copy_prop) {
                                 goto Lcontinue;
                             }
-                            TacReturn* p_node = &node->get._TacReturn;
+                            const TacReturn* p_node = &node->get._TacReturn;
                             if (p_node->val) {
                                 elim_add_data_value(ctx, p_node->val);
                             }
@@ -997,7 +997,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacSignExtend_t: {
                             if (is_store_elim) {
-                                TacSignExtend* p_node = &node->get._TacSignExtend;
+                                const TacSignExtend* p_node = &node->get._TacSignExtend;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1005,7 +1005,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacTruncate_t: {
                             if (is_store_elim) {
-                                TacTruncate* p_node = &node->get._TacTruncate;
+                                const TacTruncate* p_node = &node->get._TacTruncate;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1013,7 +1013,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacZeroExtend_t: {
                             if (is_store_elim) {
-                                TacZeroExtend* p_node = &node->get._TacZeroExtend;
+                                const TacZeroExtend* p_node = &node->get._TacZeroExtend;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1021,7 +1021,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacDoubleToInt_t: {
                             if (is_store_elim) {
-                                TacDoubleToInt* p_node = &node->get._TacDoubleToInt;
+                                const TacDoubleToInt* p_node = &node->get._TacDoubleToInt;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1029,7 +1029,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacDoubleToUInt_t: {
                             if (is_store_elim) {
-                                TacDoubleToUInt* p_node = &node->get._TacDoubleToUInt;
+                                const TacDoubleToUInt* p_node = &node->get._TacDoubleToUInt;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1037,7 +1037,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacIntToDouble_t: {
                             if (is_store_elim) {
-                                TacIntToDouble* p_node = &node->get._TacIntToDouble;
+                                const TacIntToDouble* p_node = &node->get._TacIntToDouble;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1045,7 +1045,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacUIntToDouble_t: {
                             if (is_store_elim) {
-                                TacUIntToDouble* p_node = &node->get._TacUIntToDouble;
+                                const TacUIntToDouble* p_node = &node->get._TacUIntToDouble;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1053,7 +1053,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacFunCall_t: {
                             if (is_store_elim) {
-                                TacFunCall* p_node = &node->get._TacFunCall;
+                                const TacFunCall* p_node = &node->get._TacFunCall;
                                 for (size_t i = 0; i < vec_size(p_node->args); ++i) {
                                     elim_add_data_value(ctx, p_node->args[i]);
                                 }
@@ -1065,7 +1065,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacUnary_t: {
                             if (is_store_elim) {
-                                TacUnary* p_node = &node->get._TacUnary;
+                                const TacUnary* p_node = &node->get._TacUnary;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1073,7 +1073,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacBinary_t: {
                             if (is_store_elim) {
-                                TacBinary* p_node = &node->get._TacBinary;
+                                const TacBinary* p_node = &node->get._TacBinary;
                                 elim_add_data_value(ctx, p_node->src1);
                                 elim_add_data_value(ctx, p_node->src2);
                                 elim_add_data_value(ctx, p_node->dst);
@@ -1081,7 +1081,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                             break;
                         }
                         case AST_TacCopy_t: {
-                            TacCopy* p_node = &node->get._TacCopy;
+                            const TacCopy* p_node = &node->get._TacCopy;
                             if (is_copy_prop) {
                                 if (!prop_add_data_idx(ctx, p_node, instr_idx, block_id)) {
                                     goto Lcontinue;
@@ -1094,7 +1094,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                             break;
                         }
                         case AST_TacGetAddress_t: {
-                            TacGetAddress* p_node = &node->get._TacGetAddress;
+                            const TacGetAddress* p_node = &node->get._TacGetAddress;
                             if (is_store_elim) {
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst);
@@ -1106,7 +1106,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacLoad_t: {
                             if (is_store_elim) {
-                                TacLoad* p_node = &node->get._TacLoad;
+                                const TacLoad* p_node = &node->get._TacLoad;
                                 elim_add_data_value(ctx, p_node->src_ptr);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1114,7 +1114,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacStore_t: {
                             if (is_store_elim) {
-                                TacStore* p_node = &node->get._TacStore;
+                                const TacStore* p_node = &node->get._TacStore;
                                 elim_add_data_value(ctx, p_node->src);
                                 elim_add_data_value(ctx, p_node->dst_ptr);
                             }
@@ -1122,7 +1122,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacAddPtr_t: {
                             if (is_store_elim) {
-                                TacAddPtr* p_node = &node->get._TacAddPtr;
+                                const TacAddPtr* p_node = &node->get._TacAddPtr;
                                 elim_add_data_value(ctx, p_node->src_ptr);
                                 elim_add_data_value(ctx, p_node->idx);
                                 elim_add_data_value(ctx, p_node->dst);
@@ -1131,7 +1131,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacCopyToOffset_t: {
                             if (is_store_elim) {
-                                TacCopyToOffset* p_node = &node->get._TacCopyToOffset;
+                                const TacCopyToOffset* p_node = &node->get._TacCopyToOffset;
                                 elim_add_data_name(ctx, p_node->dst_name);
                                 elim_add_data_value(ctx, p_node->src);
                             }
@@ -1139,7 +1139,7 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
                         case AST_TacCopyFromOffset_t: {
                             if (is_store_elim) {
-                                TacCopyFromOffset* p_node = &node->get._TacCopyFromOffset;
+                                const TacCopyFromOffset* p_node = &node->get._TacCopyFromOffset;
                                 elim_add_data_name(ctx, p_node->src_name);
                                 elim_add_data_value(ctx, p_node->dst);
                             }
@@ -1161,37 +1161,37 @@ static bool init_data_flow_analysis(Ctx ctx,
                         }
 #elif __OPTIM_LEVEL__ == 2
                         case AST_AsmMov_t: {
-                            AsmMov* p_node = &node->get._AsmMov;
+                            const AsmMov* p_node = &node->get._AsmMov;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmMovSx_t: {
-                            AsmMovSx* p_node = &node->get._AsmMovSx;
+                            const AsmMovSx* p_node = &node->get._AsmMovSx;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmMovZeroExtend_t: {
-                            AsmMovZeroExtend* p_node = &node->get._AsmMovZeroExtend;
+                            const AsmMovZeroExtend* p_node = &node->get._AsmMovZeroExtend;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmLea_t: {
-                            AsmLea* p_node = &node->get._AsmLea;
+                            const AsmLea* p_node = &node->get._AsmLea;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmCvttsd2si_t: {
-                            AsmCvttsd2si* p_node = &node->get._AsmCvttsd2si;
+                            const AsmCvttsd2si* p_node = &node->get._AsmCvttsd2si;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmCvtsi2sd_t: {
-                            AsmCvtsi2sd* p_node = &node->get._AsmCvtsi2sd;
+                            const AsmCvtsi2sd* p_node = &node->get._AsmCvtsi2sd;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
@@ -1200,13 +1200,13 @@ static bool init_data_flow_analysis(Ctx ctx,
                             infer_add_data_op(ctx, node->get._AsmUnary.dst);
                             break;
                         case AST_AsmBinary_t: {
-                            AsmBinary* p_node = &node->get._AsmBinary;
+                            const AsmBinary* p_node = &node->get._AsmBinary;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
                         }
                         case AST_AsmCmp_t: {
-                            AsmCmp* p_node = &node->get._AsmCmp;
+                            const AsmCmp* p_node = &node->get._AsmCmp;
                             infer_add_data_op(ctx, p_node->src);
                             infer_add_data_op(ctx, p_node->dst);
                             break;
@@ -1343,7 +1343,7 @@ static bool init_data_flow_analysis(Ctx ctx,
         GET_DFA_INSTR_SET_MASK(ctx->dfa_o1->addressed_idx, 0) = MASK_FALSE;
 #elif __OPTIM_LEVEL__ == 2
     {
-        FunType* fun_type = &map_get(ctx->frontend->symbol_table, fun_name)->type_t->get._FunType;
+        const FunType* fun_type = &map_get(ctx->frontend->symbol_table, fun_name)->type_t->get._FunType;
         GET_DFA_INSTR_SET_MASK(ctx->dfa->static_idx, 0) = fun_type->ret_reg_mask;
     }
 #endif
