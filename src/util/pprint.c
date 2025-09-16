@@ -22,7 +22,7 @@ typedef int empty_translation_unit;
 
 static void print_title(const char* title) { printf("+\n+\n@@ %s @@", title); }
 
-void pprint_toks(IdentifierContext* ctx, vector_t(Token) tokens) {
+void pprint_toks(IdentifierContext* ctx, const vector_t(Token) tokens) {
     print_title("Tokens");
     printf("\nList[%zu]:", vec_size(tokens));
     for (size_t i = 0; i < vec_size(tokens); ++i) {
@@ -1635,19 +1635,19 @@ static void print_AsmProgram(Ctx ctx, const AsmProgram* node, size_t tab) {
     }
 }
 
-void pprint_c_ast(IdentifierContext* ctx, CProgram* node) {
+void pprint_c_ast(IdentifierContext* ctx, const CProgram* node) {
     print_title("C AST");
     print_CProgram(ctx, node, 0);
     printf("\n");
 }
 
-void pprint_tac_ast(IdentifierContext* ctx, TacProgram* node) {
+void pprint_tac_ast(IdentifierContext* ctx, const TacProgram* node) {
     print_title("TAC AST");
     print_TacProgram(ctx, node, 0);
     printf("\n");
 }
 
-void pprint_asm_ast(IdentifierContext* ctx, AsmProgram* node) {
+void pprint_asm_ast(IdentifierContext* ctx, const AsmProgram* node) {
     print_title("ASM AST");
     print_AsmProgram(ctx, node, 0);
     printf("\n");
@@ -1671,10 +1671,10 @@ void pprint_string_const_table(IdentifierContext* ctx, FrontEndContext* frontend
         print_field(2, "[%s]: ", map_get(ctx->hash_table, pair_first(*static_const)));
         ssize_t map_it = map_find(frontend->symbol_table, pair_second(*static_const));
         if (map_it != map_end() && pair_second(frontend->symbol_table[map_it])->attrs->type == AST_ConstantAttr_t) {
-            ConstantAttr* constant_attr = &pair_second(frontend->symbol_table[map_it])->attrs->get._ConstantAttr;
+            const ConstantAttr* constant_attr = &pair_second(frontend->symbol_table[map_it])->attrs->get._ConstantAttr;
             if (constant_attr->static_init->type == AST_StringInit_t) {
                 printf("\n    String: \"");
-                StringInit* string_init = &constant_attr->static_init->get._StringInit;
+                const StringInit* string_init = &constant_attr->static_init->get._StringInit;
                 for (size_t i = 0; i < vec_size(string_init->literal->value); ++i) {
                     TChar byte = string_init->literal->value[i];
                     switch (byte) {
