@@ -20,7 +20,7 @@ typedef struct FrontEndContext FrontEndContext;
 #ifdef __cplusplus
 extern "C" {
 #endif
-void optimize_three_address_code(TacProgram* node, FrontEndContext* frontend, uint8_t optim_1_mask);
+void optimize_three_address_code(const TacProgram* node, FrontEndContext* frontend, uint8_t optim_1_mask);
 #ifdef __cplusplus
 }
 #endif
