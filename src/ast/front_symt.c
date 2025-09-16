@@ -444,7 +444,7 @@ StructMember* get_struct_typedef_member(Ctx ctx, TIdentifier tag, TIdentifier me
     return map_get(struct_typedef->members, struct_typedef->member_names[member_name]);
 }
 
-StructMember* get_struct_typedef_back(Ctx ctx, TIdentifier tag) {
+const StructMember* get_struct_typedef_back(Ctx ctx, TIdentifier tag) {
     StructTypedef* struct_typedef = map_get(ctx->struct_typedef_table, tag);
     return map_get(struct_typedef->members, vec_back(struct_typedef->member_names));
 }
