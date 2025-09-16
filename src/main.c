@@ -60,25 +60,25 @@ static void verbose(Ctx ctx, const char* msg) {
 }
 
 #ifndef __NDEBUG__
-static void debug_toks(Ctx ctx, vector_t(Token) tokens) {
+static void debug_toks(Ctx ctx, const vector_t(Token) tokens) {
     if (ctx->is_verbose) {
         pprint_toks(ctx->identifiers, tokens);
     }
 }
 
-static void debug_c_ast(Ctx ctx, CProgram* node) {
+static void debug_c_ast(Ctx ctx, const CProgram* node) {
     if (ctx->is_verbose) {
         pprint_c_ast(ctx->identifiers, node);
     }
 }
 
-static void debug_tac_ast(Ctx ctx, TacProgram* node) {
+static void debug_tac_ast(Ctx ctx, const TacProgram* node) {
     if (ctx->is_verbose) {
         pprint_tac_ast(ctx->identifiers, node);
     }
 }
 
-static void debug_asm_ast(Ctx ctx, AsmProgram* node) {
+static void debug_asm_ast(Ctx ctx, const AsmProgram* node) {
     if (ctx->is_verbose) {
         pprint_asm_ast(ctx->identifiers, node);
     }
