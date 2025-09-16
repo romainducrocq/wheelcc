@@ -54,20 +54,20 @@ typedef struct AsmGenContext {
 
 typedef AsmGenContext* Ctx;
 
-static shared_ptr_t(AsmOperand) char_imm_op(CConstChar* node) {
+static shared_ptr_t(AsmOperand) char_imm_op(const CConstChar* node) {
     TULong value = (TULong)node->value;
     bool is_neg = node->value < 0;
     return make_AsmImm(value, true, false, is_neg);
 }
 
-static shared_ptr_t(AsmOperand) int_imm_op(CConstInt* node) {
+static shared_ptr_t(AsmOperand) int_imm_op(const CConstInt* node) {
     TULong value = (TULong)node->value;
     bool is_byte = node->value <= 127 && node->value >= -128;
     bool is_neg = node->value < 0;
     return make_AsmImm(value, is_byte, false, is_neg);
 }
 
-static shared_ptr_t(AsmOperand) long_imm_op(CConstLong* node) {
+static shared_ptr_t(AsmOperand) long_imm_op(const CConstLong* node) {
     TULong value = (TULong)node->value;
     bool is_byte = node->value <= 127l && node->value >= -128l;
     bool is_quad = node->value > 2147483647l || node->value < -2147483648l;
@@ -75,19 +75,19 @@ static shared_ptr_t(AsmOperand) long_imm_op(CConstLong* node) {
     return make_AsmImm(value, is_byte, is_quad, is_neg);
 }
 
-static shared_ptr_t(AsmOperand) uchar_imm(CConstUChar* node) {
+static shared_ptr_t(AsmOperand) uchar_imm(const CConstUChar* node) {
     TULong value = (TULong)node->value;
     return make_AsmImm(value, true, false, false);
 }
 
-static shared_ptr_t(AsmOperand) uint_imm_op(CConstUInt* node) {
+static shared_ptr_t(AsmOperand) uint_imm_op(const CConstUInt* node) {
     TULong value = (TULong)node->value;
     bool is_byte = node->value <= 255u;
     bool is_quad = node->value > 2147483647u;
     return make_AsmImm(value, is_byte, is_quad, false);
 }
 
-static shared_ptr_t(AsmOperand) ulong_imm_op(CConstULong* node) {
+static shared_ptr_t(AsmOperand) ulong_imm_op(const CConstULong* node) {
     TULong value = node->value;
     bool is_byte = node->value <= 255ul;
     bool is_quad = node->value > 2147483647ul;
@@ -151,13 +151,13 @@ static shared_ptr_t(AsmOperand) dbl_static_const_op(Ctx ctx, TULong binary, TInt
     return make_AsmData(dbl_const_label, 0l);
 }
 
-static shared_ptr_t(AsmOperand) dbl_const_op(Ctx ctx, CConstDouble* node) {
+static shared_ptr_t(AsmOperand) dbl_const_op(Ctx ctx, const CConstDouble* node) {
     TULong binary = dbl_to_binary(node->value);
     TInt byte = binary == 9223372036854775808ul ? 16 : 8;
     return dbl_static_const_op(ctx, binary, byte);
 }
 
-static shared_ptr_t(AsmOperand) const_op(Ctx ctx, TacConstant* node) {
+static shared_ptr_t(AsmOperand) const_op(Ctx ctx, const TacConstant* node) {
     switch (node->constant->type) {
         case AST_CConstChar_t:
             return char_imm_op(&node->constant->get._CConstChar);
@@ -178,17 +178,17 @@ static shared_ptr_t(AsmOperand) const_op(Ctx ctx, TacConstant* node) {
     }
 }
 
-static shared_ptr_t(AsmOperand) pseudo_op(TacVariable* node) {
+static shared_ptr_t(AsmOperand) pseudo_op(const TacVariable* node) {
     TIdentifier name = node->name;
     return make_AsmPseudo(name);
 }
 
-static shared_ptr_t(AsmOperand) pseudo_mem_op(TacVariable* node) {
+static shared_ptr_t(AsmOperand) pseudo_mem_op(const TacVariable* node) {
     TIdentifier name = node->name;
     return make_AsmPseudoMem(name, 0l);
 }
 
-static shared_ptr_t(AsmOperand) var_op(Ctx ctx, TacVariable* node) {
+static shared_ptr_t(AsmOperand) var_op(Ctx ctx, const TacVariable* node) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Array_t:
         case AST_Structure_t:
@@ -200,7 +200,7 @@ static shared_ptr_t(AsmOperand) var_op(Ctx ctx, TacVariable* node) {
 
 // operand = Imm(int, bool, bool, bool) | Reg(reg) | Pseudo(identifier) | Memory(int, reg) | Data(identifier, int)
 //         | PseudoMem(identifier, int) | Indexed(int, reg, reg)
-static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, TacValue* node) {
+static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return const_op(ctx, &node->get._TacConstant);
@@ -212,7 +212,7 @@ static shared_ptr_t(AsmOperand) gen_op(Ctx ctx, TacValue* node) {
 }
 
 // (signed) cond_code = E | NE | L | LE | G | GE
-static AsmCondCode gen_signed_cond_code(TacBinaryOp* node) {
+static AsmCondCode gen_signed_cond_code(const TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacEqual_t:
             return init_AsmE();
@@ -232,7 +232,7 @@ static AsmCondCode gen_signed_cond_code(TacBinaryOp* node) {
 }
 
 // (unsigned) cond_code = E | NE | B | BE | A | AE
-static AsmCondCode gen_unsigned_cond_code(TacBinaryOp* node) {
+static AsmCondCode gen_unsigned_cond_code(const TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacEqual_t:
             return init_AsmE();
@@ -252,7 +252,7 @@ static AsmCondCode gen_unsigned_cond_code(TacBinaryOp* node) {
 }
 
 // unary_operator = Not | Neg | Shr
-static AsmUnaryOp gen_unop(TacUnaryOp* node) {
+static AsmUnaryOp gen_unop(const TacUnaryOp* node) {
     switch (node->type) {
         case AST_TacComplement_t:
             return init_AsmNot();
@@ -265,7 +265,7 @@ static AsmUnaryOp gen_unop(TacUnaryOp* node) {
 
 // binary_operator = Add | Sub | Mult | DivDouble | BitAnd | BitOr | BitXor | BitShiftLeft | BitShiftRight |
 //                 BitShrArithmetic
-static AsmBinaryOp gen_binop(TacBinaryOp* node) {
+static AsmBinaryOp gen_binop(const TacBinaryOp* node) {
     switch (node->type) {
         case AST_TacAdd_t:
             return init_AsmAdd();
@@ -292,7 +292,7 @@ static AsmBinaryOp gen_binop(TacBinaryOp* node) {
     }
 }
 
-static bool is_const_signed(TacConstant* node) {
+static bool is_const_signed(const TacConstant* node) {
     switch (node->constant->type) {
         case AST_CConstChar_t:
         case AST_CConstInt_t:
@@ -303,7 +303,7 @@ static bool is_const_signed(TacConstant* node) {
     }
 }
 
-static bool is_var_signed(Ctx ctx, TacVariable* node) {
+static bool is_var_signed(Ctx ctx, const TacVariable* node) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Char_t:
         case AST_SChar_t:
@@ -316,7 +316,7 @@ static bool is_var_signed(Ctx ctx, TacVariable* node) {
     }
 }
 
-static bool is_value_signed(Ctx ctx, TacValue* node) {
+static bool is_value_signed(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return is_const_signed(&node->get._TacConstant);
@@ -327,7 +327,7 @@ static bool is_value_signed(Ctx ctx, TacValue* node) {
     }
 }
 
-static bool is_const_1b(TacConstant* node) {
+static bool is_const_1b(const TacConstant* node) {
     switch (node->constant->type) {
         case AST_CConstChar_t:
         case AST_CConstUChar_t:
@@ -337,7 +337,7 @@ static bool is_const_1b(TacConstant* node) {
     }
 }
 
-static bool is_var_1b(Ctx ctx, TacVariable* node) {
+static bool is_var_1b(Ctx ctx, const TacVariable* node) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Char_t:
         case AST_SChar_t:
@@ -348,7 +348,7 @@ static bool is_var_1b(Ctx ctx, TacVariable* node) {
     }
 }
 
-static bool is_value_1b(Ctx ctx, TacValue* node) {
+static bool is_value_1b(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return is_const_1b(&node->get._TacConstant);
@@ -359,7 +359,7 @@ static bool is_value_1b(Ctx ctx, TacValue* node) {
     }
 }
 
-static bool is_const_4b(TacConstant* node) {
+static bool is_const_4b(const TacConstant* node) {
     switch (node->constant->type) {
         case AST_CConstInt_t:
         case AST_CConstUInt_t:
@@ -369,7 +369,7 @@ static bool is_const_4b(TacConstant* node) {
     }
 }
 
-static bool is_var_4b(Ctx ctx, TacVariable* node) {
+static bool is_var_4b(Ctx ctx, const TacVariable* node) {
     switch (map_get(ctx->frontend->symbol_table, node->name)->type_t->type) {
         case AST_Int_t:
         case AST_UInt_t:
@@ -379,7 +379,7 @@ static bool is_var_4b(Ctx ctx, TacVariable* node) {
     }
 }
 
-static bool is_value_4b(Ctx ctx, TacValue* node) {
+static bool is_value_4b(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return is_const_4b(&node->get._TacConstant);
@@ -390,13 +390,13 @@ static bool is_value_4b(Ctx ctx, TacValue* node) {
     }
 }
 
-static bool is_const_dbl(TacConstant* node) { return node->constant->type == AST_CConstDouble_t; }
+static bool is_const_dbl(const TacConstant* node) { return node->constant->type == AST_CConstDouble_t; }
 
-static bool is_var_dbl(Ctx ctx, TacVariable* node) {
+static bool is_var_dbl(Ctx ctx, const TacVariable* node) {
     return map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_Double_t;
 }
 
-static bool is_value_dbl(Ctx ctx, TacValue* node) {
+static bool is_value_dbl(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return is_const_dbl(&node->get._TacConstant);
@@ -407,11 +407,11 @@ static bool is_value_dbl(Ctx ctx, TacValue* node) {
     }
 }
 
-static bool is_var_struct(Ctx ctx, TacVariable* node) {
+static bool is_var_struct(Ctx ctx, const TacVariable* node) {
     return map_get(ctx->frontend->symbol_table, node->name)->type_t->type == AST_Structure_t;
 }
 
-static bool is_value_struct(Ctx ctx, TacValue* node) {
+static bool is_value_struct(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacVariable_t:
             return is_var_struct(ctx, &node->get._TacVariable);
@@ -422,7 +422,7 @@ static bool is_value_struct(Ctx ctx, TacValue* node) {
     }
 }
 
-static shared_ptr_t(AssemblyType) const_asm_type(TacConstant* node) {
+static shared_ptr_t(AssemblyType) const_asm_type(const TacConstant* node) {
     switch (node->constant->type) {
         case AST_CConstChar_t:
         case AST_CConstUChar_t:
@@ -440,11 +440,11 @@ static shared_ptr_t(AssemblyType) const_asm_type(TacConstant* node) {
     }
 }
 
-static shared_ptr_t(AssemblyType) var_asm_type(Ctx ctx, TacVariable* node) {
+static shared_ptr_t(AssemblyType) var_asm_type(Ctx ctx, const TacVariable* node) {
     return cvt_backend_asm_type(ctx->frontend, node->name);
 }
 
-static shared_ptr_t(AssemblyType) gen_asm_type(Ctx ctx, TacValue* node) {
+static shared_ptr_t(AssemblyType) gen_asm_type(Ctx ctx, const TacValue* node) {
     switch (node->type) {
         case AST_TacConstant_t:
             return const_asm_type(&node->get._TacConstant);
@@ -455,7 +455,7 @@ static shared_ptr_t(AssemblyType) gen_asm_type(Ctx ctx, TacValue* node) {
     }
 }
 
-static shared_ptr_t(AssemblyType) asm_type_8b(Ctx ctx, Structure* struct_type, TLong offset) {
+static shared_ptr_t(AssemblyType) asm_type_8b(Ctx ctx, const Structure* struct_type, TLong offset) {
     TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size - offset;
     if (size >= 8l) {
         return make_QuadWord();
@@ -470,22 +470,22 @@ static shared_ptr_t(AssemblyType) asm_type_8b(Ctx ctx, Structure* struct_type, T
     }
 }
 
-static void struct_8b_class(Ctx ctx, Structure* struct_type);
+static void struct_8b_class(Ctx ctx, const Structure* struct_type);
 
-static void struct_1_reg_8b_class(Ctx ctx, Structure* struct_type) {
+static void struct_1_reg_8b_class(Ctx ctx, const Structure* struct_type) {
     Struct8Bytes struct_8b = {1, {CLS_sse, CLS_memory}};
-    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    const StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b.clss[0] == CLS_integer) {
             break;
         }
-        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
+        const Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
         while (member_type->type == AST_Array_t) {
             member_type = member_type->get._Array.elem_type;
         }
         if (member_type->type == AST_Structure_t) {
-            Structure* member_struct_type = &member_type->get._Structure;
+            const Structure* member_struct_type = &member_type->get._Structure;
             struct_8b_class(ctx, member_struct_type);
             if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
                 struct_8b.clss[0] = CLS_integer;
@@ -498,19 +498,19 @@ static void struct_1_reg_8b_class(Ctx ctx, Structure* struct_type) {
     map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
 }
 
-static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
+static void struct_2_reg_8b_class(Ctx ctx, const Structure* struct_type) {
     Struct8Bytes struct_8b = {2, {CLS_sse, CLS_sse}};
-    StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
+    const StructTypedef* struct_typedef = map_get(ctx->frontend->struct_typedef_table, struct_type->tag);
     size_t members_front = struct_type->is_union ? map_size(struct_typedef->members) : 1;
     for (size_t i = 0; i < members_front; ++i) {
         if (struct_8b.clss[0] == CLS_integer && struct_8b.clss[1] == CLS_integer) {
             break;
         }
         TLong size = 1l;
-        Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
+        const Type* member_type = get_struct_typedef_member(ctx->frontend, struct_type->tag, i)->member_type;
         if (member_type->type == AST_Array_t) {
             do {
-                Array* member_arr_type = &member_type->get._Array;
+                const Array* member_arr_type = &member_type->get._Array;
                 member_type = member_arr_type->elem_type;
                 size *= member_arr_type->size;
             }
@@ -524,9 +524,9 @@ static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
         }
         if (size > 8l) {
             if (member_type->type == AST_Structure_t) {
-                Structure* member_struct_type = &member_type->get._Structure;
+                const Structure* member_struct_type = &member_type->get._Structure;
                 struct_8b_class(ctx, member_struct_type);
-                Struct8Bytes* member_struct_8b = &map_get(ctx->struct_8b_map, member_struct_type->tag);
+                const Struct8Bytes* member_struct_8b = &map_get(ctx->struct_8b_map, member_struct_type->tag);
                 if (member_struct_8b->size > 1) {
                     if (member_struct_8b->clss[0] == CLS_integer) {
                         struct_8b.clss[0] = CLS_integer;
@@ -547,7 +547,7 @@ static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
         }
         else {
             if (member_type->type == AST_Structure_t) {
-                Structure* member_struct_type = &member_type->get._Structure;
+                const Structure* member_struct_type = &member_type->get._Structure;
                 struct_8b_class(ctx, member_struct_type);
                 if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
                     struct_8b.clss[0] = CLS_integer;
@@ -562,7 +562,7 @@ static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
                     member_type = member_type->get._Array.elem_type;
                 }
                 if (member_type->type == AST_Structure_t) {
-                    Structure* member_struct_type = &member_type->get._Structure;
+                    const Structure* member_struct_type = &member_type->get._Structure;
                     struct_8b_class(ctx, member_struct_type);
                     if (map_get(ctx->struct_8b_map, member_struct_type->tag).clss[0] == CLS_integer) {
                         struct_8b.clss[1] = CLS_integer;
@@ -577,7 +577,7 @@ static void struct_2_reg_8b_class(Ctx ctx, Structure* struct_type) {
     map_add(ctx->struct_8b_map, struct_type->tag, struct_8b);
 }
 
-static void struct_8b_class(Ctx ctx, Structure* struct_type) {
+static void struct_8b_class(Ctx ctx, const Structure* struct_type) {
     if (map_find(ctx->struct_8b_map, struct_type->tag) == map_end()) {
         TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
         if (size > 16l) {
@@ -633,7 +633,7 @@ static void ret_2_reg_mask(FunType* fun_type, bool reg_size, bool sse_size) {
 
 static void push_instr(Ctx ctx, unique_ptr_t(AsmInstruction) instr) { vec_move_back(*ctx->p_instrs, instr); }
 
-static void ret_int_instr(Ctx ctx, TacReturn* node) {
+static void ret_int_instr(Ctx ctx, const TacReturn* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->val);
     shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_val = gen_asm_type(ctx, node->val);
@@ -641,7 +641,7 @@ static void ret_int_instr(Ctx ctx, TacReturn* node) {
     ret_1_reg_mask(ctx->p_fun_type, true);
 }
 
-static void ret_dbl_instr(Ctx ctx, TacReturn* node) {
+static void ret_dbl_instr(Ctx ctx, const TacReturn* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->val);
     shared_ptr_t(AsmOperand) dst = gen_register(REG_Xmm0);
     shared_ptr_t(AssemblyType) asm_type_val = make_BackendDouble();
@@ -649,7 +649,7 @@ static void ret_dbl_instr(Ctx ctx, TacReturn* node) {
     ret_1_reg_mask(ctx->p_fun_type, false);
 }
 
-static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, const Structure* struct_type, REGISTER_KIND arg_reg) {
     TIdentifier src_name = name;
     shared_ptr_t(AsmOperand) dst = gen_register(arg_reg);
     shared_ptr_t(AssemblyType) asm_type_src =
@@ -712,11 +712,11 @@ static void ret_8b_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* str
     }
 }
 
-static void ret_struct_instr(Ctx ctx, TacReturn* node) {
+static void ret_struct_instr(Ctx ctx, const TacReturn* node) {
     TIdentifier name = node->val->get._TacVariable.name;
-    Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+    const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
     struct_8b_class(ctx, struct_type);
-    Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+    const Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
     if (struct_8b->clss[0] == CLS_memory) {
         {
             shared_ptr_t(AsmOperand) src = gen_memory(REG_Bp, -8l);
@@ -789,7 +789,7 @@ static void ret_struct_instr(Ctx ctx, TacReturn* node) {
     }
 }
 
-static void ret_instr(Ctx ctx, TacReturn* node) {
+static void ret_instr(Ctx ctx, const TacReturn* node) {
     if (node->val) {
         if (is_value_dbl(ctx, node->val)) {
             ret_dbl_instr(ctx, node);
@@ -807,7 +807,7 @@ static void ret_instr(Ctx ctx, TacReturn* node) {
     push_instr(ctx, make_AsmRet());
 }
 
-static void sign_extend_instr(Ctx ctx, TacSignExtend* node) {
+static void sign_extend_instr(Ctx ctx, const TacSignExtend* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
@@ -821,7 +821,7 @@ static void truncate_imm_byte_instr(AsmImm* node) {
     }
 }
 
-static void truncate_byte_instr(Ctx ctx, TacTruncate* node) {
+static void truncate_byte_instr(Ctx ctx, const TacTruncate* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_dst = make_Byte();
@@ -837,7 +837,7 @@ static void truncate_imm_long_instr(AsmImm* node) {
     }
 }
 
-static void truncate_long_instr(Ctx ctx, TacTruncate* node) {
+static void truncate_long_instr(Ctx ctx, const TacTruncate* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
@@ -847,7 +847,7 @@ static void truncate_long_instr(Ctx ctx, TacTruncate* node) {
     push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
 }
 
-static void truncate_instr(Ctx ctx, TacTruncate* node) {
+static void truncate_instr(Ctx ctx, const TacTruncate* node) {
     if (is_value_1b(ctx, node->dst)) {
         truncate_byte_instr(ctx, node);
     }
@@ -856,7 +856,7 @@ static void truncate_instr(Ctx ctx, TacTruncate* node) {
     }
 }
 
-static void zero_extend_instr(Ctx ctx, TacZeroExtend* node) {
+static void zero_extend_instr(Ctx ctx, const TacZeroExtend* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
@@ -864,7 +864,7 @@ static void zero_extend_instr(Ctx ctx, TacZeroExtend* node) {
     push_instr(ctx, make_AsmMovZeroExtend(&asm_type_src, &asm_type_dst, &src, &dst));
 }
 
-static void dbl_to_char_instr(Ctx ctx, TacDoubleToInt* node) {
+static void dbl_to_char_instr(Ctx ctx, const TacDoubleToInt* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
@@ -880,14 +880,14 @@ static void dbl_to_char_instr(Ctx ctx, TacDoubleToInt* node) {
     }
 }
 
-static void dbl_to_long_instr(Ctx ctx, TacDoubleToInt* node) {
+static void dbl_to_long_instr(Ctx ctx, const TacDoubleToInt* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->dst);
     push_instr(ctx, make_AsmCvttsd2si(&asm_type_src, &src, &dst));
 }
 
-static void dbl_to_signed_instr(Ctx ctx, TacDoubleToInt* node) {
+static void dbl_to_signed_instr(Ctx ctx, const TacDoubleToInt* node) {
     if (is_value_1b(ctx, node->dst)) {
         dbl_to_char_instr(ctx, node);
     }
@@ -896,7 +896,7 @@ static void dbl_to_signed_instr(Ctx ctx, TacDoubleToInt* node) {
     }
 }
 
-static void dbl_to_uchar_instr(Ctx ctx, TacDoubleToUInt* node) {
+static void dbl_to_uchar_instr(Ctx ctx, const TacDoubleToUInt* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
@@ -912,7 +912,7 @@ static void dbl_to_uchar_instr(Ctx ctx, TacDoubleToUInt* node) {
     }
 }
 
-static void dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node) {
+static void dbl_to_uint_instr(Ctx ctx, const TacDoubleToUInt* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
@@ -928,7 +928,7 @@ static void dbl_to_uint_instr(Ctx ctx, TacDoubleToUInt* node) {
     }
 }
 
-static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
+static void dbl_to_ulong_instr(Ctx ctx, const TacDoubleToUInt* node) {
     TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsd2si_out_of_range);
     TIdentifier target_after = repr_asm_label(ctx, LBL_Lsd2si_after);
     shared_ptr_t(AsmOperand) upper_bound_sd = dbl_static_const_op(ctx, 4890909195324358656ul, 8);
@@ -990,7 +990,7 @@ static void dbl_to_ulong_instr(Ctx ctx, TacDoubleToUInt* node) {
     push_instr(ctx, make_AsmLabel(target_after));
 }
 
-static void dbl_to_unsigned_instr(Ctx ctx, TacDoubleToUInt* node) {
+static void dbl_to_unsigned_instr(Ctx ctx, const TacDoubleToUInt* node) {
     if (is_value_1b(ctx, node->dst)) {
         dbl_to_uchar_instr(ctx, node);
     }
@@ -1002,7 +1002,7 @@ static void dbl_to_unsigned_instr(Ctx ctx, TacDoubleToUInt* node) {
     }
 }
 
-static void char_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+static void char_to_dbl_instr(Ctx ctx, const TacIntToDouble* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
     {
@@ -1020,14 +1020,14 @@ static void char_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
     }
 }
 
-static void long_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+static void long_to_dbl_instr(Ctx ctx, const TacIntToDouble* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
     push_instr(ctx, make_AsmCvtsi2sd(&asm_type_src, &src, &dst));
 }
 
-static void signed_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
+static void signed_to_dbl_instr(Ctx ctx, const TacIntToDouble* node) {
     if (is_value_1b(ctx, node->src)) {
         char_to_dbl_instr(ctx, node);
     }
@@ -1036,7 +1036,7 @@ static void signed_to_dbl_instr(Ctx ctx, TacIntToDouble* node) {
     }
 }
 
-static void uchar_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+static void uchar_to_dbl_instr(Ctx ctx, const TacUIntToDouble* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_dst = make_LongWord();
     {
@@ -1054,7 +1054,7 @@ static void uchar_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
     }
 }
 
-static void uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+static void uint_to_dbl_instr(Ctx ctx, const TacUIntToDouble* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_dst = make_QuadWord();
     {
@@ -1072,7 +1072,7 @@ static void uint_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
     }
 }
 
-static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+static void ulong_to_dbl_instr(Ctx ctx, const TacUIntToDouble* node) {
     TIdentifier target_out_of_range = repr_asm_label(ctx, LBL_Lsi2sd_out_of_range);
     TIdentifier target_after = repr_asm_label(ctx, LBL_Lsi2sd_after);
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
@@ -1161,7 +1161,7 @@ static void ulong_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
     push_instr(ctx, make_AsmLabel(target_after));
 }
 
-static void unsigned_to_dbl_instr(Ctx ctx, TacUIntToDouble* node) {
+static void unsigned_to_dbl_instr(Ctx ctx, const TacUIntToDouble* node) {
     if (is_value_1b(ctx, node->src)) {
         uchar_to_dbl_instr(ctx, node);
     }
@@ -1190,14 +1190,14 @@ static void dealloc_stack_instr(Ctx ctx, TLong byte) {
     push_instr(ctx, make_AsmBinary(&binop, &asm_type, &src, &dst));
 }
 
-static void reg_arg_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
+static void reg_arg_call_instr(Ctx ctx, const TacValue* node, REGISTER_KIND arg_reg) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node);
     shared_ptr_t(AsmOperand) dst = gen_register(arg_reg);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node);
     push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
 }
 
-static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
+static void stack_arg_call_instr(Ctx ctx, const TacValue* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node);
     switch (src->type) {
         case AST_AsmRegister_t:
@@ -1227,7 +1227,7 @@ static void stack_arg_call_instr(Ctx ctx, TacValue* node) {
 }
 
 static void reg_8b_arg_call_instr(
-    Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+    Ctx ctx, TIdentifier name, TLong offset, const Structure* struct_type, REGISTER_KIND arg_reg) {
     ret_8b_instr(ctx, name, offset, struct_type, arg_reg);
 }
 
@@ -1259,7 +1259,7 @@ static void long_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, s
     push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
 }
 
-static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, ByteArray* bytearr_type) {
+static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, const ByteArray* bytearr_type) {
     {
         TLong to_offset = 0l;
         TLong size = bytearr_type->size;
@@ -1301,7 +1301,7 @@ static void bytearr_stack_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset
     }
 }
 
-static void stack_8b_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type) {
+static void stack_8b_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, const Structure* struct_type) {
     shared_ptr_t(AssemblyType) asm_type = asm_type_8b(ctx, struct_type, offset);
     switch (asm_type->type) {
         case AST_QuadWord_t:
@@ -1317,14 +1317,14 @@ static void stack_8b_arg_call_instr(Ctx ctx, TIdentifier name, TLong offset, Str
     free_AssemblyType(&asm_type);
 }
 
-static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool is_ret_memory) {
+static TLong arg_call_instr(Ctx ctx, const TacFunCall* node, FunType* fun_type, bool is_ret_memory) {
     size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_padding = 0l;
     vector_t(unique_ptr_t(AsmInstruction)) stack_instrs = vec_new();
     vector_t(unique_ptr_t(AsmInstruction))* p_instrs = ctx->p_instrs;
     for (size_t i = 0; i < vec_size(node->args); ++i) {
-        TacValue* arg = node->args[i];
+        const TacValue* arg = node->args[i];
         if (is_value_dbl(ctx, arg)) {
             if (sse_size < 8) {
                 reg_arg_call_instr(ctx, arg, ctx->sse_arg_regs[sse_size]);
@@ -1353,9 +1353,9 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
             TIdentifier name = arg->get._TacVariable.name;
-            Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+            const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
             struct_8b_class(ctx, struct_type);
-            Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+            const Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
             if (struct_8b->clss[0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
@@ -1408,14 +1408,15 @@ static TLong arg_call_instr(Ctx ctx, TacFunCall* node, FunType* fun_type, bool i
     return stack_padding;
 }
 
-static void ret_call_instr(Ctx ctx, TacValue* node, REGISTER_KIND arg_reg) {
+static void ret_call_instr(Ctx ctx, const TacValue* node, REGISTER_KIND arg_reg) {
     shared_ptr_t(AsmOperand) src = gen_register(arg_reg);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node);
     shared_ptr_t(AssemblyType) asm_type_dst = gen_asm_type(ctx, node);
     push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
 }
 
-static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+static void ret_8b_call_instr(
+    Ctx ctx, TIdentifier name, TLong offset, const Structure* struct_type, REGISTER_KIND arg_reg) {
     TIdentifier dst_name = name;
     shared_ptr_t(AsmOperand) src = gen_register(arg_reg);
     shared_ptr_t(AssemblyType) asm_type_dst =
@@ -1477,12 +1478,12 @@ static void ret_8b_call_instr(Ctx ctx, TIdentifier name, TLong offset, Structure
     }
 }
 
-static void call_instr(Ctx ctx, TacFunCall* node) {
+static void call_instr(Ctx ctx, const TacFunCall* node) {
     bool is_ret_memory = false;
     FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
     if (node->dst && is_value_struct(ctx, node->dst)) {
         TIdentifier name = node->dst->get._TacVariable.name;
-        Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+        const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
         struct_8b_class(ctx, struct_type);
         if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
             is_ret_memory = true;
@@ -1523,8 +1524,8 @@ static void call_instr(Ctx ctx, TacFunCall* node) {
     else {
         bool reg_size = false;
         TIdentifier name = node->dst->get._TacVariable.name;
-        Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
-        Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+        const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+        const Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
         switch (struct_8b->clss[0]) {
             case CLS_integer: {
                 ret_8b_call_instr(ctx, name, 0l, struct_type, REG_Ax);
@@ -1568,7 +1569,7 @@ static void zero_xmm_reg_instr(Ctx ctx) {
     push_instr(ctx, make_AsmBinary(&binop, &asm_type_src, &src, &src_cp));
 }
 
-static void unop_int_arithmetic_instr(Ctx ctx, TacUnary* node) {
+static void unop_int_arithmetic_instr(Ctx ctx, const TacUnary* node) {
     shared_ptr_t(AsmOperand) src_dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
     {
@@ -1585,7 +1586,7 @@ static void unop_int_arithmetic_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void unop_dbl_neg_instr(Ctx ctx, TacUnary* node) {
+static void unop_dbl_neg_instr(Ctx ctx, const TacUnary* node) {
     shared_ptr_t(AsmOperand) src1_dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src1 = make_BackendDouble();
     {
@@ -1603,7 +1604,7 @@ static void unop_dbl_neg_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void unop_neg_instr(Ctx ctx, TacUnary* node) {
+static void unop_neg_instr(Ctx ctx, const TacUnary* node) {
     if (is_value_dbl(ctx, node->src)) {
         unop_dbl_neg_instr(ctx, node);
     }
@@ -1612,7 +1613,7 @@ static void unop_neg_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void unop_int_conditional_instr(Ctx ctx, TacUnary* node) {
+static void unop_int_conditional_instr(Ctx ctx, const TacUnary* node) {
     shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
     shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
     {
@@ -1634,7 +1635,7 @@ static void unop_int_conditional_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void unop_dbl_conditional_instr(Ctx ctx, TacUnary* node) {
+static void unop_dbl_conditional_instr(Ctx ctx, const TacUnary* node) {
     TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
     zero_xmm_reg_instr(ctx);
@@ -1662,7 +1663,7 @@ static void unop_dbl_conditional_instr(Ctx ctx, TacUnary* node) {
     push_instr(ctx, make_AsmLabel(target_nan));
 }
 
-static void unop_conditional_instr(Ctx ctx, TacUnary* node) {
+static void unop_conditional_instr(Ctx ctx, const TacUnary* node) {
     if (is_value_dbl(ctx, node->src)) {
         unop_dbl_conditional_instr(ctx, node);
     }
@@ -1671,7 +1672,7 @@ static void unop_conditional_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void unary_instr(Ctx ctx, TacUnary* node) {
+static void unary_instr(Ctx ctx, const TacUnary* node) {
     switch (node->unop.type) {
         case AST_TacComplement_t:
             unop_int_arithmetic_instr(ctx, node);
@@ -1687,7 +1688,7 @@ static void unary_instr(Ctx ctx, TacUnary* node) {
     }
 }
 
-static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
+static void binop_arithmetic_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AsmOperand) src1_dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
     {
@@ -1705,7 +1706,7 @@ static void binop_arithmetic_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void signed_divide_instr(Ctx ctx, TacBinary* node) {
+static void signed_divide_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
     {
@@ -1733,7 +1734,7 @@ static void signed_divide_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void unsigned_divide_instr(Ctx ctx, TacBinary* node) {
+static void unsigned_divide_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AsmOperand) src1_dst = gen_register(REG_Ax);
     shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
     {
@@ -1763,7 +1764,7 @@ static void unsigned_divide_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binop_divide_instr(Ctx ctx, TacBinary* node) {
+static void binop_divide_instr(Ctx ctx, const TacBinary* node) {
     if (is_value_dbl(ctx, node->src1)) {
         binop_arithmetic_instr(ctx, node);
     }
@@ -1775,7 +1776,7 @@ static void binop_divide_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
+static void signed_remainder_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
     {
         shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
@@ -1802,7 +1803,7 @@ static void signed_remainder_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void unsigned_remainder_instr(Ctx ctx, TacBinary* node) {
+static void unsigned_remainder_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AsmOperand) dst_src = gen_register(REG_Dx);
     shared_ptr_t(AssemblyType) asm_type_src1 = gen_asm_type(ctx, node->src1);
     {
@@ -1832,7 +1833,7 @@ static void unsigned_remainder_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binop_remainder_instr(Ctx ctx, TacBinary* node) {
+static void binop_remainder_instr(Ctx ctx, const TacBinary* node) {
     if (is_value_signed(ctx, node->src1)) {
         signed_remainder_instr(ctx, node);
     }
@@ -1841,7 +1842,7 @@ static void binop_remainder_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
+static void binop_int_conditional_instr(Ctx ctx, const TacBinary* node) {
     shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
     {
         shared_ptr_t(AsmOperand) src1 = gen_op(ctx, node->src1);
@@ -1868,7 +1869,7 @@ static void binop_int_conditional_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
+static void binop_dbl_conditional_instr(Ctx ctx, const TacBinary* node) {
     TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     shared_ptr_t(AsmOperand) cmp_dst = gen_op(ctx, node->dst);
     {
@@ -1912,7 +1913,7 @@ static void binop_dbl_conditional_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binop_conditional_instr(Ctx ctx, TacBinary* node) {
+static void binop_conditional_instr(Ctx ctx, const TacBinary* node) {
     if (is_value_dbl(ctx, node->src1)) {
         binop_dbl_conditional_instr(ctx, node);
     }
@@ -1921,7 +1922,7 @@ static void binop_conditional_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void binary_instr(Ctx ctx, TacBinary* node) {
+static void binary_instr(Ctx ctx, const TacBinary* node) {
     switch (node->binop.type) {
         case AST_TacAdd_t:
         case AST_TacSubtract_t:
@@ -1953,10 +1954,10 @@ static void binary_instr(Ctx ctx, TacBinary* node) {
     }
 }
 
-static void copy_struct_instr(Ctx ctx, TacCopy* node) {
+static void copy_struct_instr(Ctx ctx, const TacCopy* node) {
     TIdentifier src_name = node->src->get._TacVariable.name;
     TIdentifier dst_name = node->dst->get._TacVariable.name;
-    Structure* struct_type = &map_get(ctx->frontend->symbol_table, src_name)->type_t->get._Structure;
+    const Structure* struct_type = &map_get(ctx->frontend->symbol_table, src_name)->type_t->get._Structure;
     TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -1982,14 +1983,14 @@ static void copy_struct_instr(Ctx ctx, TacCopy* node) {
     }
 }
 
-static void copy_scalar_instr(Ctx ctx, TacCopy* node) {
+static void copy_scalar_instr(Ctx ctx, const TacCopy* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = gen_op(ctx, node->dst);
     shared_ptr_t(AssemblyType) asm_type_src = gen_asm_type(ctx, node->src);
     push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
 }
 
-static void copy_instr(Ctx ctx, TacCopy* node) {
+static void copy_instr(Ctx ctx, const TacCopy* node) {
     if (is_value_struct(ctx, node->src)) {
         copy_struct_instr(ctx, node);
     }
@@ -1998,7 +1999,7 @@ static void copy_instr(Ctx ctx, TacCopy* node) {
     }
 }
 
-static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
+static void getaddr_instr(Ctx ctx, const TacGetAddress* node) {
     shared_ptr_t(AsmOperand) src = sptr_new();
     {
         if (node->src->type == AST_TacVariable_t) {
@@ -2018,7 +2019,7 @@ static void getaddr_instr(Ctx ctx, TacGetAddress* node) {
     push_instr(ctx, make_AsmLea(&src, &dst));
 }
 
-static void load_struct_instr(Ctx ctx, TacLoad* node) {
+static void load_struct_instr(Ctx ctx, const TacLoad* node) {
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src_ptr);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -2027,7 +2028,7 @@ static void load_struct_instr(Ctx ctx, TacLoad* node) {
     }
     {
         TIdentifier name = node->dst->get._TacVariable.name;
-        Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+        const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
         TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
         TLong offset = 0l;
         while (size > 0l) {
@@ -2054,7 +2055,7 @@ static void load_struct_instr(Ctx ctx, TacLoad* node) {
     }
 }
 
-static void load_scalar_instr(Ctx ctx, TacLoad* node) {
+static void load_scalar_instr(Ctx ctx, const TacLoad* node) {
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src_ptr);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -2069,7 +2070,7 @@ static void load_scalar_instr(Ctx ctx, TacLoad* node) {
     }
 }
 
-static void load_instr(Ctx ctx, TacLoad* node) {
+static void load_instr(Ctx ctx, const TacLoad* node) {
     if (is_value_struct(ctx, node->dst)) {
         load_struct_instr(ctx, node);
     }
@@ -2078,7 +2079,7 @@ static void load_instr(Ctx ctx, TacLoad* node) {
     }
 }
 
-static void store_struct_instr(Ctx ctx, TacStore* node) {
+static void store_struct_instr(Ctx ctx, const TacStore* node) {
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->dst_ptr);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -2087,7 +2088,7 @@ static void store_struct_instr(Ctx ctx, TacStore* node) {
     }
     {
         TIdentifier name = node->src->get._TacVariable.name;
-        Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
+        const Structure* struct_type = &map_get(ctx->frontend->symbol_table, name)->type_t->get._Structure;
         TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
         TLong offset = 0l;
         while (size > 0l) {
@@ -2114,7 +2115,7 @@ static void store_struct_instr(Ctx ctx, TacStore* node) {
     }
 }
 
-static void store_scalar_instr(Ctx ctx, TacStore* node) {
+static void store_scalar_instr(Ctx ctx, const TacStore* node) {
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->dst_ptr);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -2129,7 +2130,7 @@ static void store_scalar_instr(Ctx ctx, TacStore* node) {
     }
 }
 
-static void store_instr(Ctx ctx, TacStore* node) {
+static void store_instr(Ctx ctx, const TacStore* node) {
     if (is_value_struct(ctx, node->src)) {
         store_struct_instr(ctx, node);
     }
@@ -2138,7 +2139,7 @@ static void store_instr(Ctx ctx, TacStore* node) {
     }
 }
 
-static void const_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
+static void const_idx_add_ptr_instr(Ctx ctx, const TacAddPtr* node) {
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src_ptr);
         shared_ptr_t(AsmOperand) dst = gen_register(REG_Ax);
@@ -2148,7 +2149,7 @@ static void const_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     {
         shared_ptr_t(AsmOperand) src = sptr_new();
         {
-            CConst* constant = node->idx->get._TacConstant.constant;
+            const CConst* constant = node->idx->get._TacConstant.constant;
             THROW_ABORT_IF(constant->type != AST_CConstLong_t);
             src = gen_memory(REG_Ax, constant->get._CConstLong.value * node->scale);
         }
@@ -2157,7 +2158,7 @@ static void const_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     }
 }
 
-static void scalar_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
+static void scalar_idx_add_ptr_instr(Ctx ctx, const TacAddPtr* node) {
     shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
     {
         shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src_ptr);
@@ -2178,7 +2179,7 @@ static void scalar_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     }
 }
 
-static void aggr_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
+static void aggr_idx_add_ptr_instr(Ctx ctx, const TacAddPtr* node) {
     shared_ptr_t(AssemblyType) asm_type_src = make_QuadWord();
     shared_ptr_t(AsmOperand) src_dst = gen_register(REG_Dx);
     {
@@ -2215,7 +2216,7 @@ static void aggr_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     }
 }
 
-static void var_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
+static void var_idx_add_ptr_instr(Ctx ctx, const TacAddPtr* node) {
     switch (node->scale) {
         case 1l:
         case 2l:
@@ -2229,7 +2230,7 @@ static void var_idx_add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     }
 }
 
-static void add_ptr_instr(Ctx ctx, TacAddPtr* node) {
+static void add_ptr_instr(Ctx ctx, const TacAddPtr* node) {
     switch (node->idx->type) {
         case AST_TacConstant_t:
             const_idx_add_ptr_instr(ctx, node);
@@ -2242,9 +2243,9 @@ static void add_ptr_instr(Ctx ctx, TacAddPtr* node) {
     }
 }
 
-static void cp_to_offset_struct_instr(Ctx ctx, TacCopyToOffset* node) {
+static void cp_to_offset_struct_instr(Ctx ctx, const TacCopyToOffset* node) {
     TIdentifier src_name = node->src->get._TacVariable.name;
-    Structure* struct_type = &map_get(ctx->frontend->symbol_table, src_name)->type_t->get._Structure;
+    const Structure* struct_type = &map_get(ctx->frontend->symbol_table, src_name)->type_t->get._Structure;
     TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -2275,7 +2276,7 @@ static void cp_to_offset_struct_instr(Ctx ctx, TacCopyToOffset* node) {
     }
 }
 
-static void cp_to_offset_scalar_instr(Ctx ctx, TacCopyToOffset* node) {
+static void cp_to_offset_scalar_instr(Ctx ctx, const TacCopyToOffset* node) {
     shared_ptr_t(AsmOperand) src = gen_op(ctx, node->src);
     shared_ptr_t(AsmOperand) dst = sptr_new();
     {
@@ -2287,7 +2288,7 @@ static void cp_to_offset_scalar_instr(Ctx ctx, TacCopyToOffset* node) {
     push_instr(ctx, make_AsmMov(&asm_type_src, &src, &dst));
 }
 
-static void cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node) {
+static void cp_to_offset_instr(Ctx ctx, const TacCopyToOffset* node) {
     if (is_value_struct(ctx, node->src)) {
         cp_to_offset_struct_instr(ctx, node);
     }
@@ -2296,9 +2297,9 @@ static void cp_to_offset_instr(Ctx ctx, TacCopyToOffset* node) {
     }
 }
 
-static void cp_from_offset_struct_instr(Ctx ctx, TacCopyFromOffset* node) {
+static void cp_from_offset_struct_instr(Ctx ctx, const TacCopyFromOffset* node) {
     TIdentifier dst_name = node->dst->get._TacVariable.name;
-    Structure* struct_type = &map_get(ctx->frontend->symbol_table, dst_name)->type_t->get._Structure;
+    const Structure* struct_type = &map_get(ctx->frontend->symbol_table, dst_name)->type_t->get._Structure;
     TLong size = map_get(ctx->frontend->struct_typedef_table, struct_type->tag)->size;
     TLong offset = 0l;
     while (size > 0l) {
@@ -2329,7 +2330,7 @@ static void cp_from_offset_struct_instr(Ctx ctx, TacCopyFromOffset* node) {
     }
 }
 
-static void cp_from_offset_scalar_instr(Ctx ctx, TacCopyFromOffset* node) {
+static void cp_from_offset_scalar_instr(Ctx ctx, const TacCopyFromOffset* node) {
     shared_ptr_t(AsmOperand) src = sptr_new();
     {
         TIdentifier src_name = node->src_name;
@@ -2341,7 +2342,7 @@ static void cp_from_offset_scalar_instr(Ctx ctx, TacCopyFromOffset* node) {
     push_instr(ctx, make_AsmMov(&asm_type_dst, &src, &dst));
 }
 
-static void cp_from_offset_instr(Ctx ctx, TacCopyFromOffset* node) {
+static void cp_from_offset_instr(Ctx ctx, const TacCopyFromOffset* node) {
     if (is_value_struct(ctx, node->dst)) {
         cp_from_offset_struct_instr(ctx, node);
     }
@@ -2350,12 +2351,12 @@ static void cp_from_offset_instr(Ctx ctx, TacCopyFromOffset* node) {
     }
 }
 
-static void jump_instr(Ctx ctx, TacJump* node) {
+static void jump_instr(Ctx ctx, const TacJump* node) {
     TIdentifier target = node->target;
     push_instr(ctx, make_AsmJmp(target));
 }
 
-static void jmp_eq_0_int_instr(Ctx ctx, TacJumpIfZero* node) {
+static void jmp_eq_0_int_instr(Ctx ctx, const TacJumpIfZero* node) {
     {
         shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
         shared_ptr_t(AsmOperand) condition = gen_op(ctx, node->condition);
@@ -2369,7 +2370,7 @@ static void jmp_eq_0_int_instr(Ctx ctx, TacJumpIfZero* node) {
     }
 }
 
-static void jmp_eq_0_dbl_instr(Ctx ctx, TacJumpIfZero* node) {
+static void jmp_eq_0_dbl_instr(Ctx ctx, const TacJumpIfZero* node) {
     TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     zero_xmm_reg_instr(ctx);
     {
@@ -2390,7 +2391,7 @@ static void jmp_eq_0_dbl_instr(Ctx ctx, TacJumpIfZero* node) {
     push_instr(ctx, make_AsmLabel(target_nan));
 }
 
-static void jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node) {
+static void jmp_eq_0_instr(Ctx ctx, const TacJumpIfZero* node) {
     if (is_value_dbl(ctx, node->condition)) {
         jmp_eq_0_dbl_instr(ctx, node);
     }
@@ -2399,7 +2400,7 @@ static void jmp_eq_0_instr(Ctx ctx, TacJumpIfZero* node) {
     }
 }
 
-static void jmp_ne_0_int_instr(Ctx ctx, TacJumpIfNotZero* node) {
+static void jmp_ne_0_int_instr(Ctx ctx, const TacJumpIfNotZero* node) {
     {
         shared_ptr_t(AsmOperand) imm_zero = make_AsmImm(0ul, true, false, false);
         shared_ptr_t(AsmOperand) condition = gen_op(ctx, node->condition);
@@ -2413,7 +2414,7 @@ static void jmp_ne_0_int_instr(Ctx ctx, TacJumpIfNotZero* node) {
     }
 }
 
-static void jmp_ne_0_dbl_instr(Ctx ctx, TacJumpIfNotZero* node) {
+static void jmp_ne_0_dbl_instr(Ctx ctx, const TacJumpIfNotZero* node) {
     TIdentifier target = node->target;
     TIdentifier target_nan = repr_asm_label(ctx, LBL_Lcomisd_nan);
     TIdentifier target_nan_ne = repr_asm_label(ctx, LBL_Lcomisd_nan);
@@ -2441,7 +2442,7 @@ static void jmp_ne_0_dbl_instr(Ctx ctx, TacJumpIfNotZero* node) {
     push_instr(ctx, make_AsmLabel(target_nan_ne));
 }
 
-static void jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node) {
+static void jmp_ne_0_instr(Ctx ctx, const TacJumpIfNotZero* node) {
     if (is_value_dbl(ctx, node->condition)) {
         jmp_ne_0_dbl_instr(ctx, node);
     }
@@ -2450,12 +2451,12 @@ static void jmp_ne_0_instr(Ctx ctx, TacJumpIfNotZero* node) {
     }
 }
 
-static void label_instr(Ctx ctx, TacLabel* node) {
+static void label_instr(Ctx ctx, const TacLabel* node) {
     TIdentifier name = node->name;
     push_instr(ctx, make_AsmLabel(name));
 }
 
-static void gen_instr(Ctx ctx, TacInstruction* node) {
+static void gen_instr(Ctx ctx, const TacInstruction* node) {
     switch (node->type) {
         case AST_TacReturn_t:
             ret_instr(ctx, &node->get._TacReturn);
@@ -2566,12 +2567,12 @@ static void stack_fun_param_instr(Ctx ctx, TIdentifier name, TLong stack_bytes) 
 }
 
 static void reg_8b_fun_param_instr(
-    Ctx ctx, TIdentifier name, TLong offset, Structure* struct_type, REGISTER_KIND arg_reg) {
+    Ctx ctx, TIdentifier name, TLong offset, const Structure* struct_type, REGISTER_KIND arg_reg) {
     ret_8b_call_instr(ctx, name, offset, struct_type, arg_reg);
 }
 
 static void stack_8b_fun_param_instr(
-    Ctx ctx, TIdentifier name, TLong stack_bytes, TLong offset, Structure* struct_type) {
+    Ctx ctx, TIdentifier name, TLong stack_bytes, TLong offset, const Structure* struct_type) {
     shared_ptr_t(AssemblyType) asm_type_dst = asm_type_8b(ctx, struct_type, offset);
     if (asm_type_dst->type == AST_ByteArray_t) {
         TLong size = asm_type_dst->get._ByteArray.size;
@@ -2606,13 +2607,13 @@ static void stack_8b_fun_param_instr(
     }
 }
 
-static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool is_ret_memory) {
+static void fun_param_toplvl(Ctx ctx, const TacFunction* node, FunType* fun_type, bool is_ret_memory) {
     size_t reg_size = is_ret_memory ? 1 : 0;
     size_t sse_size = 0;
     TLong stack_bytes = 16l;
     for (size_t i = 0; i < vec_size(node->params); ++i) {
         TIdentifier param = node->params[i];
-        Type* param_type = map_get(ctx->frontend->symbol_table, param)->type_t;
+        const Type* param_type = map_get(ctx->frontend->symbol_table, param)->type_t;
         if (param_type->type == AST_Double_t) {
             if (sse_size < 8) {
                 reg_fun_param_instr(ctx, param, ctx->sse_arg_regs[sse_size]);
@@ -2636,9 +2637,9 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
         else {
             size_t struct_reg_size = 7;
             size_t struct_sse_size = 9;
-            Structure* struct_type = &param_type->get._Structure;
+            const Structure* struct_type = &param_type->get._Structure;
             struct_8b_class(ctx, struct_type);
-            Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
+            const Struct8Bytes* struct_8b = &map_get(ctx->struct_8b_map, struct_type->tag);
             if (struct_8b->clss[0] != CLS_memory) {
                 struct_reg_size = 0;
                 struct_sse_size = 0;
@@ -2678,7 +2679,7 @@ static void fun_param_toplvl(Ctx ctx, TacFunction* node, FunType* fun_type, bool
     fun_param_reg_mask(ctx, fun_type, reg_size, sse_size);
 }
 
-static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, TacFunction* node) {
+static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, const TacFunction* node) {
     TIdentifier name = node->name;
     bool is_glob = node->is_glob;
     bool is_ret_memory = false;
@@ -2690,7 +2691,7 @@ static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, TacFunction* node) {
 
         FunType* fun_type = &map_get(ctx->frontend->symbol_table, node->name)->type_t->get._FunType;
         if (fun_type->ret_type->type == AST_Structure_t) {
-            Structure* struct_type = &fun_type->ret_type->get._Structure;
+            const Structure* struct_type = &fun_type->ret_type->get._Structure;
             struct_8b_class(ctx, struct_type);
             if (map_get(ctx->struct_8b_map, struct_type->tag).clss[0] == CLS_memory) {
                 is_ret_memory = true;
@@ -2713,7 +2714,7 @@ static unique_ptr_t(AsmTopLevel) gen_fun_toplvl(Ctx ctx, TacFunction* node) {
     return make_AsmFunction(name, is_glob, is_ret_memory, &body);
 }
 
-static unique_ptr_t(AsmTopLevel) gen_static_var_toplvl(Ctx ctx, TacStaticVariable* node) {
+static unique_ptr_t(AsmTopLevel) gen_static_var_toplvl(Ctx ctx, const TacStaticVariable* node) {
     TIdentifier name = node->name;
     bool is_glob = node->is_glob;
     TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type);
@@ -2738,7 +2739,7 @@ static void dbl_static_const_toplvl(Ctx ctx, TIdentifier identifier, TIdentifier
     push_static_const_toplvl(ctx, make_AsmStaticConstant(name, alignment, &static_init));
 }
 
-static unique_ptr_t(AsmTopLevel) gen_static_const_toplvl(Ctx ctx, TacStaticConstant* node) {
+static unique_ptr_t(AsmTopLevel) gen_static_const_toplvl(Ctx ctx, const TacStaticConstant* node) {
     TIdentifier name = node->name;
     TInt alignment = gen_type_alignment(ctx->frontend, node->static_init_type);
     shared_ptr_t(StaticInit) static_init = sptr_new();
@@ -2748,7 +2749,7 @@ static unique_ptr_t(AsmTopLevel) gen_static_const_toplvl(Ctx ctx, TacStaticConst
 
 // top_level = Function(identifier, bool, bool, instruction*) | StaticVariable(identifier, bool, int, static_init*)
 //           | StaticConstant(identifier, int, static_init)
-static unique_ptr_t(AsmTopLevel) gen_toplvl(Ctx ctx, TacTopLevel* node) {
+static unique_ptr_t(AsmTopLevel) gen_toplvl(Ctx ctx, const TacTopLevel* node) {
     switch (node->type) {
         case AST_TacFunction_t:
             return gen_fun_toplvl(ctx, &node->get._TacFunction);
@@ -2762,7 +2763,7 @@ static unique_ptr_t(AsmTopLevel) gen_toplvl(Ctx ctx, TacTopLevel* node) {
 }
 
 // AST = Program(top_level*, top_level*)
-static unique_ptr_t(AsmProgram) gen_program(Ctx ctx, TacProgram* node) {
+static unique_ptr_t(AsmProgram) gen_program(Ctx ctx, const TacProgram* node) {
     vector_t(unique_ptr_t(AsmTopLevel)) static_const_toplvls = vec_new();
     vec_reserve(static_const_toplvls, vec_size(node->static_const_toplvls));
     for (size_t i = 0; i < vec_size(node->static_const_toplvls); ++i) {
