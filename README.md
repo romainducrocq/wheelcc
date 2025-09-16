@@ -166,7 +166,7 @@ $ wheelcc main.c
 /home/user/wheelcc/main.c:2:
 error: (no. 547) cannot initialize scalar type ‘int’ with compound initializer
 at line 2:     int i = { 1 };
-wheelcc: error: compilation failed
+wheelcc: error: compilation failed, see ‘--help’
 ```
 
 ### Test
