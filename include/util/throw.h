@@ -26,7 +26,7 @@ typedef struct FileOpenLine {
 } FileOpenLine;
 
 typedef struct TokenInfo {
-    size_t linenum;
+    size_t total_linenum;
     size_t tok_pos;
     size_t tok_len;
 } TokenInfo;
@@ -97,7 +97,6 @@ void raise_error_at_token(ErrorsContext* ctx, size_t linenum);
     while (0)
 #define THROW_INIT(...) THROW_ERROR(1, raise_init_error(ctx->errors), __VA_ARGS__)
 #define THROW_BASE(...) THROW_ERROR(1, raise_base_error(ctx->errors), __VA_ARGS__)
-#define THROW_AT THROW_AT_LINE // TODO
 #define THROW_AT_LINE(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X), __VA_ARGS__)
 
 #endif
