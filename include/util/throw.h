@@ -37,8 +37,8 @@ typedef struct ErrorsContext {
     // Throw
     char msg[ERROR_MSG_SIZE];
     bool is_stdout;
-    size_t linebuf;
-    hashmap_t(hash_t, size_t) linebuf_map;
+    size_t info_at_buf;
+    hashmap_t(hash_t, size_t) info_at_map;
     vector_t(FileOpenLine) fopen_lines;
     vector_t(TokenInfo) token_infos;
 } ErrorsContext;

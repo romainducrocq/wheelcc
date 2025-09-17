@@ -364,7 +364,7 @@ error_t main(int argc, char** argv) {
         errors.errors = &errors;
         errors.fileio = &fileio;
         errors.is_stdout = false;
-        errors.linebuf_map = map_new();
+        errors.info_at_map = map_new();
         errors.fopen_lines = vec_new();
         errors.token_infos = vec_new();
 
@@ -384,7 +384,7 @@ error_t main(int argc, char** argv) {
     TRY(compile(&ctx, &errors, &fileio));
 
     FINALLY;
-    map_delete(errors.linebuf_map);
+    map_delete(errors.info_at_map);
     for (size_t i = 0; i < vec_size(errors.fopen_lines); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }

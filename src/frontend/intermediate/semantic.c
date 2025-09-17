@@ -191,8 +191,9 @@ static error_t is_valid_arr(Ctx ctx, const Array* arr_type) {
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
     if (!is_type_complete(ctx, arr_type->elem_type)) {
-        THROW_AT_TOKEN(ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_incomplete_arr, str_fmt_arr(arr_type, &type_fmt_1),
-                                                 str_fmt_type(arr_type->elem_type, &type_fmt_2)));
+        THROW_AT_TOKEN(
+            ctx->errors->info_at_buf, GET_SEMANTIC_MSG(MSG_incomplete_arr, str_fmt_arr(arr_type, &type_fmt_1),
+                                          str_fmt_type(arr_type->elem_type, &type_fmt_2)));
     }
     TRY(is_valid_type(ctx, arr_type->elem_type));
     FINALLY;
@@ -626,7 +627,7 @@ static error_t check_cast_exp(Ctx ctx, const CCast* node) {
     string_t type_fmt_1 = str_new(NULL);
     string_t type_fmt_2 = str_new(NULL);
     CATCH_ENTER;
-    ctx->errors->linebuf = node->_base->line;
+    ctx->errors->info_at_buf = node->_base->line;
     TRY(reslv_struct_type(ctx, node->target_type));
     if (node->target_type->type != AST_Void_t
         && ((node->exp->exp_type->type == AST_Double_t && node->target_type->type == AST_Pointer_t)
@@ -1277,7 +1278,7 @@ static error_t check_sizeof_exp(Ctx ctx, const CSizeOf* node) {
 static error_t check_sizeoft_exp(Ctx ctx, const CSizeOfT* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
-    ctx->errors->linebuf = node->_base->line;
+    ctx->errors->info_at_buf = node->_base->line;
     TRY(reslv_struct_type(ctx, node->target_type));
     if (!is_type_complete(ctx, node->target_type)) {
         THROW_AT_TOKEN(
@@ -1787,7 +1788,7 @@ static error_t check_ret_fun_decl(Ctx ctx, const CFunctionDeclaration* node) {
     string_t type_fmt = str_new(NULL);
     CATCH_ENTER;
     const FunType* fun_type = &node->fun_type->get._FunType;
-    ctx->errors->linebuf = node->line;
+    ctx->errors->info_at_buf = node->line;
     TRY(reslv_struct_type(ctx, fun_type->ret_type));
     TRY(is_valid_type(ctx, fun_type->ret_type));
 
@@ -1828,7 +1829,7 @@ static error_t check_fun_params_decl(Ctx ctx, const CFunctionDeclaration* node) 
     CATCH_ENTER;
     const FunType* fun_type = &node->fun_type->get._FunType;
     for (size_t i = 0; i < vec_size(node->params); ++i) {
-        ctx->errors->linebuf = node->line;
+        ctx->errors->info_at_buf = node->line;
         TRY(reslv_struct_type(ctx, fun_type->param_types[i]));
         if (fun_type->param_types[i]->type == AST_Void_t) {
             THROW_AT_TOKEN(node->line, GET_SEMANTIC_MSG(MSG_void_param, str_fmt_name(node->name, &name_fmt_1),
@@ -2271,7 +2272,7 @@ static error_t check_file_var_decl(Ctx ctx, const CVariableDeclaration* node) {
     CATCH_ENTER;
     bool is_glob;
     ssize_t map_it;
-    ctx->errors->linebuf = node->line;
+    ctx->errors->info_at_buf = node->line;
     TRY(reslv_struct_type(ctx, node->var_type));
     if (node->var_type->type == AST_Void_t) {
         THROW_AT_TOKEN(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
@@ -2443,7 +2444,7 @@ static error_t check_auto_block_var_decl(Ctx ctx, const CVariableDeclaration* no
 static error_t check_block_var_decl(Ctx ctx, const CVariableDeclaration* node) {
     string_t name_fmt = str_new(NULL);
     CATCH_ENTER;
-    ctx->errors->linebuf = node->line;
+    ctx->errors->info_at_buf = node->line;
     TRY(reslv_struct_type(ctx, node->var_type));
     if (node->var_type->type == AST_Void_t) {
         THROW_AT_TOKEN(node->line, GET_SEMANTIC_MSG(MSG_void_var_decl, str_fmt_name(node->name, &name_fmt)));
@@ -2482,7 +2483,7 @@ static error_t check_struct_members_decl(Ctx ctx, const CStructDeclaration* node
             }
         }
         THROW_ABORT_IF(node->members[i]->member_type->type == AST_FunType_t);
-        ctx->errors->linebuf = node->members[i]->line;
+        ctx->errors->info_at_buf = node->members[i]->line;
         TRY(reslv_struct_type(ctx, node->members[i]->member_type));
         if (!is_type_complete(ctx, node->members[i]->member_type)) {
             THROW_AT_TOKEN(node->members[i]->line, GET_SEMANTIC_MSG(MSG_incomplete_member_decl,
@@ -2693,7 +2694,7 @@ static error_t reslv_label(Ctx ctx, const CFunctionDeclaration* node) {
     CATCH_ENTER;
     for (size_t i = 0; i < map_size(ctx->goto_map); ++i) {
         if (set_find(ctx->label_set, pair_first(ctx->goto_map[i])) == set_end()) {
-            THROW_AT_TOKEN(map_get(ctx->errors->linebuf_map, pair_second(ctx->goto_map[i])),
+            THROW_AT_TOKEN(map_get(ctx->errors->info_at_map, pair_second(ctx->goto_map[i])),
                 GET_SEMANTIC_MSG(MSG_undef_goto_target, str_fmt_name(pair_first(ctx->goto_map[i]), &name_fmt_1),
                     str_fmt_name(node->name, &name_fmt_2)));
         }
@@ -2735,7 +2736,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
         if (map_it != map_end()) {
             const Structure* structure = &pair_second(ctx->scoped_struct_maps[i][map_it]);
             if (structure->is_union != struct_type->is_union) {
-                THROW_AT_TOKEN(ctx->errors->linebuf,
+                THROW_AT_TOKEN(ctx->errors->info_at_buf,
                     GET_SEMANTIC_MSG(MSG_redecl_struct_conflict, str_fmt_struct(struct_type, &type_fmt),
                         str_fmt_struct_name(struct_type->tag, !struct_type->is_union, &struct_fmt)));
             }
@@ -2744,7 +2745,7 @@ static error_t reslv_struct(Ctx ctx, Structure* struct_type) {
         }
     }
     THROW_AT_TOKEN(
-        ctx->errors->linebuf, GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, str_fmt_struct(struct_type, &type_fmt)));
+        ctx->errors->info_at_buf, GET_SEMANTIC_MSG(MSG_undef_struct_in_scope, str_fmt_struct(struct_type, &type_fmt)));
     FINALLY;
     str_delete(struct_fmt);
     str_delete(type_fmt);
@@ -3066,13 +3067,13 @@ static void reslv_goto_statement(Ctx ctx, CGoto* node) {
     ssize_t map_it = map_find(ctx->goto_map, node->target);
     if (map_it != map_end()) {
         node->target = pair_second(ctx->goto_map[map_it]);
-        map_add(ctx->errors->linebuf_map, node->target, node->line);
+        map_add(ctx->errors->info_at_map, node->target, node->line);
     }
     else {
         TIdentifier target = rslv_label_identifier(ctx->identifiers, node->target);
         map_add(ctx->goto_map, node->target, target);
         node->target = target;
-        map_add(ctx->errors->linebuf_map, node->target, node->line);
+        map_add(ctx->errors->info_at_map, node->target, node->line);
     }
 }
 
@@ -3609,7 +3610,7 @@ error_t analyze_semantic(
     set_delete(ctx.struct_def_set);
     set_delete(ctx.union_def_set);
 
-    map_delete(errors->linebuf_map);
+    map_delete(errors->info_at_map);
     for (size_t i = 0; i < vec_size(errors->fopen_lines); ++i) {
         str_delete(errors->fopen_lines[i].filename);
     }
