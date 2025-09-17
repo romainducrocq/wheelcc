@@ -28,7 +28,10 @@ _Noreturn
 #endif
 void panic_sigabrt(const char* func, const char* file, int line, const char* msg) {
     fflush(stdout);
-    fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s (%s)\n", file, line, func, msg);
+    fprintf(stderr,
+        "\033[1m%s:%i:\033[0m\n"
+        "\033[0;31minternal error:\033[0m %s (%s)\n",
+        file, line, func, msg);
     abort();
 }
 
@@ -47,7 +50,10 @@ void raise_base_error(Ctx ctx) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename, ctx->msg);
+    fprintf(stderr,
+        "\033[1m%s:\033[0m\n"
+        "\033[0;31merror:\033[0m %s\n",
+        filename, ctx->msg);
 }
 
 static size_t get_token_linenum(Ctx ctx, size_t total_linenum) {
@@ -99,7 +105,10 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n", filename,
-        tok_linenum, ctx->msg, tok_linenum, line);
+    fprintf(stderr,
+        "\033[1m%s:%zu:\033[0m\n"
+        "\033[0;31merror:\033[0m %s\n"
+        "at line %zu: \033[1m%s\033[0m\n",
+        filename, tok_linenum, ctx->msg, tok_linenum, line);
     str_delete(line);
 }
