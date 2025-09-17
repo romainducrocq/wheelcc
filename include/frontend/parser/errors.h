@@ -78,14 +78,15 @@ const char* get_type_fmt(IdentifierContext* ctx, const Type* type, string_t* typ
 #ifdef __cplusplus
 }
 #endif
-#define str_fmt_tok(X) get_tok_fmt(ctx->identifiers, X)
-#define str_fmt_name(X, Y) get_name_fmt(ctx->identifiers, X, Y)
-#define str_fmt_struct_name(X, Y, Z) get_struct_name_fmt(ctx->identifiers, X, Y, Z)
-#define str_fmt_fun(X, Y) get_fun_fmt(ctx->identifiers, X, Y)
-#define str_fmt_ptr(X, Y) get_ptr_fmt(ctx->identifiers, X, Y)
-#define str_fmt_arr(X, Y) get_arr_fmt(ctx->identifiers, X, Y)
-#define str_fmt_struct(X, Y) get_struct_fmt(ctx->identifiers, X, Y)
-#define str_fmt_type(X, Y) get_type_fmt(ctx->identifiers, X, Y)
+#define str_get_fmt(T, ...) get_##T##_fmt(ctx->identifiers, __VA_ARGS__)
+#define str_fmt_tok(X) str_get_fmt(tok, X)
+#define str_fmt_name(X, Y) str_get_fmt(name, X, Y)
+#define str_fmt_struct_name(X, Y, Z) str_get_fmt(struct_name, X, Y, Z)
+#define str_fmt_fun(X, Y) str_get_fmt(fun, X, Y)
+#define str_fmt_ptr(X, Y) str_get_fmt(ptr, X, Y)
+#define str_fmt_arr(X, Y) str_get_fmt(arr, X, Y)
+#define str_fmt_struct(X, Y) str_get_fmt(struct, X, Y)
+#define str_fmt_type(X, Y) str_get_fmt(type, X, Y)
 
 #ifdef __cplusplus
 extern "C" {
@@ -99,15 +100,17 @@ const char* get_semantic_msg(MESSAGE_SEMANTIC msg);
 #ifdef __cplusplus
 }
 #endif
-#define GET_FATAL_MSG(X, ...) get_fatal_msg(X), (int)X, __VA_ARGS__
-#define GET_ARG_MSG(X, ...) get_arg_msg(X), (int)X, __VA_ARGS__
-#define GET_UTIL_MSG(X, ...) get_util_msg(X), (int)X, __VA_ARGS__
-#define GET_LEXER_MSG(X, ...) get_lexer_msg(X), (int)X, __VA_ARGS__
-#define GET_PARSER_MSG(X, ...) get_parser_msg(X), (int)X, __VA_ARGS__
-#define GET_SEMANTIC_MSG(X, ...) get_semantic_msg(X), (int)X, __VA_ARGS__
-#define GET_ARG_MSG_0(X) get_arg_msg(X), (int)X
-#define GET_PARSER_MSG_0(X) get_parser_msg(X), (int)X
-#define GET_SEMANTIC_MSG_0(X) get_semantic_msg(X), (int)X
+#define GET_MESSAGE_0(E, X) get_##E##_msg(X), (int)X
+#define GET_ARG_MSG_0(X) GET_MESSAGE_0(arg, X)
+#define GET_PARSER_MSG_0(X) GET_MESSAGE_0(parser, X)
+#define GET_SEMANTIC_MSG_0(X) GET_MESSAGE_0(semantic, X)
+#define GET_MESSAGE(E, X, ...) GET_MESSAGE_0(E, X), __VA_ARGS__
+#define GET_FATAL_MSG(X, ...) GET_MESSAGE(fatal, X, __VA_ARGS__)
+#define GET_ARG_MSG(X, ...) GET_MESSAGE(arg, X, __VA_ARGS__)
+#define GET_UTIL_MSG(X, ...) GET_MESSAGE(util, X, __VA_ARGS__)
+#define GET_LEXER_MSG(X, ...) GET_MESSAGE(lexer, X, __VA_ARGS__)
+#define GET_PARSER_MSG(X, ...) GET_MESSAGE(parser, X, __VA_ARGS__)
+#define GET_SEMANTIC_MSG(X, ...) GET_MESSAGE(semantic, X, __VA_ARGS__)
 #define GCC_VERSION __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__
 #define CLANG_VERSION __clang_major__, __clang_minor__, __clang_patchlevel__
 
