@@ -40,6 +40,7 @@ typedef struct ErrorsContext {
     size_t linebuf;
     hashmap_t(hash_t, size_t) linebuf_map;
     vector_t(FileOpenLine) fopen_lines;
+    vector_t(TokenInfo) token_infos;
 } ErrorsContext;
 
 #define CATCH_ENTER error_t _errval = 0
