@@ -105,10 +105,34 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
         printf("\n");
         fflush(stdout);
     }
-    fprintf(stderr,
-        "\033[1m%s:%zu:\033[0m\n"
-        "\033[0;31merror:\033[0m %s\n"
-        "at line %zu: \033[1m%s\033[0m\n",
-        filename, tok_linenum, ctx->msg, tok_linenum, line);
+    {
+        string_t tok_underline = str_new("");
+        int tok_pos = 0;
+        if (token_info->tok_pos >= 0) {
+            tok_pos = token_info->tok_pos;
+            if (token_info->tok_len > 1) {
+                str_resize(tok_underline, token_info->tok_len - 1);
+                for (size_t i = 0; i < str_size(tok_underline); ++i) {
+                    tok_underline[i] = '~';
+                }
+            }
+        }
+
+        string_t strto_linenum = str_to_string(tok_linenum);
+        int pad_linenum = (int)str_size(strto_linenum);
+        if (pad_linenum < 0) {
+            pad_linenum = 0;
+        }
+
+        fprintf(stderr,
+            "\033[1m%s:%zu:%i:\033[0m\n"
+            "\033[0;31merror:\033[0m %s\n"
+            "at line %s: \033[1m%s\033[0m\n"
+            "        %*s| %*s^%s\n",
+            filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, line, pad_linenum, "", tok_pos, "", tok_underline);
+
+        str_delete(tok_underline);
+        str_delete(strto_linenum);
+    }
     str_delete(line);
 }
