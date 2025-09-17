@@ -384,28 +384,21 @@ error_t main(int argc, char** argv) {
     TRY(compile(&ctx, &errors, &fileio));
 
     FINALLY;
-    // TODO see if delete these when not needed anymore or at end of the program
-    // at end of semantic
     map_delete(errors.linebuf_map);
     for (size_t i = 0; i < vec_size(errors.fopen_lines); ++i) {
         str_delete(errors.fopen_lines[i].filename);
     }
     vec_delete(errors.fopen_lines);
     vec_delete(errors.token_infos);
-    //
 
     str_delete(fileio.write_buf);
     str_delete(fileio.filename);
-    // at end of lexer
     for (size_t i = 0; i < vec_size(fileio.file_reads); ++i) {
         str_delete(fileio.file_reads[i].filename);
     }
     vec_delete(fileio.file_reads);
-    //
 
     str_delete(ctx.filename);
-    // at end of lexer
     vec_delete(ctx.includedirs);
-    //
     CATCH_EXIT;
 }

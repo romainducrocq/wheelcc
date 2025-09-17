@@ -865,6 +865,11 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
     FINALLY;
     vec_delete(ctx.stdlibdirs);
     set_delete(ctx.includename_set);
+
+    for (size_t i = 0; i < vec_size(fileio->file_reads); ++i) {
+        str_delete(fileio->file_reads[i].filename);
+    }
+    vec_delete(fileio->file_reads);
     vec_delete(*includedirs);
     CATCH_EXIT;
 }

@@ -3608,5 +3608,12 @@ error_t analyze_semantic(
     set_delete(ctx.fun_def_set);
     set_delete(ctx.struct_def_set);
     set_delete(ctx.union_def_set);
+
+    map_delete(errors->linebuf_map);
+    for (size_t i = 0; i < vec_size(errors->fopen_lines); ++i) {
+        str_delete(errors->fopen_lines[i].filename);
+    }
+    vec_delete(errors->fopen_lines);
+    vec_delete(errors->token_infos);
     CATCH_EXIT;
 }
