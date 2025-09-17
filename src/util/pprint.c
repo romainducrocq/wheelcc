@@ -340,7 +340,6 @@ static void print_StructTypedef(Ctx ctx, const StructTypedef* node, size_t tab) 
 }
 
 static void print_CUnaryOp(const CUnaryOp* node, size_t tab) {
-    print_null((node->type != AST_CUnaryOp_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CUnaryOp_t:
@@ -718,7 +717,6 @@ static void print_CBlockItem(Ctx ctx, const CBlockItem* node, size_t tab) {
 }
 
 static void print_CStorageClass(const CStorageClass* node, size_t tab) {
-    print_null((node->type != AST_CStorageClass_t), ++tab); // TODO remove
     print_null(node, ++tab);
     switch (node->type) {
         case AST_CStorageClass_t:
