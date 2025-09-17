@@ -63,11 +63,11 @@ extern "C" {
 #else
 _Noreturn
 #endif
-void raise_sigabrt(const char* func, const char* file, int line, const char* msg);
+void panic_sigabrt(const char* func, const char* file, int line, const char* msg);
 #ifdef __cplusplus
 }
 #endif
-#define THROW_PANIC(X) raise_sigabrt(__func__, __FILE__, __LINE__, X)
+#define THROW_PANIC(X) panic_sigabrt(__func__, __FILE__, __LINE__, X)
 #define THROW_ABORT THROW_PANIC("abort")
 #define THROW_ALLOC(T) THROW_PANIC("alloc " #T)
 #ifdef __NDEBUG__
@@ -82,8 +82,7 @@ void raise_sigabrt(const char* func, const char* file, int line, const char* msg
 extern "C" {
 #endif
 void raise_init_error(ErrorsContext* ctx);
-void raise_error_at_line(ErrorsContext* ctx, size_t linenum);
-size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
+void raise_error_at_token(ErrorsContext* ctx, size_t linenum, bool is_total);
 #ifdef __cplusplus
 }
 #endif
@@ -96,8 +95,7 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
     }                                                     \
     while (0)
 #define THROW_INIT(...) THROW_ERROR(1, raise_init_error(ctx->errors), __VA_ARGS__)
-#define THROW_AT(X, ...) THROW_ERROR(1, raise_error_at_line(ctx->errors, X), __VA_ARGS__)
-#define THROW_AT_LINE(X, ...) \
-    THROW_ERROR(1, raise_error_at_line(ctx->errors, handle_error_at_line(ctx->errors, X)), __VA_ARGS__)
+#define THROW_AT(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X, false), __VA_ARGS__)
+#define THROW_AT_LINE(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X, true), __VA_ARGS__)
 
 #endif

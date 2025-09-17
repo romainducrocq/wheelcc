@@ -26,7 +26,7 @@ typedef ErrorsContext* Ctx;
 #else
 _Noreturn
 #endif
-void raise_sigabrt(const char* func, const char* file, int line, const char* msg) {
+void panic_sigabrt(const char* func, const char* file, int line, const char* msg) {
     fflush(stdout);
     fprintf(stderr, "\033[1m%s:%i:\033[0m\n\033[0;31minternal error:\033[0m %s (%s)\n", file, line, func, msg);
     abort();
@@ -50,10 +50,24 @@ static void raise_base_error(Ctx ctx) {
     fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename, ctx->msg);
 }
 
-void raise_error_at_line(Ctx ctx, size_t linenum) {
+static size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
+    for (size_t i = 0; i < vec_size(ctx->fopen_lines) - 1; ++i) {
+        if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
+            set_filename(ctx->fileio, ctx->fopen_lines[i].filename);
+            return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
+        }
+    }
+    set_filename(ctx->fileio, vec_back(ctx->fopen_lines).filename);
+    return total_linenum - vec_back(ctx->fopen_lines).total_linenum + vec_back(ctx->fopen_lines).linenum;
+}
+
+void raise_error_at_token(Ctx ctx, size_t linenum, bool is_total) {
     if (linenum == 0) {
         raise_base_error(ctx);
         return;
+    }
+    if (is_total) {
+        linenum = handle_error_at_line(ctx, linenum);
     }
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
@@ -92,15 +106,4 @@ void raise_error_at_line(Ctx ctx, size_t linenum) {
     fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n", filename,
         linenum, ctx->msg, linenum, line);
     str_delete(line);
-}
-
-size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
-    for (size_t i = 0; i < vec_size(ctx->fopen_lines) - 1; ++i) {
-        if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
-            set_filename(ctx->fileio, ctx->fopen_lines[i].filename);
-            return total_linenum - ctx->fopen_lines[i].total_linenum + ctx->fopen_lines[i].linenum;
-        }
-    }
-    set_filename(ctx->fileio, vec_back(ctx->fopen_lines).filename);
-    return total_linenum - vec_back(ctx->fopen_lines).total_linenum + vec_back(ctx->fopen_lines).linenum;
 }
