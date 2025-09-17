@@ -40,7 +40,7 @@ void raise_init_error(Ctx ctx) {
     fprintf(stderr, "\033[0;31merror:\033[0m %s\n", ctx->msg);
 }
 
-static void raise_base_error(Ctx ctx) {
+void raise_base_error(Ctx ctx) {
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
     if (ctx->is_stdout) {
@@ -61,14 +61,9 @@ static size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     return total_linenum - vec_back(ctx->fopen_lines).total_linenum + vec_back(ctx->fopen_lines).linenum;
 }
 
-void raise_error_at_token(Ctx ctx, size_t linenum, bool is_total) {
-    if (linenum == 0) {
-        raise_base_error(ctx);
-        return;
-    }
-    if (is_total) {
-        linenum = handle_error_at_line(ctx, linenum);
-    }
+void raise_error_at_token(Ctx ctx, size_t linenum) {
+    // TDOO THROW_ABORT_IF if info_at > vec_size token_infos
+    linenum = handle_error_at_line(ctx, linenum);
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
     string_t line = str_new(NULL);

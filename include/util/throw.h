@@ -82,7 +82,8 @@ void panic_sigabrt(const char* func, const char* file, int line, const char* msg
 extern "C" {
 #endif
 void raise_init_error(ErrorsContext* ctx);
-void raise_error_at_token(ErrorsContext* ctx, size_t linenum, bool is_total);
+void raise_base_error(ErrorsContext* ctx);
+void raise_error_at_token(ErrorsContext* ctx, size_t linenum);
 #ifdef __cplusplus
 }
 #endif
@@ -95,7 +96,8 @@ void raise_error_at_token(ErrorsContext* ctx, size_t linenum, bool is_total);
     }                                                     \
     while (0)
 #define THROW_INIT(...) THROW_ERROR(1, raise_init_error(ctx->errors), __VA_ARGS__)
-#define THROW_AT(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X, false), __VA_ARGS__)
-#define THROW_AT_LINE(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X, true), __VA_ARGS__)
+#define THROW_BASE(...) THROW_ERROR(1, raise_base_error(ctx->errors), __VA_ARGS__)
+#define THROW_AT THROW_AT_LINE // TODO
+#define THROW_AT_LINE(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X), __VA_ARGS__)
 
 #endif
