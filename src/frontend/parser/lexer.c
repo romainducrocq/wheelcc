@@ -686,7 +686,7 @@ static string_t get_match(Ctx ctx, size_t match_at, size_t match_size) {
 static error_t tokenize_include(Ctx ctx, size_t linenum);
 
 static size_t push_token_info(Ctx ctx) {
-    TokenInfo token_info = {ctx->match_at, ctx->match_size, ctx->total_linenum};
+    TokenInfo token_info = {(int)ctx->match_at, (int)ctx->match_size, ctx->total_linenum};
     vec_push_back(ctx->errors->token_infos, token_info);
     return vec_size(ctx->errors->token_infos) - 1;
 }

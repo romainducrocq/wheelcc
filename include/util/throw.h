@@ -26,8 +26,8 @@ typedef struct FileOpenLine {
 } FileOpenLine;
 
 typedef struct TokenInfo {
-    size_t tok_pos;
-    size_t tok_len;
+    int tok_pos;
+    int tok_len;
     size_t total_linenum;
 } TokenInfo;
 
