@@ -131,6 +131,14 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
             "        %*s| %*s^%s\n",
             filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, line, pad_linenum, "", tok_pos, "", tok_underline);
 
+        // TODO rm before
+        // fprintf(stderr,
+        //     "\033[1m%s:%zu:\033[0m\n"
+        //     "\033[0;31merror:\033[0m %s\n"
+        //     "at line %s: \033[1m%s\033[0m\n",
+        //     filename, tok_linenum, ctx->msg, strto_linenum, line);
+
+
         str_delete(tok_underline);
         str_delete(strto_linenum);
     }
