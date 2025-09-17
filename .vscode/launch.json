@@ -6,12 +6,24 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/wheelcc",
-            "args": ["255", "0", "0", "return_0.c", "${PWD}"],
+            "args": ["255", "0", "0", "return_0.c", "./"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
             "environment": [],
             "externalConsole": false,
             "preLaunchTask": "Build"
+        },
+        {
+            "name": "DebugCpp",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/wheelcc",
+            "args": ["255", "0", "0", "return_0.c", "./"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/bin",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "BuildCpp"
         }
     ]
 }

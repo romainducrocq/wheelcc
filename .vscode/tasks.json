@@ -29,6 +29,26 @@
             },
             "dependsOn": "Configure",
             "problemMatcher": []
+        },
+        {
+            "label": "ConfigureCpp",
+            "type": "shell",
+            "command": "cmake -G \"Unix Makefiles\" -S . -B debug/ -DCMAKE_BUILD_TYPE=Debug -D__NDEBUG__=OFF -DBUILD_CPP=ON",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "dependsOn": "Clean",
+            "problemMatcher": []
+        },
+        {
+            "label": "BuildCpp",
+            "type": "shell",
+            "command": "cmake --build . --config Debug",
+            "options": {
+                "cwd": "${workspaceFolder}/build/debug"
+            },
+            "dependsOn": "ConfigureCpp",
+            "problemMatcher": []
         }
     ]
 }
