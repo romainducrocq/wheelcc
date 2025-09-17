@@ -26,9 +26,9 @@ typedef struct FileOpenLine {
 } FileOpenLine;
 
 typedef struct TokenInfo {
-    size_t total_linenum;
     size_t tok_pos;
     size_t tok_len;
+    size_t total_linenum;
 } TokenInfo;
 
 typedef struct ErrorsContext {
@@ -83,7 +83,7 @@ extern "C" {
 #endif
 void raise_init_error(ErrorsContext* ctx);
 void raise_base_error(ErrorsContext* ctx);
-void raise_error_at_token(ErrorsContext* ctx, size_t linenum);
+void raise_error_at_token(ErrorsContext* ctx, size_t info_at);
 #ifdef __cplusplus
 }
 #endif

@@ -685,6 +685,12 @@ static string_t get_match(Ctx ctx, size_t match_at, size_t match_size) {
 
 static error_t tokenize_include(Ctx ctx, size_t linenum);
 
+static size_t push_token_info(Ctx ctx) {
+    TokenInfo token_info = {ctx->match_at, ctx->match_size, ctx->total_linenum};
+    vec_push_back(ctx->errors->token_infos, token_info);
+    return vec_size(ctx->errors->token_infos) - 1;
+}
+
 static error_t tokenize_file(Ctx ctx) {
     string_t match = str_new(NULL);
     CATCH_ENTER;
@@ -726,7 +732,8 @@ static error_t tokenize_file(Ctx ctx) {
                 }
                 case TOK_error: {
                     match = get_match(ctx, ctx->match_at, ctx->match_size);
-                    THROW_AT_LINE(ctx->total_linenum, GET_LEXER_MSG(MSG_invalid_tok, match));
+                    size_t info_at = push_token_info(ctx);
+                    THROW_AT_LINE(info_at, GET_LEXER_MSG(MSG_invalid_tok, match));
                 }
                 default:
                     goto Lpass;
@@ -736,7 +743,8 @@ static error_t tokenize_file(Ctx ctx) {
         Lcontinue:
             continue;
         Lpass:;
-            Token token = {match_kind, match_tok, ctx->total_linenum};
+            size_t info_at = push_token_info(ctx);
+            Token token = {match_kind, match_tok, info_at};
             vec_push_back(*ctx->p_toks, token);
         }
     }
@@ -778,13 +786,15 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     switch (ctx->line[ctx->match_at]) {
         case '<': {
             if (!find_include(ctx->stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
-                THROW_AT_LINE(ctx->total_linenum, GET_LEXER_MSG(MSG_failed_include, filename));
+                size_t info_at = push_token_info(ctx);
+                THROW_AT_LINE(info_at, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }
         case '"': {
             if (!find_include(*ctx->p_includedirs, &filename)) {
-                THROW_AT_LINE(ctx->total_linenum, GET_LEXER_MSG(MSG_failed_include, filename));
+                size_t info_at = push_token_info(ctx);
+                THROW_AT_LINE(info_at, GET_LEXER_MSG(MSG_failed_include, filename));
             }
             break;
         }

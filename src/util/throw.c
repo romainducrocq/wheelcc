@@ -50,7 +50,7 @@ void raise_base_error(Ctx ctx) {
     fprintf(stderr, "\033[1m%s:\033[0m\n\033[0;31merror:\033[0m %s\n", filename, ctx->msg);
 }
 
-static size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
+static size_t get_token_linenum(Ctx ctx, size_t total_linenum) {
     for (size_t i = 0; i < vec_size(ctx->fopen_lines) - 1; ++i) {
         if (total_linenum < ctx->fopen_lines[i + 1].total_linenum) {
             set_filename(ctx->fileio, ctx->fopen_lines[i].filename);
@@ -61,9 +61,10 @@ static size_t handle_error_at_line(Ctx ctx, size_t total_linenum) {
     return total_linenum - vec_back(ctx->fopen_lines).total_linenum + vec_back(ctx->fopen_lines).linenum;
 }
 
-void raise_error_at_token(Ctx ctx, size_t linenum) {
-    // TDOO THROW_ABORT_IF if info_at > vec_size token_infos
-    linenum = handle_error_at_line(ctx, linenum);
+void raise_error_at_token(Ctx ctx, size_t info_at) {
+    THROW_ABORT_IF(info_at >= vec_size(ctx->errors->token_infos));
+    const TokenInfo* token_info = &ctx->errors->token_infos[info_at];
+    size_t tok_linenum = get_token_linenum(ctx, token_info->total_linenum);
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
     string_t line = str_new(NULL);
@@ -75,7 +76,7 @@ void raise_error_at_token(Ctx ctx, size_t linenum) {
             raise_base_error(ctx);
             return;
         }
-        for (size_t i = 0; i < linenum; ++i) {
+        for (size_t i = 0; i < tok_linenum; ++i) {
             if (getline(&buf, &len, fd) == -1) {
                 free(buf);
                 fclose(fd);
@@ -99,6 +100,6 @@ void raise_error_at_token(Ctx ctx, size_t linenum) {
         fflush(stdout);
     }
     fprintf(stderr, "\033[1m%s:%zu:\033[0m\n\033[0;31merror:\033[0m %s\nat line %zu: \033[1m%s\033[0m\n", filename,
-        linenum, ctx->msg, linenum, line);
+        tok_linenum, ctx->msg, tok_linenum, line);
     str_delete(line);
 }
