@@ -67,8 +67,9 @@ void raise_sigabrt(const char* func, const char* file, int line, const char* msg
 #ifdef __cplusplus
 }
 #endif
-#define THROW_ABORT raise_sigabrt(__func__, __FILE__, __LINE__, "abort")
-#define THROW_ALLOC(T) raise_sigabrt(__func__, __FILE__, __LINE__, "alloc " #T)
+#define THROW_PANIC(X) raise_sigabrt(__func__, __FILE__, __LINE__, X)
+#define THROW_ABORT THROW_PANIC("abort")
+#define THROW_ALLOC(T) THROW_PANIC("alloc " #T)
 #ifdef __NDEBUG__
 #define THROW_ABORT_IF(X)
 #else
