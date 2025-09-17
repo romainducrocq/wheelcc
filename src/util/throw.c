@@ -71,6 +71,7 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
     THROW_ABORT_IF(info_at >= vec_size(ctx->errors->token_infos));
     const TokenInfo* token_info = &ctx->errors->token_infos[info_at];
     size_t tok_linenum = get_token_linenum(ctx, token_info->total_linenum);
+
     free_fileio(ctx->fileio);
     const char* filename = get_filename(ctx->fileio);
     string_t line = str_new(NULL);
@@ -106,14 +107,14 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
         fflush(stdout);
     }
     {
-        string_t tok_underline = str_new("");
+        string_t tok_overline = str_new("");
         int tok_pos = 0;
         if (token_info->tok_pos >= 0) {
             tok_pos = token_info->tok_pos;
             if (token_info->tok_len > 1) {
-                str_resize(tok_underline, token_info->tok_len - 1);
-                for (size_t i = 0; i < str_size(tok_underline); ++i) {
-                    tok_underline[i] = '~';
+                str_resize(tok_overline, token_info->tok_len - 1);
+                for (size_t i = 0; i < str_size(tok_overline); ++i) {
+                    tok_overline[i] = '~';
                 }
             }
         }
@@ -127,9 +128,18 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
         fprintf(stderr,
             "\033[1m%s:%zu:%i:\033[0m\n"
             "\033[0;31merror:\033[0m %s\n"
-            "at line %s: \033[1m%s\033[0m\n"
-            "        %*s| %*s^%s\n",
-            filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, line, pad_linenum, "", tok_pos, "", tok_underline);
+            "at line %s: \033[0;31m%*sv%s\033[0m\n"
+            "        %*s| \033[1m%s\033[0m\n",
+            filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, tok_pos, "", tok_overline, pad_linenum, "", line);
+
+        // TODO rm underline
+        // fprintf(stderr,
+        //     "\033[1m%s:%zu:%i:\033[0m\n"
+        //     "\033[0;31merror:\033[0m %s\n"
+        //     "at line %s: \033[1m%s\033[0m\n"
+        //     "        %*s| %*s^%s\n",
+        //     filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, line, pad_linenum, "", tok_pos, "",
+        //     tok_overline);
 
         // TODO rm before
         // fprintf(stderr,
@@ -139,7 +149,7 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
         //     filename, tok_linenum, ctx->msg, strto_linenum, line);
 
 
-        str_delete(tok_underline);
+        str_delete(tok_overline);
         str_delete(strto_linenum);
     }
     str_delete(line);
