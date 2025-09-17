@@ -97,6 +97,6 @@ void raise_error_at_token(ErrorsContext* ctx, size_t info_at);
     while (0)
 #define THROW_INIT(...) THROW_ERROR(1, raise_init_error(ctx->errors), __VA_ARGS__)
 #define THROW_BASE(...) THROW_ERROR(1, raise_base_error(ctx->errors), __VA_ARGS__)
-#define THROW_AT_LINE(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X), __VA_ARGS__)
+#define THROW_AT_TOKEN(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X), __VA_ARGS__)
 
 #endif
