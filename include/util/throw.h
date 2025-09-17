@@ -17,17 +17,25 @@ typedef int error_t;
 typedef size_t hash_t;
 PairKeyValue(hash_t, size_t);
 
+#define ERROR_MSG_SIZE 1024
+
 typedef struct FileOpenLine {
     size_t linenum;
     size_t total_linenum;
     string_t filename;
 } FileOpenLine;
 
+typedef struct TokenInfo {
+    size_t linenum;
+    size_t tok_pos;
+    size_t tok_len;
+} TokenInfo;
+
 typedef struct ErrorsContext {
     struct ErrorsContext* errors;
     FileIoContext* fileio;
     // Throw
-    char msg[1024];
+    char msg[ERROR_MSG_SIZE];
     bool is_stdout;
     size_t linebuf;
     hashmap_t(hash_t, size_t) linebuf_map;
@@ -77,7 +85,7 @@ size_t handle_error_at_line(ErrorsContext* ctx, size_t total_linenum);
 #ifdef __cplusplus
 }
 #endif
-#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * 1024, X, __VA_ARGS__)
+#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * ERROR_MSG_SIZE, X, __VA_ARGS__)
 #define THROW_INIT(...)                                                               \
     do {                                                                              \
         GET_ERROR_MSG(__VA_ARGS__) > 0 ? raise_init_error(ctx->errors) : THROW_ABORT; \
