@@ -13,11 +13,8 @@ typedef struct FileIoContext FileIoContext;
 
 // Throw
 
-typedef int error_t;
 typedef size_t hash_t;
 PairKeyValue(hash_t, size_t);
-
-#define ERROR_MSG_SIZE 1024
 
 typedef struct FileOpenLine {
     size_t linenum;
@@ -42,20 +39,6 @@ typedef struct ErrorsContext {
     vector_t(FileOpenLine) fopen_lines;
     vector_t(TokenInfo) token_infos;
 } ErrorsContext;
-
-#define CATCH_ENTER error_t _errval = 0
-#define CATCH_EXIT return _errval
-#define EARLY_EXIT goto _Lfinally
-#define FINALLY \
-    _Lfinally:
-#define TRY(X)              \
-    do {                    \
-        _errval = X;        \
-        if (_errval != 0) { \
-            EARLY_EXIT;     \
-        }                   \
-    }                       \
-    while (0)
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,14 +70,7 @@ void raise_error_at_token(ErrorsContext* ctx, size_t info_at);
 #ifdef __cplusplus
 }
 #endif
-#define GET_ERROR_MSG(X, ...) snprintf(ctx->errors->msg, sizeof(char) * ERROR_MSG_SIZE, X, __VA_ARGS__)
-#define THROW_ERROR(X, Y, ...)                            \
-    do {                                                  \
-        GET_ERROR_MSG(__VA_ARGS__) > 0 ? Y : THROW_ABORT; \
-        _errval = X;                                      \
-        EARLY_EXIT;                                       \
-    }                                                     \
-    while (0)
+#define ERROR_MSG_BUF ctx->errors->msg
 #define THROW_INIT(...) THROW_ERROR(1, raise_init_error(ctx->errors), __VA_ARGS__)
 #define THROW_BASE(...) THROW_ERROR(1, raise_base_error(ctx->errors), __VA_ARGS__)
 #define THROW_AT_TOKEN(X, ...) THROW_ERROR(1, raise_error_at_token(ctx->errors, X), __VA_ARGS__)

@@ -7,7 +7,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 #if 0
+#include "tinydir/tinydir.h"
+#include <assert.h>
+#include <errno.h>
 #include <limits.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +26,43 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Errors
+
+typedef int error_t;
+#define ERROR_MSG_SIZE 1024
+
+#define CATCH_ENTER error_t _errval = 0
+#define CATCH_EXIT return _errval
+#define EARLY_EXIT goto _Lfinally
+#define FINALLY \
+    _Lfinally:
+#define TRY(X)              \
+    do {                    \
+        _errval = X;        \
+        if (_errval != 0) { \
+            EARLY_EXIT;     \
+        }                   \
+    }                       \
+    while (0)
+
+#if 0
+static char* error_msg[ERROR_MSG_SIZE];
+#define ERROR_MSG_BUF error_msg
+#define THROW_ABORT abort()
+#define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
+#endif
+
+#define SET_ERROR_MSG(X, ...) snprintf(ERROR_MSG_BUF, sizeof(char) * ERROR_MSG_SIZE, X, __VA_ARGS__)
+#define THROW_ERROR(X, Y, ...)                            \
+    do {                                                  \
+        SET_ERROR_MSG(__VA_ARGS__) > 0 ? Y : THROW_ABORT; \
+        _errval = X;                                      \
+        EARLY_EXIT;                                       \
+    }                                                     \
+    while (0)
+
+//////////////////////////////////////////////////////////////////////////////////////
+
 // Memory
 
 #define tagged_def_t(E, T) E##_##T##_t
@@ -32,9 +73,6 @@
 #else
 #define tagged_def_init(E, T1, T2) \
     (T1) { tagged_def_t(E, T2) }
-#endif
-#if 0
-#define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
 #endif
 
 #define unique_ptr_t(T) T*
