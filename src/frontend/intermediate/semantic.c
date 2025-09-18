@@ -555,7 +555,7 @@ static TULong get_const_ptr_value(const CConstant* node) {
     }
 }
 
-static size_t get_compound_line(const CCompoundInit* node) {
+static size_t get_compound_info_at(const CCompoundInit* node) {
     THROW_ABORT_IF(vec_empty(node->initializers));
     const CInitializer* initializer = node->initializers[0];
     while (initializer->type == AST_CCompoundInit_t) {
@@ -649,9 +649,9 @@ static error_t check_cast_exp(Ctx ctx, const CCast* node) {
 static error_t cast_exp(Ctx ctx, shared_ptr_t(Type) * exp_type, unique_ptr_t(CExp) * exp) {
     shared_ptr_t(Type) exp_type_cp = sptr_new();
     CATCH_ENTER;
-    size_t line = (*exp)->info_at;
+    size_t info_at = (*exp)->info_at;
     sptr_copy(Type, *exp_type, exp_type_cp);
-    *exp = make_CCast(exp, &exp_type_cp, line);
+    *exp = make_CCast(exp, &exp_type_cp, info_at);
     TRY(check_cast_exp(ctx, &(*exp)->get._CCast));
     FINALLY;
     free_Type(&exp_type_cp);
@@ -1371,8 +1371,8 @@ static void check_arr_typed_exp(unique_ptr_t(CExp) * addrof) {
         free_Type(&(*addrof)->exp_type);
         (*addrof)->exp_type = make_Pointer(&ref_type);
     }
-    size_t line = (*addrof)->info_at;
-    *addrof = make_CAddrOf(addrof, line);
+    size_t info_at = (*addrof)->info_at;
+    *addrof = make_CAddrOf(addrof, info_at);
     sptr_copy(Type, (*addrof)->get._CAddrOf.exp->exp_type, (*addrof)->exp_type);
 }
 
@@ -1739,7 +1739,7 @@ static error_t check_bound_arr_init(Ctx ctx, const CCompoundInit* node, const Ar
     if (vec_size(node->initializers) > (size_t)arr_type->size) {
         strto_fmt_1 = str_to_string(arr_type->size);
         strto_fmt_2 = str_to_string(vec_size(node->initializers));
-        THROW_AT_TOKEN(get_compound_line(node),
+        THROW_AT_TOKEN(get_compound_info_at(node),
             GET_SEMANTIC_MSG(MSG_arr_init_overflow, strto_fmt_1, str_fmt_arr(arr_type, &type_fmt), strto_fmt_2));
     }
     FINALLY;
@@ -1759,8 +1759,9 @@ static error_t check_bound_struct_init(Ctx ctx, const CCompoundInit* node, const
     if (vec_size(node->initializers) > bound) {
         strto_fmt_1 = str_to_string(vec_size(node->initializers));
         strto_fmt_2 = str_to_string(bound);
-        THROW_AT_TOKEN(get_compound_line(node), GET_SEMANTIC_MSG(MSG_struct_init_overflow,
-                                                    str_fmt_struct(struct_type, &type_fmt), strto_fmt_1, strto_fmt_2));
+        THROW_AT_TOKEN(
+            get_compound_info_at(node), GET_SEMANTIC_MSG(MSG_struct_init_overflow,
+                                            str_fmt_struct(struct_type, &type_fmt), strto_fmt_1, strto_fmt_2));
     }
     FINALLY;
     str_delete(type_fmt);
@@ -2224,7 +2225,7 @@ static error_t check_static_compound_init(Ctx ctx, const CCompoundInit* node, co
             TRY(check_static_struct_init(ctx, node, &static_init_type->get._Structure));
             break;
         default:
-            THROW_AT_TOKEN(get_compound_line(node),
+            THROW_AT_TOKEN(get_compound_info_at(node),
                 GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(static_init_type, &type_fmt)));
     }
     FINALLY;
@@ -3340,7 +3341,7 @@ static error_t reslv_compound_init(Ctx ctx, CCompoundInit* node, shared_ptr_t(Ty
             TRY(reslv_struct_init(ctx, node, &(*init_type)->get._Structure, init_type));
             break;
         default:
-            THROW_AT_TOKEN(get_compound_line(node),
+            THROW_AT_TOKEN(get_compound_info_at(node),
                 GET_SEMANTIC_MSG(MSG_scalar_init_with_compound, str_fmt_type(*init_type, &type_fmt)));
     }
     FINALLY;
