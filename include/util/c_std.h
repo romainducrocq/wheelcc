@@ -52,14 +52,15 @@ static char* error_msg[ERROR_MSG_SIZE];
 #define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
 #endif
 
-#define SET_ERROR_MSG(X, ...) snprintf(ERROR_MSG_BUF, sizeof(char) * ERROR_MSG_SIZE, X, __VA_ARGS__)
-#define THROW_ERROR(X, Y, ...)                            \
-    do {                                                  \
-        SET_ERROR_MSG(__VA_ARGS__) > 0 ? Y : THROW_ABORT; \
-        _errval = X;                                      \
-        EARLY_EXIT;                                       \
-    }                                                     \
+#define SET_ERROR_MSG(...) snprintf(ERROR_MSG_BUF, sizeof(char) * ERROR_MSG_SIZE, __VA_ARGS__)
+#define THROW_ERROR(X, Y, ...)                                  \
+    do {                                                        \
+        SET_ERROR_MSG(__VA_ARGS__) > 0 ? (void)Y : THROW_ABORT; \
+        _errval = X;                                            \
+        EARLY_EXIT;                                             \
+    }                                                           \
     while (0)
+#define THROW_MESSAGE(X, ...) THROW_ERROR(X, fprintf(stderr, ERROR_MSG_BUF), __VA_ARGS__)
 
 //////////////////////////////////////////////////////////////////////////////////////
 
