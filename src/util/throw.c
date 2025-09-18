@@ -108,9 +108,11 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
     }
     {
         string_t tok_overline = str_new("");
-        int tok_pos = 0;
+        string_t strto_linenum = str_to_string(tok_linenum);
+
+        int tok_pos = 1;
         if (token_info->tok_pos >= 0) {
-            tok_pos = token_info->tok_pos;
+            tok_pos += token_info->tok_pos;
             if (token_info->tok_len > 1) {
                 str_resize(tok_overline, token_info->tok_len - 1);
                 for (size_t i = 0; i < str_size(tok_overline); ++i) {
@@ -118,8 +120,7 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
                 }
             }
         }
-
-        string_t strto_linenum = str_to_string(tok_linenum);
+        int pad_tok = tok_pos - 1;
         int pad_linenum = (int)str_size(strto_linenum);
         if (pad_linenum < 0) {
             pad_linenum = 0;
@@ -130,24 +131,7 @@ void raise_error_at_token(Ctx ctx, size_t info_at) {
             "\033[0;31merror:\033[0m %s\n"
             "at line %s: \033[0;31m%*sv%s\033[0m\n"
             "        %*s| \033[1m%s\033[0m\n",
-            filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, tok_pos, "", tok_overline, pad_linenum, "", line);
-
-        // TODO rm underline
-        // fprintf(stderr,
-        //     "\033[1m%s:%zu:%i:\033[0m\n"
-        //     "\033[0;31merror:\033[0m %s\n"
-        //     "at line %s: \033[1m%s\033[0m\n"
-        //     "        %*s| %*s^%s\n",
-        //     filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, line, pad_linenum, "", tok_pos, "",
-        //     tok_overline);
-
-        // TODO rm before
-        // fprintf(stderr,
-        //     "\033[1m%s:%zu:\033[0m\n"
-        //     "\033[0;31merror:\033[0m %s\n"
-        //     "at line %s: \033[1m%s\033[0m\n",
-        //     filename, tok_linenum, ctx->msg, strto_linenum, line);
-
+            filename, tok_linenum, tok_pos, ctx->msg, strto_linenum, pad_tok, "", tok_overline, pad_linenum, "", line);
 
         str_delete(tok_overline);
         str_delete(strto_linenum);
