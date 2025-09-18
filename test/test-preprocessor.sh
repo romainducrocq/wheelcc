@@ -176,9 +176,10 @@ check_error () {
             for i in $(seq 1 $((${ERR}))); do
                 echo -n "${i}/"
             done
-            echo -e "test-header_${ERR}.h:10:${NC}"
+            echo -e "test-header_${ERR}.h:10:11:${NC}"
             echo -e "\033[0;31merror:${NC} (no. 547) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
-            echo -e "at line 10: \033[1mint e1 = {0};${NC}"
+            echo -e "at line 10: \033[0;31m          v${NC}"
+            echo -e "          | \033[1mint e1 = {0};${NC}"
             echo -e "${PACKAGE_NAME}: \033[0;31merror:${NC} compilation failed, see \033[1m‘--help’${NC}"
         ) | grep -q "identical"
         if [ ${?} -eq 0 ]; then
