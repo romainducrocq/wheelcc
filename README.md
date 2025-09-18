@@ -145,7 +145,7 @@ FILES:  list of .c files to compile
 
 ### Errors
 
-Compile errors output messages with file, line and explanation to stderr:  
+Compile errors output messages with file, line, position and explanation to stderr:  
 ```c
 int main(void) {
     int i = { 1 };
@@ -154,9 +154,10 @@ int main(void) {
 ```
 ```
 $ wheelcc main.c
-/home/user/wheelcc/main.c:2:
+/home/user/wheelcc/main.c:2:15:
 error: (no. 547) cannot initialize scalar type ‘int’ with compound initializer
-at line 2:     int i = { 1 };
+at line 2:               v
+         |     int i = { 1 };
 wheelcc: error: compilation failed, see ‘--help’
 ```
 
@@ -212,7 +213,7 @@ The preprocessor does not natively support macros, but macro expansion can be en
 
 wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux or MacOS assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
 The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file with the same name without extension, or with the name set with the `-o` command-line option.  
-wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line and explanation for the compile error to stderr.
+wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line, position and explanation for the compile error to stderr.
 
 ### Optimization
 
