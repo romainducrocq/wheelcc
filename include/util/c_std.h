@@ -6,7 +6,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-#if 0
+#ifdef C_STD_INCLUDE_ALL
 #include "tinydir/tinydir.h"
 #include <assert.h>
 #include <errno.h>
@@ -45,11 +45,12 @@ typedef int error_t;
     }                       \
     while (0)
 
-#if 0
+#ifdef C_STD_THROW_MESSAGE
 static char* error_msg[ERROR_MSG_SIZE];
 #define ERROR_MSG_BUF error_msg
 #define THROW_ABORT abort()
 #define THROW_ALLOC(T) fprintf(stderr, "failed to allocate %zu bytes for %s", sizeof(T), #T)
+#define THROW_MESSAGE(X, ...) THROW_ERROR(X, fprintf(stderr, ERROR_MSG_BUF), __VA_ARGS__)
 #endif
 
 #define SET_ERROR_MSG(...) snprintf(ERROR_MSG_BUF, sizeof(char) * ERROR_MSG_SIZE, __VA_ARGS__)
@@ -60,7 +61,6 @@ static char* error_msg[ERROR_MSG_SIZE];
         EARLY_EXIT;                                             \
     }                                                           \
     while (0)
-#define THROW_MESSAGE(X, ...) THROW_ERROR(X, fprintf(stderr, ERROR_MSG_BUF), __VA_ARGS__)
 
 //////////////////////////////////////////////////////////////////////////////////////
 
