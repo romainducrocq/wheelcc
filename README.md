@@ -347,7 +347,8 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 - x86-64 instruction reference: https://www.felixcloutier.com/x86/
 - Compiler explorer online: https://godbolt.org/
 <!---->
-
+  
+- My small C17/C++17 standard library: https://github.com/romainducrocq/c-std/
 - Some Were Meant for C, _Stephen Kell_: https://www.cs.tufts.edu/comp/150FP/archive/stephen-kell/some-were-meant-for-c.pdf
 
 ****
