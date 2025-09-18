@@ -213,34 +213,34 @@ uint64_t dbl_to_binary(double decimal) {
     return binary;
 }
 
-error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t line, intmax_t* value) {
+error_t string_to_intmax(ErrorsContext* ctx, const char* str_int, size_t info_at, intmax_t* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtoimax(str_int, &end_ptr, 10);
     if (end_ptr == str_int) {
-        THROW_AT_TOKEN(line, GET_UTIL_MSG(MSG_failed_strtoi, str_int));
+        THROW_AT_TOKEN(info_at, GET_UTIL_MSG(MSG_failed_strtoi, str_int));
     }
     FINALLY;
     CATCH_EXIT;
 }
 
-error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t line, uintmax_t* value) {
+error_t string_to_uintmax(ErrorsContext* ctx, const char* str_uint, size_t info_at, uintmax_t* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtoumax(str_uint, &end_ptr, 10);
     if (end_ptr == str_uint) {
-        THROW_AT_TOKEN(line, GET_UTIL_MSG(MSG_failed_strtou, str_uint));
+        THROW_AT_TOKEN(info_at, GET_UTIL_MSG(MSG_failed_strtou, str_uint));
     }
     FINALLY;
     CATCH_EXIT;
 }
 
-error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t line, double* value) {
+error_t string_to_dbl(ErrorsContext* ctx, const char* str_dbl, size_t info_at, double* value) {
     CATCH_ENTER;
     char* end_ptr = NULL;
     *value = strtod(str_dbl, &end_ptr);
     if (end_ptr == str_dbl) {
-        THROW_AT_TOKEN(line, GET_UTIL_MSG(MSG_failed_strtod, str_dbl));
+        THROW_AT_TOKEN(info_at, GET_UTIL_MSG(MSG_failed_strtod, str_dbl));
     }
     FINALLY;
     CATCH_EXIT;
