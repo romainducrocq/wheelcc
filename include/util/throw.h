@@ -46,11 +46,11 @@ extern "C" {
 #else
 _Noreturn
 #endif
-void panic_sigabrt(const char* func, const char* file, int line, const char* msg);
+void panic_sigabrt(const char* msg, const char* func, int line, const char* file);
 #ifdef __cplusplus
 }
 #endif
-#define THROW_PANIC(X) panic_sigabrt(__func__, __FILE__, __LINE__, X)
+#define PANIC_FUNC(X, ...) panic_sigabrt(X, __VA_ARGS__)
 #define THROW_ABORT THROW_PANIC("abort")
 #define THROW_ALLOC(T) THROW_PANIC("alloc " #T)
 #ifdef __NDEBUG__

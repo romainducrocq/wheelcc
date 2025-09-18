@@ -26,7 +26,7 @@ typedef ErrorsContext* Ctx;
 #else
 _Noreturn
 #endif
-void panic_sigabrt(const char* func, const char* file, int line, const char* msg) {
+void panic_sigabrt(const char* msg, const char* func, int line, const char* file) {
     fflush(stdout);
     fprintf(stderr,
         "\033[1m%s:%i:\033[0m\n"
