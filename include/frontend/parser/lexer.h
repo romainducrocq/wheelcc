@@ -19,7 +19,7 @@ typedef struct IdentifierContext IdentifierContext;
 typedef struct Token {
     TOKEN_KIND tok_kind;
     TIdentifier tok;
-    size_t line;
+    size_t info_at;
 } Token;
 
 #ifdef __cplusplus
