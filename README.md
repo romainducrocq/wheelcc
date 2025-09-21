@@ -148,16 +148,16 @@ FILES:  list of .c files to compile
 Compile errors output messages with file, line, position and explanation to stderr:  
 ```c
 int main(void) {
-    int i = { 1 };
+    int i = 1 + foo;
     return 0;
 }
 ```
 ```
 $ wheelcc main.c
-/home/user/wheelcc/main.c:2:15:
-error: (no. 547) cannot initialize scalar type ‘int’ with compound initializer
-at line 2:               v
-         |     int i = { 1 };
+/home/user/wheelcc/main.c:2:17:
+error: (no. 564) variable ‘foo’ not declared in this scope
+at line 2:                 v~~
+         |     int i = 1 + foo;
 wheelcc: error: compilation failed, see ‘--help’
 ```
 
@@ -347,7 +347,8 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 - x86-64 instruction reference: https://www.felixcloutier.com/x86/
 - Compiler explorer online: https://godbolt.org/
 <!---->
-
+  
+- My small C17/C++17 standard library: https://github.com/romainducrocq/c-std/
 - Some Were Meant for C, _Stephen Kell_: https://www.cs.tufts.edu/comp/150FP/archive/stephen-kell/some-were-meant-for-c.pdf
 
 ****
