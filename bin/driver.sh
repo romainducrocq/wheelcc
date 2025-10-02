@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
-PACKAGE_NAME="$(cat $(echo ${PACKAGE_DIR})/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
 CC="gcc"
 AS_FLAGS="--64"
 LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
@@ -75,7 +75,7 @@ function usage () {
     echo "[Output]:"
     echo "    -o <file>  write the output into <file>"
     echo ""
-    echo "FILES:  list of .c files to compile"
+    echo "FILES:  list of .${EXT_IN} files to compile"
     exit 0
 }
 
@@ -546,6 +546,9 @@ function link () {
 
 EXT_IN="c"
 EXT_OUT="s"
+if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+fi
 
 IS_VERBOSE=0
 IS_PREPROC=0

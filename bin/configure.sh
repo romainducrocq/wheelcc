@@ -1,6 +1,9 @@
 #!/bin/bash
 
 PACKAGE_NAME="wheelcc"
+if [ ! -z "${1}" ]; then
+    PACKAGE_NAME="${1}"
+fi
 
 echo -n "${PACKAGE_NAME}" > ./package_name.txt
 if [ ${?} -ne 0 ]; then
