@@ -1,11 +1,12 @@
 #!/bin/bash
 
+PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
 PACKAGE_NAME="wheelcc"
 if [ ! -z "${1}" ]; then
     PACKAGE_NAME="${1}"
 fi
 
-echo -n "${PACKAGE_NAME}" > ./package_name.txt
+echo -n "${PACKAGE_NAME}" > ${PACKAGE_DIR}/package_name.txt
 if [ ${?} -ne 0 ]; then
     echo -e "\033[0;31merror:\033[0m configuration failed" 1>&2
     exit 1

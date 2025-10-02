@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd $(dirname $(dirname $(readlink -f ${0})))/build/
+PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
+cd $(dirname ${PACKAGE_DIR})/build/
+
 if [[ "${1}" = "--cmake"* ]]; then
     ./cmake_build.sh ${1}
     if [ ${?} -ne 0 ]; then
