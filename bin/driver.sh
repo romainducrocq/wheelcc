@@ -10,6 +10,7 @@ if [[ "$(uname -s)" = "Darwin"* ]]; then
     AS_FLAGS="-arch x86_64"
     LD_LIB_64=""
 fi
+PP="${CC}"
 
 ARGC=${#}
 ARGV=(${@})
@@ -57,7 +58,7 @@ function usage () {
     echo "    -O3                           alias    for -O1 -O2"
     echo ""
     echo "[Preprocess]:"
-    echo "    -E  enable macro expansion with ${CC}"
+    echo "    -E  enable macro expansion with ${PP}"
     echo ""
     echo "[Link]:"
     echo "    -s  compile, but do not assemble and link"
@@ -466,10 +467,17 @@ function add_linklibs () {
 function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
-            verbose "Preprocess (${CC}) -> ${FILE}.i"
-            ${CC} -E -P ${FILE}.${EXT_IN} -o ${FILE}.i
-            if [ ${?} -ne 0 ]; then
-                raise_error "preprocessing failed"
+            verbose "Preprocess (${PP}) -> ${FILE}.i"
+            if [ "${PP}" = m4 ]; then
+                m4 -P ${FILE}.${EXT_IN} > ${FILE}.i
+                if [ ${?} -ne 0 ]; then
+                    raise_error "preprocessing failed"
+                fi
+            else
+                ${CC} -E -P ${FILE}.${EXT_IN} -o ${FILE}.i
+                if [ ${?} -ne 0 ]; then
+                    raise_error "preprocessing failed"
+                fi
             fi
         done
         EXT_IN="i"
@@ -548,6 +556,9 @@ EXT_IN="c"
 EXT_OUT="s"
 if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
     EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+    if [[ "${EXT_IN}" != "c"* ]]; then
+        PP="m4"
+    fi
 fi
 
 IS_VERBOSE=0
