@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
-PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/pkgname.cfg)"
 
 INSTALL_Y=""
 INSTALL_DIR="/usr/local/bin"

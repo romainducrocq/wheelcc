@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+PACKAGE_NAME="$(cat ../bin/pkgname.cfg)"
 CC="gcc"
 CXX="g++"
 if [[ "$(uname -s)" = "Darwin"* ]]; then

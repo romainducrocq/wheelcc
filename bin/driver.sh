@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PACKAGE_DIR="$(dirname $(readlink -f ${0}))"
-PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/pkgname.cfg)"
 CC="gcc"
 AS_FLAGS="--64"
 LD_LIB_64="/lib64/ld-linux-x86-64.so.2"
@@ -554,8 +554,8 @@ function link () {
 
 EXT_IN="c"
 EXT_OUT="s"
-if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
-    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/fileext.cfg)"
     if [[ "${EXT_IN}" != "c"* ]]; then
         PP="m4"
     fi

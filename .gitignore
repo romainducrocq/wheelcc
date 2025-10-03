@@ -19,9 +19,9 @@ perf.data
 
 /bin/wheelcc
 /bin/planet
-/bin/package_name.txt
-/bin/filename_ext.txt
-/bin/package_path.txt
+/bin/pkgname.cfg
+/bin/pkgpath.cfg
+/bin/fileext.cfg
 /bin/crt.o
 /build/build_cache/
 /test/tests/

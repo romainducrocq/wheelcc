@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+PACKAGE_NAME="$(cat ../bin/pkgname.cfg)"
 
 LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'

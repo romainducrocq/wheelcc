@@ -3,8 +3,8 @@
 PACKAGE_TEST="$(dirname $(readlink -f ${0}))"
 PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
 PACKAGE_PATH="$(dirname ${PACKAGE_TEST})"
-if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
-    PACKAGE_PATH="$(cat ${PACKAGE_DIR}/package_path.txt)"
+if [ -f "${PACKAGE_DIR}/pkgpath.cfg" ]; then
+    PACKAGE_PATH="$(cat ${PACKAGE_DIR}/pkgpath.cfg)"
 fi
 
 LIGHT_RED='\033[1;31m'

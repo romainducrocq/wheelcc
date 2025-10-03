@@ -2,15 +2,15 @@
 
 PACKAGE_TEST="$(dirname $(dirname $(readlink -f ${0})))"
 PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
-PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/pkgname.cfg)"
 
 EXT_IN="c"
 TEST_DIR="${PACKAGE_TEST}/tests/compiler"
-if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
-    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/fileext.cfg)"
 fi
-if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
-    TEST_DIR="$(cat ${PACKAGE_DIR}/package_path.txt)/test/tests/compiler"
+if [ -f "${PACKAGE_DIR}/pkgpath.cfg" ]; then
+    TEST_DIR="$(cat ${PACKAGE_DIR}/pkgpath.cfg)/test/tests/compiler"
 fi
 
 function print_errors () {

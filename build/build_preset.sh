@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+PACKAGE_NAME="$(cat ../bin/pkgname.cfg)"
 
 if [ -f "../bin/${PACKAGE_NAME}" ]; then
     rm ../bin/${PACKAGE_NAME}

@@ -2,11 +2,11 @@
 
 PACKAGE_TEST="$(dirname $(dirname $(readlink -f ${0})))"
 PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
-PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/pkgname.cfg)"
 
 EXT_IN="c"
-if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
-    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/fileext.cfg)"
 fi
 
 valgrind --help > /dev/null 2>&1

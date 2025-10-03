@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-file(READ "../bin/package_name.txt" PACKAGE_NAME)
+file(READ "../bin/pkgname.cfg" PACKAGE_NAME)
 project("${PACKAGE_NAME}")
 
 set(PROJECT_DIR "${PROJECT_SOURCE_DIR}/..")

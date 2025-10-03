@@ -2,7 +2,7 @@
 
 PACKAGE_TEST="$(dirname $(readlink -f ${0}))"
 PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
-PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/pkgname.cfg)"
 
 LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
@@ -14,11 +14,11 @@ TEST_SRCS=()
 for i in $(seq 1 20); do
     TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
 done
-if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
-    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/fileext.cfg)"
 fi
-if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
-    TEST_DIR="$(cat ${PACKAGE_DIR}/package_path.txt)/test/tests/compiler"
+if [ -f "${PACKAGE_DIR}/pkgpath.cfg" ]; then
+    TEST_DIR="$(cat ${PACKAGE_DIR}/pkgpath.cfg)/test/tests/compiler"
 fi
 
 if [[ "$(uname -s)" = "Darwin"* ]]; then
