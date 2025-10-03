@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd ../build/
+PACKAGE_TEST="$(dirname $(readlink -f ${0}))"
+cd $(dirname ${PACKAGE_TEST})/build/
 
 ./build_preset.sh
 if [ ${?} -ne 0 ]; then exit 1; fi

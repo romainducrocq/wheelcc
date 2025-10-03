@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
+PACKAGE_TEST="$(dirname $(readlink -f ${0}))"
+PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
 CC="gcc"
 DIST="linux"
 if [[ "$(uname -s)" = "Darwin"* ]]; then
@@ -31,11 +33,19 @@ LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
 NC='\033[0m'
 
-TEST_DIR="${PWD}/tests/compiler"
+EXT_IN="c"
+TEST_DIR_GCC="${PACKAGE_TEST}/tests/compiler"
+TEST_DIR="${TEST_DIR_GCC}"
 TEST_SRCS=()
 for i in $(seq 1 20); do
-    TEST_SRCS+=("$(basename $(find ${TEST_DIR} -maxdepth 1 -name "${i}_*" -type d))")
+    TEST_SRCS+=("$(basename $(find ${TEST_DIR_GCC} -maxdepth 1 -name "${i}_*" -type d))")
 done
+if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+fi
+if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
+    TEST_DIR="$(cat ${PACKAGE_DIR}/package_path.txt)/test/tests/compiler"
+fi
 
 function file () {
     FILE=${1%.*}
@@ -57,7 +67,7 @@ function total () {
 }
 
 function indent () {
-    echo -n "$(echo "${TOTAL} [ ] ${FILE}.c" | sed -r 's/./ /g')"
+    echo -n "$(echo "${TOTAL} [ ] ${FILE}.${EXT_IN}" | sed -r 's/./ /g')"
 }
 
 function print_check () {
@@ -65,13 +75,13 @@ function print_check () {
 }
 
 function print_fail () {
-    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.${EXT_IN}${NC}"
     PRINT="${PACKAGE_NAME}: ${RETURN_THIS}"
     print_check "fail" "[${PRINT}]"
 }
 
 function print_single () {
-    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.${EXT_IN}${NC}"
     if [ ${RETURN_PASS} -ne 0 ]; then
         PRINT="${COMP_2}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
@@ -87,7 +97,7 @@ function print_single () {
 }
 
 function print_client () {
-    echo -e -n "${TOTAL} ${RESULT} ${FILE}.c${NC}"
+    echo -e -n "${TOTAL} ${RESULT} ${FILE}.${EXT_IN}${NC}"
     if [ ${RETURN_PASS} -ne 0 ]; then
         PRINT="${COMP_4}: ${RETURN_THIS}"
         print_check "return" "[${PRINT}]"
@@ -105,7 +115,7 @@ function print_client () {
 }
 
 function check_fail () {
-    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${TEST_DIR}/${FILE}.${EXT_IN} > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -ne 0 ]; then
@@ -126,9 +136,9 @@ function check_pass () {
         return 1
     fi
 
-    STDOUT_THIS=$(${FILE})
+    STDOUT_THIS=$(${TEST_DIR}/${FILE})
     RETURN_THIS=${?}
-    rm ${FILE}
+    rm ${TEST_DIR}/${FILE}
 
     if [ ${RETURN_GCC} -eq ${RETURN_THIS} ]; then
         if [[ "${STDOUT_GCC}" == "${STDOUT_THIS}" ]]; then
@@ -157,7 +167,9 @@ function check_single () {
     RETURN_GCC=${?}
     rm ${FILE}
 
-    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${FILE}.c > /dev/null 2>&1
+    if [ -f "${TEST_DIR}/${FILE}" ]; then rm ${TEST_DIR}/${FILE}; fi
+
+    ${PACKAGE_NAME} ${OPTIM} ${LIBS} ${TEST_DIR}/${FILE}.${EXT_IN} > /dev/null 2>&1
     RETURN_THIS=${?}
 
     check_pass 0
@@ -169,25 +181,25 @@ function check_single () {
 }
 
 function check_data () {
-    ${CC} -c ${FILE}_${DIST}.s ${LIBS} -o ${FILE}_data.o > /dev/null 2>&1
     ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
-    ${CC} ${FILE}.o ${FILE}_data.o ${LIBS} -o ${FILE} > /dev/null 2>&1
+    ${CC} ${FILE}.o ${FILE}_${DIST}.s ${LIBS} -o ${FILE} > /dev/null 2>&1
     STDOUT_GCC=$(${FILE})
     RETURN_GCC=${?}
+    rm ${FILE}.o
     rm ${FILE}
 
-    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
+    if [ -f "${TEST_DIR}/${FILE}.o" ]; then rm ${TEST_DIR}/${FILE}.o; fi
+    if [ -f "${TEST_DIR}/${FILE}" ]; then rm ${TEST_DIR}/${FILE}; fi
 
-    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${TEST_DIR}/${FILE}.${EXT_IN} > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        ${CC} ${FILE}.o ${FILE}_${DIST}.s ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${TEST_DIR}/${FILE}.o ${FILE}_${DIST}.s ${LIBS} -o ${TEST_DIR}/${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
-    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
-    if [ -f "${FILE}_data.o" ]; then rm ${FILE}_data.o; fi
+    if [ -f "${TEST_DIR}/${FILE}.o" ]; then rm ${TEST_DIR}/${FILE}.o; fi
 
     check_pass 0
     RETURN_PASS=${?}
@@ -198,16 +210,16 @@ function check_data () {
 }
 
 function compile_client () {
-    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${1} > /dev/null 2>&1
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${TEST_DIR}/${1}.${EXT_IN} > /dev/null 2>&1
     RETURN_THIS=${?}
 
     if [ ${RETURN_THIS} -eq 0 ]; then
-        ${CC} ${FILE}.o ${FILE}_client.o ${LIBS} -o ${FILE} > /dev/null 2>&1
+        ${CC} ${TEST_DIR}/${FILE}.o ${TEST_DIR}/${FILE}_client.o ${LIBS} -o ${TEST_DIR}/${FILE} > /dev/null 2>&1
         RETURN_THIS=${?}
     fi
 
-    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
-    if [ -f "${FILE}_client.o" ]; then rm ${FILE}_client.o; fi
+    if [ -f "${TEST_DIR}/${FILE}.o" ]; then rm ${TEST_DIR}/${FILE}.o; fi
+    if [ -f "${TEST_DIR}/${FILE}_client.o" ]; then rm ${TEST_DIR}/${FILE}_client.o; fi
 }
 
 function check_client () {
@@ -216,11 +228,12 @@ function check_client () {
     RETURN_GCC=${?}
     rm ${FILE}
 
-    if [ -f "${FILE}.o" ]; then rm ${FILE}.o; fi
-    if [ -f "${FILE}_client.o" ]; then rm ${FILE}_client.o; fi
+    if [ -f "${TEST_DIR}/${FILE}.o" ]; then rm ${TEST_DIR}/${FILE}.o; fi
+    if [ -f "${TEST_DIR}/${FILE}_client.o" ]; then rm ${TEST_DIR}/${FILE}_client.o; fi
+    if [ -f "${TEST_DIR}/${FILE}" ]; then rm ${TEST_DIR}/${FILE}; fi
 
-    ${CC} -c ${FILE}_client.c ${LIBS} -o ${FILE}_client.o > /dev/null 2>&1
-    compile_client ${FILE}.c
+    ${CC} -c ${FILE}_client.c ${LIBS} -o ${TEST_DIR}/${FILE}_client.o > /dev/null 2>&1
+    compile_client ${FILE}
     check_pass 1
     RETURN_PASS=${?}
     RETURN_GCC_THIS=${RETURN_THIS}
@@ -231,8 +244,8 @@ function check_client () {
         return
     fi
 
-    ${CC} -c ${FILE}.c ${LIBS} -o ${FILE}.o > /dev/null 2>&1
-    compile_client ${FILE}_client.c
+    ${CC} -c ${FILE}.c ${LIBS} -o ${TEST_DIR}/${FILE}.o > /dev/null 2>&1
+    compile_client ${FILE}_client
     check_pass 1
     RETURN_PASS=${?}
     RETURN_THIS_GCC=${RETURN_THIS}
@@ -243,8 +256,8 @@ function check_client () {
         return
     fi
 
-    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${FILE}.c > /dev/null 2>&1
-    compile_client ${FILE}_client.c
+    ${PACKAGE_NAME} ${OPTIM} -c ${LIBS} ${TEST_DIR}/${FILE}.${EXT_IN} > /dev/null 2>&1
+    compile_client ${FILE}_client
     check_pass 0
     RETURN_PASS=${?}
 
@@ -257,6 +270,9 @@ function check_client () {
 
 function check_test () {
     FILE=$(file ${1})
+    if [ ! -f "${TEST_DIR}/${FILE}.${EXT_IN}" ]; then
+        return
+    fi
     if [[ "${FILE}" == *"_client" ]]; then
         return
     fi
@@ -321,7 +337,7 @@ elif [ "${1}" = "-O3" ]; then
     ARG=${2}
 fi
 
-cd ${TEST_DIR}
+cd ${TEST_DIR_GCC}
 if [ ! -z "${ARG}" ]; then
     test_src ${TEST_SRCS["$((${ARG} - 1))"]}
 else
