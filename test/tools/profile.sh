@@ -1,8 +1,13 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../../bin/package_name.txt)"
+PACKAGE_TEST="$(dirname $(dirname $(readlink -f ${0})))"
+PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
 
-ROOT="${PWD}/../.."
+EXT_IN="c"
+if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+fi
 
 valgrind --help > /dev/null 2>&1
 if [ ${?} -ne 0 ]; then
@@ -27,12 +32,12 @@ fi
 
 if [ -z "${ARG}" ]; then exit 1; fi
 FILE="$(readlink -f ${ARG%.*})"
-if [ ! -f "${FILE}.c" ]; then exit 1; fi
+if [ ! -f "${FILE}.${EXT_IN}" ]; then exit 1; fi
 
 valgrind \
     --tool=callgrind \
     --callgrind-out-file=$(basename ${FILE}).callgrind.out.1 \
-    ${ROOT}/bin/${PACKAGE_NAME} 0 ${OPTIM} ${FILE}.c $(dirname ${FILE})/ > /dev/null 2>&1
+    ${PACKAGE_DIR}/${PACKAGE_NAME} 0 ${OPTIM} ${FILE}.${EXT_IN} $(dirname ${FILE})/ > /dev/null 2>&1
 
 exit 0
 
