@@ -121,7 +121,7 @@ function make_test () {
     echo "}" >> ${FILE}.c
 }
 
-check_preprocess () {
+function check_preprocess () {
     let TOTAL+=1
 
     make_test
@@ -156,10 +156,10 @@ check_preprocess () {
     print_preprocess
 }
 
-check_error () {
+function check_error () {
     let TOTAL+=1
 
-    echo "int e1 = {0};" >> ${TEST_SRC}/$(header_dir ${ERR})test-header_${ERR}.h
+    echo "int e1 = {0, 1, 2};" >> ${TEST_SRC}/$(header_dir ${ERR})test-header_${ERR}.h
 
     if [ -f "${FILE}" ]; then
         rm ${FILE}
@@ -179,7 +179,7 @@ check_error () {
             echo -e "test-header_${ERR}.h:10:11:${NC}"
             echo -e "\033[0;31merror:${NC} (no. 547) cannot initialize scalar type \033[1m‘int’${NC} with compound initializer"
             echo -e "at line 10: \033[0;31m          v${NC}"
-            echo -e "          | \033[1mint e1 = {0};${NC}"
+            echo -e "          | \033[1mint e1 = {0, 1, 2};${NC}"
             echo -e "${PACKAGE_NAME}: \033[0;31merror:${NC} compilation failed, see \033[1m‘--help’${NC}"
         ) | grep -q "identical"
         if [ ${?} -eq 0 ]; then

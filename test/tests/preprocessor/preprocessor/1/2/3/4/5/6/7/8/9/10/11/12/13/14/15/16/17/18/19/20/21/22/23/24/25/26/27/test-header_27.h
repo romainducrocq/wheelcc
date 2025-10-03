@@ -7,4 +7,4 @@ comment 27
    */
 #define MACRO_27 27
 char* s27 = "Hello 27!";
-int e1 = {0};
+int e1 = {0, 1, 2};
