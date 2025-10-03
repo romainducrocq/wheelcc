@@ -28,7 +28,6 @@ list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/ast/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/optimization/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/frontend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/backend/")
-list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/src/frontend/")
 list(APPEND INCLUDE_DIRS "${PROJECT_DIR}/lib/")
 
 list(APPEND SOURCE_FILES "${PROJECT_DIR}/src/main.c")
