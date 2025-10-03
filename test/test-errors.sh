@@ -1,7 +1,11 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../bin/package_name.txt)"
-PACKAGE_PATH="$(readlink -f ..)"
+PACKAGE_TEST="$(dirname $(readlink -f ${0}))"
+PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
+PACKAGE_PATH="$(dirname ${PACKAGE_TEST})"
+if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
+    PACKAGE_PATH="$(cat ${PACKAGE_DIR}/package_path.txt)"
+fi
 
 LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'

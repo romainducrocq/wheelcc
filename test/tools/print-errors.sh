@@ -1,11 +1,20 @@
 #!/bin/bash
 
-PACKAGE_NAME="$(cat ../../bin/package_name.txt)"
+PACKAGE_TEST="$(dirname $(dirname $(readlink -f ${0})))"
+PACKAGE_DIR="$(dirname ${PACKAGE_TEST})/bin"
+PACKAGE_NAME="$(cat ${PACKAGE_DIR}/package_name.txt)"
 
-TEST_DIR="${PWD}/../tests/compiler"
+EXT_IN="c"
+TEST_DIR="${PACKAGE_TEST}/tests/compiler"
+if [ -f "${PACKAGE_DIR}/filename_ext.txt" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/filename_ext.txt)"
+fi
+if [ -f "${PACKAGE_DIR}/package_path.txt" ]; then
+    TEST_DIR="$(cat ${PACKAGE_DIR}/package_path.txt)/test/tests/compiler"
+fi
 
 function print_errors () {
-    for FILE in $(find ${TEST_DIR}/${1}_* -name "*.c" -type f | grep invalid | sort --uniq); do
+    for FILE in $(find ${TEST_DIR}/${1}_* -name "*.${EXT_IN}" -type f | grep invalid | sort --uniq); do
         if [ ! -z "${MATCH_PATTERN}" ]; then
             cat <(${PACKAGE_NAME} -s ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
         else
