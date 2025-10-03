@@ -11,8 +11,8 @@ LIGHT_RED='\033[1;31m'
 LIGHT_GREEN='\033[1;32m'
 NC='\033[0m'
 
-ERRS_IN=$(sed "s|@PACKAGE_PATH@|${PACKAGE_PATH}|g" tools/print_errors.in)
-ERRS_OUT=$(cd tools/; ./print-errors.sh; cd ../)
+ERRS_IN=$(sed "s|@PACKAGE_PATH@|${PACKAGE_PATH}|g" ${PACKAGE_TEST}/tools/print_errors.in)
+ERRS_OUT=$(cd ${PACKAGE_TEST}/tools/; ./print-errors.sh; cd ${PACKAGE_TEST})
 
 diff -q <(echo "${ERRS_IN}" | sort) <(echo "${ERRS_OUT}" | sort)
 RETURN=${?}
