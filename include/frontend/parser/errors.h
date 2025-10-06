@@ -46,6 +46,7 @@ typedef enum MESSAGE_ARG {
     MSG_no_optim_2_arg,
     MSG_invalid_optim_2_arg,
     MSG_no_input_files_arg,
+    MSG_no_stdlib_dir_arg,
     MSG_no_include_dir_arg
 } MESSAGE_ARG;
 

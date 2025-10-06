@@ -10,6 +10,7 @@ if [[ "$(uname -s)" = "Darwin"* ]]; then
     AS_FLAGS="-arch x86_64"
     LD_LIB_64=""
 fi
+LIBC_DIR="${PACKAGE_DIR}/libc/"
 PP="${CC}"
 
 ARGC=${#}
@@ -493,7 +494,7 @@ function compile () {
             SOURCE_DIR=""
         fi
         verbose "Compile (${PACKAGE_NAME}) -> ${FILE}.${EXT_OUT}"
-        ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${SOURCE_DIR} ${INCLUDE_DIRS}
+        ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${LIBC_DIR} ${SOURCE_DIR} ${INCLUDE_DIRS}
         if [ ${?} -ne 0 ]; then
             raise_error "compilation failed"
         fi

@@ -37,7 +37,7 @@ if [ ! -f "${FILE}.${EXT_IN}" ]; then exit 1; fi
 valgrind \
     --tool=callgrind \
     --callgrind-out-file=$(basename ${FILE}).callgrind.out.1 \
-    ${PACKAGE_DIR}/${PACKAGE_NAME} 0 ${OPTIM} ${FILE}.${EXT_IN} $(dirname ${FILE})/ > /dev/null 2>&1
+    ${PACKAGE_DIR}/${PACKAGE_NAME} 0 ${OPTIM} ${FILE}.${EXT_IN} ${PACKAGE_DIR}/libc/ $(dirname ${FILE})/ > /dev/null 2>&1
 
 exit 0
 

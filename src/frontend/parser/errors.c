@@ -503,7 +503,7 @@ const char* get_fatal_msg(MESSAGE_FATAL msg) {
 const char* get_arg_msg(MESSAGE_ARG msg) {
     switch (msg) {
         case MSG_print_help:
-            RET_ERRNO "Usage: %s [--help] Debug OptimL1 OptimL2 FILE SourceDir [IncludeDir...]\n"
+            RET_ERRNO "Usage: %s [--help] Debug OptimL1 OptimL2 FILE StdlibDir SourceDir [IncludeDir...]\n"
                       "    [--help]:         print help and exit\n"
                       "    Debug:            print debug info (0..1"
 #ifndef __NDEBUG__
@@ -513,6 +513,7 @@ const char* get_arg_msg(MESSAGE_ARG msg) {
                       "    OptimL1:          optimization level 1 mask (0..15)\n"
                       "    OptimL2:          optimization level 2 enum (0..2)\n"
                       "    FILE:             source file to compile\n"
+                      "    StdlibDir:        standard lib include path\n"
                       "    SourceDir:        source file include path\n"
                       "    [IncludeDir...]:  add a list of paths to include path\n"
                       "see " EM_CSTR("driver.sh");
@@ -530,8 +531,10 @@ const char* get_arg_msg(MESSAGE_ARG msg) {
             RET_ERRNO "invalid level 2 optimization code " EM_VARG " passed in third argument, see " EM_CSTR("--help");
         case MSG_no_input_files_arg:
             RET_ERRNO "no input file passed in fourth argument, see " EM_CSTR("--help");
+        case MSG_no_stdlib_dir_arg:
+            RET_ERRNO "no standard lib directory passed in fifth argument, see " EM_CSTR("--help");
         case MSG_no_include_dir_arg:
-            RET_ERRNO "no include directories passed in fifth argument, see " EM_CSTR("--help");
+            RET_ERRNO "no include directories passed in sixth argument, see " EM_CSTR("--help");
         default:
             THROW_ABORT;
     }

@@ -23,6 +23,7 @@ perf.data
 /bin/pkgpath.cfg
 /bin/fileext.cfg
 /bin/crt.o
+/bin/libc/*
 /build/build_cache/
 /test/tests/
 /test/test_results/

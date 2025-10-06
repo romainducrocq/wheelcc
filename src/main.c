@@ -345,6 +345,11 @@ static error_t arg_parse(Ctx ctx, int argc, char** argv) {
     ctx->filename = str_new(argv[i]);
 
     if (!argv[++i]) {
+        THROW_INIT(GET_ARG_MSG_0(MSG_no_stdlib_dir_arg));
+    }
+    vec_push_back(ctx->stdlibdirs, (const char*)argv[i]);
+
+    if (!argv[++i]) {
         THROW_INIT(GET_ARG_MSG_0(MSG_no_include_dir_arg));
     }
     do {
