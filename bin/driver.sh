@@ -455,6 +455,7 @@ function add_linkdirs () {
     if [ ! -z "${LINK_DIRS}" ]; then
         LINK_DIRS=$(echo "${LINK_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
     fi
+    LINK_DIRS="${LINK_DIRS} -L${LIBC_DIR}"
     return 0
 }
 
@@ -462,6 +463,10 @@ function add_linklibs () {
     if [ ! -z "${LINK_LIBS}" ]; then
         LINK_LIBS=$(echo "${LINK_LIBS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
     fi
+    for LIB in $(find ${LIBC_DIR} -maxdepth 1 -name "*.so" -type f); do
+        LIB="/$(basename ${LIB%.*})"
+        LINK_LIBS="${LINK_LIBS} -${LIB//\/lib/l}"
+    done
     return 0
 }
 

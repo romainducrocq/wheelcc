@@ -24,6 +24,7 @@ perf.data
 /bin/fileext.cfg
 /bin/crt.o
 /bin/libc/*
+/build/build_libc.sh
 /build/build_cache/
 /test/tests/
 /test/test_results/

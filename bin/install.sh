@@ -29,5 +29,12 @@ if [ ${?} -ne 0 ]; then
 fi
 echo -e "created symlink \033[1;36m${INSTALL_DIR}/${PACKAGE_NAME}\033[0m -> \033[1;32m${PACKAGE_DIR}/driver.sh\033[0m"
 
+sudo echo 'export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:'"${PACKAGE_DIR}/libc/\"" >> ~/.bashrc
+if [ ${?} -ne 0 ]; then
+    echo -e "\033[0;31merror:\033[0m libc installation failed" 1>&2
+    exit 1
+fi
+echo -e "exported \033[1m‘${PACKAGE_DIR}/libc/’\033[0m library path to ~/.bashrc"
+
 echo -e "installation was successful, use with command \033[1m‘${PACKAGE_NAME}’\033[0m"
 exit 0
