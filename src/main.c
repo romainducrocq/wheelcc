@@ -45,6 +45,7 @@ typedef struct MainContext {
     uint8_t optim_2_code;
     string_t filename;
     vector_t(const char*) includedirs;
+    vector_t(const char*) stdlibdirs;
 } MainContext;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +198,7 @@ static error_t compile(Ctx ctx, ErrorsContext* errors, FileIoContext* fileio) {
 #endif
 
     verbose(ctx, "-- Lexing ... ");
-    TRY(lex_c_code(ctx->filename, &ctx->includedirs, errors, fileio, &identifiers, &tokens));
+    TRY(lex_c_code(ctx->filename, &ctx->includedirs, &ctx->stdlibdirs, errors, fileio, &identifiers, &tokens));
     verbose(ctx, "OK\n");
 #ifndef __NDEBUG__
     if (ctx->debug_code == 255) {
@@ -378,6 +379,7 @@ error_t main(int argc, char** argv) {
         ctx.is_verbose = false;
         ctx.filename = str_new(NULL);
         ctx.includedirs = vec_new();
+        ctx.stdlibdirs = vec_new();
     }
     CATCH_ENTER;
     TRY(arg_parse(&ctx, argc, argv));
@@ -400,5 +402,6 @@ error_t main(int argc, char** argv) {
 
     str_delete(ctx.filename);
     vec_delete(ctx.includedirs);
+    vec_delete(ctx.stdlibdirs);
     CATCH_EXIT;
 }

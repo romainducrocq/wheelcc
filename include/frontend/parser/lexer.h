@@ -25,8 +25,8 @@ typedef struct Token {
 #ifdef __cplusplus
 extern "C" {
 #endif
-error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers, vector_t(Token) * tokens);
+error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, vector_t(const char*) * stdlibdirs,
+    ErrorsContext* errors, FileIoContext* fileio, IdentifierContext* identifiers, vector_t(Token) * tokens);
 #ifdef __cplusplus
 }
 #endif

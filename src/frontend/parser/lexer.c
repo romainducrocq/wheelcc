@@ -18,9 +18,9 @@ typedef struct LexerContext {
     size_t line_size;
     size_t match_at;
     size_t match_size;
-    vector_t(const char*) stdlibdirs;
     hashset_t(hash_t) includename_set;
     vector_t(const char*) * p_includedirs;
+    vector_t(const char*) * p_stdlibdirs;
     vector_t(Token) * p_toks;
     size_t total_linenum;
 } LexerContext;
@@ -785,7 +785,7 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
     }
     switch (ctx->line[ctx->match_at]) {
         case '<': {
-            if (!find_include(ctx->stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
+            if (!find_include(*ctx->p_stdlibdirs, &filename) && !find_include(*ctx->p_includedirs, &filename)) {
                 size_t info_at = push_token_info(ctx);
                 THROW_AT_TOKEN(info_at, GET_LEXER_MSG(MSG_failed_include, filename));
             }
@@ -834,20 +834,20 @@ static error_t tokenize_include(Ctx ctx, size_t linenum) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, ErrorsContext* errors,
-    FileIoContext* fileio, IdentifierContext* identifiers, vector_t(Token) * tokens) {
+error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs, vector_t(const char*) * stdlibdirs,
+    ErrorsContext* errors, FileIoContext* fileio, IdentifierContext* identifiers, vector_t(Token) * tokens) {
     LexerContext ctx;
     {
         ctx.errors = errors;
         ctx.fileio = fileio;
         ctx.identifiers = identifiers;
-        ctx.stdlibdirs = vec_new();
-#ifndef __APPLE__
-        vec_push_back(ctx.stdlibdirs, "/usr/include/");
-        vec_push_back(ctx.stdlibdirs, "/usr/local/include/");
-#endif
         ctx.includename_set = set_new();
         ctx.p_includedirs = includedirs;
+        ctx.p_stdlibdirs = stdlibdirs;
+#ifndef __APPLE__
+        vec_push_back(*ctx.p_stdlibdirs, "/usr/include/");
+        vec_push_back(*ctx.p_stdlibdirs, "/usr/local/include/");
+#endif
         ctx.p_toks = tokens;
         ctx.total_linenum = 0;
     }
@@ -863,7 +863,6 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
     TRY(close_fread(ctx.fileio, 0));
     set_filename(ctx.fileio, filename);
     FINALLY;
-    vec_delete(ctx.stdlibdirs);
     set_delete(ctx.includename_set);
 
     for (size_t i = 0; i < vec_size(fileio->file_reads); ++i) {
@@ -871,5 +870,6 @@ error_t lex_c_code(const string_t filename, vector_t(const char*) * includedirs,
     }
     vec_delete(fileio->file_reads);
     vec_delete(*includedirs);
+    vec_delete(*stdlibdirs);
     CATCH_EXIT;
 }
