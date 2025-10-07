@@ -29,12 +29,26 @@ if [ ${?} -ne 0 ]; then
 fi
 echo -e "created symlink \033[1;36m${INSTALL_DIR}/${PACKAGE_NAME}\033[0m -> \033[1;32m${PACKAGE_DIR}/driver.sh\033[0m"
 
-sudo echo 'export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:'"${PACKAGE_DIR}/libc/\"" >> ~/.bashrc
-if [ ${?} -ne 0 ]; then
-    echo -e "\033[0;31merror:\033[0m libc installation failed" 1>&2
-    exit 1
+if [ -d "${PACKAGE_DIR}/libc/" ]; then
+    if [ ! -z "$(ls ${PACKAGE_DIR}/libc/)" ]; then
+        RC_FILE="bashrc"
+        if [ ! -f "~/.bashrc" ]; then
+            if [ -f "~/.zshrc" ]; then
+                RC_FILE="zshrc"
+            elif [[ "$(uname -s)" = "Darwin"* ]]; then
+                RC_FILE="zshrc"
+            fi
+        fi
+        sudo echo 'export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:'"${PACKAGE_DIR}/libc/\"" >> ~/.${RC_FILE}
+        if [ ${?} -ne 0 ]; then
+            echo -e "\033[0;31merror:\033[0m libc installation failed" 1>&2
+            exit 1
+        fi
+        echo -e "exported \033[1m‘${PACKAGE_DIR}/libc/’\033[0m library path to ~/.${RC_FILE}"
+    else
+        rm -r ${PACKAGE_DIR}/libc/
+    fi
 fi
-echo -e "exported \033[1m‘${PACKAGE_DIR}/libc/’\033[0m library path to ~/.bashrc"
 
 echo -e "installation was successful, use with command \033[1m‘${PACKAGE_NAME}’\033[0m"
 exit 0

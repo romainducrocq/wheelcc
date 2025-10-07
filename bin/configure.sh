@@ -13,6 +13,10 @@ if [ ${?} -ne 0 ]; then
 fi
 echo "-- Package name ${PACKAGE_NAME}"
 
+if [ ! -d "${PACKAGE_DIR}/libc/" ]; then
+    mkdir -p ${PACKAGE_DIR}/libc/
+fi
+
 INSTALL_CC=0
 
 # Check for MacOS first, as it supports only bash <= 3.2
