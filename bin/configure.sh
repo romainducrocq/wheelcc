@@ -19,6 +19,20 @@ fi
 
 INSTALL_CC=0
 
+PKG_M4=""
+MSG_M4=""
+if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
+    EXT_IN="$(cat ${PACKAGE_DIR}/fileext.cfg)"
+    if [[ "${EXT_IN}" != "c"* ]]; then
+        m4 --help > /dev/null 2>&1
+        if [ ${?} -ne 0 ]; then
+            INSTALL_CC=1
+            PKG_M4="m4"
+            MSG_M4="\033[1m‘m4’\033[0m, "
+        fi
+    fi
+fi
+
 # Check for MacOS first, as it supports only bash <= 3.2
 if [[ "$(uname -s)" = "Darwin"* ]]; then
     clang --help > /dev/null 2>&1
@@ -37,7 +51,7 @@ if [[ "$(uname -s)" = "Darwin"* ]]; then
     fi
 
     if [ ${INSTALL_CC} -ne 0 ]; then
-        echo -e "\033[1;34mwarning:\033[0m install \033[1m‘clang’\033[0m >= 5.0.0 before building"
+        echo -e "\033[1;34mwarning:\033[0m install ${MSG_M4}\033[1m‘clang’\033[0m >= 5.0.0 before building"
     fi
 
     echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
@@ -71,7 +85,7 @@ fi
 
 INSTALL_Y="n"
 if [ ${INSTALL_CC} -ne 0 ]; then
-    echo -e -n "install missing dependencies \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m >= 8.1.0? [y/n]: "
+    echo -e -n "install missing dependencies \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘gcc’\033[0m >= 8.1.0? [y/n]: "
     read -p "" INSTALL_Y
 fi
 
@@ -81,17 +95,17 @@ if [ "${INSTALL_Y}" = "y" ]; then
         "Debian GNU/Linux") ;&
         "Linux Mint") ;&
         "Ubuntu")
-            sudo apt-get update && sudo apt-get -y install binutils gcc g++
+            sudo apt-get update && sudo apt-get -y install binutils gcc g++ ${PKG_M4}
             INSTALL_CC=${?}
             ;;
         "openSUSE Leap") ;&
         "Rocky Linux")
-            sudo dnf check-update && sudo dnf -y install binutils.x86_64 gcc.x86_64 gcc-c++.x86_64
+            sudo dnf check-update && sudo dnf -y install binutils.x86_64 gcc.x86_64 gcc-c++.x86_64 ${PKG_M4//m4/m4.x86_64}
             INSTALL_CC=${?}
             ;;
         "Arch Linux") ;&
         "EndeavourOS")
-            sudo pacman -Syy && yes | sudo pacman -S binutils gcc
+            sudo pacman -Syy && yes | sudo pacman -S binutils gcc ${PKG_M4}
             INSTALL_CC=${?}
             ;;
         # Not tested yet
@@ -116,9 +130,9 @@ fi
 
 if [ ${INSTALL_CC} -ne 0 ]; then
     if [ "${INSTALL_Y}" = "y" ]; then
-        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m"
+        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘gcc’\033[0m"
     fi
-    echo -e "\033[1;34mwarning:\033[0m install \033[1m‘binutils’\033[0m, \033[1m‘gcc’\033[0m >= 8.1.0 before building"
+    echo -e "\033[1;34mwarning:\033[0m install \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘gcc’\033[0m >= 8.1.0 before building"
 fi
 
 echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
