@@ -112,7 +112,7 @@ static error_t peek_next_i(Ctx ctx, size_t i) {
     CATCH_EXIT;
 }
 
-// <identifier> ::= ? An identifier token ?
+// <identifier> ::= ? An identifier token ? => [a-zA-Z_]\w*
 static error_t parse_identifier(Ctx ctx, size_t i, TIdentifier* identifier) {
     CATCH_ENTER;
     TRY(pop_next_i(ctx, i));
@@ -122,7 +122,7 @@ static error_t parse_identifier(Ctx ctx, size_t i, TIdentifier* identifier) {
 }
 
 // string = StringLiteral(int*)
-// <string> ::= ? A string token ?
+// <string> ::= ? A string token ? => "([^"\\\n]|\\['"\\?abfnrtv])*"
 static error_t parse_string_literal(Ctx ctx, shared_ptr_t(CStringLiteral) * literal) {
     vector_t(TChar) value = vec_new();
     CATCH_ENTER;
@@ -139,25 +139,26 @@ static error_t parse_string_literal(Ctx ctx, shared_ptr_t(CStringLiteral) * lite
     CATCH_EXIT;
 }
 
-// <int> ::= ? An int constant token ?
+// <int> ::= ? An int token ? => [0-9]+
 static shared_ptr_t(CConst) parse_int_const(intmax_t intmax) {
     TInt value = intmax_to_int32(intmax);
     return make_CConstInt(value);
 }
 
-// <char> ::= ? A char token ?
+// <char> ::= ? A char token ? => '([^'\\\n]|\\['"?\\abfnrtv])'
 static shared_ptr_t(CConst) parse_char_const(Ctx ctx) {
     TInt value = string_to_char_ascii(map_get(ctx->identifiers->hash_table, ctx->next_tok->tok));
     return make_CConstInt(value);
 }
 
-// <long> ::= ? An int or long constant token ?
+// <long> ::= ? An int or long token ? => [0-9]+[lL]
 static shared_ptr_t(CConst) parse_long_const(intmax_t intmax) {
     TLong value = intmax_to_int64(intmax);
     return make_CConstLong(value);
 }
 
 // <double> ::= ? A floating-point constant token ?
+//            => (([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)
 static error_t parse_dbl_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_ENTER;
     TDouble value;
@@ -168,19 +169,19 @@ static error_t parse_dbl_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_EXIT;
 }
 
-// <unsigned int> ::= ? An unsigned int constant token ?
+// <uint> ::= ? An unsigned int token ? => [0-9]+[uU]
 static shared_ptr_t(CConst) parse_uint_const(uintmax_t uintmax) {
     TUInt value = uintmax_to_uint32(uintmax);
     return make_CConstUInt(value);
 }
 
-// <unsigned long> ::= ? An unsigned int or unsigned long constant token ?
+// <ulong> ::= ? An unsigned int or unsigned long token ? => [0-9]+([lL][uU]|[uU][lL])
 static shared_ptr_t(CConst) parse_ulong_const(uintmax_t uintmax) {
     TULong value = uintmax_to_uint64(uintmax);
     return make_CConstULong(value);
 }
 
-// <const> ::= <int> | <long> | <double> | <char>
+// (signed) <const> ::= <int> | <long> | <double> | <char>
 // (signed) const = ConstInt(int) | ConstLong(long) | ConstDouble(double) | ConstChar(int)
 static error_t parse_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_ENTER;
@@ -214,7 +215,7 @@ static error_t parse_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_EXIT;
 }
 
-// <const> ::= <unsigned int> | <unsigned long>
+// (unsigned) <const> ::= <uint> | <ulong>
 // (unsigned) const = ConstUInt(uint) | ConstULong(ulong) | ConstUChar(int)
 static error_t parse_unsigned_const(Ctx ctx, shared_ptr_t(CConst) * constant) {
     CATCH_ENTER;
@@ -896,7 +897,7 @@ static error_t parse_primary_exp_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     CATCH_EXIT;
 }
 
-// <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
+// <postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier> | "++" | "--"
 static error_t parse_postfix_op_exp_factor(Ctx ctx, unique_ptr_t(CExp) * exp) {
     CATCH_ENTER;
     TRY(peek_next(ctx));
@@ -1446,11 +1447,12 @@ static error_t parse_null_statement(Ctx ctx, unique_ptr_t(CStatement) * statemen
     CATCH_EXIT;
 }
 
-// <statement> ::= ";" | "return" [ <exp> ] ";" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
-//               | "goto" <identifier> ";" | <identifier> ":" | <block> | "do" <statement> "while" "(" <exp> ")" ";"
-//               | "while" "(" <exp> ")" <statement> | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
-//               | "switch" "(" <exp> ")" <statement> | "case" <const> ":" <statement> | "default" ":" <statement>
-//               | "break" ";" | "continue" ";" | <exp> ";"
+// <statement> ::= ";" | <block> | <exp> ";" | "return" [ <exp> ] ";" | "goto" <identifier> ";"
+//               | <identifier> ":" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
+//               | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
+//               | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | "continue" ";"
+//               | "break" ";" | "switch" "(" <exp> ")" <statement>
+//               | "case" <const> ":" <statement> | "default" ":" <statement>
 // statement = Return(exp?) | Expression(exp) | If(exp, statement, statement?) | Goto(identifier)
 //           | Label(identifier, target) | Compound(block) | While(exp, statement, identifier)
 //           | DoWhile(statement, exp, identifier) | For(for_init, exp?, exp?, statement, identifier)
@@ -1659,8 +1661,8 @@ static error_t parse_block(Ctx ctx, unique_ptr_t(CBlock) * block) {
     CATCH_EXIT;
 }
 
-// <type-specifier> ::= "int" | "long" | "signed" | "unsigned" | "double" | "char" | "void"
-//                    | ("struct" | "union") <identifier>
+// <type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void"
+//                    | ( "struct" | "union" ) <identifier>
 static error_t parse_type_specifier(Ctx ctx, shared_ptr_t(Type) * type_specifier) {
     size_t type_tok_kinds_size = 0;
     string_t type_tok_kinds_fmt = str_new(NULL);
@@ -1904,7 +1906,7 @@ static error_t parse_compound_init(Ctx ctx, unique_ptr_t(CInitializer) * initial
     CATCH_EXIT;
 }
 
-// <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [","] "}"
+// <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [ "," ] "}"
 // initializer = SingleInit(exp) | CompoundInit(initializer*)
 static error_t parse_initializer(Ctx ctx, unique_ptr_t(CInitializer) * initializer) {
     CATCH_ENTER;
@@ -2132,7 +2134,7 @@ static error_t parse_param_list(Ctx ctx, vector_t(unique_ptr_t(CParam)) * param_
     CATCH_EXIT;
 }
 
-// (fun) <declarator-suffix> ::= <param-list>
+// (function) <declarator-suffix> ::= <param-list>
 static error_t parse_fun_decltor_suffix(Ctx ctx, unique_ptr_t(CDeclarator) * decltor) {
     vector_t(unique_ptr_t(CParam)) param_list = vec_new();
     CATCH_ENTER;
@@ -2204,7 +2206,7 @@ static error_t parse_decltor(Ctx ctx, unique_ptr_t(CDeclarator) * decltor) {
     CATCH_EXIT;
 }
 
-// <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";")
+// <function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";" )
 // function_declaration = FunctionDeclaration(identifier, identifier*, block?, type, storage_class?)
 static error_t parse_fun_declaration(
     Ctx ctx, const CStorageClass* storage_class, Declarator* decltor, unique_ptr_t(CFunctionDeclaration) * fun_decl) {
@@ -2273,7 +2275,7 @@ static error_t parse_member_declaration(Ctx ctx, unique_ptr_t(CMemberDeclaration
     CATCH_EXIT;
 }
 
-// <struct-declaration> ::= ("struct" | "union") <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
+// <struct-declaration> ::= ( "struct" | "union" ) <identifier> [ "{" { <member-declaration> }+ "}" ] ";"
 // struct_declaration = StructDeclaration(identifier, bool, member_declaration*)
 static error_t parse_struct_declaration(Ctx ctx, unique_ptr_t(CStructDeclaration) * struct_decl) {
     unique_ptr_t(CMemberDeclaration) member = uptr_new();

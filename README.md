@@ -293,48 +293,59 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 ### Language grammar
 
 ```
+<program> ::= { <declaration> }
+<declaration> ::= <variable-declaration> | <function-declaration> | <struct-declaration>
+<variable-declaration> ::= { <specifier> }+ <declarator> [ "=" <initializer> ] ";"
+<function-declaration> ::= { <specifier> }+ <declarator> ( <block> | ";" )
+<struct-declaration> ::= <struct-specifier> [ "{" { <member-declaration> }+ "}" ] ";"
+<member-declaration> ::= { <type-specifier> }+ <declarator> ";"
+<declarator> ::= "*" <declarator> | <direct-declarator>
+<direct-declarator> ::= <simple-declarator> [ <declarator-suffix> ]
+<declarator-suffix> ::= <param-list> | { "[" <const> "]" }+
+<param-list> ::= "(" "void" ")" | "(" <param> { "," <param> } ")"
 <param> ::= { <type-specifier> }+ <declarator>
 <simple-declarator> ::= <identifier> | "(" <declarator> ")"
-<type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void" 
-                   | ("struct" | "union") <identifier>
+<type-specifier> ::= "int" | "long" | "unsigned" | "signed" | "double" | "char" | "void"
+                   | <struct-specifier>
+<struct-specifier> ::= ( "struct" | "union" ) <identifier>
 <specifier> ::= <type-specifier> | "static" | "extern"
 <block> ::= "{" { <block-item> } "}"
 <block-item> ::= <statement> | <declaration>
 <initializer> ::= <exp> | "{" <initializer> { "," <initializer> } [ "," ] "}"
 <for-init> ::= <variable-declaration> | [ <exp> ] ";"
-<statement> ::= "return" [ <exp> ] ";" | <exp> ";" 
-              | "if" "(" <exp> ")" <statement> [ "else" <statement> ] | "goto" <identifier> ";"
-              | <identifier> ":" | <block> | "break" ";" | "continue" ";"
+<statement> ::= ";" | <block> | <exp> ";" | "return" [ <exp> ] ";" | "goto" <identifier> ";"
+              | <identifier> ":" | "if" "(" <exp> ")" <statement> [ "else" <statement> ]
               | "while" "(" <exp> ")" <statement> | "do" <statement> "while" "(" <exp> ")" ";"
-              | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement>
-              | "switch" "(" <exp> ")" <statement> | "case" <const> ":" <statement>
-              | "default" ":" <statement> | ";"
+              | "for" "(" <for-init> [ <exp> ] ";" [ <exp> ] ")" <statement> | "continue" ";"
+              | "break" ";" | "switch" "(" <exp> ")" <statement>
+              | "case" <const> ":" <statement> | "default" ":" <statement>
 <exp> ::= <cast-exp> | <exp> <binop> <exp> | <exp> "?" <exp> ":" <exp>
 <cast-exp> ::= "(" <type-name> ")" <cast-exp> | <unary-exp>
-<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")" 
+<unary-exp> ::= <unop> <cast-exp> | "sizeof" <unary-exp> | "sizeof" "(" <type-name> ")"
               | <postfix-exp>
 <type-name> ::= { <type-specifier> }+ [ <abstract-declarator> ]
 <postfix-exp> ::= <primary-exp> { <postfix-op> }
-<postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier>
-<primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+ 
+<postfix-op> ::= "[" <exp> "]" | "." <identifier> | "->" <identifier> | "++" | "--"
+<primary-exp> ::= <const> | <identifier> | "(" <exp> ")" | { <string> }+
                 | <identifier> "(" [ <argument-list> ] ")"
 <argument-list> ::= <exp> { "," <exp> }
 <abstract-declarator> ::= "*" [ <abstract-declarator> ] | <direct-abstract-declarator>
-<direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" } 
+<direct-abstract-declarator> ::= "(" <abstract-declarator> ")" { "[" <const> "]" }
                                | { "[" <const> "]" }+
 <unop> ::= "-" | "~" | "!" | "*" | "&" | "++" | "--"
-<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "==" 
-          | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&=" 
+<binop> ::= "-" | "+" | "*" | "/" | "%" | "&" | "|" | "^" | "<<" | ">>" | "&&" | "||" | "=="
+          | "!=" | "<" | "<=" | ">" | ">=" | "=" | "-=" | "+=" | "*=" | "/=" | "%=" | "&="
           | "|=" | "^=" | "<<=" | ">>="
-<const> ::= <int> | <long> | <uint> | <ulong> | <double> | <char>
-<identifier> ::= ? An identifier token ?
-<string> ::= ? A string token ?
-<int> ::= ? An int token ?
-<char> ::= ? A char token ?
-<long> ::= ? An int or long token ?
-<uint> ::= ? An unsigned int token ?
-<ulong> ::= ? An unsigned int or unsigned long token ?
+<const> ::= <uint> | <ulong> | <int> | <long> | <double> | <char>
+<identifier> ::= ? An identifier token ? => [a-zA-Z_]\w*
+<string> ::= ? A string token ? => "([^"\\\n]|\\['"\\?abfnrtv])*"
+<int> ::= ? An int token ? => [0-9]+
+<char> ::= ? A char token ? => '([^'\\\n]|\\['"?\\abfnrtv])'
+<long> ::= ? An int or long token ? => [0-9]+[lL]
+<uint> ::= ? An unsigned int token ? => [0-9]+[uU]
+<ulong> ::= ? An unsigned int or unsigned long token ? => [0-9]+([lL][uU]|[uU][lL])
 <double> ::= ? A floating-point constant token ?
+           => (([0-9]*\.[0-9]+|[0-9]+\.?)[Ee][+\-]?[0-9]+|[0-9]*\.[0-9]+|[0-9]+\.)
 ```
 
 ## References
