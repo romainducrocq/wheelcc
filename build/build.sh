@@ -70,29 +70,31 @@ mkdir ${BUILD_CACHE}/
 if [ ${?} -ne 0 ]; then exit 1; fi
 
 OBJECT_FILES=""
+LINK_CC="${CC}"
 echo "-- Build objects ..."
 for FILE in ${SOURCE_FILES}; do
     OBJECT="${BUILD_CACHE}/$(basename ${FILE%.*}).o"
     OBJECT_FILES="${OBJECT_FILES} ${OBJECT}"
     echo "${FILE} -> ${OBJECT}"
+    BUILD_CC="${CC}"
     case "${FILE##*.}" in
         "c")
-            ${CC} -c ${FILE} ${CC_FLAGS} ${INCLUDE_DIRS} -o ${OBJECT}
-            if [ ${?} -ne 0 ]; then exit 1; fi
             ;;
         "cpp")
-            ${CXX} -c ${FILE} ${CC_FLAGS} ${INCLUDE_DIRS} -o ${OBJECT}
-            if [ ${?} -ne 0 ]; then exit 1; fi
+            BUILD_CC="${CXX}"
+            LINK_CC="${CXX}"
             ;;
         *)
             exit 1
     esac
+    ${BUILD_CC} -c ${FILE} ${CC_FLAGS} ${INCLUDE_DIRS} -o ${OBJECT}
+    if [ ${?} -ne 0 ]; then exit 1; fi
 done
 echo "OK"
 
 echo "-- Linking executable ..."
 echo "${BUILD_CACHE}/*.o -> ${PROJECT_NAME}"
-${CXX} ${OBJECT_FILES} ${CC_FLAGS} -o ${PROJECT_NAME}
+${LINK_CC} ${OBJECT_FILES} ${CC_FLAGS} -o ${PROJECT_NAME}
 if [ ${?} -ne 0 ]; then exit 1; fi
 echo "OK"
 
