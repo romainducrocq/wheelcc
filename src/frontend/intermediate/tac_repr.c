@@ -1069,7 +1069,11 @@ static void do_while_statement_instr(Ctx ctx, const CDoWhile* node) {
     push_instr(ctx, make_TacLabel(target_break));
 }
 
-static void for_init_decl_instr(Ctx ctx, const CInitDecl* node) { var_decl_instr(ctx, node->init); }
+static void for_init_decl_instr(Ctx ctx, const CInitDecl* node) {
+    if (node->init && node->init->init) {
+        var_decl_instr(ctx, node->init);
+    }
+}
 
 static void for_init_exp_instr(Ctx ctx, const CInitExp* node) {
     if (node->init) {
