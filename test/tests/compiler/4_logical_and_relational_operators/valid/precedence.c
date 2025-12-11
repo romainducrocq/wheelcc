@@ -8,5 +8,6 @@
 #endif
 
 int main(void) {
-    return 1 || 0 && 2;
+    return 1 || 2 && 0;
 }
+
