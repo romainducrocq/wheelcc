@@ -466,10 +466,9 @@ function add_linklibs () {
         LINK_LIBS=$(echo "${LINK_LIBS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
     fi
     if [ -d "${LIBC_DIR}" ]; then
-        for LIB in $(find ${LIBC_DIR} -maxdepth 1 -name "*.so" -type f); do
-            LIB="/$(basename ${LIB%.*})"
-            LINK_LIBS="${LINK_LIBS} -${LIB//\/lib/l}"
-        done
+        if [ -f "${LIBC_DIR}/lib${PACKAGE_NAME}.so" ]; then
+            LINK_LIBS="${LINK_LIBS} -l${PACKAGE_NAME}"
+        fi
     fi
     return 0
 }
