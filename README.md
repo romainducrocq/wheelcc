@@ -17,9 +17,8 @@ A small, self-contained C compiler written from scratch in C for x86-64 GNU/Linu
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has it's own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
-
 > The [planet](https://github.com/romainducrocq/planet) programming language uses wheelcc as it's backend!
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has its own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
 
 ## Usage
 
@@ -87,8 +86,8 @@ All command-line arguments are optional, except for one `.c` source file to comp
 > **Warning**: <ins>The order of command-line arguments matters!</ins> They are parsed in the order shown by `--help` (and only in that order). Passing arguments in any other order will fail with an `unknown or malformed option` error.
 ```
 $ wheelcc --help
-Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...]
- [Linkdir...] [Linklib...] [Output] FILES
+Usage: wheelcc [Help] [Debug] [Optimize...] [Preprocess] [Defval...] [Link]
+ [Include...] [Linkdir...] [Linklib...] [Output] FILES
 
 warning: 1. optional arguments must be passed in this order only
 warning: 2. whitespaces are not supported in paths and file names
@@ -126,8 +125,11 @@ warning: 2. whitespaces are not supported in paths and file names
 [Preprocess]:
     -E  enable macro expansion with gcc/clang
 
+[Defval...]:
+    -D<define>[=<value>]  add a list of macro definitions
+
 [Link]:
-    -s  compile, but do not assemble and link
+    -S  compile, but do not assemble and link
     -c  compile and assemble, but do not link
 
 [Include...]:
@@ -207,14 +209,14 @@ $ ./test-all.sh
 > **TL;DR** Supports `include` headers and comments. No built-in support for macros.
 
 A minimal built-in preprocessor supports `include` header directives and comments (singleline and multiline). By default, included files are searched in the same directory as the source file currently being compiled, but other directories to search for can be added to the include path with the `-I` option. Other directives, like pragmas, are ignored and stripped out.  
-The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc/clang.
+The preprocessor does not natively support macros, but macro expansion can be enabled with the `-E` command-line option, which falls back on preprocessing with gcc/clang. Then, the `-D` option can be used to define macro names and values.
 
 ### Compiler
 
 > **TL;DR** Compiles C source files to x86-64 AT&T assembly, then outputs a native executable.
 
 wheelcc compiles a list of C source files to x86-64 AT&T GNU/Linux or MacOS assembly (see [_Implementation Reference_](https://github.com/romainducrocq/wheelcc/tree/master?tab=readme-ov-file#implementation-reference) section for a list of supported C language features).
-The `-s` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file with the same name without extension, or with the name set with the `-o` command-line option.  
+The `-S` command-line option can be used to output the assembly without linking, and the `-c` option to create an object file instead of an executable. Otherwise, it creates an executable located next to the first source file with the same name without extension, or with the name set with the `-o` command-line option.  
 wheelcc also has comprehensive compile error handling, and outputs error messages with the file, line, position and explanation for the compile error to stderr.
 
 ### Optimization

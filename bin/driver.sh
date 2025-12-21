@@ -23,7 +23,7 @@ function verbose () {
 }
 
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Link] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Defval...] [Link] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
     echo -e "\033[1;34mwarning:\033[0m 1. optional arguments must be passed in this order only"
     echo -e "\033[1;34mwarning:\033[0m 2. whitespaces are not supported in paths and file names"
@@ -61,8 +61,11 @@ function usage () {
     echo "[Preprocess]:"
     echo "    -E  enable macro expansion with ${PP}"
     echo ""
+    echo "[Defval...]:"
+    echo "    -D<define>[=<value>]  add a list of macro definitions"
+    echo ""
     echo "[Link]:"
-    echo "    -s  compile, but do not assemble and link"
+    echo "    -S  compile, but do not assemble and link"
     echo "    -c  compile and assemble, but do not link"
     echo ""
     echo "[Include...]:"
@@ -87,15 +90,17 @@ function clean_exit () {
         LINK_ENUM=255
     fi
     for FILE in ${FILES}; do
-        if [ -f "${FILE}.i" ]; then
-            rm ${FILE}.i
-        fi
         if [ ${LINK_ENUM} -ne 0 ]; then
             if [ -f "${FILE}" ]; then
                 rm ${FILE}
             fi
         fi
         if [ ${LINK_ENUM} -ne 1 ]; then
+            if [ ${EXIT_CODE} -eq 0 ]; then
+                if [ -f "${FILE}.i" ]; then
+                    rm ${FILE}.i
+                fi
+            fi
             if [ -f "${FILE}.${EXT_OUT}" ]; then
                 rm ${FILE}.${EXT_OUT}
             fi
@@ -234,9 +239,21 @@ function parse_preproc_arg () {
     return 0
 }
 
+function parse_defval_arg () {
+    if [[ "${ARG}" != "-D"* ]]; then
+        return 1
+    fi
+    ARG="${ARG:2}"
+    if [[ "${ARG}" == "-"* ]]; then
+        raise_error "unknown or malformed option: $(em "${ARG}")"
+    fi
+    DEF_VALS="${DEF_VALS} -D${ARG}"
+    return 0
+}
+
 function parse_link_arg () {
     case "${ARG}" in
-        "-s")
+        "-S")
             LINK_ENUM=1
             ;;
         "-c")
@@ -381,6 +398,18 @@ function parse_args () {
         fi
     fi
 
+    while :; do
+        parse_defval_arg
+        if [ ${?} -eq 0 ]; then
+            shift_arg
+            if [ ${?} -ne 0 ]; then
+                raise_error "no input files"
+            fi
+        else
+            break
+        fi
+    done
+
     parse_link_arg
     if [ ${?} -eq 0 ]; then
         shift_arg
@@ -446,6 +475,10 @@ function parse_args () {
 
 function add_includedirs () {
     if [ ! -z "${INCLUDE_DIRS}" ]; then
+        if [ ${IS_PREPROC} -eq 1 ]; then
+            PREPROC_DIRS="${INCLUDE_DIRS// / -I}"
+            PREPROC_DIRS=$(echo "${PREPROC_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
+        fi
         INCLUDE_DIRS=$(echo "${INCLUDE_DIRS}" | tr ' ' '\n' | sort --uniq | tr '\n' ' ')
     fi
     return 0
@@ -477,13 +510,13 @@ function preprocess () {
     if [ ${IS_PREPROC} -eq 1 ]; then
         for FILE in ${FILES}; do
             verbose "Preprocess (${PP}) -> ${FILE}.i"
-            if [ "${PP}" = m4 ]; then
-                m4 -P ${FILE}.${EXT_IN} > ${FILE}.i
+            if [ "${PP}" = "m4" ]; then
+                m4 -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} ${DEF_VALS} ${FILE}.${EXT_IN} > ${FILE}.i
                 if [ ${?} -ne 0 ]; then
                     raise_error "preprocessing failed"
                 fi
             else
-                ${CC} -E -P ${FILE}.${EXT_IN} -o ${FILE}.i
+                ${CC} -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} ${DEF_VALS} ${FILE}.${EXT_IN} -o ${FILE}.i
                 if [ ${?} -ne 0 ]; then
                     raise_error "preprocessing failed"
                 fi
@@ -579,6 +612,8 @@ LINK_ENUM=0
 OPTIM_L1_MASK=0
 OPTIM_L2_ENUM=2
 
+DEF_VALS=""
+PREPROC_DIRS=""
 INCLUDE_DIRS=""
 LINK_DIRS=""
 LINK_LIBS=""

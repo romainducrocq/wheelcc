@@ -16,9 +16,9 @@ fi
 function print_errors () {
     for FILE in $(find ${TEST_DIR}/${1}_* -name "*.${EXT_IN}" -type f | grep invalid | sort --uniq); do
         if [ ! -z "${MATCH_PATTERN}" ]; then
-            cat <(${PACKAGE_NAME} -s ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
+            cat <(${PACKAGE_NAME} -S ${FILE} 2>&1) | grep -P "${MATCH_PATTERN}"
         else
-            cat <(${PACKAGE_NAME} -s ${FILE} 2>&1)
+            cat <(${PACKAGE_NAME} -S ${FILE} 2>&1)
         fi
         if [ -f ${FILE%.*}.s ]; then
             rm ${FILE%.*}.s

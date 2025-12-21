@@ -19,7 +19,7 @@ function performance () {
     echo ""
     echo "${PACKAGE_NAME} ${OPTIM}"
     { time for FILE in ${FILES}; do
-        ${PACKAGE_NAME} ${OPTIM} -s ${FILE} > /dev/null 2>&1
+        ${PACKAGE_NAME} ${OPTIM} -S ${FILE} > /dev/null 2>&1
     done } 2>&1
     if [ 1 -eq 0 ]; then
         echo ""
