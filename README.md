@@ -15,9 +15,10 @@
 <!---->
 A small, self-contained C compiler written from scratch in C for x86-64 GNU/Linux and MacOS.
 
+## &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The [planet](https://github.com/romainducrocq/planet) language uses wheelcc as its backend!
+
 ****
 
-> The [planet](https://github.com/romainducrocq/planet) programming language uses wheelcc as it's backend!
 The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has its own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux and MacOS, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
 
 ## Usage
@@ -364,6 +365,7 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 <!---->
   
 - My small C17/C++17 standard library: https://github.com/romainducrocq/c-std/
+- `planet`, my C-like language based on wheelcc: https://github.com/romainducrocq/planet/
 - Some Were Meant for C, _Stephen Kell_: https://www.cs.tufts.edu/comp/150FP/archive/stephen-kell/some-were-meant-for-c.pdf
 
 ****
