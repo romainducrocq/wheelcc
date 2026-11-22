@@ -5,7 +5,6 @@
 #define _GNU_SOURCE
 #endif
 #endif
-#include "tinydir/tinydir.h"
 #include <limits.h>
 #include <stdio.h>
 
@@ -24,12 +23,14 @@ typedef FileIoContext* Ctx;
 #define WRITE_BUF_SIZE 4096
 
 bool find_file(const char* filename) {
-    tinydir_file file = {
-#ifndef __cplusplus
-        0
-#endif
-    };
-    return tinydir_file_open(&file, filename) != -1 && !file.is_dir;
+    FILE* fd = fopen(filename, "rb");
+    if (fd) {
+        fclose(fd);
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 const char* get_filename(Ctx ctx) {
@@ -48,8 +49,8 @@ error_t open_fread(Ctx ctx, const string_t filename) {
     for (size_t i = 0; i < vec_size(ctx->file_reads); ++i) {
         if (ctx->file_reads[i].fd) {
             size_t n_fopens = vec_size(ctx->file_reads) - i;
-            THROW_ABORT_IF(n_fopens > FOPEN_MAX);
-            if (n_fopens == FOPEN_MAX) {
+            THROW_ABORT_IF(n_fopens > FOPEN_MAX - 1);
+            if (n_fopens == FOPEN_MAX - 1) {
                 ctx->file_reads[i].len = 0;
                 free(ctx->file_reads[i].buf);
                 ctx->file_reads[i].buf = NULL;
