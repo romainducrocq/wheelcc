@@ -475,8 +475,8 @@ const char* get_type_fmt(IdentifierContext* ctx, const Type* type, string_t* typ
 const char* get_fatal_msg(MESSAGE_FATAL msg) {
     switch (msg) {
         case MSG_unsupported_os:
-            RET_ERRNO EM_VARG " operating system is not supported, requires " EM_CSTR("GNU/Linux") " (x86_64) or " //
-                EM_CSTR("MacOS");
+            RET_ERRNO EM_VARG " operating system is not supported, requires " EM_CSTR("GNU/Linux") " (x86_64), " //
+                EM_CSTR("FreeBSD") " (x86_64) or " EM_CSTR("MacOS") " (aarch64, x86_64)";
         case MSG_unsupported_arch:
 #ifdef __APPLE__
             RET_ERRNO EM_VARG " architecture is not supported, requires " EM_CSTR("x86_64") " or " EM_CSTR("arm");
