@@ -6,16 +6,31 @@ PACKAGE_NAME="wheelcc"
 if [ ! -z "${1}" ]; then
     PACKAGE_NAME="${1}"
 fi
+PACKAGE_LIBC="${PACKAGE_DIR}/libc"
+
+function em () {
+    echo "\033[1m‘${1}’\033[0m"
+}
+
+function log_warning () {
+    WARN_MESSAGE="${1}"
+    echo -e "\033[1;34mwarning:\033[0m ${WARN_MESSAGE}"
+}
+
+function raise_error () {
+    ERROR_MESSAGE="${1}"
+    echo -e "configure: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
+    exit 1
+}
 
 echo -n "${PACKAGE_NAME}" > ${PACKAGE_DIR}/pkgname.cfg
 if [ ${?} -ne 0 ]; then
-    echo -e "\033[0;31merror:\033[0m configuration failed" 1>&2
-    exit 1
+    raise_error "failed to set package name"
 fi
 echo "-- Package name ${PACKAGE_NAME}"
 
-if [ ! -d "${PACKAGE_DIR}/libc/" ]; then
-    mkdir -p ${PACKAGE_DIR}/libc/
+if [ ! -d "${PACKAGE_LIBC}/" ]; then
+    mkdir -p ${PACKAGE_LIBC}/
 fi
 
 CC="gcc"
@@ -78,7 +93,7 @@ if [ -f "${PACKAGE_DIR}/fileext.cfg" ]; then
         if [ ${?} -ne 0 ]; then
             INSTALL_CC=1
             PKG_M4="m4"
-            MSG_M4="\033[1m‘m4’\033[0m, "
+            MSG_M4="$(em "m4"), "
         fi
     fi
 fi
@@ -89,10 +104,10 @@ if [[ "${KERNEL_NAME}" == "Darwin"* ]]; then
         INSTALL_CC=1
     fi
     if [ ${INSTALL_CC} -ne 0 ]; then
-        echo -e "\033[1;34mwarning:\033[0m install ${MSG_M4}\033[1m‘clang’\033[0m >= 5.0.0 before building"
+        log_warning "install ${MSG_M4}$(em "clang") >= 5.0.0 before building"
     fi
 
-    echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
+    echo -e "configuration was successful, build with $(em "./make.sh")"
     exit 0
 fi
 
@@ -103,7 +118,7 @@ fi
 
 INSTALL_Y="n"
 if [ ${INSTALL_CC} -ne 0 ]; then
-    echo -e -n "install missing dependencies \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘${CC}’\033[0m >= ${CC_VER}? [y/n]: "
+    echo -e -n "install missing dependencies $(em "binutils"), ${MSG_M4}$(em "${CC}") >= ${CC_VER}? [y/n]: "
     read -p "" INSTALL_Y
 fi
 
@@ -149,7 +164,7 @@ if [ "${INSTALL_Y}" = "y" ]; then
         # "Red Hat Enterprise Linux") ;&
         # "Manjaro") ;&
         *)
-            echo -e "\033[1;34mwarning:\033[0m this distribution was not tested yet, use at your own risk!"
+            # this distribution was not tested yet, use at your own risk!
             INSTALL_Y="n"
     esac
 fi
@@ -159,10 +174,10 @@ if [ ${INSTALL_BASE} -ne 0 ]; then
 fi
 if [ ${INSTALL_CC} -ne 0 ]; then
     if [ "${INSTALL_Y}" = "y" ]; then
-        echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘${CC}’\033[0m"
+        log_warning "failed to install $(em "binutils"), ${MSG_M4}$(em "${CC}")"
     fi
-    echo -e "\033[1;34mwarning:\033[0m install \033[1m‘binutils’\033[0m, ${MSG_M4}\033[1m‘${CC}’\033[0m >= ${CC_VER} before building"
+    log_warning "install $(em "binutils"), ${MSG_M4}$(em "${CC}") >= ${CC_VER} before building"
 fi
 
-echo -e "configuration was successful, build with \033[1m‘./make.sh’\033[0m"
+echo -e "configuration was successful, build with $(em "./make.sh")"
 exit 0

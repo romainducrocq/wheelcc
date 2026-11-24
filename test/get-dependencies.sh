@@ -2,21 +2,30 @@
 
 KERNEL_NAME="$(uname -s)"
 
+function em () {
+    echo "\033[1m‘${1}’\033[0m"
+}
+
+function log_warning () {
+    WARN_MESSAGE="${1}"
+    echo -e "\033[1;34mwarning:\033[0m ${WARN_MESSAGE}"
+}
+
 # Check for MacOS first, as it supports only bash <= 3.2
 if [[ "${KERNEL_NAME}" == "Darwin"* ]]; then
     cmake --help > /dev/null 2>&1
     if [ ${?} -ne 0 ]; then
-        echo -e -n "install missing dependencies \033[1m‘cmake’\033[0m? [y/n]: "
+        echo -e -n "install missing dependencies $(em "cmake")? [y/n]: "
         read -p "" INSTALL_CMAKE
         if [ "${INSTALL_CMAKE}" = "y" ]; then
             brew install cmake
             if [ ${?} -ne 0 ]; then
-                echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘cmake’\033[0m"
+                log_warning "failed to install $(em "cmake")"
                 INSTALL_CMAKE="n"
             fi
         fi
         if [ ! "${INSTALL_CMAKE}" = "y" ]; then
-            echo -e "\033[1;34mwarning:\033[0m install the missing dependencies before testing"
+            log_warning "install the missing dependencies before testing"
         fi
     fi
 
@@ -56,9 +65,9 @@ for i in $(seq 1 ${#INSTALL_PKGS[@]}); do
     if [ ${INSTALL_PKGS[$((i-1))]} -ne 0 ]; then
         DEP="$(echo "${INSTALL_DEPS}" | cut -d" " -f${i})"
         if [ "${INSTALL_Y}" = "y" ]; then
-            echo -e -n ", \033[1m‘${DEP}’\033[0m"
+            echo -e -n ", $(em "${DEP}")"
         else
-            echo -e -n "install missing dependencies \033[1m‘${DEP}’\033[0m"
+            echo -e -n "install missing dependencies $(em "${DEP}")"
             INSTALL_Y="y"
         fi
     fi
@@ -136,7 +145,7 @@ if [ "${INSTALL_Y}" = "y" ]; then
         # "Red Hat Enterprise Linux") ;&
         # "Manjaro") ;&
         *)
-            echo -e "\033[1;34mwarning:\033[0m this distribution was not tested yet, use at your own risk!"
+            # this distribution was not tested yet, use at your own risk!
             INSTALL_Y="n"
     esac
 fi
@@ -145,13 +154,13 @@ if [ "${INSTALL_Y}" = "y" ]; then
     for i in $(seq 1 ${#INSTALL_PKGS[@]}); do
         if [ ${INSTALL_PKGS[$((i-1))]} -ne 0 ]; then
             DEP="$(echo "${INSTALL_DEPS}" | cut -d" " -f${i})"
-            echo -e "\033[1;34mwarning:\033[0m failed to install \033[1m‘${DEP}’\033[0m"
+            log_warning "failed to install $(em "${DEP}")"
         fi
     done
 fi
 for i in $(seq 1 ${#INSTALL_PKGS[@]}); do
     if [ ${INSTALL_PKGS[$((i-1))]} -ne 0 ]; then
-        echo -e "\033[1;34mwarning:\033[0m install the missing dependencies before testing"
+        log_warning "install the missing dependencies before testing"
         break
     fi
 done

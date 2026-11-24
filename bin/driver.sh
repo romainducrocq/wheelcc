@@ -26,11 +26,17 @@ function verbose () {
     fi
 }
 
+function log_warning () {
+    WARN_MESSAGE="${1}"
+    echo -e "\033[1;34mwarning:\033[0m ${WARN_MESSAGE}"
+}
+
 function usage () {
-    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Defval...] [Link] [Include...] [Linkdir...] [Linklib...] [Output] FILES"
+    echo "Usage: ${PACKAGE_NAME} [Help] [Debug] [Optimize...] [Preprocess] [Defval...] [Link] \
+[Include...] [Linkdir...] [Linklib...] [Output] FILES"
     echo ""
-    echo -e "\033[1;34mwarning:\033[0m 1. optional arguments must be passed in this order only"
-    echo -e "\033[1;34mwarning:\033[0m 2. whitespaces are not supported in paths and file names"
+    log_warning "1. optional arguments must be passed in this order only"
+    log_warning "2. whitespaces are not supported in paths and file names"
     echo ""
     echo "[Help]:"
     echo "    --help  print help and exit"
@@ -121,7 +127,7 @@ function clean_exit () {
     exit ${EXIT_CODE}
 }
 
-function em() {
+function em () {
     echo "\033[1m‘${1}’\033[0m"
 }
 
@@ -515,12 +521,14 @@ function preprocess () {
         for FILE in ${FILES}; do
             verbose "Preprocess (${PP}) -> ${FILE}.i"
             if [ "${PP}" = "m4" ]; then
-                m4 -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} ${DEF_VALS} ${FILE}.${EXT_IN} > ${FILE}.i
+                m4 -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} \
+                    ${DEF_VALS} ${FILE}.${EXT_IN} > ${FILE}.i
                 if [ ${?} -ne 0 ]; then
                     raise_error "preprocessing failed"
                 fi
             else
-                ${CC} -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} ${DEF_VALS} ${FILE}.${EXT_IN} -o ${FILE}.i
+                ${CC} -E -P -I${LIBC_DIR} -I$(dirname ${FILE})/ ${PREPROC_DIRS} \
+                    ${DEF_VALS} ${FILE}.${EXT_IN} -o ${FILE}.i
                 if [ ${?} -ne 0 ]; then
                     raise_error "preprocessing failed"
                 fi
@@ -539,7 +547,8 @@ function compile () {
             SOURCE_DIR=""
         fi
         verbose "Compile (${PACKAGE_NAME}) -> ${FILE}.${EXT_OUT}"
-        ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} ${LIBC_DIR} ${SOURCE_DIR} ${INCLUDE_DIRS}
+        ${PACKAGE_DIR}/${PACKAGE_NAME} ${DEBUG_ENUM} ${OPTIM_L1_MASK} ${OPTIM_L2_ENUM} ${FILE}.${EXT_IN} \
+            ${LIBC_DIR} ${SOURCE_DIR} ${INCLUDE_DIRS}
         if [ ${?} -ne 0 ]; then
             raise_error "compilation failed"
         fi
@@ -572,8 +581,8 @@ function link () {
                         raise_error "assembling failed"
                     fi
                     verbose "Link (ld) -> ${NAME_OUT}"
-                    ld --build-id -m elf_x86_64 --hash-style=gnu -dynamic-linker ${LD_LIB_64} -pie -lc ${PACKAGE_DIR}/crt.o \
-                        ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
+                    ld --build-id -m elf_x86_64 --hash-style=gnu -dynamic-linker ${LD_LIB_64} -pie -lc \
+                        ${PACKAGE_DIR}/crt.o ${FILES// /.o }.o ${LINK_DIRS} ${LINK_LIBS} -o ${NAME_OUT}
                     if [ ${?} -ne 0 ]; then
                         LD_LIB_64=""
                     fi
