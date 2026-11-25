@@ -163,10 +163,10 @@ wheelcc: [0;31merror:[0m compilation failed, see [1m‘--help’[0m
 at line 3: [0;31mv[0m
          | [1m}[0m
 wheelcc: [0;31merror:[0m compilation failed, see [1m‘--help’[0m
-[1m@PACKAGE_PATH@/test/tests/compiler/4_logical_and_relational_operators/invalid_parse/missing_const.c:3:12:[0m
+[1m@PACKAGE_PATH@/test/tests/compiler/4_logical_and_relational_operators/invalid_parse/missing_const.c:3:19:[0m
 [0;31merror:[0m (no. 411) found token [1m‘;’[0m, but expected [1m‘const int’[0m, [1m‘const long’[0m, [1m‘const char’[0m, [1m‘const double’[0m, [1m‘const unsigned int’[0m, [1m‘const unsigned long’[0m, [1m‘identifier’[0m, [1m‘identifier(’[0m, [1m‘string literal’[0m or [1m‘(’[0m next
-at line 3: [0;31m           v[0m
-         | [1m    10 <= !;[0m
+at line 3: [0;31m                  v[0m
+         | [1m    return 10 <= !;[0m
 wheelcc: [0;31merror:[0m compilation failed, see [1m‘--help’[0m
 [1m@PACKAGE_PATH@/test/tests/compiler/4_logical_and_relational_operators/invalid_parse/missing_first_op.c:2:12:[0m
 [0;31merror:[0m (no. 411) found token [1m‘<=’[0m, but expected [1m‘const int’[0m, [1m‘const long’[0m, [1m‘const char’[0m, [1m‘const double’[0m, [1m‘const unsigned int’[0m, [1m‘const unsigned long’[0m, [1m‘identifier’[0m, [1m‘identifier(’[0m, [1m‘string literal’[0m or [1m‘(’[0m next
