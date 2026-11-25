@@ -19,7 +19,7 @@ A small, self-contained C compiler written from scratch in C for x86-64 GNU/Linu
 
 ****
 
-The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has its own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, MacOS and FreeBSD, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on Glibc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
+The wheelcc C compiler supports a large subset of C17 (International Standard ISO/IEC 9899:2018), for which it has its own built-in preprocessor, frontend, IR, optimization and backend. It emits x86-64 AT&T assembly for GNU/Linux, MacOS and FreeBSD, which is then assembled with as and linked with ld. wheelcc is written in C, depends only on libc, POSIX and bash, and builds to a standalone executable + a driver. It also builds in C++.
 
 ### Supported platforms
 
@@ -59,7 +59,7 @@ $ ./make.sh [--cmake | --cmake-cpp]
 - Install the `wheelcc` command system-wide (this creates a symlink to the driver in `/usr/local/bin/`)  
     > or do not install system-wide and use the driver directly instead at `bin/driver.sh`
 ```
-$ ./install.sh
+$ ./install.sh [--remove]
 ```
 > **Warning**: <ins>Whitespaces in paths and file names are not supported</ins>, for both compiler installation and runtime.
 
@@ -237,7 +237,7 @@ There is no built-in linker, the compiler outputs assembly that is then assemble
 
 > **TL;DR** No dependencies are required other than the system tools already installed.
 
-wheelcc aims to be small and self-contained. It only depends on the C standard library and 3 source-only dependencies that are patched and included: [sds](https://github.com/antirez/sds), [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h) and [tinydir](https://github.com/cxong/tinydir). The build+runtime only requires Glibc, POSIX, bash, binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS and FreeBSD, which makes the compiler easy to build and use on most x86-64 GNU/Linux distributions, MacOS or FreeBSD.
+wheelcc aims to be small and self-contained. It only depends on the C standard library and 2 source-only dependencies that are patched and included: [sds](https://github.com/antirez/sds) and [stb_ds](https://github.com/nothings/stb/blob/master/stb_ds.h). The build+runtime only requires libc with POSIX 2008, bash (>= 3), binutils and gcc (>= 8.1.0) on GNU/Linux, or clang (>= 5.0.0) on MacOS and FreeBSD, which makes the compiler easy to build and use on most x86-64 GNU/Linux distributions, MacOS or FreeBSD.
 
 ### Limitations
 
@@ -366,7 +366,7 @@ Here's everything the wheelcc compiler supports from the C17 language (so far). 
 <!---->
   
 - My small C17/C++17 standard library: https://github.com/romainducrocq/c-std/
-- `planet`, my C-like language based on wheelcc: https://github.com/romainducrocq/planet/
+- My selfhosted implementation of WaCC: https://github.com/romainducrocq/wacc-selfhosted/
 - Some Were Meant for C, _Stephen Kell_: https://www.cs.tufts.edu/comp/150FP/archive/stephen-kell/some-were-meant-for-c.pdf
 
 ****
