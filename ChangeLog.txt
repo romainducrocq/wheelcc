@@ -1,3 +1,7 @@
+version 0.3.1 (tags/0.3.1):
+  - remove dependency on cxong/tinydir library
+  - release planet language new versions 0.2.1 and later
+
 version 0.3.0 (tags/0.3.0):
   - add support for FreeBSD system
   - release planet language new versions 0.1.1 and 0.2.0
