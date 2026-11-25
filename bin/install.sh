@@ -13,6 +13,11 @@ INSTALL_Y=""
 INSTALL_DIR="/usr/local/bin"
 INSTALL_LINK="${INSTALL_DIR}/${PACKAGE_NAME}"
 
+function help () {
+    echo "Usage: ./install.sh [--remove]"
+    exit 0
+}
+
 function em () {
     echo "\033[1m‘${1}’\033[0m"
 }
@@ -27,6 +32,13 @@ function raise_error () {
     echo -e "install: \033[0;31merror:\033[0m ${ERROR_MESSAGE}" 1>&2
     exit 1
 }
+
+REMOVE=0
+if [ "${1}" = "--remove" ]; then
+    REMOVE=1
+elif [ ! -z "${1}" ]; then
+   help
+fi
 
 RC_FILE=""
 if [ -d "${PACKAGE_LIBC}/" ]; then
@@ -61,14 +73,23 @@ MSG_RC=""
 if [ ! -z "${RC_FILE}" ]; then
     MSG_RC="~/.${RC_FILE} and "
 fi
-echo -e -n "install $(em "${PACKAGE_NAME}") to ${MSG_RC}$(em "${INSTALL_DIR}/")? [y/n]: "
+if [ ${REMOVE} -eq 1 ]; then
+    echo -e -n "remove $(em "${PACKAGE_NAME}") from"
+else
+    echo -e -n "install $(em "${PACKAGE_NAME}") to"
+fi
+echo -e -n " ${MSG_RC}$(em "${INSTALL_DIR}/")? [y/n]: "
 read -p "" INSTALL_Y
 if [ ! "${INSTALL_Y}" = "y" ]; then
-    MSG_RC=""
-    if [ -z "${RC_FILE}" ]; then
-        MSG_RC=", use with $(em "${PACKAGE_DIR}/driver.sh")"
+    if [ ${REMOVE} -eq 1 ]; then
+        log_warning "system-wide $(em "${PACKAGE_NAME}") installation was not removed"
+    else
+        MSG_RC=""
+        if [ -z "${RC_FILE}" ]; then
+            MSG_RC=", use with $(em "./driver.sh")"
+        fi
+        log_warning "$(em "${PACKAGE_NAME}") was not installed system-wide${MSG_RC}"
     fi
-    log_warning "command $(em "${PACKAGE_NAME}") was not installed${MSG_RC}"
     exit 0
 fi
 
@@ -77,7 +98,29 @@ if [ ! -d "${INSTALL_DIR}/" ]; then
 fi
 sudo find ${INSTALL_DIR}/ -maxdepth 1 -name "${PACKAGE_NAME}" -type l -delete
 if [ ${?} -ne 0 ]; then
-    raise_error "failed to remove existing installation from $(em "${INSTALL_DIR}/")"
+    raise_error "failed to remove symlink from $(em "${INSTALL_DIR}/")"
+fi
+
+if [ ${REMOVE} -eq 1 ]; then
+    if [ ! -z "${RC_FILE}" ]; then
+        EXPR="/$(basename $(dirname ${PACKAGE_DIR}))"
+        EXPR="${EXPR}/$(basename ${PACKAGE_DIR})"
+        EXPR="${EXPR}/$(basename ${PACKAGE_LIBC})/"
+        EXPR="LD_LIBRARY_PATH.*${EXPR//\/\//\/}"
+        if [[ "${KERNEL_NAME}" == "Darwin"* ]]; then
+            sudo sed -i '' "\|${EXPR}|d" ~/.${RC_FILE}
+        elif [[ "${KERNEL_NAME}" == "FreeBSD"* ]]; then
+            sudo sed -i '' "\|${EXPR}|d" ~/.${RC_FILE}
+        else
+            sudo sed -i "\|${EXPR}|d" ~/.${RC_FILE}
+        fi
+        if [ ${?} -ne 0 ]; then
+            raise_error "failed to remove runtime library from ~/.${RC_FILE}"
+        fi
+    fi
+
+    echo -e "system-wide $(em "${PACKAGE_NAME}") installation was successfully removed"
+    exit 0
 fi
 
 sudo ln -s ${PACKAGE_DIR}/driver.sh ${INSTALL_LINK}
@@ -94,7 +137,7 @@ if [ ! -z "${RC_FILE}" ]; then
         sudo echo 'export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:'"${PACKAGE_LIBC}/\"" >> ~/.${RC_FILE}
     fi
     if [ ${?} -ne 0 ]; then
-        raise_error "failed to install runtime to ~/.${RC_FILE}"
+        raise_error "failed to install runtime library to ~/.${RC_FILE}"
     fi
     echo -e "exported $(em "${PACKAGE_LIBC}/") library path to ~/.${RC_FILE}"
 fi
